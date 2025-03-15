@@ -1,16 +1,7 @@
 
 import React, { useState } from "react";
-import { 
-  SidebarProvider, 
-  Sidebar, 
-  SidebarContent, 
-  SidebarMenu, 
-  SidebarMenuItem, 
-  SidebarMenuButton,
-  SidebarInset
-} from "@/components/ui/sidebar";
+import { Building2, Users, ShoppingBag, Heart, Search } from "lucide-react";
 import PersonsList from "@/components/personal/PersonsList";
-import { Building, Heart, User, ShoppingCart, Search } from "lucide-react";
 
 const PersonalCabinet = () => {
   const [activeSection, setActiveSection] = useState<string>("persons");
@@ -33,78 +24,90 @@ const PersonalCabinet = () => {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex w-full min-h-screen bg-background">
-        <Sidebar>
-          <div className="flex items-center justify-center p-4 bg-[#9b87f5] text-white font-bold text-2xl h-14">
+    <div className="flex w-full min-h-screen bg-background">
+      <div className="w-64 bg-[#1A1F2C] min-h-screen flex flex-col border-r border-[#2A2F3C]">
+        <div className="p-4 mb-6">
+          <div className="bg-[#9b87f5] text-white font-bold text-xl p-2 w-12 h-12 flex items-center justify-center rounded">
             Alt
           </div>
-          <SidebarContent className="bg-[#1A1F2C] text-white h-full">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  isActive={activeSection === "companies"}
-                  onClick={() => setActiveSection("companies")}
-                  className={`${activeSection === "companies" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
-                >
-                  <Building className="h-5 w-5" />
-                  <span>Companies</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  isActive={activeSection === "persons"}
-                  onClick={() => setActiveSection("persons")}
-                  className={`${activeSection === "persons" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
-                >
-                  <User className="h-5 w-5" />
-                  <span>Persons</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  isActive={activeSection === "orders"}
-                  onClick={() => setActiveSection("orders")}
-                  className={`${activeSection === "orders" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>My Orders</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  isActive={activeSection === "favorites"}
-                  onClick={() => setActiveSection("favorites")}
-                  className={`${activeSection === "favorites" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
-                >
-                  <Heart className="h-5 w-5" />
-                  <span>Favorites</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  isActive={activeSection === "saved"}
-                  onClick={() => setActiveSection("saved")}
-                  className={`${activeSection === "saved" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
-                >
-                  <Search className="h-5 w-5" />
-                  <span>Saved Searches</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
-          <div className="mt-auto p-4 border-t border-[#2A2F3C] bg-[#1A1F2C] flex items-center gap-3">
+        </div>
+
+        <nav className="space-y-1 flex-1 px-2">
+          <button
+            onClick={() => setActiveSection("companies")}
+            className={`flex items-center gap-3 p-3 rounded-md w-full text-left ${
+              activeSection === "companies"
+                ? "text-white bg-[#6E59A5] border-l-4 border-[#9b87f5]"
+                : "text-[#8E9196] hover:bg-[#2A2F3C]"
+            }`}
+          >
+            <Building2 className="h-5 w-5" />
+            <span>Companies</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection("persons")}
+            className={`flex items-center gap-3 p-3 rounded-md w-full text-left ${
+              activeSection === "persons"
+                ? "text-white bg-[#6E59A5] border-l-4 border-[#9b87f5]"
+                : "text-[#8E9196] hover:bg-[#2A2F3C]"
+            }`}
+          >
+            <Users className="h-5 w-5" />
+            <span>Persons</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection("orders")}
+            className={`flex items-center gap-3 p-3 rounded-md w-full text-left ${
+              activeSection === "orders"
+                ? "text-white bg-[#6E59A5] border-l-4 border-[#9b87f5]"
+                : "text-[#8E9196] hover:bg-[#2A2F3C]"
+            }`}
+          >
+            <ShoppingBag className="h-5 w-5" />
+            <span>My Orders</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection("favorites")}
+            className={`flex items-center gap-3 p-3 rounded-md w-full text-left ${
+              activeSection === "favorites"
+                ? "text-white bg-[#6E59A5] border-l-4 border-[#9b87f5]"
+                : "text-[#8E9196] hover:bg-[#2A2F3C]"
+            }`}
+          >
+            <Heart className="h-5 w-5" />
+            <span>Favorites</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSection("saved")}
+            className={`flex items-center gap-3 p-3 rounded-md w-full text-left ${
+              activeSection === "saved"
+                ? "text-white bg-[#6E59A5] border-l-4 border-[#9b87f5]"
+                : "text-[#8E9196] hover:bg-[#2A2F3C]"
+            }`}
+          >
+            <Search className="h-5 w-5" />
+            <span>Saved Searches</span>
+          </button>
+        </nav>
+
+        <div className="mt-auto p-4 border-t border-[#2A2F3C]">
+          <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
               <img src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="" className="h-8 w-8 object-cover" />
             </div>
-            <span className="text-sm font-medium text-white">User Name</span>
+            <span className="text-white text-sm">User Name</span>
           </div>
-        </Sidebar>
-        <SidebarInset className="bg-[#F6F6F7]">
-          {renderContent()}
-        </SidebarInset>
+        </div>
       </div>
-    </SidebarProvider>
+
+      <main className="flex-1 bg-[#F6F6F7]">
+        {renderContent()}
+      </main>
+    </div>
   );
 };
 
