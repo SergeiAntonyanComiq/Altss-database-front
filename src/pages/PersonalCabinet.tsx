@@ -36,15 +36,16 @@ const PersonalCabinet = () => {
     <SidebarProvider>
       <div className="flex w-full min-h-screen bg-background">
         <Sidebar>
-          <div className="flex items-center justify-center p-4 bg-blue-600 text-white font-bold text-2xl h-14">
+          <div className="flex items-center justify-center p-4 bg-[#9b87f5] text-white font-bold text-2xl h-14">
             Alt
           </div>
-          <SidebarContent>
+          <SidebarContent className="bg-[#1A1F2C] text-white h-full">
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   isActive={activeSection === "companies"}
                   onClick={() => setActiveSection("companies")}
+                  className={`${activeSection === "companies" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
                 >
                   <Building className="h-5 w-5" />
                   <span>Companies</span>
@@ -54,6 +55,7 @@ const PersonalCabinet = () => {
                 <SidebarMenuButton 
                   isActive={activeSection === "persons"}
                   onClick={() => setActiveSection("persons")}
+                  className={`${activeSection === "persons" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
                 >
                   <User className="h-5 w-5" />
                   <span>Persons</span>
@@ -63,6 +65,7 @@ const PersonalCabinet = () => {
                 <SidebarMenuButton 
                   isActive={activeSection === "orders"}
                   onClick={() => setActiveSection("orders")}
+                  className={`${activeSection === "orders" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
                 >
                   <ShoppingCart className="h-5 w-5" />
                   <span>My Orders</span>
@@ -72,6 +75,7 @@ const PersonalCabinet = () => {
                 <SidebarMenuButton 
                   isActive={activeSection === "favorites"}
                   onClick={() => setActiveSection("favorites")}
+                  className={`${activeSection === "favorites" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
                 >
                   <Heart className="h-5 w-5" />
                   <span>Favorites</span>
@@ -81,6 +85,7 @@ const PersonalCabinet = () => {
                 <SidebarMenuButton 
                   isActive={activeSection === "saved"}
                   onClick={() => setActiveSection("saved")}
+                  className={`${activeSection === "saved" ? "bg-[#6E59A5] text-white" : "hover:bg-[#2A2F3C] text-[#8E9196]"}`}
                 >
                   <Search className="h-5 w-5" />
                   <span>Saved Searches</span>
@@ -88,14 +93,14 @@ const PersonalCabinet = () => {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
-          <div className="mt-auto p-4 border-t flex items-center gap-3">
+          <div className="mt-auto p-4 border-t border-[#2A2F3C] bg-[#1A1F2C] flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
               <img src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="" className="h-8 w-8 object-cover" />
             </div>
-            <span className="text-sm font-medium">User Name</span>
+            <span className="text-sm font-medium text-white">User Name</span>
           </div>
         </Sidebar>
-        <SidebarInset>
+        <SidebarInset className="bg-[#F6F6F7]">
           {renderContent()}
         </SidebarInset>
       </div>
