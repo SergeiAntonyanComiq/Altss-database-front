@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import BlurredShape from "@/components/ui/BlurredShape";
-import './ui/animatedBackground.css';
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
 
 const Hero: React.FC = () => {
   const imageRef = useRef<HTMLImageElement>(null);
@@ -37,33 +37,7 @@ const Hero: React.FC = () => {
     <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 bg-altss-deep-blue/95 -z-20"></div>
-      <div className="wave-container -z-10">
-        <div className="animated-wave"></div>
-        <div className="wave-pattern">
-          {Array.from({ length: 15 }).map((_, i) => (
-            <svg
-              key={i}
-              className="absolute w-full h-full"
-              style={{
-                animationDuration: `${20 + i * 0.5}s`,
-                animationDelay: `${i * 0.3}s`,
-                opacity: 0.5 - i * 0.02,
-                animation: `wave ${8 + i * 0.7}s ease-in-out infinite alternate`,
-                top: `${i * 5}%`
-              }}
-              viewBox="0 0 1440 320"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d={`M0,${160 + (i * 10)} C320,${180 + (i * 5)} 720,${120 + (i * 3)} 1440,${150 + (i * 8)}`}
-                fill="none"
-                stroke="rgba(100, 140, 255, 0.2)"
-                strokeWidth="2"
-              ></path>
-            </svg>
-          ))}
-        </div>
-      </div>
+      <AnimatedBackground />
       
       <BlurredShape color="blue" size="xl" className="-top-20 -right-20 opacity-10" />
       <BlurredShape color="orange" size="lg" className="-left-20 top-40 opacity-5" />
