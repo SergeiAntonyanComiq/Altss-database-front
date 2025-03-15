@@ -20,14 +20,14 @@ import {
   PaginationPrevious, 
   PaginationEllipsis 
 } from "@/components/ui/pagination";
-import { Filter, Bookmark, Heart, Plus } from "lucide-react";
+import { Filter, Bookmark, Heart, Plus, Search } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
 
 const PersonsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(2);
+  const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
+  const [currentPage] = useState(2);
   const [persons] = useState<PersonType[]>(mockPersons);
 
   const handleCheckboxChange = (personId: string) => {
@@ -46,6 +46,11 @@ const PersonsList = () => {
     }
   };
 
+  const toggleFavorite = (id: string) => {
+    // В реальном приложении, это был бы API вызов для изменения избранного статуса
+    console.log(`Toggle favorite for person with ID: ${id}`);
+  };
+
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">Persons</h1>
@@ -60,9 +65,7 @@ const PersonsList = () => {
             className="pl-3 pr-10"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg className="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-            </svg>
+            <Search className="w-5 h-5 text-gray-400" />
           </div>
         </div>
         
@@ -82,9 +85,9 @@ const PersonsList = () => {
         </Button>
       </div>
       
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-lg overflow-hidden bg-white">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-white">
             <TableRow>
               <TableHead className="w-10">
                 <Checkbox
@@ -107,7 +110,7 @@ const PersonsList = () => {
           </TableHeader>
           <TableBody>
             {persons.map((person) => (
-              <TableRow key={person.id}>
+              <TableRow key={person.id} className={selectedPersons.includes(person.id) ? "bg-blue-50" : ""}>
                 <TableCell>
                   <Checkbox
                     checked={selectedPersons.includes(person.id)}
@@ -116,9 +119,14 @@ const PersonsList = () => {
                 </TableCell>
                 <TableCell className="font-medium flex items-center gap-2">
                   {person.name}
-                  {person.favorite && (
-                    <Heart className={`h-4 w-4 ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} />
-                  )}
+                  <button 
+                    onClick={() => toggleFavorite(person.id)}
+                    className="focus:outline-none"
+                  >
+                    <Heart 
+                      className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                    />
+                  </button>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-2">
