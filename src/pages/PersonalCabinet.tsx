@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Building2, Users, ShoppingBag, Heart, Search } from "lucide-react";
 import PersonsList from "@/components/personal/PersonsList";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const PersonalCabinet = () => {
   const [activeSection, setActiveSection] = useState<string>("persons");
@@ -96,9 +97,10 @@ const PersonalCabinet = () => {
 
         <div className="mt-auto p-4 border-t border-[#2A2F3C]">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-              <img src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="" className="h-8 w-8 object-cover" />
-            </div>
+            <Avatar>
+              <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
+              <AvatarFallback>UN</AvatarFallback>
+            </Avatar>
             <span className="text-white text-sm">User Name</span>
           </div>
         </div>
