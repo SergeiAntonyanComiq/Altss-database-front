@@ -7,4 +7,5 @@ export interface PersonType {
   linkedin: string;
   location: string;
   companies: string[];
+  profileImage?: string;
 }

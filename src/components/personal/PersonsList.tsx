@@ -20,6 +20,7 @@ import {
   PaginationPrevious, 
   PaginationEllipsis 
 } from "@/components/ui/pagination";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Filter, Bookmark, Heart, Plus, Search } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
@@ -117,16 +118,22 @@ const PersonsList = () => {
                     onCheckedChange={() => handleCheckboxChange(person.id)}
                   />
                 </TableCell>
-                <TableCell className="font-medium flex items-center gap-2">
-                  {person.name}
-                  <button 
-                    onClick={() => toggleFavorite(person.id)}
-                    className="focus:outline-none"
-                  >
-                    <Heart 
-                      className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
-                    />
-                  </button>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={person.profileImage} alt={person.name} />
+                      <AvatarFallback>{person.name.charAt(0)}{person.name.split(' ')[1]?.charAt(0) || ''}</AvatarFallback>
+                    </Avatar>
+                    <span>{person.name}</span>
+                    <button 
+                      onClick={() => toggleFavorite(person.id)}
+                      className="focus:outline-none ml-1"
+                    >
+                      <Heart 
+                        className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                      />
+                    </button>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-2">
