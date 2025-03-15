@@ -34,6 +34,7 @@ const PersonsTable = ({
               />
             </TableHead>
             <TableHead>Full Name</TableHead>
+            <TableHead className="w-10">Favorite</TableHead>
             <TableHead>Area of responsibility</TableHead>
             <TableHead>LinkedIn</TableHead>
             <TableHead>Resident Location</TableHead>
@@ -65,15 +66,17 @@ const PersonsTable = ({
                     </AvatarFallback>
                   </Avatar>
                   <span>{person.name}</span>
-                  <button 
-                    onClick={() => toggleFavorite(person.id)}
-                    className="focus:outline-none ml-1"
-                  >
-                    <Heart 
-                      className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
-                    />
-                  </button>
                 </div>
+              </TableCell>
+              <TableCell className="w-10 text-center">
+                <button 
+                  onClick={() => toggleFavorite(person.id)}
+                  className="focus:outline-none"
+                >
+                  <Heart 
+                    className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                  />
+                </button>
               </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-2">
