@@ -89,3 +89,16 @@
     @apply absolute rounded-full blur-[100px] opacity-20 z-0;
   }
 }
+
+/* Wave animation keyframes */
+@keyframes wave {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(20px) translateY(10px);
+  }
+  100% {
+    transform: translateX(-20px) translateY(-10px);
+  }
+}
