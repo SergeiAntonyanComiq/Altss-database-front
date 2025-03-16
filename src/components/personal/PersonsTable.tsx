@@ -56,7 +56,7 @@ const PersonsTable = ({
                   onCheckedChange={() => handleCheckboxChange(person.id)}
                 />
               </TableCell>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium pr-0">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={person.profileImage} alt={person.name} />
