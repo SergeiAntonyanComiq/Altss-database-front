@@ -16,6 +16,24 @@ interface PersonsTableProps {
   toggleFavorite: (id: string) => void;
 }
 
+// Helper function to get company logo based on company name
+const getCompanyLogo = (company: string) => {
+  const logoMap: Record<string, string> = {
+    "Goldman Sachs": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "JP Morgan": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "BlackRock": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "Citigroup": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "Morgan Stanley": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "Wells Fargo": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "Bank of America": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "Optimum": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "LGT": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+    "Book Store": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
+  };
+  
+  return logoMap[company] || "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png";
+};
+
 const PersonsTable = ({ 
   persons, 
   selectedPersons, 
@@ -148,7 +166,13 @@ const PersonsTable = ({
               <TableCell className="py-3 px-4 align-middle">
                 <div className="flex flex-wrap gap-1">
                   {person.companies.map((company, index) => (
-                    <Badge key={index} variant="outline" className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs border-blue-100">
+                    <Badge key={index} variant="outline" className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs border-blue-100 flex items-center gap-1">
+                      <Avatar className="h-4 w-4">
+                        <AvatarImage src={getCompanyLogo(company)} alt={company} />
+                        <AvatarFallback className="text-[8px] bg-blue-200 text-blue-700">
+                          {company.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                       {company}
                     </Badge>
                   ))}
