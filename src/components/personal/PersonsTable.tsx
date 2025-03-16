@@ -56,16 +56,16 @@ const PersonsTable = ({
         <TableBody>
           {persons.map((person) => (
             <TableRow key={person.id} className={selectedPersons.includes(person.id) ? "bg-blue-50" : ""}>
-              <TableCell className="p-1">
+              <TableCell className="p-1 align-middle">
                 <Checkbox
                   checked={selectedPersons.includes(person.id)}
                   onCheckedChange={() => handleCheckboxChange(person.id)}
                   className="h-3 w-3"
                 />
               </TableCell>
-              <TableCell className="font-medium pl-1 pr-0 py-1">
+              <TableCell className="font-medium pl-1 pr-0 py-1 whitespace-nowrap">
                 <div className="flex items-center gap-1 w-max max-w-[150px]">
-                  <Avatar className="h-5 w-5">
+                  <Avatar className="h-5 w-5 shrink-0">
                     <AvatarImage src={person.profileImage} alt={person.name} />
                     <AvatarFallback className="text-[9px]">
                       {person.name.charAt(0)}
@@ -75,7 +75,7 @@ const PersonsTable = ({
                   <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">{person.name}</span>
                 </div>
               </TableCell>
-              <TableCell className="w-5 p-0 text-center">
+              <TableCell className="w-5 p-0 text-center align-middle">
                 <button 
                   onClick={() => toggleFavorite(person.id)}
                   className="focus:outline-none"
