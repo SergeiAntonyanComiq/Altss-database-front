@@ -69,11 +69,6 @@ const PersonsTable = ({
               </TableCell>
               <TableCell className="py-3 px-4 align-middle">
                 <div className="flex items-center gap-2">
-                  <Checkbox
-                    checked={selectedPersons.includes(person.id)}
-                    onCheckedChange={() => handleCheckboxChange(person.id)}
-                    className="h-4 w-4 shrink-0"
-                  />
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage src={person.profileImage} alt={person.name} />
                     <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
