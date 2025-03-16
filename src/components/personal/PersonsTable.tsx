@@ -70,7 +70,11 @@ const PersonsTable = ({
               <TableCell className="py-3 px-4 align-middle">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage src={person.profileImage} alt={person.name} />
+                    {/* Use the example profile image for the first person */}
+                    <AvatarImage 
+                      src={person.id === "1" ? "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png" : person.profileImage} 
+                      alt={person.name} 
+                    />
                     <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
                       {person.name.charAt(0)}
                       {person.name.split(' ')[1]?.charAt(0) || ''}
