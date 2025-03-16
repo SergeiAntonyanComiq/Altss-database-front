@@ -64,7 +64,7 @@ const PersonsTable = ({
                 />
               </TableCell>
               <TableCell className="font-medium pl-1 pr-0 py-1">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 w-max max-w-[150px]">
                   <Avatar className="h-5 w-5">
                     <AvatarImage src={person.profileImage} alt={person.name} />
                     <AvatarFallback className="text-[9px]">
@@ -72,7 +72,7 @@ const PersonsTable = ({
                       {person.name.split(' ')[1]?.charAt(0) || ''}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs">{person.name}</span>
+                  <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">{person.name}</span>
                 </div>
               </TableCell>
               <TableCell className="w-5 p-0 text-center">
