@@ -125,19 +125,23 @@ const PersonsTable = ({
                 </div>
               </TableCell>
               <TableCell className="py-3 px-4 align-middle">
-                <div className="flex items-center gap-2">
-                  <a href={`mailto:${person.name.toLowerCase().replace(' ', '.')}@example.com`} className="text-gray-600 hover:text-blue-600">
-                    <Mail className="h-4 w-4" />
-                  </a>
-                  <a href={person.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                  <a href={`https://facebook.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                    <Facebook className="h-4 w-4" />
-                  </a>
-                  <a href={`https://twitter.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                    <Twitter className="h-4 w-4" />
-                  </a>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <a href={`mailto:${person.name.toLowerCase().replace(' ', '.')}@example.com`} className="text-gray-600 hover:text-blue-600">
+                      <Mail className="h-4 w-4" />
+                    </a>
+                    <a href={person.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                      <Linkedin className="h-4 w-4" />
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a href={`https://facebook.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                      <Facebook className="h-4 w-4" />
+                    </a>
+                    <a href={`https://twitter.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                      <Twitter className="h-4 w-4" />
+                    </a>
+                  </div>
                 </div>
               </TableCell>
               <TableCell className="py-3 px-4 align-middle text-sm">{person.location}</TableCell>
