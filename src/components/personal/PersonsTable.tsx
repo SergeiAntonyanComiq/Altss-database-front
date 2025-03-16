@@ -27,21 +27,27 @@ const PersonsTable = ({
       <Table>
         <TableHeader className="bg-white">
           <TableRow>
-            <TableHead className="w-7 px-2">
+            <TableHead className="w-5 p-1">
               <Checkbox
                 checked={selectedPersons.length === persons.length && persons.length > 0}
                 onCheckedChange={handleSelectAll}
+                className="h-3 w-3"
               />
             </TableHead>
-            <TableHead className="pl-2 pr-0">Full Name</TableHead>
-            <TableHead className="w-6 px-0"></TableHead>
-            <TableHead className="px-2">Area of responsibility</TableHead>
-            <TableHead className="px-2">LinkedIn</TableHead>
-            <TableHead className="px-2">Resident Location</TableHead>
-            <TableHead className="px-2">Current Companies</TableHead>
-            <TableHead className="w-7 px-2">
-              <Button variant="ghost" size="icon" className="h-6 w-6">
-                <Plus className="h-3 w-3" />
+            <TableHead className="pl-1 pr-0 text-xs">Full Name</TableHead>
+            <TableHead className="w-5 p-0"></TableHead>
+            <TableHead className="p-1 text-xs">Short Bio</TableHead>
+            <TableHead className="p-1 text-xs">LinkedIn</TableHead>
+            <TableHead className="p-1 text-xs">Area of responsibility</TableHead>
+            <TableHead className="p-1 text-xs">Resident Location</TableHead>
+            <TableHead className="p-1 text-xs">Current Companies</TableHead>
+            <TableHead className="p-1 text-xs">Current Position</TableHead>
+            <TableHead className="p-1 text-xs">Job History</TableHead>
+            <TableHead className="p-1 text-xs">News</TableHead>
+            <TableHead className="p-1 text-xs">Last Update</TableHead>
+            <TableHead className="w-5 p-1">
+              <Button variant="ghost" size="icon" className="h-4 w-4">
+                <Plus className="h-2 w-2" />
                 <span className="sr-only">Add column</span>
               </Button>
             </TableHead>
@@ -50,59 +56,65 @@ const PersonsTable = ({
         <TableBody>
           {persons.map((person) => (
             <TableRow key={person.id} className={selectedPersons.includes(person.id) ? "bg-blue-50" : ""}>
-              <TableCell className="px-2">
+              <TableCell className="p-1">
                 <Checkbox
                   checked={selectedPersons.includes(person.id)}
                   onCheckedChange={() => handleCheckboxChange(person.id)}
+                  className="h-3 w-3"
                 />
               </TableCell>
-              <TableCell className="font-medium pl-2 pr-0">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
+              <TableCell className="font-medium pl-1 pr-0 py-1">
+                <div className="flex items-center gap-1">
+                  <Avatar className="h-5 w-5">
                     <AvatarImage src={person.profileImage} alt={person.name} />
-                    <AvatarFallback>
+                    <AvatarFallback className="text-[9px]">
                       {person.name.charAt(0)}
                       {person.name.split(' ')[1]?.charAt(0) || ''}
                     </AvatarFallback>
                   </Avatar>
-                  <span>{person.name}</span>
+                  <span className="text-xs">{person.name}</span>
                 </div>
               </TableCell>
-              <TableCell className="w-6 px-0 text-center">
+              <TableCell className="w-5 p-0 text-center">
                 <button 
                   onClick={() => toggleFavorite(person.id)}
                   className="focus:outline-none"
                 >
                   <Heart 
-                    className={`h-3 w-3 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                    className={`h-2 w-2 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
                   />
                 </button>
               </TableCell>
-              <TableCell className="px-2">
+              <TableCell className="p-1 text-xs">{person.shortBio || "-"}</TableCell>
+              <TableCell className="p-1 text-xs">
+                <a href={person.linkedin} className="text-blue-600 hover:underline text-xs">
+                  {person.linkedinHandle || "/lorem_ipsu.."}
+                </a>
+              </TableCell>
+              <TableCell className="p-1">
                 <div className="flex flex-wrap gap-1">
                   {person.responsibilities.map((resp, index) => (
-                    <span key={index} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs">
+                    <span key={index} className="px-1 py-0.5 bg-blue-50 text-blue-700 rounded-md text-[9px]">
                       {resp}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="px-2">
-                <a href={person.linkedin} className="text-blue-600 hover:underline">
-                  /lorem_ipsu..
-                </a>
-              </TableCell>
-              <TableCell className="px-2">{person.location}</TableCell>
-              <TableCell className="px-2">
+              <TableCell className="p-1 text-xs">{person.location}</TableCell>
+              <TableCell className="p-1">
                 <div className="flex flex-wrap gap-1">
                   {person.companies.map((company, index) => (
-                    <span key={index} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs">
+                    <span key={index} className="px-1 py-0.5 bg-blue-50 text-blue-700 rounded-md text-[9px]">
                       {company}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="px-2"></TableCell>
+              <TableCell className="p-1 text-xs">{person.currentPosition || "-"}</TableCell>
+              <TableCell className="p-1 text-xs">{person.jobHistory || "-"}</TableCell>
+              <TableCell className="p-1 text-xs">{person.news || "-"}</TableCell>
+              <TableCell className="p-1 text-xs">{person.lastUpdate || "-"}</TableCell>
+              <TableCell className="p-1"></TableCell>
             </TableRow>
           ))}
         </TableBody>
