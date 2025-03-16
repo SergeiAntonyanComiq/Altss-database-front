@@ -145,7 +145,7 @@ const PersonsTable2 = ({
                 </div>
               </TableCell>
               <TableCell>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <a href={`mailto:${person.name.toLowerCase().replace(' ', '.')}@example.com`} className="text-gray-600 hover:text-blue-600">
                     <Mail className="h-4 w-4" />
                   </a>
