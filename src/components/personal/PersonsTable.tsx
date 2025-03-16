@@ -27,21 +27,21 @@ const PersonsTable = ({
       <Table>
         <TableHeader className="bg-white">
           <TableRow>
-            <TableHead className="w-10">
+            <TableHead className="w-7 px-2">
               <Checkbox
                 checked={selectedPersons.length === persons.length && persons.length > 0}
                 onCheckedChange={handleSelectAll}
               />
             </TableHead>
-            <TableHead>Full Name</TableHead>
-            <TableHead className="w-10 pl-0"></TableHead>
-            <TableHead>Area of responsibility</TableHead>
-            <TableHead>LinkedIn</TableHead>
-            <TableHead>Resident Location</TableHead>
-            <TableHead>Current Companies</TableHead>
-            <TableHead className="w-10">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Plus className="h-4 w-4" />
+            <TableHead className="pl-2 pr-0">Full Name</TableHead>
+            <TableHead className="w-6 px-0"></TableHead>
+            <TableHead className="px-2">Area of responsibility</TableHead>
+            <TableHead className="px-2">LinkedIn</TableHead>
+            <TableHead className="px-2">Resident Location</TableHead>
+            <TableHead className="px-2">Current Companies</TableHead>
+            <TableHead className="w-7 px-2">
+              <Button variant="ghost" size="icon" className="h-6 w-6">
+                <Plus className="h-3 w-3" />
                 <span className="sr-only">Add column</span>
               </Button>
             </TableHead>
@@ -50,15 +50,15 @@ const PersonsTable = ({
         <TableBody>
           {persons.map((person) => (
             <TableRow key={person.id} className={selectedPersons.includes(person.id) ? "bg-blue-50" : ""}>
-              <TableCell>
+              <TableCell className="px-2">
                 <Checkbox
                   checked={selectedPersons.includes(person.id)}
                   onCheckedChange={() => handleCheckboxChange(person.id)}
                 />
               </TableCell>
-              <TableCell className="font-medium pr-0">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
+              <TableCell className="font-medium pl-2 pr-0">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-6 w-6">
                     <AvatarImage src={person.profileImage} alt={person.name} />
                     <AvatarFallback>
                       {person.name.charAt(0)}
@@ -68,41 +68,41 @@ const PersonsTable = ({
                   <span>{person.name}</span>
                 </div>
               </TableCell>
-              <TableCell className="w-10 pl-0 text-center">
+              <TableCell className="w-6 px-0 text-center">
                 <button 
                   onClick={() => toggleFavorite(person.id)}
                   className="focus:outline-none"
                 >
                   <Heart 
-                    className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                    className={`h-3 w-3 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
                   />
                 </button>
               </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-2">
+              <TableCell className="px-2">
+                <div className="flex flex-wrap gap-1">
                   {person.responsibilities.map((resp, index) => (
-                    <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-sm">
+                    <span key={index} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs">
                       {resp}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="px-2">
                 <a href={person.linkedin} className="text-blue-600 hover:underline">
                   /lorem_ipsu..
                 </a>
               </TableCell>
-              <TableCell>{person.location}</TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-2">
+              <TableCell className="px-2">{person.location}</TableCell>
+              <TableCell className="px-2">
+                <div className="flex flex-wrap gap-1">
                   {person.companies.map((company, index) => (
-                    <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-md text-sm">
+                    <span key={index} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs">
                       {company}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell></TableCell>
+              <TableCell className="px-2"></TableCell>
             </TableRow>
           ))}
         </TableBody>
