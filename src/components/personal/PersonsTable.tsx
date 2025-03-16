@@ -34,7 +34,7 @@ const PersonsTable = ({
               />
             </TableHead>
             <TableHead>Full Name</TableHead>
-            <TableHead className="w-10">Favorite</TableHead>
+            <TableHead className="w-10"></TableHead>
             <TableHead>Area of responsibility</TableHead>
             <TableHead>LinkedIn</TableHead>
             <TableHead>Resident Location</TableHead>
