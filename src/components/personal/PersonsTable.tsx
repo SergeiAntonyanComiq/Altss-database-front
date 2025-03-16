@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, Mail, Linkedin, Facebook, Twitter } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { Badge } from "@/components/ui/badge";
 
@@ -42,7 +42,7 @@ const PersonsTable = ({
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Job History</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">News</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Area of responsibility</TableHead>
-            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">LinkedIn</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Contacts</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Resident Location</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Current Companies</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Last Update</TableHead>
@@ -125,9 +125,20 @@ const PersonsTable = ({
                 </div>
               </TableCell>
               <TableCell className="py-3 px-4 align-middle">
-                <a href={person.linkedin} className="text-blue-600 hover:underline text-sm">
-                  {person.linkedinHandle || "/lorem_ipsu.."}
-                </a>
+                <div className="flex items-center gap-2">
+                  <a href={`mailto:${person.name.toLowerCase().replace(' ', '.')}@example.com`} className="text-gray-600 hover:text-blue-600">
+                    <Mail className="h-4 w-4" />
+                  </a>
+                  <a href={person.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                    <Linkedin className="h-4 w-4" />
+                  </a>
+                  <a href={`https://facebook.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                    <Facebook className="h-4 w-4" />
+                  </a>
+                  <a href={`https://twitter.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                    <Twitter className="h-4 w-4" />
+                  </a>
+                </div>
               </TableCell>
               <TableCell className="py-3 px-4 align-middle text-sm">{person.location}</TableCell>
               <TableCell className="py-3 px-4 align-middle">
