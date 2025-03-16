@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 
 const PersonalCabinet = () => {
   const [activeSection, setActiveSection] = useState<string>("persons");
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
 
   const renderContent = () => {
     switch (activeSection) {
@@ -37,15 +37,15 @@ const PersonalCabinet = () => {
   };
 
   const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   return (
-    <SidebarProvider defaultOpen={!collapsed}>
+    <SidebarProvider defaultOpen={!sidebarCollapsed}>
       <div className="flex w-full min-h-screen bg-background">
         <Sidebar 
           className="bg-[#1A1F2C] text-white border-r border-[#2A2F3C]"
-          collapsible={collapsed ? "icon" : "none"}
+          collapsible={sidebarCollapsed ? "icon" : "none"}
         >
           <SidebarHeader className="flex flex-col relative">
             <div className="flex items-center justify-between p-4">
@@ -57,9 +57,8 @@ const PersonalCabinet = () => {
                 size="icon" 
                 className="text-[#8E9196] hover:bg-[#2A2F3C] h-8 w-8 absolute right-2 top-4"
                 onClick={toggleSidebar}
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
-                {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
               </Button>
             </div>
           </SidebarHeader>
