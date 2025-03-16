@@ -26,28 +26,23 @@ const PersonsTable = ({
     <div className="border rounded-lg overflow-hidden bg-white">
       <Table>
         <TableHeader className="bg-white">
-          <TableRow>
-            <TableHead className="w-5 p-1">
+          <TableRow className="border-b border-gray-200">
+            <TableHead className="w-12 py-3 px-4">
               <Checkbox
                 checked={selectedPersons.length === persons.length && persons.length > 0}
                 onCheckedChange={handleSelectAll}
-                className="h-3 w-3"
+                className="h-4 w-4"
               />
             </TableHead>
-            <TableHead className="pl-1 pr-0 text-xs">Full Name</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Full Name</TableHead>
             <TableHead className="w-5 p-0"></TableHead>
-            <TableHead className="p-1 text-xs">Short Bio</TableHead>
-            <TableHead className="p-1 text-xs">LinkedIn</TableHead>
-            <TableHead className="p-1 text-xs">Area of responsibility</TableHead>
-            <TableHead className="p-1 text-xs">Resident Location</TableHead>
-            <TableHead className="p-1 text-xs">Current Companies</TableHead>
-            <TableHead className="p-1 text-xs">Current Position</TableHead>
-            <TableHead className="p-1 text-xs">Job History</TableHead>
-            <TableHead className="p-1 text-xs">News</TableHead>
-            <TableHead className="p-1 text-xs">Last Update</TableHead>
-            <TableHead className="w-5 p-1">
-              <Button variant="ghost" size="icon" className="h-4 w-4">
-                <Plus className="h-2 w-2" />
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Area of responsibility</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">LinkedIn</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Resident Location</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Current Companies</TableHead>
+            <TableHead className="w-5 py-3 px-2">
+              <Button variant="ghost" size="icon" className="h-5 w-5 ml-2 rounded-full bg-blue-50">
+                <Plus className="h-3 w-3 text-blue-600" />
                 <span className="sr-only">Add column</span>
               </Button>
             </TableHead>
@@ -55,66 +50,65 @@ const PersonsTable = ({
         </TableHeader>
         <TableBody>
           {persons.map((person) => (
-            <TableRow key={person.id} className={selectedPersons.includes(person.id) ? "bg-blue-50" : ""}>
-              <TableCell className="p-1 align-middle">
+            <TableRow 
+              key={person.id} 
+              className={`${selectedPersons.includes(person.id) ? "bg-blue-50" : "hover:bg-gray-50"} border-b border-gray-200`}
+            >
+              <TableCell className="py-3 px-4 align-middle w-12">
                 <Checkbox
                   checked={selectedPersons.includes(person.id)}
                   onCheckedChange={() => handleCheckboxChange(person.id)}
-                  className="h-3 w-3"
+                  className="h-4 w-4"
                 />
               </TableCell>
-              <TableCell className="font-medium pl-1 pr-0 py-1 whitespace-nowrap">
-                <div className="flex items-center gap-1 w-max max-w-[150px]">
-                  <Avatar className="h-5 w-5 shrink-0">
+              <TableCell className="py-3 px-4 align-middle">
+                <div className="flex items-center gap-3 max-w-[200px]">
+                  <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage src={person.profileImage} alt={person.name} />
-                    <AvatarFallback className="text-[9px]">
+                    <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
                       {person.name.charAt(0)}
                       {person.name.split(' ')[1]?.charAt(0) || ''}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis">{person.name}</span>
+                  <span className="text-sm font-medium text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                    {person.name}
+                  </span>
+                  <button 
+                    onClick={() => toggleFavorite(person.id)}
+                    className="focus:outline-none ml-1"
+                  >
+                    <Heart 
+                      className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                    />
+                  </button>
                 </div>
               </TableCell>
-              <TableCell className="w-5 p-0 text-center align-middle">
-                <button 
-                  onClick={() => toggleFavorite(person.id)}
-                  className="focus:outline-none"
-                >
-                  <Heart 
-                    className={`h-2 w-2 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
-                  />
-                </button>
-              </TableCell>
-              <TableCell className="p-1 text-xs">{person.shortBio || "-"}</TableCell>
-              <TableCell className="p-1 text-xs">
-                <a href={person.linkedin} className="text-blue-600 hover:underline text-xs">
-                  {person.linkedinHandle || "/lorem_ipsu.."}
-                </a>
-              </TableCell>
-              <TableCell className="p-1">
+              <TableCell className="w-5 p-0"></TableCell>
+              <TableCell className="py-3 px-4 align-middle">
                 <div className="flex flex-wrap gap-1">
                   {person.responsibilities.map((resp, index) => (
-                    <span key={index} className="px-1 py-0.5 bg-blue-50 text-blue-700 rounded-md text-[9px]">
+                    <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs">
                       {resp}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="p-1 text-xs">{person.location}</TableCell>
-              <TableCell className="p-1">
+              <TableCell className="py-3 px-4 align-middle">
+                <a href={person.linkedin} className="text-blue-600 hover:underline text-sm">
+                  {person.linkedinHandle || "/lorem_ipsu.."}
+                </a>
+              </TableCell>
+              <TableCell className="py-3 px-4 align-middle text-sm">{person.location}</TableCell>
+              <TableCell className="py-3 px-4 align-middle">
                 <div className="flex flex-wrap gap-1">
                   {person.companies.map((company, index) => (
-                    <span key={index} className="px-1 py-0.5 bg-blue-50 text-blue-700 rounded-md text-[9px]">
+                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs">
                       {company}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="p-1 text-xs">{person.currentPosition || "-"}</TableCell>
-              <TableCell className="p-1 text-xs">{person.jobHistory || "-"}</TableCell>
-              <TableCell className="p-1 text-xs">{person.news || "-"}</TableCell>
-              <TableCell className="p-1 text-xs">{person.lastUpdate || "-"}</TableCell>
-              <TableCell className="p-1"></TableCell>
+              <TableCell className="py-3 px-4 align-middle"></TableCell>
             </TableRow>
           ))}
         </TableBody>
