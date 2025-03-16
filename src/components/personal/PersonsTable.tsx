@@ -34,7 +34,7 @@ const PersonsTable = ({
               />
             </TableHead>
             <TableHead>Full Name</TableHead>
-            <TableHead className="w-8 p-0"></TableHead>
+            <TableHead className="w-10 pl-0"></TableHead>
             <TableHead>Area of responsibility</TableHead>
             <TableHead>LinkedIn</TableHead>
             <TableHead>Resident Location</TableHead>
@@ -68,7 +68,7 @@ const PersonsTable = ({
                   <span>{person.name}</span>
                 </div>
               </TableCell>
-              <TableCell className="w-8 p-0 text-center">
+              <TableCell className="w-10 pl-0 text-center">
                 <button 
                   onClick={() => toggleFavorite(person.id)}
                   className="focus:outline-none"
