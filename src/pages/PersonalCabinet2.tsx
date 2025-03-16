@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Building2, Users, ShoppingBag, Heart, Search } from "lucide-react";
-import PersonsList from "@/components/personal/PersonsList";
+import PersonsList2 from "@/components/personal/PersonsList2";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const PersonalCabinet2 = () => {
@@ -10,7 +10,7 @@ const PersonalCabinet2 = () => {
   const renderContent = () => {
     switch (activeSection) {
       case "persons":
-        return <PersonsList />;
+        return <PersonsList2 />;
       case "companies":
         return <div className="p-6"><h2 className="text-2xl font-semibold">Companies</h2></div>;
       case "orders":
@@ -20,7 +20,7 @@ const PersonalCabinet2 = () => {
       case "saved":
         return <div className="p-6"><h2 className="text-2xl font-semibold">Saved Searches</h2></div>;
       default:
-        return <PersonsList />;
+        return <PersonsList2 />;
     }
   };
 
