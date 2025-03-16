@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, Plus } from "lucide-react";
 import { PersonType } from "@/types/person";
+import { Badge } from "@/components/ui/badge";
 
 interface PersonsTableProps {
   persons: PersonType[];
@@ -36,10 +37,15 @@ const PersonsTable = ({
             </TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Full Name</TableHead>
             <TableHead className="w-5 p-0"></TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Bio / About</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Position</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Job History</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">News</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Area of responsibility</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">LinkedIn</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Resident Location</TableHead>
             <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Current Companies</TableHead>
+            <TableHead className="py-3 px-4 text-sm font-medium text-gray-700">Last Update</TableHead>
             <TableHead className="w-5 py-3 px-2">
               <Button variant="ghost" size="icon" className="h-5 w-5 ml-2 rounded-full bg-blue-50">
                 <Plus className="h-3 w-3 text-blue-600" />
@@ -62,7 +68,12 @@ const PersonsTable = ({
                 />
               </TableCell>
               <TableCell className="py-3 px-4 align-middle">
-                <div className="flex items-center gap-3 max-w-[200px]">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={selectedPersons.includes(person.id)}
+                    onCheckedChange={() => handleCheckboxChange(person.id)}
+                    className="h-4 w-4 shrink-0"
+                  />
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage src={person.profileImage} alt={person.name} />
                     <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
@@ -70,26 +81,48 @@ const PersonsTable = ({
                       {person.name.split(' ')[1]?.charAt(0) || ''}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {person.name}
-                  </span>
-                  <button 
-                    onClick={() => toggleFavorite(person.id)}
-                    className="focus:outline-none ml-1"
-                  >
-                    <Heart 
-                      className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
-                    />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm font-medium text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {person.name}
+                    </span>
+                    <button 
+                      onClick={() => toggleFavorite(person.id)}
+                      className="focus:outline-none"
+                    >
+                      <Heart 
+                        className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                      />
+                    </button>
+                  </div>
                 </div>
               </TableCell>
               <TableCell className="w-5 p-0"></TableCell>
               <TableCell className="py-3 px-4 align-middle">
+                <p className="text-sm text-gray-600 max-w-[200px] line-clamp-2">
+                  {person.shortBio || "-"}
+                </p>
+              </TableCell>
+              <TableCell className="py-3 px-4 align-middle">
+                <span className="text-sm text-gray-600">
+                  {person.currentPosition || "-"}
+                </span>
+              </TableCell>
+              <TableCell className="py-3 px-4 align-middle">
+                <span className="text-sm text-gray-600">
+                  {person.jobHistory || "-"}
+                </span>
+              </TableCell>
+              <TableCell className="py-3 px-4 align-middle">
+                <span className="text-sm text-gray-600">
+                  {person.news || "-"}
+                </span>
+              </TableCell>
+              <TableCell className="py-3 px-4 align-middle">
                 <div className="flex flex-wrap gap-1">
                   {person.responsibilities.map((resp, index) => (
-                    <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs">
+                    <Badge key={index} variant="outline" className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs border-blue-100">
                       {resp}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </TableCell>
@@ -102,11 +135,16 @@ const PersonsTable = ({
               <TableCell className="py-3 px-4 align-middle">
                 <div className="flex flex-wrap gap-1">
                   {person.companies.map((company, index) => (
-                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs">
+                    <Badge key={index} variant="outline" className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs border-blue-100">
                       {company}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
+              </TableCell>
+              <TableCell className="py-3 px-4 align-middle">
+                <span className="text-sm text-gray-500">
+                  {person.lastUpdate || "-"}
+                </span>
               </TableCell>
               <TableCell className="py-3 px-4 align-middle"></TableCell>
             </TableRow>
