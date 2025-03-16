@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, Plus, Mail, Linkedin, Facebook, Twitter } from "lucide-react";
+import { Heart, Plus, Mail, Linkedin, Facebook, Twitter, Flag } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { Badge } from "@/components/ui/badge";
 
@@ -162,7 +162,14 @@ const PersonsTable = ({
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="py-3 px-4 align-middle text-sm">{person.location}</TableCell>
+              <TableCell className="py-3 px-4 align-middle text-sm">
+                <div className="flex items-center gap-1">
+                  {person.location}
+                  {person.location.includes("US") && (
+                    <Flag className="h-4 w-4 text-blue-600 ml-1" />
+                  )}
+                </div>
+              </TableCell>
               <TableCell className="py-3 px-4 align-middle">
                 <div className="flex flex-wrap gap-1">
                   {person.companies.map((company, index) => (
