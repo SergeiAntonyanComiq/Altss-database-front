@@ -162,7 +162,7 @@ const ContactsList = () => {
           toast({
             title: "Warning",
             description: "Using demo data as we couldn't load contacts from the server.",
-            variant: "warning",
+            variant: "default", // Changed from "warning" to "default"
           });
         } else {
           setContacts(validContacts);
@@ -175,7 +175,7 @@ const ContactsList = () => {
         toast({
           title: "Error",
           description: "Failed to load contacts. Using demo data instead.",
-          variant: "destructive",
+          variant: "destructive", // This is already correct
         });
       } finally {
         setIsLoading(false);
