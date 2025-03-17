@@ -6,6 +6,13 @@ import ContactsTable from "./ContactsTable";
 import PersonsSearchBar from "../personal/PersonsSearchBar";
 import PersonsPagination from "../personal/PersonsPagination";
 import { toast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Mock data to use when API fails or for initial load
 const mockContacts: ContactType[] = [
@@ -93,8 +100,9 @@ const fetchContact = async (contactId: number): Promise<ContactType> => {
 
 const fetchContactIds = async (): Promise<number[]> => {
   // In a real app, you would fetch a list of available contact IDs
-  // For now, we'll return mock IDs
-  return [2, 3, 4, 5, 6, 7, 8];
+  // For now, we'll generate IDs for pagination demo
+  const totalContacts = 119418; // Total contacts in database
+  return Array.from({ length: totalContacts }, (_, i) => i + 1);
 };
 
 const ContactsList = () => {
@@ -105,14 +113,21 @@ const ContactsList = () => {
   const [contacts, setContacts] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const contactsPerPage = 3;
+  const [contactsPerPage, setContactsPerPage] = useState(10);
+  const totalContacts = 119418; // Total contacts in database
 
-  // Get list of contact IDs
+  // Get list of contact IDs for current page
   useEffect(() => {
     const getContactIds = async () => {
       try {
-        const ids = await fetchContactIds();
-        setContactIds(ids);
+        // For demo, we'll generate sequential IDs based on pagination
+        const startId = (currentPage - 1) * contactsPerPage + 1;
+        const endId = Math.min(startId + contactsPerPage - 1, totalContacts);
+        const pageIds = Array.from(
+          { length: endId - startId + 1 },
+          (_, i) => startId + i
+        );
+        setContactIds(pageIds);
       } catch (err) {
         console.error("Failed to fetch contact IDs:", err);
         setError(err instanceof Error ? err : new Error("Unknown error"));
@@ -122,7 +137,7 @@ const ContactsList = () => {
     };
     
     getContactIds();
-  }, []);
+  }, [currentPage, contactsPerPage]);
 
   // Fetch contacts for current page
   useEffect(() => {
@@ -138,12 +153,8 @@ const ContactsList = () => {
           return;
         }
         
-        // Calculate which contacts to fetch based on current page
-        const startIndex = (currentPage - 1) * contactsPerPage;
-        const currentPageIds = contactIds.slice(startIndex, startIndex + contactsPerPage);
-        
         // Fetch each contact
-        const contactPromises = currentPageIds.map(id => fetchContact(id));
+        const contactPromises = contactIds.map(id => fetchContact(id));
         const fetchedContacts = await Promise.all(
           contactPromises.map(promise => 
             promise.catch(err => {
@@ -162,7 +173,7 @@ const ContactsList = () => {
           toast({
             title: "Warning",
             description: "Using demo data as we couldn't load contacts from the server.",
-            variant: "default", // Changed from "warning" to "default"
+            variant: "default",
           });
         } else {
           setContacts(validContacts);
@@ -175,7 +186,7 @@ const ContactsList = () => {
         toast({
           title: "Error",
           description: "Failed to load contacts. Using demo data instead.",
-          variant: "destructive", // This is already correct
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -183,7 +194,7 @@ const ContactsList = () => {
     };
     
     fetchCurrentPageContacts();
-  }, [contactIds, currentPage]);
+  }, [contactIds]);
 
   useEffect(() => {
     if (error) {
@@ -227,13 +238,37 @@ const ContactsList = () => {
     setCurrentPage(newPage);
   };
 
+  const handleContactsPerPageChange = (value: string) => {
+    const newValue = parseInt(value, 10);
+    setContactsPerPage(newValue);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Contacts</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Show:</span>
+            <Select
+              value={contactsPerPage.toString()}
+              onValueChange={handleContactsPerPageChange}
+            >
+              <SelectTrigger className="w-[80px] h-8">
+                <SelectValue placeholder="10" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <span className="text-sm text-muted-foreground">
-            {isLoading ? "Loading..." : `Showing ${contacts.length} items`}
+            {isLoading ? "Loading..." : `Showing ${contacts.length} of ${totalContacts} items`}
           </span>
         </div>
       </div>
@@ -267,7 +302,7 @@ const ContactsList = () => {
         <PersonsPagination 
           currentPage={currentPage} 
           onPageChange={handlePageChange}
-          totalPages={Math.ceil(contactIds.length / contactsPerPage)}
+          totalPages={Math.ceil(totalContacts / contactsPerPage)}
         />
       </div>
     </div>
