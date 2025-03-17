@@ -238,9 +238,8 @@ const ContactsList = () => {
     setCurrentPage(newPage);
   };
 
-  const handleContactsPerPageChange = (value: string) => {
-    const newValue = parseInt(value, 10);
-    setContactsPerPage(newValue);
+  const handleContactsPerPageChange = (value: number) => {
+    setContactsPerPage(value);
     setCurrentPage(1); // Reset to first page when changing items per page
   };
 
@@ -253,7 +252,7 @@ const ContactsList = () => {
             <span className="text-sm text-muted-foreground">Show:</span>
             <Select
               value={contactsPerPage.toString()}
-              onValueChange={handleContactsPerPageChange}
+              onValueChange={(value) => handleContactsPerPageChange(parseInt(value, 10))}
             >
               <SelectTrigger className="w-[80px] h-8">
                 <SelectValue placeholder="10" />
@@ -303,6 +302,8 @@ const ContactsList = () => {
           currentPage={currentPage} 
           onPageChange={handlePageChange}
           totalPages={Math.ceil(totalContacts / contactsPerPage)}
+          itemsPerPage={contactsPerPage}
+          onItemsPerPageChange={handleContactsPerPageChange}
         />
       </div>
     </div>
