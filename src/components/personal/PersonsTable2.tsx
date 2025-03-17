@@ -34,6 +34,20 @@ const getCompanyLogo = (company: string) => {
   return logoMap[company] || "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png";
 };
 
+// Helper function to format LinkedIn URL
+const formatLinkedInUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `https://${url}`;
+};
+
+// Helper function to format social media URLs
+const formatSocialUrl = (platform: string, username: string) => {
+  return `https://${platform}.com/${username.toLowerCase().replace(' ', '')}`;
+};
+
 const PersonsTable2 = ({ 
   persons, 
   selectedPersons, 
@@ -149,13 +163,13 @@ const PersonsTable2 = ({
                   <a href={`mailto:${person.name.toLowerCase().replace(' ', '.')}@example.com`} className="text-gray-600 hover:text-blue-600">
                     <Mail className="h-4 w-4" />
                   </a>
-                  <a href={person.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                  <a href={formatLinkedInUrl(person.linkedin)} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
                     <Linkedin className="h-4 w-4" />
                   </a>
-                  <a href={`https://facebook.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                  <a href={formatSocialUrl('facebook', person.name)} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
                     <Facebook className="h-4 w-4" />
                   </a>
-                  <a href={`https://twitter.com/${person.name.toLowerCase().replace(' ', '')}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                  <a href={formatSocialUrl('twitter', person.name)} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
                     <Twitter className="h-4 w-4" />
                   </a>
                 </div>

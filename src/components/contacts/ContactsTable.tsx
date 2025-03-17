@@ -33,6 +33,15 @@ const getLocation = (city: string, state: string, country: string) => {
   return parts.join(', ');
 };
 
+// Helper function to format LinkedIn URL
+const formatLinkedInUrl = (url: string) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return `https://${url}`;
+};
+
 const ContactsTable = ({ 
   contacts, 
   selectedContacts, 
@@ -137,15 +146,21 @@ const ContactsTable = ({
               </TableCell>
               <TableCell>
                 <div className="flex space-x-1">
-                  <a href={`mailto:${contact.email}`} className="text-gray-600 hover:text-blue-600">
-                    <Mail className="h-4 w-4" />
-                  </a>
-                  <a href={`tel:${contact.tel}`} className="text-gray-600 hover:text-blue-600">
-                    <Phone className="h-4 w-4" />
-                  </a>
-                  <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-                    <Linkedin className="h-4 w-4" />
-                  </a>
+                  {contact.email && (
+                    <a href={`mailto:${contact.email}`} className="text-gray-600 hover:text-blue-600">
+                      <Mail className="h-4 w-4" />
+                    </a>
+                  )}
+                  {contact.tel && (
+                    <a href={`tel:${contact.tel}`} className="text-gray-600 hover:text-blue-600">
+                      <Phone className="h-4 w-4" />
+                    </a>
+                  )}
+                  {contact.linkedin && (
+                    <a href={formatLinkedInUrl(contact.linkedin)} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                      <Linkedin className="h-4 w-4" />
+                    </a>
+                  )}
                 </div>
               </TableCell>
               <TableCell></TableCell>
