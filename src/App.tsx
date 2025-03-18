@@ -24,7 +24,11 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Public route - no protection */}
             <Route path="/auth" element={<Auth />} />
+            
+            {/* NotFound should remain accessible */}
+            <Route path="*" element={<NotFound />} />
             
             {/* All protected routes */}
             <Route path="/" element={
@@ -52,8 +56,6 @@ const App = () => (
                 <PersonalCabinet4 />
               </ProtectedRoute>
             } />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

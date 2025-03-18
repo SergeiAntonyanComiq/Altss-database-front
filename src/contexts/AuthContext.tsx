@@ -28,23 +28,27 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   useEffect(() => {
     console.log("AuthProvider initializing...");
+    let mounted = true;
     
     const getSession = async () => {
       try {
         console.log("Fetching session...");
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error("Error getting session:", error);
-        } else {
-          console.log("Session fetched:", session?.user?.email);
+        } else if (mounted) {
+          console.log("Session fetched:", session?.user?.email || "No session");
           setSession(session);
           setUser(session?.user ?? null);
         }
       } catch (err) {
         console.error("Unexpected error getting session:", err);
       } finally {
-        console.log("Finished loading session");
-        setLoading(false);
+        if (mounted) {
+          console.log("Finished loading session");
+          setLoading(false);
+        }
       }
     };
 
@@ -54,17 +58,19 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log("Auth state changed:", event, session?.user?.email);
-        setSession(session);
-        setUser(session?.user ?? null);
         
-        // If we're signed out, make sure loading is false
-        if (event === 'SIGNED_OUT') {
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          // Make sure loading is false after any auth state change
           setLoading(false);
         }
       }
     );
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -72,7 +78,10 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const signOut = async () => {
     try {
       console.log("Signing out...");
+      setLoading(true); // Set loading to true during sign out
+      
       const { error } = await supabase.auth.signOut();
+      
       if (error) {
         console.error("Error signing out:", error);
         toast({
@@ -81,12 +90,18 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
           variant: "destructive",
         });
       } else {
+        // Clear user and session state
+        setUser(null);
+        setSession(null);
+        
         toast({
           title: "Signed out successfully",
         });
       }
     } catch (error) {
       console.error("Unexpected error signing out:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
