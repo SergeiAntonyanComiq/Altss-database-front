@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import PersonalCabinet from "./pages/PersonalCabinet";
 import PersonalCabinet2 from "./pages/PersonalCabinet2";
 import PersonalCabinet3 from "./pages/PersonalCabinet3";
+import PersonalCabinet4 from "./pages/PersonalCabinet4";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/cabinet" element={<PersonalCabinet />} />
           <Route path="/cabinet2" element={<PersonalCabinet2 />} />
           <Route path="/cabinet3" element={<PersonalCabinet3 />} />
+          <Route path="/cabinet4" element={<PersonalCabinet4 />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
