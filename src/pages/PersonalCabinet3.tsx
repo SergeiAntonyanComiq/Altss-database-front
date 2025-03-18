@@ -1,11 +1,16 @@
 
 import React, { useState } from "react";
-import { Building2, Users, ShoppingBag, Heart, Search } from "lucide-react";
+import { Building2, Users, ShoppingBag, Heart, Search, LogOut } from "lucide-react";
 import ContactsList from "@/components/contacts/ContactsList";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const PersonalCabinet3 = () => {
   const [activeSection, setActiveSection] = useState<string>("contacts");
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const renderContent = () => {
     switch (activeSection) {
@@ -22,6 +27,22 @@ const PersonalCabinet3 = () => {
       default:
         return <ContactsList />;
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/auth");
+  };
+
+  // Get user's initials for avatar fallback
+  const getUserInitials = () => {
+    if (!user) return "UN";
+    
+    const email = user.email || "";
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    return "UN";
   };
 
   return (
@@ -96,12 +117,22 @@ const PersonalCabinet3 = () => {
         </nav>
 
         <div className="mt-auto p-4 border-t border-[#2A2F3C]">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
-              <AvatarFallback>UN</AvatarFallback>
-            </Avatar>
-            <span className="text-white text-sm">User Name</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
+                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+              </Avatar>
+              <span className="text-white text-sm">{user?.email}</span>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleSignOut}
+              className="text-[#8E9196] hover:text-white hover:bg-[#2A2F3C]"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>

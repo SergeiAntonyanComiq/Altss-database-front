@@ -2,10 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +19,18 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleAuthClick = () => {
+    if (user) {
+      navigate('/cabinet3');
+    } else {
+      navigate('/auth');
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+  };
 
   return (
     <header
@@ -41,9 +57,20 @@ const Header: React.FC = () => {
           <Button asChild variant="outline" className="ml-2">
             <a href="#contact">Contact</a>
           </Button>
-          <Button asChild className="bg-altss-deep-blue hover:bg-altss-blue transition-all duration-300">
-            <a href="#demo">Book a Demo</a>
-          </Button>
+          {user ? (
+            <>
+              <Button asChild className="bg-altss-deep-blue hover:bg-altss-blue transition-all duration-300">
+                <a href="/cabinet3">Dashboard</a>
+              </Button>
+              <Button variant="ghost" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button asChild className="bg-altss-deep-blue hover:bg-altss-blue transition-all duration-300">
+              <a href="/auth">Sign In</a>
+            </Button>
+          )}
         </nav>
 
         {/* Mobile Menu Button */}
@@ -92,13 +119,39 @@ const Header: React.FC = () => {
           >
             Contact
           </a>
-          <Button 
-            asChild 
-            className="bg-altss-deep-blue hover:bg-altss-blue transition-all duration-300 w-full mt-4"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            <a href="#demo">Book a Demo</a>
-          </Button>
+          {user ? (
+            <>
+              <Button 
+                onClick={() => {
+                  navigate('/cabinet3');
+                  setIsMobileMenuOpen(false);
+                }} 
+                className="bg-altss-deep-blue hover:bg-altss-blue transition-all duration-300 w-full"
+              >
+                Dashboard
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full"
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button 
+              onClick={() => {
+                navigate('/auth');
+                setIsMobileMenuOpen(false);
+              }} 
+              className="bg-altss-deep-blue hover:bg-altss-blue transition-all duration-300 w-full mt-4"
+            >
+              Sign In
+            </Button>
+          )}
         </nav>
       </div>
     </header>
