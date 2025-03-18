@@ -24,12 +24,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/auth" element={<Auth />} />
+            
+            {/* All protected routes */}
             <Route path="/" element={
               <ProtectedRoute>
                 <Index />
               </ProtectedRoute>
             } />
-            <Route path="/auth" element={<Auth />} />
             <Route path="/cabinet" element={
               <ProtectedRoute>
                 <PersonalCabinet />

@@ -27,29 +27,40 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const { toast } = useToast();
 
   useEffect(() => {
+    console.log("AuthProvider initializing...");
+    
     const getSession = async () => {
       try {
+        console.log("Fetching session...");
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error("Error getting session:", error);
         } else {
+          console.log("Session fetched:", session?.user?.email);
           setSession(session);
           setUser(session?.user ?? null);
         }
       } catch (err) {
         console.error("Unexpected error getting session:", err);
       } finally {
+        console.log("Finished loading session");
         setLoading(false);
       }
     };
 
     getSession();
 
+    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        console.log("Auth state changed:", _event, session?.user?.email);
+      (event, session) => {
+        console.log("Auth state changed:", event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // If we're signed out, make sure loading is false
+        if (event === 'SIGNED_OUT') {
+          setLoading(false);
+        }
       }
     );
 
@@ -60,6 +71,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   const signOut = async () => {
     try {
+      console.log("Signing out...");
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Error signing out:", error);
