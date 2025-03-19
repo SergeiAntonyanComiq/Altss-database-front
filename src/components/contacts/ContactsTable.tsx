@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, Plus, Mail, Linkedin, MapPin, Phone } from "lucide-react";
 import { ContactType } from "@/types/contact";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 interface ContactsTableProps {
   contacts: ContactType[];
@@ -102,9 +103,12 @@ const ContactsTable = ({
                   </Avatar>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1">
-                      <span className="font-medium text-gray-800">
+                      <Link 
+                        to={`/profile/${contact.id}`} 
+                        className="font-medium text-gray-800 hover:text-blue-600 hover:underline"
+                      >
                         {contact.title} {contact.name}
-                      </span>
+                      </Link>
                       <button 
                         onClick={() => toggleFavorite(contact.id)}
                         className="focus:outline-none"
