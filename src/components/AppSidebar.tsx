@@ -1,9 +1,11 @@
 
 import React from "react";
-import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft } from "lucide-react";
+import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Sidebar,
   SidebarContent,
@@ -20,8 +22,9 @@ import {
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { state } = useSidebar();
+  const { toast } = useToast();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -29,6 +32,22 @@ const AppSidebar = () => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/auth');
+      toast({
+        title: "Logged out successfully",
+      });
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error logging out",
+        variant: "destructive",
+      });
+    }
   };
 
   const menuItems = [
@@ -109,14 +128,25 @@ const AppSidebar = () => {
         </SidebarContent>
         
         <SidebarFooter className="mt-auto p-6 border-t border-[#F1F0FB]">
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
-              <AvatarFallback>{getUserInitials()}</AvatarFallback>
-            </Avatar>
-            <span className="text-gray-700 text-sm truncate max-w-[120px]">
-              {user?.email || "User"}
-            </span>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
+                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+              </Avatar>
+              <span className="text-gray-700 text-sm truncate max-w-[120px]">
+                {user?.email || "User"}
+              </span>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              className="flex items-center justify-center gap-2 w-full border-gray-200"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Log Out</span>
+            </Button>
           </div>
         </SidebarFooter>
       </Sidebar>
