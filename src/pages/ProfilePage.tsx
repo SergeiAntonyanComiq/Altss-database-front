@@ -11,7 +11,12 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { mockPersons } from "@/data/mockPersons";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ContactType } from "@/types/contact";
+import { supabase } from "@/integrations/supabase/client";
+import { Toast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 
+// Sample news items for the Bio tab
 const newsItems = [
   {
     id: "1",
@@ -42,34 +47,97 @@ const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [person, setPerson] = useState<typeof mockPersons[0] | null>(null);
+  const [contact, setContact] = useState<ContactType | null>(null);
+  const { toast } = useToast();
   
   const [showEmails, setShowEmails] = useState({
     work: false,
     personal: false
   });
 
+  // For demonstration purposes, we'll use a mock contact with the same structure as the example
+  const mockContacts: ContactType[] = [
+    {
+      id: 2,
+      firm_id: 4,
+      contact_id: 59246,
+      investor: "3i",
+      firm_type: "Fund Manager",
+      title: "Mr.",
+      name: "Rémi Carnimolla",
+      alternative_name: "",
+      role: "Investment Team",
+      job_title: "Senior Partner, Managing Director, Global Head of Services & Software Sector and Member of the Investment Committee",
+      asset_class: "PE,INF,NR",
+      email: "remi.carnimolla@3i.com",
+      tel: "+33 (0)1 7315 1100",
+      city: "Paris",
+      state: "",
+      country_territory: "France",
+      zip_code: "75008",
+      linkedin: "www.linkedin.com/in/rémi-carnimolla-4227873/",
+      favorite: false
+    },
+    // Add more mock contacts as needed
+    {
+      id: 3,
+      firm_id: 5,
+      contact_id: 60123,
+      investor: "Blackstone",
+      firm_type: "Fund Manager",
+      title: "Ms.",
+      name: "Sarah Williams",
+      alternative_name: "",
+      role: "Investment Team",
+      job_title: "M&A Director",
+      asset_class: "PE,RE",
+      email: "sarah.williams@blackstone.com",
+      tel: "+1 212 555 1234",
+      city: "New York",
+      state: "NY",
+      country_territory: "USA",
+      zip_code: "10022",
+      linkedin: "www.linkedin.com/in/sarah-williams/",
+      favorite: true
+    }
+  ];
+
   useEffect(() => {
     console.log("Profile page loaded with ID:", id);
     
     // Simulate loading delay
     const timer = setTimeout(() => {
-      // Find the person with the matching ID
-      const foundPerson = mockPersons.find(p => p.id === id);
-      
-      if (foundPerson) {
-        setPerson(foundPerson);
-      } else {
-        console.error("Person not found with ID:", id);
-        // You could redirect to a 404 page here
-        // navigate("/not-found");
+      try {
+        // For now, use mockContacts instead of actual API call
+        const numericId = parseInt(id || "0", 10);
+        const foundContact = mockContacts.find(c => c.id === numericId);
+        
+        if (foundContact) {
+          setContact(foundContact);
+        } else {
+          console.error("Contact not found with ID:", id);
+          toast({
+            title: "Error",
+            description: "Contact not found with provided ID",
+            variant: "destructive",
+          });
+          // You could redirect to a 404 page here
+          // navigate("/not-found");
+        }
+      } catch (error) {
+        console.error("Error fetching contact:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load contact data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     }, 500);
     
     return () => clearTimeout(timer);
-  }, [id, navigate]);
+  }, [id, navigate, toast]);
 
   const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
     setShowEmails(prev => ({
@@ -91,6 +159,7 @@ const ProfilePage: React.FC = () => {
                 <Skeleton className="h-4 w-32" />
               </div>
               
+              {/* Loading skeleton */}
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-4">
                   <Skeleton className="h-8 w-48" />
@@ -135,17 +204,17 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  if (!person) {
+  if (!contact) {
     return (
       <SidebarProvider>
         <div className="flex w-full min-h-screen bg-background">
           <AppSidebar />
           <main className="flex-1 bg-[#F6F6F7] p-6 overflow-auto">
             <div className="max-w-6xl mx-auto text-center py-12">
-              <h1 className="text-2xl font-bold mb-4">Person Not Found</h1>
-              <p className="text-gray-600 mb-6">We couldn't find the person you're looking for.</p>
+              <h1 className="text-2xl font-bold mb-4">Contact Not Found</h1>
+              <p className="text-gray-600 mb-6">We couldn't find the contact you're looking for.</p>
               <Button onClick={() => navigate("/cabinet3")}>
-                Return to Persons List
+                Return to Contacts List
               </Button>
             </div>
           </main>
@@ -154,12 +223,7 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  // Create a mock work email based on the person's name
-  const workEmail = `${person.name.toLowerCase().replace(/\s+/g, '.')}@example.com`;
-  const hiddenWorkEmail = '••••••••••••@••.•••';
-  
-  // Generate a fake phone based on person ID for consistency
-  const phone = `+${(parseInt(person.id) * 100000000).toString().substring(0, 10)}`;
+  const hiddenEmail = contact.email ? contact.email.replace(/(.{2})(.*)(@.*)/, '$1••••••$3') : '••••••••••••@••.•••';
 
   return (
     <SidebarProvider>
@@ -170,15 +234,15 @@ const ProfilePage: React.FC = () => {
             <div className="mb-6 flex items-center text-gray-500 text-sm">
               <Link to="/cabinet3" className="flex items-center hover:text-blue-600">
                 <ChevronLeft className="h-4 w-4 mr-1" />
-                <span>Persons</span>
+                <span>Contacts</span>
               </Link>
               <span className="mx-2">/</span>
-              <span className="text-gray-700 font-medium">{person.name}</span>
+              <span className="text-gray-700 font-medium">{contact.name}</span>
             </div>
 
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-semibold">{person.name}</h1>
+                <h1 className="text-2xl font-semibold">{contact.name}</h1>
                 <div className="flex gap-2">
                   <Button variant="outline" className="text-gray-600">
                     Claim a mistake
@@ -198,12 +262,9 @@ const ProfilePage: React.FC = () => {
               </div>
 
               <div className="flex gap-2 mb-6">
-                {/* Use lists if available, otherwise provide default */}
-                {["My List"].map((list, index) => (
-                  <Button key={index} variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
-                    {list}
-                  </Button>
-                ))}
+                <Button variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
+                  My List
+                </Button>
                 <Button variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
                   Update Subscription
                 </Button>
@@ -243,12 +304,12 @@ const ProfilePage: React.FC = () => {
                         <div className="flex flex-col">
                           <span className="text-gray-500 text-sm mb-1">Area of responsibility</span>
                           <div className="flex gap-2">
-                            {person.responsibilities.map((resp, index) => (
+                            {contact.asset_class.split(',').map((asset, index) => (
                               <span 
                                 key={index}
                                 className="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm"
                               >
-                                {resp}
+                                {asset}
                               </span>
                             ))}
                           </div>
@@ -256,12 +317,12 @@ const ProfilePage: React.FC = () => {
                         
                         <div className="flex flex-col">
                           <span className="text-gray-500 text-sm mb-1">Resident Location</span>
-                          <span>{person.location}</span>
+                          <span>{`${contact.city}${contact.state ? `, ${contact.state}` : ''}, ${contact.country_territory}`}</span>
                         </div>
                         
                         <div className="flex flex-col md:col-span-2">
                           <span className="text-gray-500 text-sm mb-1">Current Company</span>
-                          <span>{person.companies?.join(", ") || "No data"}</span>
+                          <span>{contact.investor || "No data"}</span>
                         </div>
                       </div>
                     </section>
@@ -269,48 +330,54 @@ const ProfilePage: React.FC = () => {
                     <section>
                       <h2 className="text-xl font-medium mb-4">Contacts</h2>
                       <div className="space-y-4">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 flex items-center justify-center mr-3">
-                            <Linkedin className="h-5 w-5 text-blue-600" />
-                          </div>
-                          <span className="text-blue-600 hover:underline">
-                            <a href={person.linkedin} target="_blank" rel="noopener noreferrer">
-                              {person.linkedinHandle || person.linkedin}
-                            </a>
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 flex items-center justify-center mr-3">
-                            <Mail className="h-5 w-5 text-blue-600" />
-                          </div>
-                          <span className="flex items-center">
-                            <span className="mr-2">
-                              {showEmails.work ? workEmail : hiddenWorkEmail}
+                        {contact.linkedin && (
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 flex items-center justify-center mr-3">
+                              <Linkedin className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <span className="text-blue-600 hover:underline">
+                              <a href={`https://${contact.linkedin}`} target="_blank" rel="noopener noreferrer">
+                                {contact.linkedin}
+                              </a>
                             </span>
-                            <Button 
-                              variant="ghost" 
-                              onClick={() => toggleEmailVisibility('work')}
-                              className="h-8 w-8 p-0"
-                            >
-                              {showEmails.work ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </span>
-                        </div>
+                          </div>
+                        )}
+                        
+                        {contact.email && (
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 flex items-center justify-center mr-3">
+                              <Mail className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <span className="flex items-center">
+                              <span className="mr-2">
+                                {showEmails.work ? contact.email : hiddenEmail}
+                              </span>
+                              <Button 
+                                variant="ghost" 
+                                onClick={() => toggleEmailVisibility('work')}
+                                className="h-8 w-8 p-0"
+                              >
+                                {showEmails.work ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </Button>
+                            </span>
+                          </div>
+                        )}
                         
                         <div className="flex items-center">
                           <div className="w-8 h-8 flex items-center justify-center mr-3">
                             <Mail className="h-5 w-5 text-blue-600" />
                           </div>
-                          <span>{"no data"}</span>
+                          <span>{"no personal email data"}</span>
                         </div>
                         
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 flex items-center justify-center mr-3">
-                            <Phone className="h-5 w-5 text-blue-600" />
+                        {contact.tel && (
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 flex items-center justify-center mr-3">
+                              <Phone className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <span>{contact.tel}</span>
                           </div>
-                          <span>{phone}</span>
-                        </div>
+                        )}
                       </div>
                     </section>
                   </div>
@@ -320,38 +387,28 @@ const ProfilePage: React.FC = () => {
                   <div className="space-y-8">
                     <section>
                       <h2 className="text-xl font-medium mb-4">Short Bio</h2>
-                      <p className="text-gray-700">{person.shortBio || "No biography information available."}</p>
+                      <p className="text-gray-700">
+                        {contact.job_title || "No biography information available."}
+                      </p>
                     </section>
 
                     <section>
                       <h2 className="text-xl font-medium mb-4">News</h2>
                       <div className="space-y-4">
-                        {person.news ? (
-                          <div className="flex gap-4">
-                            <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-xl font-bold bg-[#FBE4CF] text-[#333333]">
-                              FT
+                        {newsItems.map(item => (
+                          <div key={item.id} className="flex gap-4">
+                            <div 
+                              className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-xl font-bold"
+                              style={{ backgroundColor: item.color, color: item.textColor }}
+                            >
+                              {item.logo}
                             </div>
                             <div className="flex-1">
-                              <p className="text-gray-700">{person.news}</p>
+                              <p className="text-gray-700">{item.content}</p>
                               <a href="#" className="text-blue-600 hover:underline mt-1 inline-block">Read more.</a>
                             </div>
                           </div>
-                        ) : (
-                          newsItems.map(item => (
-                            <div key={item.id} className="flex gap-4">
-                              <div 
-                                className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-xl font-bold"
-                                style={{ backgroundColor: item.color, color: item.textColor }}
-                              >
-                                {item.logo}
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-gray-700">{item.content}</p>
-                                <a href="#" className="text-blue-600 hover:underline mt-1 inline-block">Read more.</a>
-                              </div>
-                            </div>
-                          ))
-                        )}
+                        ))}
                       </div>
                     </section>
                   </div>
@@ -360,11 +417,9 @@ const ProfilePage: React.FC = () => {
                 <TabsContent value="job" className="pt-6">
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h2 className="text-xl font-medium mb-4">Job History</h2>
-                    {person.jobHistory ? (
-                      <p className="text-gray-700">{person.jobHistory}</p>
-                    ) : (
-                      <p className="text-gray-500">No job history data available.</p>
-                    )}
+                    <p className="text-gray-700">
+                      {contact.job_title || "No job history data available."}
+                    </p>
                   </div>
                 </TabsContent>
               </Tabs>
