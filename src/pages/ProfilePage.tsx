@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Linkedin, Mail, Phone, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const mockPerson = {
   id: "1",
@@ -51,11 +52,19 @@ const newsItems = [
 const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("details");
   const { user } = useAuth();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   
   const [showEmails, setShowEmails] = useState({
     work: false,
     personal: false
   });
+
+  // Log for debugging
+  useEffect(() => {
+    console.log("Profile page loaded with ID:", id);
+    // In a real application, you would fetch the contact data based on this ID
+  }, [id]);
 
   const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
     setShowEmails(prev => ({
@@ -72,7 +81,7 @@ const ProfilePage: React.FC = () => {
           <div className="max-w-6xl mx-auto">
             {/* Breadcrumb */}
             <div className="mb-6 flex items-center text-gray-500 text-sm">
-              <Link to="/cabinet2" className="flex items-center hover:text-blue-600">
+              <Link to="/cabinet3" className="flex items-center hover:text-blue-600">
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 <span>Persons</span>
               </Link>

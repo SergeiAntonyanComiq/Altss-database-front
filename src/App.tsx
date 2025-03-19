@@ -57,7 +57,7 @@ const App = () => (
                 <PersonalCabinet4 />
               </ProtectedRoute>
             } />
-            <Route path="/profile" element={
+            <Route path="/profile/:id" element={
               <ProtectedRoute>
                 <ProfilePage />
               </ProtectedRoute>
