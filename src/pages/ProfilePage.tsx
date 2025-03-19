@@ -49,87 +49,44 @@ const ProfilePage: React.FC = () => {
     personal: false
   });
 
-  // For demonstration purposes, we'll use a mock contact with the same structure as the example
-  const mockContacts: ContactType[] = [
-    {
-      id: 2,
-      firm_id: 4,
-      contact_id: 59246,
-      investor: "3i",
-      firm_type: "Fund Manager",
-      title: "Mr.",
-      name: "Rémi Carnimolla",
-      alternative_name: "",
-      role: "Investment Team",
-      job_title: "Senior Partner, Managing Director, Global Head of Services & Software Sector and Member of the Investment Committee",
-      asset_class: "PE,INF,NR",
-      email: "remi.carnimolla@3i.com",
-      tel: "+33 (0)1 7315 1100",
-      city: "Paris",
-      state: "",
-      country_territory: "France",
-      zip_code: "75008",
-      linkedin: "www.linkedin.com/in/rémi-carnimolla-4227873/",
-      favorite: false
-    },
-    {
-      id: 3,
-      firm_id: 5,
-      contact_id: 60123,
-      investor: "Blackstone",
-      firm_type: "Fund Manager",
-      title: "Ms.",
-      name: "Sarah Williams",
-      alternative_name: "",
-      role: "Investment Team",
-      job_title: "M&A Director",
-      asset_class: "PE,RE",
-      email: "sarah.williams@blackstone.com",
-      tel: "+1 212 555 1234",
-      city: "New York",
-      state: "NY",
-      country_territory: "USA",
-      zip_code: "10022",
-      linkedin: "www.linkedin.com/in/sarah-williams/",
-      favorite: true
-    }
-  ];
-
   React.useEffect(() => {
     console.log("Profile page loaded with ID:", id);
     
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      try {
-        // For now, use mockContacts instead of actual API call
-        const numericId = parseInt(id || "0", 10);
-        const foundContact = mockContacts.find(c => c.id === numericId);
-        
-        if (foundContact) {
-          setContact(foundContact);
-        } else {
-          console.error("Contact not found with ID:", id);
-          toast({
-            title: "Error",
-            description: "Contact not found with provided ID",
-            variant: "destructive",
-          });
-          // You could redirect to a 404 page here
-          // navigate("/not-found");
+    if (!id) {
+      toast({
+        title: "Error",
+        description: "No contact ID provided",
+        variant: "destructive",
+      });
+      navigate("/cabinet3");
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    // Fetch contact data from API
+    fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${id}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
         }
-      } catch (error) {
+        return response.json();
+      })
+      .then(data => {
+        console.log("Contact data fetched:", data);
+        setContact(data);
+      })
+      .catch(error => {
         console.error("Error fetching contact:", error);
         toast({
           title: "Error",
           description: "Failed to load contact data",
           variant: "destructive",
         });
-      } finally {
+      })
+      .finally(() => {
         setIsLoading(false);
-      }
-    }, 500);
-    
-    return () => clearTimeout(timer);
+      });
   }, [id, navigate, toast]);
 
   const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
