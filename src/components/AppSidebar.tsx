@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -58,6 +59,11 @@ const AppSidebar = () => {
     {
       title: "Persons",
       path: "/cabinet2",
+      icon: Users,
+    },
+    {
+      title: "Persons Table",
+      path: "/cabinet5",
       icon: Users,
     },
     {
