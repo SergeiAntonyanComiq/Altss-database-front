@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,78 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Linkedin, Mail, Phone, Eye, EyeOff } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
 
-// Mock data for the contacts (should match the IDs in ContactsList)
-const mockPersons = [
-  {
-    id: "1",
-    name: "John Smitty",
-    responsibilities: ["Investment"],
-    location: "Ankara (Türkiye)",
-    company: "ACME Long Name Super Long Inc.",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    linkedin: "linkedin.com/lorem-ipsum-2025",
-    workEmail: "••••••••••••@••.•••",
-    personalEmail: "no data",
-    phone: "+810 000 000 000",
-    lists: ["My Long Super List", "UserList1"],
-  },
-  {
-    id: "2",
-    name: "Jane Doe",
-    responsibilities: ["Product Development"],
-    location: "New York (USA)",
-    company: "Widget Inc",
-    bio: "Jane is a product development expert with 10+ years of experience in the tech industry.",
-    linkedin: "linkedin.com/in/janedoe",
-    workEmail: "••••••••••••@••.•••",
-    personalEmail: "no data",
-    phone: "+1 800 555 1234",
-    lists: ["Tech Leaders", "Product People"],
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    responsibilities: ["Development"],
-    location: "San Francisco (USA)",
-    company: "Tech Solutions",
-    bio: "Senior developer with expertise in full-stack development and cloud architecture.",
-    linkedin: "linkedin.com/in/bobjohnson",
-    workEmail: "••••••••••••@••.•••",
-    personalEmail: "no data",
-    phone: "+1 800 555 5678",
-    lists: ["Dev Team", "Cloud Experts"],
-  },
-  {
-    id: "4",
-    name: "Alice Smith",
-    responsibilities: ["Data Science"],
-    location: "London (UK)",
-    company: "Data Corp",
-    bio: "Data scientist specializing in machine learning and AI applications.",
-    linkedin: "linkedin.com/in/alicesmith",
-    workEmail: "••••••••••••@••.•••",
-    personalEmail: "no data",
-    phone: "+44 800 555 9012",
-    lists: ["Data Team", "AI Experts"],
-  },
-  {
-    id: "5",
-    name: "Charlie Brown",
-    responsibilities: ["Design"],
-    location: "Berlin (Germany)",
-    company: "Design Studio",
-    bio: "Creative designer with a passion for user experience and interface design.",
-    linkedin: "linkedin.com/in/charliebrown",
-    workEmail: "••••••••••••@••.•••",
-    personalEmail: "no data",
-    phone: "+49 800 555 3456",
-    lists: ["Design Team", "UX/UI"],
-  },
-];
+const mockPerson = {
+  id: "1",
+  name: "John Smitty",
+  responsibilities: ["Investment"],
+  location: "Ankara (Türkiye)",
+  company: "ACME Long Name Super Long Inc.",
+  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+  linkedin: "linkedin.com/lorem-ipsum-2025",
+  workEmail: "••••••••••••@••.•••",
+  personalEmail: "no data",
+  phone: "+810 000 000 000",
+  lists: ["My Long Super List", "UserList1"],
+};
 
 const newsItems = [
   {
@@ -107,34 +51,11 @@ const newsItems = [
 const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("details");
   const { user } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { toast } = useToast();
   
   const [showEmails, setShowEmails] = useState({
     work: false,
     personal: false
   });
-
-  // Get the person ID from URL query params
-  const queryParams = new URLSearchParams(location.search);
-  const personId = queryParams.get('id');
-  
-  // Find the person in our mock data
-  const person = personId 
-    ? mockPersons.find(p => p.id === personId) 
-    : mockPersons[0]; // Default to first person if no ID
-  
-  useEffect(() => {
-    if (personId && !person) {
-      toast({
-        title: "Person not found",
-        description: "The requested profile could not be found.",
-        variant: "destructive",
-      });
-      navigate('/cabinet3');
-    }
-  }, [personId, person, navigate, toast]);
 
   const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
     setShowEmails(prev => ({
@@ -142,10 +63,6 @@ const ProfilePage: React.FC = () => {
       [emailType]: !prev[emailType]
     }));
   };
-
-  if (!person) {
-    return null; // Don't render anything if person not found
-  }
 
   return (
     <SidebarProvider>
@@ -155,18 +72,18 @@ const ProfilePage: React.FC = () => {
           <div className="max-w-6xl mx-auto">
             {/* Breadcrumb */}
             <div className="mb-6 flex items-center text-gray-500 text-sm">
-              <Link to="/cabinet3" className="flex items-center hover:text-blue-600">
+              <Link to="/cabinet2" className="flex items-center hover:text-blue-600">
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 <span>Persons</span>
               </Link>
               <span className="mx-2">/</span>
-              <span className="text-gray-700 font-medium">{person.name}</span>
+              <span className="text-gray-700 font-medium">{mockPerson.name}</span>
             </div>
 
             {/* Header */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-semibold">{person.name}</h1>
+                <h1 className="text-2xl font-semibold">{mockPerson.name}</h1>
                 <div className="flex gap-2">
                   <Button variant="outline" className="text-gray-600">
                     Claim a mistake
@@ -187,7 +104,7 @@ const ProfilePage: React.FC = () => {
 
               {/* Action buttons */}
               <div className="flex gap-2 mb-6">
-                {person.lists.map((list, index) => (
+                {mockPerson.lists.map((list, index) => (
                   <Button key={index} variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
                     {list}
                   </Button>
@@ -234,7 +151,7 @@ const ProfilePage: React.FC = () => {
                         <div className="flex flex-col">
                           <span className="text-gray-500 text-sm mb-1">Area of responsibility</span>
                           <div className="flex gap-2">
-                            {person.responsibilities.map((resp, index) => (
+                            {mockPerson.responsibilities.map((resp, index) => (
                               <span 
                                 key={index}
                                 className="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm"
@@ -247,12 +164,12 @@ const ProfilePage: React.FC = () => {
                         
                         <div className="flex flex-col">
                           <span className="text-gray-500 text-sm mb-1">Resident Location</span>
-                          <span>{person.location}</span>
+                          <span>{mockPerson.location}</span>
                         </div>
                         
                         <div className="flex flex-col md:col-span-2">
                           <span className="text-gray-500 text-sm mb-1">Current Company</span>
-                          <span>{person.company}</span>
+                          <span>{mockPerson.company}</span>
                         </div>
                       </div>
                     </section>
@@ -266,8 +183,8 @@ const ProfilePage: React.FC = () => {
                             <Linkedin className="h-5 w-5 text-blue-600" />
                           </div>
                           <span className="text-blue-600 hover:underline">
-                            <a href={`https://${person.linkedin}`} target="_blank" rel="noopener noreferrer">
-                              {person.linkedin}
+                            <a href={`https://${mockPerson.linkedin}`} target="_blank" rel="noopener noreferrer">
+                              {mockPerson.linkedin}
                             </a>
                           </span>
                         </div>
@@ -278,7 +195,7 @@ const ProfilePage: React.FC = () => {
                           </div>
                           <span className="flex items-center">
                             <span className="mr-2">
-                              {showEmails.work ? "work@example.com" : person.workEmail}
+                              {showEmails.work ? "work@example.com" : mockPerson.workEmail}
                             </span>
                             <Button 
                               variant="ghost" 
@@ -294,14 +211,14 @@ const ProfilePage: React.FC = () => {
                           <div className="w-8 h-8 flex items-center justify-center mr-3">
                             <Mail className="h-5 w-5 text-blue-600" />
                           </div>
-                          <span>{person.personalEmail}</span>
+                          <span>{mockPerson.personalEmail}</span>
                         </div>
                         
                         <div className="flex items-center">
                           <div className="w-8 h-8 flex items-center justify-center mr-3">
                             <Phone className="h-5 w-5 text-blue-600" />
                           </div>
-                          <span>{person.phone}</span>
+                          <span>{mockPerson.phone}</span>
                         </div>
                       </div>
                     </section>
@@ -314,7 +231,7 @@ const ProfilePage: React.FC = () => {
                     {/* Short Bio Section */}
                     <section>
                       <h2 className="text-xl font-medium mb-4">Short Bio</h2>
-                      <p className="text-gray-700">{person.bio}</p>
+                      <p className="text-gray-700">{mockPerson.bio}</p>
                     </section>
 
                     {/* News Section */}
