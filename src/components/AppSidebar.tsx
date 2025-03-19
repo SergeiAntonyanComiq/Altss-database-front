@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -80,7 +79,6 @@ const AppSidebar = () => {
     },
   ];
 
-  // Get user's initials for avatar fallback
   const getUserInitials = () => {
     if (!user) return "UN";
     
@@ -141,19 +139,16 @@ const AppSidebar = () => {
             
             <Button 
               variant="outline" 
-              className="group flex items-center justify-center h-10 w-full border-gray-200 transition-all p-0"
+              className="flex items-center justify-start text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-4 h-10 w-full border-gray-200"
               onClick={handleLogout}
             >
-              <span className="flex items-center justify-center gap-2 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <LogOut className="h-4 w-4" />
-                <span>Log Out</span>
-              </span>
+              <LogOut className="h-5 w-5 mr-3" />
+              <span>Log Out</span>
             </Button>
           </div>
         </SidebarFooter>
       </Sidebar>
       
-      {/* Floating trigger button that appears when sidebar is collapsed */}
       {state === "collapsed" && (
         <div className="fixed top-6 left-3 z-50 md:flex">
           <SidebarTrigger className="bg-white shadow-md rounded-md p-1.5 hover:bg-gray-100" />
