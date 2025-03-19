@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
@@ -9,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Linkedin, Mail, Phone, Eye, EyeOff } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
 
 const mockPerson = {
   id: "1",
@@ -60,10 +58,8 @@ const ProfilePage: React.FC = () => {
     personal: false
   });
 
-  // Log for debugging
   useEffect(() => {
     console.log("Profile page loaded with ID:", id);
-    // In a real application, you would fetch the contact data based on this ID
   }, [id]);
 
   const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
@@ -79,7 +75,6 @@ const ProfilePage: React.FC = () => {
         <AppSidebar />
         <main className="flex-1 bg-[#F6F6F7] p-6 overflow-auto">
           <div className="max-w-6xl mx-auto">
-            {/* Breadcrumb */}
             <div className="mb-6 flex items-center text-gray-500 text-sm">
               <Link to="/cabinet3" className="flex items-center hover:text-blue-600">
                 <ChevronLeft className="h-4 w-4 mr-1" />
@@ -89,7 +84,6 @@ const ProfilePage: React.FC = () => {
               <span className="text-gray-700 font-medium">{mockPerson.name}</span>
             </div>
 
-            {/* Header */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-semibold">{mockPerson.name}</h1>
@@ -111,7 +105,6 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Action buttons */}
               <div className="flex gap-2 mb-6">
                 {mockPerson.lists.map((list, index) => (
                   <Button key={index} variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
@@ -123,7 +116,6 @@ const ProfilePage: React.FC = () => {
                 </Button>
               </div>
 
-              {/* Tabs */}
               <Tabs 
                 value={activeTab} 
                 onValueChange={setActiveTab}
@@ -150,10 +142,8 @@ const ProfilePage: React.FC = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                {/* Details Tab */}
                 <TabsContent value="details" className="pt-6">
                   <div className="space-y-8">
-                    {/* About Section */}
                     <section>
                       <h2 className="text-xl font-medium mb-4">About</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
@@ -183,7 +173,6 @@ const ProfilePage: React.FC = () => {
                       </div>
                     </section>
 
-                    {/* Contacts Section */}
                     <section>
                       <h2 className="text-xl font-medium mb-4">Contacts</h2>
                       <div className="space-y-4">
@@ -234,16 +223,13 @@ const ProfilePage: React.FC = () => {
                   </div>
                 </TabsContent>
 
-                {/* Bio & News Tab */}
                 <TabsContent value="bio" className="pt-6">
                   <div className="space-y-8">
-                    {/* Short Bio Section */}
                     <section>
                       <h2 className="text-xl font-medium mb-4">Short Bio</h2>
                       <p className="text-gray-700">{mockPerson.bio}</p>
                     </section>
 
-                    {/* News Section */}
                     <section>
                       <h2 className="text-xl font-medium mb-4">News</h2>
                       <div className="space-y-4">
@@ -266,7 +252,6 @@ const ProfilePage: React.FC = () => {
                   </div>
                 </TabsContent>
 
-                {/* Job history Tab */}
                 <TabsContent value="job" className="pt-6">
                   <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h2 className="text-xl font-medium mb-4">Job History</h2>
