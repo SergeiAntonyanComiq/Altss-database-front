@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { ChevronDown, Heart, Search, Filter } from 'lucide-react';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const PersonalCabinet5 = () => {
   const { persons, toggleFavorite, filterPersons } = usePersons();
@@ -29,7 +30,9 @@ const PersonalCabinet5 = () => {
 
   return (
     <div className="flex h-screen bg-background">
-      <AppSidebar />
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>
       
       <div className="flex-1 p-6 overflow-auto">
         <div className="rounded-lg border bg-card shadow-sm p-6">
