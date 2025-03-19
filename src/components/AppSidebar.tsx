@@ -1,5 +1,6 @@
+
 import React from "react";
-import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut } from "lucide-react";
+import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -127,7 +128,10 @@ const AppSidebar = () => {
         
         <SidebarFooter className="mt-auto p-6 border-t border-[#F1F0FB]">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
+            <div 
+              className="flex items-center gap-3 cursor-pointer hover:bg-blue-50 p-2 rounded-md transition-colors"
+              onClick={() => handleNavigation("/profile")}
+            >
               <Avatar>
                 <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
                 <AvatarFallback>{getUserInitials()}</AvatarFallback>
