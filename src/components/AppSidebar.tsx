@@ -76,9 +76,8 @@ const AppSidebar = () => {
         <div className="flex justify-between items-center px-6">
           <div className="flex items-center">
             <div className="bg-[#2546F3] text-white font-bold text-xl h-10 w-10 rounded flex items-center justify-center">
-              Alt
+              Altss
             </div>
-            <span className="ml-1 font-semibold text-gray-800">ss</span>
           </div>
           <SidebarTrigger className="text-gray-400" />
         </div>
