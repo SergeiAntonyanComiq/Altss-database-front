@@ -114,7 +114,9 @@ const AppSidebar = () => {
               <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
               <AvatarFallback>{getUserInitials()}</AvatarFallback>
             </Avatar>
-            <span className="text-gray-700 text-sm">User Name</span>
+            <span className="text-gray-700 text-sm truncate max-w-[120px]">
+              {user?.email || "User"}
+            </span>
           </div>
         </SidebarFooter>
       </Sidebar>
