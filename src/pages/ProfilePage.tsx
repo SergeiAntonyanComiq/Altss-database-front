@@ -1,19 +1,13 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Linkedin, Mail, Phone, Eye, EyeOff } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { mockPersons } from "@/data/mockPersons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ContactType } from "@/types/contact";
-import { supabase } from "@/integrations/supabase/client";
-import { Toast } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 
 // Sample news items for the Bio tab
@@ -78,7 +72,6 @@ const ProfilePage: React.FC = () => {
       linkedin: "www.linkedin.com/in/rémi-carnimolla-4227873/",
       favorite: false
     },
-    // Add more mock contacts as needed
     {
       id: 3,
       firm_id: 5,
@@ -102,7 +95,7 @@ const ProfilePage: React.FC = () => {
     }
   ];
 
-  useEffect(() => {
+  React.useEffect(() => {
     console.log("Profile page loaded with ID:", id);
     
     // Simulate loading delay
@@ -159,7 +152,6 @@ const ProfilePage: React.FC = () => {
                 <Skeleton className="h-4 w-32" />
               </div>
               
-              {/* Loading skeleton */}
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-4">
                   <Skeleton className="h-8 w-48" />
@@ -363,12 +355,14 @@ const ProfilePage: React.FC = () => {
                           </div>
                         )}
                         
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 flex items-center justify-center mr-3">
-                            <Mail className="h-5 w-5 text-blue-600" />
+                        {!contact.email && (
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 flex items-center justify-center mr-3">
+                              <Mail className="h-5 w-5 text-blue-600" />
+                            </div>
+                            <span>{"no personal email data"}</span>
                           </div>
-                          <span>{"no personal email data"}</span>
-                        </div>
+                        )}
                         
                         {contact.tel && (
                           <div className="flex items-center">
