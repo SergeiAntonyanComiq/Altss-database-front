@@ -141,11 +141,11 @@ const AppSidebar = () => {
             
             <Button 
               variant="outline" 
-              className="flex items-center justify-center gap-2 w-full border-gray-200"
+              className="group flex items-center justify-center gap-2 w-full border-gray-200 transition-all"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" />
-              <span>Log Out</span>
+              <span className="w-0 overflow-hidden group-hover:w-auto transition-all duration-300">Log Out</span>
             </Button>
           </div>
         </SidebarFooter>
