@@ -53,7 +53,7 @@ const AppSidebar = () => {
   const menuItems = [
     {
       title: "Companies",
-      path: "/cabinet",
+      path: "/companies",
       icon: Building2,
     },
     {

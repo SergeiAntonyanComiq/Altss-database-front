@@ -14,6 +14,7 @@ import PersonalCabinet3 from "./pages/PersonalCabinet3";
 import PersonalCabinet4 from "./pages/PersonalCabinet4";
 import ProfilePage from "./pages/ProfilePage";
 import Auth from "./pages/Auth";
+import Companies from "./pages/Companies";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,11 @@ const App = () => (
             <Route path="/profile/:id" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/companies" element={
+              <ProtectedRoute>
+                <Companies />
               </ProtectedRoute>
             } />
           </Routes>
