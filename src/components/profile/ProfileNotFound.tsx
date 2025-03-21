@@ -10,8 +10,8 @@ const ProfileNotFound: React.FC = () => {
     <div className="max-w-6xl mx-auto text-center py-12">
       <h1 className="text-2xl font-bold mb-4">Contact Not Found</h1>
       <p className="text-gray-600 mb-6">We couldn't find the contact you're looking for.</p>
-      <Button onClick={() => navigate("/companies")}>
-        Return to Companies
+      <Button onClick={() => navigate("/cabinet3")}>
+        Return to Contacts List
       </Button>
     </div>
   );
