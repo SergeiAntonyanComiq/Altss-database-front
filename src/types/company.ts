@@ -107,4 +107,22 @@ export interface CompanyType {
   status?: string;
   name?: string;
   type?: string;
+  
+  // Additional fields used in CompanyDetails component
+  description?: string;
+  industry?: string;
+  founded?: string;
+  headquarters?: string;
+  phone?: string;
+  contactPerson?: {
+    name: string;
+    title: string;
+    phone: string;
+    email: string;
+  };
+  social?: {
+    linkedin?: string;
+    twitter?: string;
+  };
+  logo?: string;
 }
