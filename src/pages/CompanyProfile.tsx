@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -18,8 +19,6 @@ const mockCompanyData: CompanyType = {
   founded_year: 2005,
   description: "A leading technology company specializing in innovative solutions.",
   website: "https://www.acme.com",
-  linkedin: "linkedin.com/lorem-ipsum-2025",
-  twitter: "x.com/lorem-ipsum-2025",
   employees_count: "1000-5000",
   revenue: "$100M-$500M",
   ceo: "John Smitty",
@@ -74,7 +73,12 @@ const CompanyProfile: React.FC = () => {
             <CompanyNotFound />
           ) : (
             <div className="max-w-6xl mx-auto">
-              <CompanyProfileHeader company={company} />
+              <CompanyProfileHeader 
+                company={{
+                  name: company.name || company.firm_name || "",
+                  last_updated: company.last_updated
+                }} 
+              />
               <CompanyProfileTabs 
                 company={company} 
                 activeTab={activeTab} 
