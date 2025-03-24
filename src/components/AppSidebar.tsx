@@ -58,7 +58,7 @@ const AppSidebar = () => {
     },
     {
       title: "Persons",
-      path: "/persons",
+      path: "/cabinet3",
       icon: Users,
     },
     {
