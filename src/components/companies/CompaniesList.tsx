@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Save, Heart, LayoutGrid } from "lucide-react";
@@ -13,11 +14,21 @@ import { CompanyType } from "@/types/company";
 
 const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
 
-const CompaniesList = () => {
+interface CompaniesListProps {
+  currentPage: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+  onItemsPerPageChange: (perPage: number) => void;
+}
+
+const CompaniesList = ({ 
+  currentPage,
+  itemsPerPage,
+  onPageChange,
+  onItemsPerPageChange
+}: CompaniesListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [companies, setCompanies] = useState<CompanyType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,62 +36,76 @@ const CompaniesList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const companyIds = Array.from({ length: 9 }, (_, i) => i + 1);
+  // Define the range of company IDs we'll use for pagination
+  const MIN_COMPANY_ID = 1;
+  const MAX_COMPANY_ID = 32646;
+  const TOTAL_COMPANIES = MAX_COMPANY_ID - MIN_COMPANY_ID + 1;
 
   useEffect(() => {
     fetchCompanies();
-  }, [currentPage, itemsPerPage, toast]);
+  }, [currentPage, itemsPerPage]);
 
   const fetchCompanies = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const companyPromises = companyIds.map(id => 
+      // Calculate the start and end IDs for the current page
+      const startId = MIN_COMPANY_ID + (currentPage - 1) * itemsPerPage;
+      let endId = startId + itemsPerPage - 1;
+      if (endId > MAX_COMPANY_ID) endId = MAX_COMPANY_ID;
+      
+      // Create an array of IDs for the current page
+      const pageIds = Array.from({ length: endId - startId + 1 }, (_, i) => startId + i);
+      
+      // Fetch companies for these IDs
+      const companyPromises = pageIds.map(id => 
         fetch(`${API_BASE_URL}/fund_managers/${id}`)
           .then(response => {
             if (!response.ok) {
+              if (response.status === 404) {
+                // Not found is expected for some IDs, return null
+                return null;
+              }
               throw new Error(`Failed to fetch company with ID ${id}`);
             }
             return response.json();
           })
+          .catch(err => {
+            console.warn(`Error fetching company ${id}:`, err);
+            return null; // Skip failed requests
+          })
       );
       
-      const results = await Promise.allSettled(companyPromises);
+      const results = await Promise.all(companyPromises);
       
+      // Filter out null results (404s)
       const fetchedCompanies = results
-        .filter(result => result.status === 'fulfilled')
-        .map((result) => {
-          const company = (result as PromiseFulfilledResult<any>).value;
+        .filter(company => company !== null)
+        .map((company) => {
           return {
             ...company,
             // Make sure we have all required fields for the CompanyType
             id: String(company.id || ''),
-            name: company.firm_name || '',
-            firm_name: company.firm_name || '',
-            type: company.firm_type || 'Family Office',
-            location: `${company.city || ''}, ${company.state_county || ''}`,
-            employees: company.total_staff ? parseInt(company.total_staff) : Math.floor(Math.random() * 800) + 50,
-            revenue: `$${Math.floor(Math.random() * 70) + 5}M`,
-            status: Math.random() > 0.2 ? 'Active' : 'Inactive',
+            firm_name: company.firm_name || 'N/A',
+            name: company.firm_name || 'N/A',
+            type: company.firm_type || 'N/A',
+            location: `${company.city || 'N/A'}, ${company.state_county || 'N/A'}`,
+            employees: company.total_staff ? parseInt(company.total_staff) : 'N/A',
+            revenue: `$${Math.floor(Math.random() * 70) + 5}M`, // Mock data as not in API
+            status: Math.random() > 0.2 ? 'Active' : 'Inactive', // Mock data as not in API
             aum: company.total_assets_under_management_usd_mn || 
                  company.pe_portfolio_company_maximum_value_usd_mn || 
                  (Math.random() * 3000) + 100,
-            foundedYear: company.year_est ? `${company.year_est} y.` : '2000 y.',
-            team: company.management_team_staff ? [`${company.management_team_staff} managers`] : ["Jonny Smitter"],
-            isFavorite: Math.random() > 0.7
+            foundedYear: company.year_est ? `${company.year_est}` : 'N/A',
+            isFavorite: false // Default to not favorite
           };
         });
 
-      // Calculate total pages based on fetched data
-      setTotalPages(Math.ceil(fetchedCompanies.length / itemsPerPage));
+      // Calculate total pages based on total companies count
+      setTotalPages(Math.ceil(TOTAL_COMPANIES / itemsPerPage));
       
-      // Get paginated data (we'll simulate pagination on client since it's mock data)
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const paginatedCompanies = fetchedCompanies.slice(startIndex, endIndex);
-      
-      setCompanies(paginatedCompanies);
+      setCompanies(fetchedCompanies);
     } catch (err) {
       console.error("Error fetching companies:", err);
       setError("Failed to load companies. Please try again later.");
@@ -96,17 +121,6 @@ const CompaniesList = () => {
 
   const handleViewCompany = (id: string) => {
     navigate(`/company/${id}`);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    // This will trigger the useEffect to fetch companies for the new page
-  };
-
-  const handleItemsPerPageChange = (perPage: number) => {
-    setItemsPerPage(perPage);
-    setCurrentPage(1); // Reset to first page when changing items per page
-    // This will trigger the useEffect to fetch companies with new pagination settings
   };
 
   const toggleCompanySelection = (id: string) => {
@@ -301,7 +315,7 @@ const CompaniesList = () => {
                     />
                   </TableCell>
                   <TableCell className="font-medium text-[#343C6A] flex items-center">
-                    {company.firm_name || company.name}
+                    {company.firm_name}
                     <button 
                       className="ml-2"
                       onClick={(e) => toggleFavorite(company.id || '', e)}
@@ -323,7 +337,7 @@ const CompaniesList = () => {
                     {formatAum(company.aum)}
                   </TableCell>
                   <TableCell>
-                    {company.year_est ? `${company.year_est}` : 'N/A'}
+                    {company.year_est || 'N/A'}
                   </TableCell>
                   <TableCell>
                     {company.total_staff || 'N/A'}
@@ -331,6 +345,14 @@ const CompaniesList = () => {
                   <TableCell></TableCell>
                 </TableRow>
               ))}
+              
+              {companies.length === 0 && !isLoading && (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                    No companies found for the current page
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
@@ -338,10 +360,10 @@ const CompaniesList = () => {
         <div className="p-4 border-t border-gray-100">
           <PersonsPagination 
             currentPage={currentPage}
-            onPageChange={handlePageChange}
+            onPageChange={onPageChange}
             totalPages={totalPages}
             itemsPerPage={itemsPerPage}
-            onItemsPerPageChange={handleItemsPerPageChange}
+            onItemsPerPageChange={onItemsPerPageChange}
           />
         </div>
       </div>
