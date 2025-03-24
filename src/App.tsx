@@ -8,12 +8,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import PersonalCabinet2 from "./pages/PersonalCabinet2";
 import PersonalCabinet3 from "./pages/PersonalCabinet3";
-import PersonalCabinet4 from "./pages/PersonalCabinet4";
 import ProfilePage from "./pages/ProfilePage";
 import Auth from "./pages/Auth";
-import Persons from "./pages/Persons";
 import Companies from "./pages/Companies";
 import CompanyDetails from "./pages/CompanyDetails";
 import MyOrders from "./pages/MyOrders";
@@ -42,24 +39,9 @@ const App = () => (
                 <Index />
               </ProtectedRoute>
             } />
-            <Route path="/cabinet2" element={
-              <ProtectedRoute>
-                <PersonalCabinet2 />
-              </ProtectedRoute>
-            } />
             <Route path="/cabinet3" element={
               <ProtectedRoute>
                 <PersonalCabinet3 />
-              </ProtectedRoute>
-            } />
-            <Route path="/cabinet4" element={
-              <ProtectedRoute>
-                <PersonalCabinet4 />
-              </ProtectedRoute>
-            } />
-            <Route path="/persons" element={
-              <ProtectedRoute>
-                <Persons />
               </ProtectedRoute>
             } />
             <Route path="/profile/:id" element={
