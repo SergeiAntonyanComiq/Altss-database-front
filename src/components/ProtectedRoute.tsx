@@ -35,10 +35,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // If user is authenticated and trying to access /auth, redirect to home
+  // If user is authenticated and trying to access /auth, redirect to companies
   if (user && isAuthPage) {
-    console.log("User is authenticated, redirecting from /auth to /");
-    return <Navigate to="/" replace />;
+    console.log("User is authenticated, redirecting from /auth to /companies");
+    return <Navigate to="/companies" replace />;
   }
 
   console.log("User authenticated, allowing access to:", location.pathname);

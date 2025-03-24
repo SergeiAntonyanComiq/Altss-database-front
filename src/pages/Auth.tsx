@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,7 +45,7 @@ const Auth = () => {
           title: "Sign up successful!",
           description: "Please check your email for verification.",
         });
-        navigate("/cabinet3");
+        navigate("/companies");
       }
     } catch (error) {
       console.error("Error signing up:", error);
@@ -79,7 +80,7 @@ const Auth = () => {
           title: "Signed in successfully!",
           description: "Welcome back!",
         });
-        navigate("/cabinet3");
+        navigate("/companies");
       }
     } catch (error) {
       console.error("Error signing in:", error);
@@ -99,7 +100,7 @@ const Auth = () => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin + '/cabinet3',
+          redirectTo: window.location.origin + '/companies',
         },
       });
 
