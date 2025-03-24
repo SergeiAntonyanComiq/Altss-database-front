@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Save, Heart, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid } from "lucide-react";
@@ -45,22 +46,24 @@ const CompaniesList = () => {
         
         const fetchedCompanies = results
           .filter(result => result.status === 'fulfilled')
-          .map((result, index) => {
+          .map((result) => {
             const company = (result as PromiseFulfilledResult<any>).value;
             return {
               ...company,
-              id: String(companyIds[index]),
-              name: company.firm_name,
+              // Make sure we have all required fields for the CompanyType
+              id: String(company.id || ''),
+              name: company.firm_name || '',
+              firm_name: company.firm_name || '',
               type: company.firm_type || 'Family Office',
               location: `${company.city || ''}, ${company.state_county || ''}`,
-              employees: Math.floor(Math.random() * 800) + 50,
+              employees: company.total_staff ? parseInt(company.total_staff) : Math.floor(Math.random() * 800) + 50,
               revenue: `$${Math.floor(Math.random() * 70) + 5}M`,
               status: Math.random() > 0.2 ? 'Active' : 'Inactive',
               aum: company.total_assets_under_management_usd_mn || 
-                  company.pe_portfolio_company_maximum_value_usd_mn || 
-                  (Math.random() * 3000) + 100,
+                   company.pe_portfolio_company_maximum_value_usd_mn || 
+                   (Math.random() * 3000) + 100,
               foundedYear: company.year_est ? `${company.year_est} y.` : '2000 y.',
-              team: ["Jonny Smitter"],
+              team: company.management_team_staff ? [`${company.management_team_staff} managers`] : ["Jonny Smitter"],
               isFavorite: Math.random() > 0.7
             };
           });
@@ -111,11 +114,22 @@ const CompaniesList = () => {
     ));
   };
 
-  const formatAum = (aum: number | string | undefined | null) => {
-    if (aum === null || aum === undefined || isNaN(Number(aum))) {
+  const formatAum = (aumValue: number | string | undefined | null) => {
+    if (aumValue === null || aumValue === undefined) {
       return 'N/A';
     }
-    const numAum = typeof aum === 'string' ? parseFloat(aum) : aum;
+    
+    // Convert string to number if needed
+    let numAum: number;
+    if (typeof aumValue === 'string') {
+      numAum = parseFloat(aumValue);
+      if (isNaN(numAum)) {
+        return 'N/A';
+      }
+    } else {
+      numAum = aumValue;
+    }
+    
     if (numAum >= 1000) {
       return `${(numAum / 1000).toFixed(1)}B`;
     }
@@ -229,7 +243,7 @@ const CompaniesList = () => {
         </div>
       </div>
       
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -242,9 +256,10 @@ const CompaniesList = () => {
                 </TableHead>
                 <TableHead className="font-medium text-[#343C6A]">Company Name</TableHead>
                 <TableHead className="font-medium text-[#343C6A]">Company Type</TableHead>
+                <TableHead className="font-medium text-[#343C6A]">Location</TableHead>
                 <TableHead className="font-medium text-[#343C6A]">AUM, $mln.</TableHead>
                 <TableHead className="font-medium text-[#343C6A]">Founded year</TableHead>
-                <TableHead className="font-medium text-[#343C6A]">Known Team</TableHead>
+                <TableHead className="font-medium text-[#343C6A]">Staff Count</TableHead>
                 <TableHead className="w-12">
                   <LayoutGrid className="h-4 w-4 mx-auto text-gray-500" />
                 </TableHead>
@@ -278,32 +293,20 @@ const CompaniesList = () => {
                   </TableCell>
                   <TableCell>
                     <Badge className="bg-[#EEF0F7] text-[#343C6A] hover:bg-[#EEF0F7] rounded-full font-medium">
-                      {company.firm_type || company.type || 'Family Office'}
+                      {company.firm_type || company.type || 'N/A'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {company.aum !== undefined ? formatAum(company.aum) : 'N/A'}
+                    {company.city ? `${company.city}, ${company.country || company.state_county || ''}` : 'N/A'}
                   </TableCell>
                   <TableCell>
-                    {company.foundedYear || (company.year_est ? `${company.year_est} y.` : 'N/A')}
+                    {formatAum(company.aum)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center">
-                      {company.team && company.team.length > 0 ? (
-                        <>
-                          <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium mr-2">
-                            {company.team[0]}
-                          </Badge>
-                          {company.team.length > 1 && (
-                            <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium">
-                              +{company.team.length - 1}
-                            </Badge>
-                          )}
-                        </>
-                      ) : (
-                        <span className="text-gray-400 text-sm">No team data</span>
-                      )}
-                    </div>
+                    {company.year_est ? `${company.year_est}` : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    {company.total_staff || 'N/A'}
                   </TableCell>
                   <TableCell></TableCell>
                 </TableRow>
