@@ -15,7 +15,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
       <div className="mb-6 flex items-center text-gray-500 text-sm">
         <Link to="/persons" className="flex items-center hover:text-blue-600">
           <ChevronLeft className="h-4 w-4 mr-1" />
-          <span>Contacts</span>
+          <span>Persons</span>
         </Link>
         <span className="mx-2">/</span>
         <span className="text-gray-700 font-medium">{contact.name}</span>
