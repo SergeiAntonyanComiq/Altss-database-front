@@ -15,6 +15,10 @@ export interface CompanyType {
   employees: number;
   revenue: string;
   status: string;
+  team?: string[];
+  aum?: number;
+  foundedYear?: string;
+  isFavorite?: boolean;
   social?: {
     linkedin?: string;
     twitter?: string;
