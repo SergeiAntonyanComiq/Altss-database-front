@@ -1,16 +1,15 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Save, Heart, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid } from "lucide-react";
+import { Search, Filter, Save, Heart, LayoutGrid } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { CompanyType } from "@/types/company";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import PersonsPagination from "@/components/personal/PersonsPagination";
+import { CompanyType } from "@/types/company";
 
 const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
 
@@ -18,6 +17,8 @@ const CompaniesList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
   const [companies, setCompanies] = useState<CompanyType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,66 +28,85 @@ const CompaniesList = () => {
   const companyIds = Array.from({ length: 9 }, (_, i) => i + 1);
 
   useEffect(() => {
-    const fetchCompanies = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        const companyPromises = companyIds.map(id => 
-          fetch(`${API_BASE_URL}/fund_managers/${id}`)
-            .then(response => {
-              if (!response.ok) {
-                throw new Error(`Failed to fetch company with ID ${id}`);
-              }
-              return response.json();
-            })
-        );
-        
-        const results = await Promise.allSettled(companyPromises);
-        
-        const fetchedCompanies = results
-          .filter(result => result.status === 'fulfilled')
-          .map((result) => {
-            const company = (result as PromiseFulfilledResult<any>).value;
-            return {
-              ...company,
-              // Make sure we have all required fields for the CompanyType
-              id: String(company.id || ''),
-              name: company.firm_name || '',
-              firm_name: company.firm_name || '',
-              type: company.firm_type || 'Family Office',
-              location: `${company.city || ''}, ${company.state_county || ''}`,
-              employees: company.total_staff ? parseInt(company.total_staff) : Math.floor(Math.random() * 800) + 50,
-              revenue: `$${Math.floor(Math.random() * 70) + 5}M`,
-              status: Math.random() > 0.2 ? 'Active' : 'Inactive',
-              aum: company.total_assets_under_management_usd_mn || 
-                   company.pe_portfolio_company_maximum_value_usd_mn || 
-                   (Math.random() * 3000) + 100,
-              foundedYear: company.year_est ? `${company.year_est} y.` : '2000 y.',
-              team: company.management_team_staff ? [`${company.management_team_staff} managers`] : ["Jonny Smitter"],
-              isFavorite: Math.random() > 0.7
-            };
-          });
-        
-        setCompanies(fetchedCompanies);
-      } catch (err) {
-        console.error("Error fetching companies:", err);
-        setError("Failed to load companies. Please try again later.");
-        toast({
-          title: "Error",
-          description: "Failed to load companies. Please try again later.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchCompanies();
-  }, [toast]);
+  }, [currentPage, itemsPerPage, toast]);
+
+  const fetchCompanies = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const companyPromises = companyIds.map(id => 
+        fetch(`${API_BASE_URL}/fund_managers/${id}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to fetch company with ID ${id}`);
+            }
+            return response.json();
+          })
+      );
+      
+      const results = await Promise.allSettled(companyPromises);
+      
+      const fetchedCompanies = results
+        .filter(result => result.status === 'fulfilled')
+        .map((result) => {
+          const company = (result as PromiseFulfilledResult<any>).value;
+          return {
+            ...company,
+            // Make sure we have all required fields for the CompanyType
+            id: String(company.id || ''),
+            name: company.firm_name || '',
+            firm_name: company.firm_name || '',
+            type: company.firm_type || 'Family Office',
+            location: `${company.city || ''}, ${company.state_county || ''}`,
+            employees: company.total_staff ? parseInt(company.total_staff) : Math.floor(Math.random() * 800) + 50,
+            revenue: `$${Math.floor(Math.random() * 70) + 5}M`,
+            status: Math.random() > 0.2 ? 'Active' : 'Inactive',
+            aum: company.total_assets_under_management_usd_mn || 
+                 company.pe_portfolio_company_maximum_value_usd_mn || 
+                 (Math.random() * 3000) + 100,
+            foundedYear: company.year_est ? `${company.year_est} y.` : '2000 y.',
+            team: company.management_team_staff ? [`${company.management_team_staff} managers`] : ["Jonny Smitter"],
+            isFavorite: Math.random() > 0.7
+          };
+        });
+
+      // Calculate total pages based on fetched data
+      setTotalPages(Math.ceil(fetchedCompanies.length / itemsPerPage));
+      
+      // Get paginated data (we'll simulate pagination on client since it's mock data)
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedCompanies = fetchedCompanies.slice(startIndex, endIndex);
+      
+      setCompanies(paginatedCompanies);
+    } catch (err) {
+      console.error("Error fetching companies:", err);
+      setError("Failed to load companies. Please try again later.");
+      toast({
+        title: "Error",
+        description: "Failed to load companies. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleViewCompany = (id: string) => {
     navigate(`/company/${id}`);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // This will trigger the useEffect to fetch companies for the new page
+  };
+
+  const handleItemsPerPageChange = (perPage: number) => {
+    setItemsPerPage(perPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+    // This will trigger the useEffect to fetch companies with new pagination settings
   };
 
   const toggleCompanySelection = (id: string) => {
@@ -315,73 +335,14 @@ const CompaniesList = () => {
           </Table>
         </div>
         
-        <div className="p-4 flex justify-between items-center border-t border-gray-100">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(1); }}>
-                  <ChevronsLeft className="h-4 w-4" />
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(Math.max(1, currentPage - 1)); }}>
-                  <ChevronLeft className="h-4 w-4" />
-                </PaginationLink>
-              </PaginationItem>
-              
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(1); }}>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive onClick={(e) => { e.preventDefault(); setCurrentPage(2); }}>
-                  2
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(3); }}>
-                  3
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(4); }}>
-                  4
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(5); }}>
-                  5
-                </PaginationLink>
-              </PaginationItem>
-              
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(12); }}>
-                  12
-                </PaginationLink>
-              </PaginationItem>
-              
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(Math.min(12, currentPage + 1)); }}>
-                  <ChevronRight className="h-4 w-4" />
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(12); }}>
-                  <ChevronsRight className="h-4 w-4" />
-                </PaginationLink>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-          
-          <div className="flex items-center">
-            <span className="text-sm text-gray-500 mr-2">50 results per page</span>
-            <ChevronRight className="h-4 w-4 text-gray-400" />
-          </div>
+        <div className="p-4 border-t border-gray-100">
+          <PersonsPagination 
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
         </div>
       </div>
     </div>
