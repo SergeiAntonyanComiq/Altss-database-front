@@ -13,46 +13,60 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
       <section>
         <h2 className="text-xl font-medium mb-4">About</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">Industry</span>
-            <div className="flex gap-2">
-              <span 
-                className="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm"
-              >
-                {company.industry || company.firm_type || 'N/A'}
-              </span>
+          {(company.industry || company.firm_type) && (
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">Industry</span>
+              <div className="flex gap-2">
+                <span 
+                  className="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm"
+                >
+                  {company.industry || company.firm_type || 'N/A'}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
           
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">Headquarters</span>
-            <span>{company.headquarters || company.location || `${company.city || 'N/A'}, ${company.state_county || 'N/A'}`}</span>
-          </div>
+          {(company.headquarters || company.location || company.city || company.state_county) && (
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">Headquarters</span>
+              <span>{company.headquarters || company.location || `${company.city || ''} ${company.state_county || ''}`.trim() || 'N/A'}</span>
+            </div>
+          )}
           
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">Founded</span>
-            <span>{company.founded_year || company.year_est || 'N/A'}</span>
-          </div>
+          {(company.founded_year || company.year_est) && (
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">Founded</span>
+              <span>{company.founded_year || company.year_est || 'N/A'}</span>
+            </div>
+          )}
           
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">Employees</span>
-            <span>{company.employees || company.total_staff || 'N/A'}</span>
-          </div>
+          {(company.employees || company.employees_count || company.total_staff) && (
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">Employees</span>
+              <span>{company.employees || company.employees_count || company.total_staff || 'N/A'}</span>
+            </div>
+          )}
           
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">Revenue</span>
-            <span>{company.revenue || 'N/A'}</span>
-          </div>
+          {company.revenue && (
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">Revenue</span>
+              <span>{company.revenue}</span>
+            </div>
+          )}
           
-          <div className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">CEO</span>
-            <span>{company.ceo || 'N/A'}</span>
-          </div>
+          {company.ceo && (
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-sm mb-1">CEO</span>
+              <span>{company.ceo}</span>
+            </div>
+          )}
           
-          <div className="flex flex-col md:col-span-2">
-            <span className="text-gray-500 text-sm mb-1">SEC Registration</span>
-            <span>{company.registration_id || 'N/A'}</span>
-          </div>
+          {company.registration_id && (
+            <div className="flex flex-col md:col-span-2">
+              <span className="text-gray-500 text-sm mb-1">SEC Registration</span>
+              <span>{company.registration_id}</span>
+            </div>
+          )}
         </div>
       </section>
       
@@ -107,7 +121,7 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
             </div>
           )}
 
-          {company.phone || company.tel && (
+          {(company.phone || company.tel) && (
             <div className="flex items-center">
               <div className="w-8 h-8 flex items-center justify-center mr-3">
                 <Phone className="h-5 w-5 text-blue-600" />
