@@ -72,22 +72,28 @@ const CompanyDetails: React.FC = () => {
         type: data.firm_type || 'N/A',
         location: `${data.city || 'N/A'}, ${data.state_county || 'N/A'}`,
         employees: data.total_staff ? parseInt(data.total_staff) : 'N/A',
+        employees_count: data.total_staff || 'N/A',
         revenue: `$${Math.floor(Math.random() * 70) + 5}M`, // Mock data as not in API
         status: Math.random() > 0.2 ? 'Active' : 'Inactive', // Mock data as not in API
         aum: data.total_assets_under_management_usd_mn || 
              data.pe_portfolio_company_maximum_value_usd_mn || 
              (Math.random() * 3000) + 100,
         foundedYear: data.year_est ? `${data.year_est}` : 'N/A',
+        founded_year: data.year_est || 2005,
         isFavorite: false, // Default to not favorite
         phone: data.tel,
         email: data.email,
         website: data.website,
         industry: data.firm_type,
-        founded_year: data.year_est || 2005,
         headquarters: `${data.city || 'N/A'}, ${data.state_county || 'N/A'}`,
         description: data.background || "A leading investment company specializing in private equity.",
         ceo: "John Smith", // Mock data
+        registration_id: "SEC-" + Math.floor(Math.random() * 10000), // Mock data
         last_updated: "4 weeks ago", // Mock data
+        social: {
+          linkedin: "linkedin.com/company/example",
+          twitter: "twitter.com/example"
+        }
       };
       
       setCompany(companyData);

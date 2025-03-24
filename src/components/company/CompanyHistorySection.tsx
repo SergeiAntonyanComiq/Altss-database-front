@@ -1,12 +1,10 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { CompanyType } from "@/types/company";
 
 interface CompanyHistorySectionProps {
-  company: {
-    name: string;
-    founded_year: number;
-  };
+  company: CompanyType;
 }
 
 const historyEvents = [
@@ -14,7 +12,7 @@ const historyEvents = [
     id: "1",
     year: "2005",
     title: "Company Founding",
-    description: "ACME Long Name Super Long Inc. was founded by John Smitty in San Francisco, California."
+    description: "COMPANY_NAME was founded by John Smitty in San Francisco, California."
   },
   {
     id: "2",
@@ -60,7 +58,9 @@ const CompanyHistorySection: React.FC<CompanyHistorySectionProps> = ({ company }
                 <Card className="flex-1 shadow-sm border-gray-200">
                   <CardContent className="p-4">
                     <h3 className="font-medium text-lg">{event.title}</h3>
-                    <p className="text-gray-600 mt-1">{event.description}</p>
+                    <p className="text-gray-600 mt-1">
+                      {event.description.replace("COMPANY_NAME", company.firm_name || "")}
+                    </p>
                   </CardContent>
                 </Card>
               </div>

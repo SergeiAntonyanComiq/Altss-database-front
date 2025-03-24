@@ -102,7 +102,7 @@ export interface CompanyType {
   location?: string;
   foundedYear?: string;
   aum?: number;
-  employees?: number;
+  employees?: number | string;
   revenue?: string;
   status?: string;
   name?: string;
@@ -112,14 +112,13 @@ export interface CompanyType {
   description?: string;
   industry?: string;
   founded?: string;
+  founded_year?: number;
   headquarters?: string;
+  employees_count?: string;
   phone?: string;
-  contactPerson?: {
-    name: string;
-    title: string;
-    phone: string;
-    email: string;
-  };
+  ceo?: string;
+  registration_id?: string;
+  last_updated?: string;
   social?: {
     linkedin?: string;
     twitter?: string;

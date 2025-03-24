@@ -1,37 +1,13 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Linkedin, Twitter, Mail, Phone, Globe } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CompanyType } from "@/types/company";
 
 interface CompanyDetailsSectionProps {
-  company: {
-    industry: string;
-    location: string;
-    founded_year: number;
-    description: string;
-    website: string;
-    linkedin: string;
-    twitter: string;
-    employees_count: string;
-    revenue: string;
-    ceo: string;
-    headquarters: string;
-    registration_id: string;
-  };
+  company: CompanyType;
 }
 
 const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }) => {
-  const [showEmails, setShowEmails] = useState({
-    work: false,
-  });
-
-  const toggleEmailVisibility = () => {
-    setShowEmails(prev => ({
-      ...prev,
-      work: !prev.work
-    }));
-  };
-
   return (
     <div className="space-y-8">
       <section>
@@ -43,39 +19,39 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
               <span 
                 className="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm"
               >
-                {company.industry}
+                {company.industry || company.firm_type || 'N/A'}
               </span>
             </div>
           </div>
           
           <div className="flex flex-col">
             <span className="text-gray-500 text-sm mb-1">Headquarters</span>
-            <span>{company.headquarters || company.location}</span>
+            <span>{company.headquarters || company.location || `${company.city || 'N/A'}, ${company.state_county || 'N/A'}`}</span>
           </div>
           
           <div className="flex flex-col">
             <span className="text-gray-500 text-sm mb-1">Founded</span>
-            <span>{company.founded_year}</span>
+            <span>{company.founded_year || company.year_est || 'N/A'}</span>
           </div>
           
           <div className="flex flex-col">
             <span className="text-gray-500 text-sm mb-1">Employees</span>
-            <span>{company.employees_count}</span>
+            <span>{company.employees || company.total_staff || 'N/A'}</span>
           </div>
           
           <div className="flex flex-col">
             <span className="text-gray-500 text-sm mb-1">Revenue</span>
-            <span>{company.revenue}</span>
+            <span>{company.revenue || 'N/A'}</span>
           </div>
           
           <div className="flex flex-col">
             <span className="text-gray-500 text-sm mb-1">CEO</span>
-            <span>{company.ceo}</span>
+            <span>{company.ceo || 'N/A'}</span>
           </div>
           
           <div className="flex flex-col md:col-span-2">
             <span className="text-gray-500 text-sm mb-1">SEC Registration</span>
-            <span>{company.registration_id}</span>
+            <span>{company.registration_id || 'N/A'}</span>
           </div>
         </div>
       </section>
@@ -96,29 +72,47 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
             </div>
           )}
           
-          {company.linkedin && (
+          {company.social?.linkedin && (
             <div className="flex items-center">
               <div className="w-8 h-8 flex items-center justify-center mr-3">
                 <Linkedin className="h-5 w-5 text-blue-600" />
               </div>
               <span className="text-blue-600 hover:underline">
-                <a href={`https://${company.linkedin}`} target="_blank" rel="noopener noreferrer">
-                  {company.linkedin}
+                <a href={`https://${company.social.linkedin}`} target="_blank" rel="noopener noreferrer">
+                  {company.social.linkedin}
                 </a>
               </span>
             </div>
           )}
           
-          {company.twitter && (
+          {company.social?.twitter && (
             <div className="flex items-center">
               <div className="w-8 h-8 flex items-center justify-center mr-3">
                 <Twitter className="h-5 w-5 text-blue-600" />
               </div>
               <span className="text-blue-600 hover:underline">
-                <a href={`https://${company.twitter}`} target="_blank" rel="noopener noreferrer">
-                  {company.twitter}
+                <a href={`https://${company.social.twitter}`} target="_blank" rel="noopener noreferrer">
+                  {company.social.twitter}
                 </a>
               </span>
+            </div>
+          )}
+
+          {company.email && (
+            <div className="flex items-center">
+              <div className="w-8 h-8 flex items-center justify-center mr-3">
+                <Mail className="h-5 w-5 text-blue-600" />
+              </div>
+              <span>{company.email}</span>
+            </div>
+          )}
+
+          {company.phone || company.tel && (
+            <div className="flex items-center">
+              <div className="w-8 h-8 flex items-center justify-center mr-3">
+                <Phone className="h-5 w-5 text-blue-600" />
+              </div>
+              <span>{company.phone || company.tel}</span>
             </div>
           )}
         </div>
