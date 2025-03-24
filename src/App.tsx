@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PersonalCabinet3 from "./pages/PersonalCabinet3";
 import ProfilePage from "./pages/ProfilePage";
@@ -27,6 +26,9 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            {/* Redirect root path to auth */}
+            <Route path="/" element={<Navigate to="/auth" replace />} />
+            
             {/* Public route - no protection */}
             <Route path="/auth" element={<Auth />} />
             
@@ -34,11 +36,6 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
             
             {/* All protected routes */}
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
             <Route path="/persons" element={
               <ProtectedRoute>
                 <PersonalCabinet3 />
