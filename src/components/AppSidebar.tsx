@@ -96,9 +96,11 @@ const AppSidebar = () => {
         <SidebarHeader className="pt-6 pb-4">
           <div className="flex justify-between items-center px-6">
             <div className="flex items-center">
-              <div className="bg-[#2546F3] text-white font-bold text-sm h-10 w-10 rounded flex items-center justify-center">
-                Altss
-              </div>
+              <img 
+                src="/lovable-uploads/f0e39660-fbf7-43b0-a89f-e3a346681785.png" 
+                alt="Altss Logo" 
+                className="h-10"
+              />
             </div>
             <SidebarTrigger className="text-gray-400" />
           </div>

@@ -45,7 +45,11 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <a href="/" className="flex items-center">
-            <span className="text-xl font-bold text-altss-deep-blue">Altss</span>
+            <img 
+              src="/lovable-uploads/f0e39660-fbf7-43b0-a89f-e3a346681785.png" 
+              alt="Altss Logo" 
+              className="h-10"
+            />
           </a>
         </div>
 
