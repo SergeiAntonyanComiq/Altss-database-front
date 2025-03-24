@@ -43,11 +43,13 @@ const CompaniesTable = ({
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-gray-200">
-              <TableHead className="w-12">
-                <Checkbox 
-                  checked={selectedCompanies.length === companies.length && companies.length > 0} 
-                  onCheckedChange={toggleAllCompanies}
-                />
+              <TableHead className="w-12 p-0 pl-3">
+                <div className="flex items-center justify-center">
+                  <Checkbox 
+                    checked={selectedCompanies.length === companies.length && companies.length > 0} 
+                    onCheckedChange={toggleAllCompanies}
+                  />
+                </div>
               </TableHead>
               <TableHead className="font-medium">Company Name</TableHead>
               <TableHead className="font-medium">Company Type</TableHead>
