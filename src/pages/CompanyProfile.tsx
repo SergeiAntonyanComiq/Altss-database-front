@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -8,27 +7,11 @@ import CompanyProfileHeader from "@/components/company/CompanyProfileHeader";
 import CompanyProfileTabs from "@/components/company/CompanyProfileTabs";
 import CompanyProfileSkeleton from "@/components/company/CompanyProfileSkeleton";
 import CompanyNotFound from "@/components/company/CompanyNotFound";
-
-interface CompanyType {
-  id: string;
-  name: string;
-  industry: string;
-  location: string;
-  founded_year: number;
-  description: string;
-  website: string;
-  linkedin: string;
-  twitter: string;
-  employees_count: string;
-  revenue: string;
-  ceo: string;
-  headquarters: string;
-  registration_id: string;
-  last_updated: string;
-}
+import { CompanyType } from "@/types/company";
 
 const mockCompanyData: CompanyType = {
   id: "1",
+  firm_name: "ACME Long Name Super Long Inc.",
   name: "ACME Long Name Super Long Inc.",
   industry: "Technology",
   location: "San Francisco, USA",
@@ -42,7 +25,11 @@ const mockCompanyData: CompanyType = {
   ceo: "John Smitty",
   headquarters: "San Francisco, California",
   registration_id: "ID Number",
-  last_updated: "4 weeks ago"
+  last_updated: "4 weeks ago",
+  social: {
+    linkedin: "linkedin.com/lorem-ipsum-2025",
+    twitter: "x.com/lorem-ipsum-2025"
+  }
 };
 
 const CompanyProfile: React.FC = () => {
