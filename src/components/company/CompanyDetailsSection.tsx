@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Linkedin, Twitter, Mail, Phone, Globe, Fax } from "lucide-react";
+import { Linkedin, Twitter, Mail, Phone, Globe } from "lucide-react";
 import { CompanyType } from "@/types/company";
 
 interface CompanyDetailsSectionProps {
@@ -47,8 +47,7 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
   // Contact information
   const hasContactInfo = company.website || 
     company.email || 
-    company.tel || 
-    company.fax;
+    company.tel;
 
   return (
     <div className="space-y-8">
@@ -364,15 +363,6 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
                   <Phone className="h-5 w-5 text-blue-600" />
                 </div>
                 <span>{company.tel}</span>
-              </div>
-            )}
-            
-            {company.fax && (
-              <div className="flex items-center">
-                <div className="w-8 h-8 flex items-center justify-center mr-3">
-                  <Fax className="h-5 w-5 text-blue-600" />
-                </div>
-                <span>{company.fax}</span>
               </div>
             )}
           </div>

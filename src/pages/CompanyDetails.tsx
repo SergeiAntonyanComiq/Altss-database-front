@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { CompanyType } from "@/types/company";
 import { useToast } from "@/components/ui/use-toast";
 import CompanyProfileSkeleton from "@/components/company/CompanyProfileSkeleton";
