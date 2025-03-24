@@ -63,18 +63,18 @@ const AppSidebar = () => {
     },
     {
       title: "My Orders",
-      path: "/cabinet3",
+      path: "/persons?section=orders",
       icon: ShoppingBag,
     },
     {
       title: "Favorites",
-      path: "/cabinet3?section=favorites",
+      path: "/persons?section=favorites",
       icon: Heart,
       hasDropdown: true,
     },
     {
       title: "Saved Searches",
-      path: "/cabinet3?section=saved",
+      path: "/persons?section=saved",
       icon: Search,
       hasDropdown: true,
     },
@@ -109,10 +109,12 @@ const AppSidebar = () => {
             {menuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
-                  data-active={isActive(item.path)}
+                  data-active={isActive(item.path.split('?')[0]) && (item.path.includes('?') ? location.search.includes(item.path.split('?')[1]) : true)}
                   onClick={() => handleNavigation(item.path)}
                   className={`flex items-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-6 ${
-                    isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
+                    isActive(item.path.split('?')[0]) && (item.path.includes('?') ? location.search.includes(item.path.split('?')[1]) : true) 
+                      ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" 
+                      : ""
                   }`}
                 >
                   <item.icon className="h-5 w-5 mr-3" />

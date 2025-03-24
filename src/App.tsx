@@ -10,7 +10,6 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PersonalCabinet from "./pages/PersonalCabinet";
 import PersonalCabinet2 from "./pages/PersonalCabinet2";
-import PersonalCabinet3 from "./pages/PersonalCabinet3";
 import PersonalCabinet4 from "./pages/PersonalCabinet4";
 import ProfilePage from "./pages/ProfilePage";
 import Auth from "./pages/Auth";
@@ -46,11 +45,6 @@ const App = () => (
             <Route path="/cabinet2" element={
               <ProtectedRoute>
                 <PersonalCabinet2 />
-              </ProtectedRoute>
-            } />
-            <Route path="/cabinet3" element={
-              <ProtectedRoute>
-                <PersonalCabinet3 />
               </ProtectedRoute>
             } />
             <Route path="/cabinet4" element={
