@@ -246,7 +246,7 @@ const ContactsList = () => {
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Contacts</h1>
+        <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-4 items-center">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Show:</span>
@@ -292,7 +292,7 @@ const ContactsList = () => {
           />
         ) : (
           <div className="text-center p-12 text-muted-foreground">
-            No contacts found
+            No persons found
           </div>
         )}
       </div>
