@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,11 +9,11 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
-  SidebarHeader,
   SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar";
@@ -63,20 +62,18 @@ const AppSidebar = () => {
     },
     {
       title: "My Orders",
-      path: "/cabinet4",
+      path: "/my-orders",
       icon: ShoppingBag,
     },
     {
       title: "Favorites",
-      path: "/persons?section=favorites",
+      path: "/favorites",
       icon: Heart,
-      hasDropdown: true,
     },
     {
       title: "Saved Searches",
-      path: "/persons?section=saved",
+      path: "/saved-searches",
       icon: Search,
-      hasDropdown: true,
     },
   ];
 
@@ -119,9 +116,6 @@ const AppSidebar = () => {
                 >
                   <item.icon className="h-5 w-5 mr-3" />
                   <span>{item.title}</span>
-                  {item.hasDropdown && (
-                    <ChevronDown className="h-4 w-4 ml-auto" />
-                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}

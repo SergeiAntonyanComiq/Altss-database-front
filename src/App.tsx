@@ -16,6 +16,9 @@ import Auth from "./pages/Auth";
 import Persons from "./pages/Persons";
 import Companies from "./pages/Companies";
 import CompanyDetails from "./pages/CompanyDetails";
+import MyOrders from "./pages/MyOrders";
+import Favorites from "./pages/Favorites";
+import SavedSearches from "./pages/SavedSearches";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +75,21 @@ const App = () => (
             <Route path="/company/:id" element={
               <ProtectedRoute>
                 <CompanyDetails />
+              </ProtectedRoute>
+            } />
+            <Route path="/my-orders" element={
+              <ProtectedRoute>
+                <MyOrders />
+              </ProtectedRoute>
+            } />
+            <Route path="/favorites" element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            } />
+            <Route path="/saved-searches" element={
+              <ProtectedRoute>
+                <SavedSearches />
               </ProtectedRoute>
             } />
           </Routes>
