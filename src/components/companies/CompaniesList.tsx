@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Save, Heart, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,133 +9,82 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { CompanyType } from "@/types/company";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 
-// Mock data for companies
-const mockCompanies: CompanyType[] = [
-  { 
-    id: "1", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "San Francisco, CA",
-    employees: 250,
-    revenue: "$25M",
-    status: "Active",
-    aum: 567.8,
-    foundedYear: "1990 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  },
-  { 
-    id: "2", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Boston, MA",
-    employees: 120,
-    revenue: "$12M",
-    status: "Active",
-    aum: 999.34,
-    foundedYear: "1978 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: true
-  },
-  { 
-    id: "3", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Chicago, IL",
-    employees: 500,
-    revenue: "$40M",
-    status: "Inactive",
-    aum: 999.34,
-    foundedYear: "2000 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: true
-  },
-  { 
-    id: "4", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "New York, NY",
-    employees: 340,
-    revenue: "$32M",
-    status: "Active",
-    aum: 999.34,
-    foundedYear: "2002 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  },
-  { 
-    id: "5", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Detroit, MI",
-    employees: 780,
-    revenue: "$65M",
-    status: "Active",
-    aum: 999.34,
-    foundedYear: "2002 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  },
-  { 
-    id: "6", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Seattle, WA",
-    employees: 95,
-    revenue: "$8M",
-    status: "Active",
-    aum: 1.0,
-    foundedYear: "2002 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  },
-  { 
-    id: "7", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Austin, TX",
-    employees: 420,
-    revenue: "$37M",
-    status: "Active",
-    aum: 567.8,
-    foundedYear: "2002 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  },
-  { 
-    id: "8", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Denver, CO",
-    employees: 180,
-    revenue: "$18M",
-    status: "Active",
-    aum: 567.8,
-    foundedYear: "2002 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  },
-  { 
-    id: "9", 
-    name: "Lorem Ipsum Inc", 
-    type: "Family Office",
-    location: "Portland, OR",
-    employees: 320,
-    revenue: "$29M",
-    status: "Active",
-    aum: 3452362.4,
-    foundedYear: "2002 y.",
-    team: ["Jonny Smitter"],
-    isFavorite: false
-  }
-];
+const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
 
 const CompaniesList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [companies, setCompanies] = useState<CompanyType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Generate an array of IDs to fetch (for demonstration purposes)
+  const companyIds = Array.from({ length: 9 }, (_, i) => i + 1);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch multiple companies in parallel
+        const companyPromises = companyIds.map(id => 
+          fetch(`${API_BASE_URL}/fund_managers/${id}`)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Failed to fetch company with ID ${id}`);
+              }
+              return response.json();
+            })
+        );
+        
+        const results = await Promise.allSettled(companyPromises);
+        
+        // Process the results
+        const fetchedCompanies = results
+          .filter(result => result.status === 'fulfilled')
+          .map((result, index) => {
+            const company = (result as PromiseFulfilledResult<any>).value;
+            return {
+              ...company,
+              id: String(companyIds[index]),
+              name: company.firm_name,
+              type: company.firm_type || 'Family Office',
+              location: `${company.city || ''}, ${company.state_county || ''}`,
+              employees: Math.floor(Math.random() * 800) + 50, // Random for demo
+              revenue: `$${Math.floor(Math.random() * 70) + 5}M`, // Random for demo
+              status: Math.random() > 0.2 ? 'Active' : 'Inactive', // Random for demo
+              aum: company.total_assets_under_management_usd_mn || 
+                  company.pe_portfolio_company_maximum_value_usd_mn || 
+                  (Math.random() * 3000) + 100, // Fallback to random for demo
+              foundedYear: company.year_est ? `${company.year_est} y.` : '2000 y.',
+              team: ["Jonny Smitter"], // Placeholder
+              isFavorite: Math.random() > 0.7 // Random for demo
+            };
+          });
+        
+        setCompanies(fetchedCompanies);
+      } catch (err) {
+        console.error("Error fetching companies:", err);
+        setError("Failed to load companies. Please try again later.");
+        toast({
+          title: "Error",
+          description: "Failed to load companies. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, [toast]);
 
   const handleViewCompany = (id: string) => {
     navigate(`/company/${id}`);
@@ -150,19 +99,21 @@ const CompaniesList = () => {
   };
 
   const toggleAllCompanies = () => {
-    if (selectedCompanies.length === mockCompanies.length) {
+    if (selectedCompanies.length === companies.length) {
       setSelectedCompanies([]);
     } else {
-      setSelectedCompanies(mockCompanies.map(company => company.id));
+      setSelectedCompanies(companies.map(company => company.id || ''));
     }
   };
 
-  const isCompanySelected = (id: string) => selectedCompanies.includes(id);
+  const isCompanySelected = (id: string | undefined) => id ? selectedCompanies.includes(id) : false;
 
   const toggleFavorite = (id: string, event: React.MouseEvent) => {
     event.stopPropagation();
     // In a real app, this would update the favorites in the backend
-    console.log(`Toggle favorite for company ${id}`);
+    setCompanies(prev => prev.map(company => 
+      company.id === id ? { ...company, isFavorite: !company.isFavorite } : company
+    ));
   };
 
   const formatAum = (aum: number) => {
@@ -171,6 +122,80 @@ const CompaniesList = () => {
     }
     return `${aum.toFixed(1)}M`;
   };
+
+  // Render skeletons while loading
+  if (isLoading) {
+    return (
+      <div className="container py-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Companies</h1>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-sm mb-6">
+          <div className="flex items-center gap-4 p-4">
+            <div className="relative flex-1">
+              <Skeleton className="h-10 w-full" />
+            </div>
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
+                  <TableHead className="w-12"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
+                  <TableHead className="font-medium text-[#343C6A]">Company Name</TableHead>
+                  <TableHead className="font-medium text-[#343C6A]">Company Type</TableHead>
+                  <TableHead className="font-medium text-[#343C6A]">AUM, $mln.</TableHead>
+                  <TableHead className="font-medium text-[#343C6A]">Founded year</TableHead>
+                  <TableHead className="font-medium text-[#343C6A]">Known Team</TableHead>
+                  <TableHead className="w-12"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array.from({ length: 9 }).map((_, index) => (
+                  <TableRow key={index} className="border-t border-gray-100">
+                    <TableCell className="p-3"><Skeleton className="h-4 w-4" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-32" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-24" /></TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Display error message if there is an error
+  if (error) {
+    return (
+      <div className="container py-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Companies</h1>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+          <p className="text-red-500">{error}</p>
+          <Button 
+            className="mt-4" 
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-6">
@@ -207,14 +232,14 @@ const CompaniesList = () => {
         </div>
       </div>
       
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
                 <TableHead className="w-12">
                   <Checkbox 
-                    checked={selectedCompanies.length === mockCompanies.length && mockCompanies.length > 0} 
+                    checked={selectedCompanies.length === companies.length && companies.length > 0} 
                     onCheckedChange={toggleAllCompanies}
                   />
                 </TableHead>
@@ -229,25 +254,25 @@ const CompaniesList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockCompanies.map((company) => (
+              {companies.map((company) => (
                 <TableRow 
                   key={company.id} 
                   className="border-t border-gray-100 cursor-pointer hover:bg-blue-50"
-                  onClick={() => handleViewCompany(company.id)}
+                  onClick={() => handleViewCompany(company.id || '')}
                 >
                   <TableCell className="p-3">
                     <Checkbox 
                       checked={isCompanySelected(company.id)}
-                      onCheckedChange={() => toggleCompanySelection(company.id)}
+                      onCheckedChange={() => toggleCompanySelection(company.id || '')}
                       onClick={(e) => e.stopPropagation()}
                       className="text-blue-600"
                     />
                   </TableCell>
                   <TableCell className="font-medium text-[#343C6A] flex items-center">
-                    {company.name}
+                    {company.firm_name || company.name}
                     <button 
                       className="ml-2"
-                      onClick={(e) => toggleFavorite(company.id, e)}
+                      onClick={(e) => toggleFavorite(company.id || '', e)}
                     >
                       <Heart 
                         className={`h-5 w-5 ${company.isFavorite ? 'fill-blue-600 text-blue-600' : 'text-gray-400'}`} 
@@ -256,20 +281,30 @@ const CompaniesList = () => {
                   </TableCell>
                   <TableCell>
                     <Badge className="bg-[#EEF0F7] text-[#343C6A] hover:bg-[#EEF0F7] rounded-full font-medium">
-                      {company.type}
+                      {company.firm_type || company.type || 'Family Office'}
                     </Badge>
                   </TableCell>
-                  <TableCell>{formatAum(company.aum)}</TableCell>
-                  <TableCell>{company.foundedYear}</TableCell>
+                  <TableCell>
+                    {company.aum ? formatAum(company.aum) : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    {company.foundedYear || (company.year_est ? `${company.year_est} y.` : 'N/A')}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium mr-2">
-                        {company.team && company.team[0]}
-                      </Badge>
-                      {company.team && company.team.length > 1 && (
-                        <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium">
-                          +{company.team.length - 1}
-                        </Badge>
+                      {company.team && company.team.length > 0 ? (
+                        <>
+                          <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium mr-2">
+                            {company.team[0]}
+                          </Badge>
+                          {company.team.length > 1 && (
+                            <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium">
+                              +{company.team.length - 1}
+                            </Badge>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-gray-400 text-sm">No team data</span>
                       )}
                     </div>
                   </TableCell>
