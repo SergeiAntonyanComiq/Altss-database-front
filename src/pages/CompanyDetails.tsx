@@ -16,6 +16,7 @@ const mockCompanyDetails: Record<string, CompanyType> = {
   "1": {
     id: "1", 
     name: "Altss Technology", 
+    firm_name: "Altss Technology",
     type: "IT",
     description: "Altss Technology is a leading IT company specializing in software development, cloud solutions, and digital transformation services for enterprise clients.",
     website: "https://altstechnology.com",
@@ -43,6 +44,7 @@ const mockCompanyDetails: Record<string, CompanyType> = {
   "2": { 
     id: "2", 
     name: "Nexus Solutions", 
+    firm_name: "Nexus Solutions",
     type: "Software",
     description: "Nexus Solutions develops enterprise software solutions focusing on business intelligence, data analytics, and workflow optimization.",
     website: "https://nexussolutions.com",
@@ -65,6 +67,7 @@ const mockCompanyDetails: Record<string, CompanyType> = {
   "3": { 
     id: "3", 
     name: "Global Connect", 
+    firm_name: "Global Connect",
     type: "Telecommunications",
     description: "Global Connect provides telecommunications infrastructure and services to businesses worldwide, specializing in network solutions and connectivity.",
     industry: "Telecommunications",
@@ -79,6 +82,7 @@ const mockCompanyDetails: Record<string, CompanyType> = {
   "4": { 
     id: "4", 
     name: "Summit Enterprises", 
+    firm_name: "Summit Enterprises",
     type: "Finance",
     description: "Summit Enterprises offers financial services including investment management, financial planning, and wealth management for individuals and businesses.",
     location: "New York, NY",
@@ -89,6 +93,7 @@ const mockCompanyDetails: Record<string, CompanyType> = {
   "5": { 
     id: "5", 
     name: "Vertex Manufacturing", 
+    firm_name: "Vertex Manufacturing",
     type: "Manufacturing",
     description: "Vertex Manufacturing specializes in precision engineering and manufacturing of components for aerospace, automotive, and medical industries.",
     location: "Detroit, MI",
