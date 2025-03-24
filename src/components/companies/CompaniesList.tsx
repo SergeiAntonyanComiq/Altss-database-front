@@ -1,16 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Save, Heart, LayoutGrid } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import PersonsPagination from "@/components/personal/PersonsPagination";
 import { CompanyType } from "@/types/company";
+import CompaniesSearchBar from "./CompaniesSearchBar";
+import CompaniesTable from "./CompaniesTable";
+import CompaniesTableSkeleton from "./CompaniesTableSkeleton";
 
 const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
 
@@ -188,36 +184,7 @@ const CompaniesList = ({
           </div>
         </div>
         
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
-                  <TableHead className="w-12"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
-                  <TableHead className="font-medium text-[#343C6A]">Company Name</TableHead>
-                  <TableHead className="font-medium text-[#343C6A]">Company Type</TableHead>
-                  <TableHead className="font-medium text-[#343C6A]">AUM, $mln.</TableHead>
-                  <TableHead className="font-medium text-[#343C6A]">Founded year</TableHead>
-                  <TableHead className="font-medium text-[#343C6A]">Known Team</TableHead>
-                  <TableHead className="w-12"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Array.from({ length: 9 }).map((_, index) => (
-                  <TableRow key={index} className="border-t border-gray-100">
-                    <TableCell className="p-3"><Skeleton className="h-4 w-4" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-32" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-24" /></TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+        <CompaniesTableSkeleton />
       </div>
     );
   }
@@ -248,124 +215,31 @@ const CompaniesList = ({
         <h1 className="text-2xl font-bold">Companies</h1>
       </div>
       
-      <div className="bg-white rounded-lg shadow-sm mb-6">
-        <div className="flex items-center gap-4 p-4">
-          <div className="relative flex-1">
-            <Input
-              placeholder="Search the company"
-              className="pl-10 w-full border-gray-200 focus:ring-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          </div>
-          
-          <Button variant="outline" className="gap-2 text-gray-500 border-gray-200">
-            <Filter className="h-4 w-4" />
-            Filters
-          </Button>
-          
-          <Button variant="outline" className="gap-2 text-gray-500 border-gray-200">
-            <Save className="h-4 w-4" />
-            Save this Search
-          </Button>
-          
-          <Button variant="outline" className="gap-2 text-gray-500 border-gray-200">
-            <Heart className="h-4 w-4" />
-            Add to Favorites
-          </Button>
-        </div>
-      </div>
+      <CompaniesSearchBar 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
       
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
-                <TableHead className="w-12">
-                  <Checkbox 
-                    checked={selectedCompanies.length === companies.length && companies.length > 0} 
-                    onCheckedChange={toggleAllCompanies}
-                  />
-                </TableHead>
-                <TableHead className="font-medium text-[#343C6A]">Company Name</TableHead>
-                <TableHead className="font-medium text-[#343C6A]">Company Type</TableHead>
-                <TableHead className="font-medium text-[#343C6A]">Location</TableHead>
-                <TableHead className="font-medium text-[#343C6A]">AUM, $mln.</TableHead>
-                <TableHead className="font-medium text-[#343C6A]">Founded year</TableHead>
-                <TableHead className="font-medium text-[#343C6A]">Staff Count</TableHead>
-                <TableHead className="w-12">
-                  <LayoutGrid className="h-4 w-4 mx-auto text-gray-500" />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {companies.map((company) => (
-                <TableRow 
-                  key={company.id} 
-                  className="border-t border-gray-100 cursor-pointer hover:bg-blue-50"
-                  onClick={() => handleViewCompany(company.id || '')}
-                >
-                  <TableCell className="p-3">
-                    <Checkbox 
-                      checked={isCompanySelected(company.id)}
-                      onCheckedChange={() => toggleCompanySelection(company.id || '')}
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-blue-600"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium text-[#343C6A] flex items-center">
-                    {company.firm_name}
-                    <button 
-                      className="ml-2"
-                      onClick={(e) => toggleFavorite(company.id || '', e)}
-                    >
-                      <Heart 
-                        className={`h-5 w-5 ${company.isFavorite ? 'fill-blue-600 text-blue-600' : 'text-gray-400'}`} 
-                      />
-                    </button>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-[#EEF0F7] text-[#343C6A] hover:bg-[#EEF0F7] rounded-full font-medium">
-                      {company.firm_type || company.type || 'N/A'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {company.city ? `${company.city}, ${company.country || company.state_county || ''}` : 'N/A'}
-                  </TableCell>
-                  <TableCell>
-                    {formatAum(company.aum)}
-                  </TableCell>
-                  <TableCell>
-                    {company.year_est || 'N/A'}
-                  </TableCell>
-                  <TableCell>
-                    {company.total_staff || 'N/A'}
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              ))}
-              
-              {companies.length === 0 && !isLoading && (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                    No companies found for the current page
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        
-        <div className="p-4 border-t border-gray-100">
-          <PersonsPagination 
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            totalPages={totalPages}
-            itemsPerPage={itemsPerPage}
-            onItemsPerPageChange={onItemsPerPageChange}
-          />
-        </div>
+      <CompaniesTable 
+        companies={companies}
+        selectedCompanies={selectedCompanies}
+        toggleCompanySelection={toggleCompanySelection}
+        toggleAllCompanies={toggleAllCompanies}
+        handleViewCompany={handleViewCompany}
+        toggleFavorite={toggleFavorite}
+        formatAum={formatAum}
+        isCompanySelected={isCompanySelected}
+        isLoading={isLoading}
+      />
+      
+      <div className="p-4 border-t border-gray-100 bg-white rounded-lg shadow-sm mt-4">
+        <PersonsPagination 
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={onItemsPerPageChange}
+        />
       </div>
     </div>
   );
