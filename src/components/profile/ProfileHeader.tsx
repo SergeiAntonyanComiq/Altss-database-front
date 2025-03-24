@@ -13,7 +13,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
   return (
     <>
       <div className="mb-6 flex items-center text-gray-500 text-sm">
-        <Link to="/cabinet3" className="flex items-center hover:text-blue-600">
+        <Link to="/persons" className="flex items-center hover:text-blue-600">
           <ChevronLeft className="h-4 w-4 mr-1" />
           <span>Contacts</span>
         </Link>
