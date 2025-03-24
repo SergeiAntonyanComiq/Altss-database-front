@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { CompanyType } from "@/types/company";
+import { Badge } from "@/components/ui/badge";
 
 // Mock data for companies
 const mockCompanies: CompanyType[] = [
@@ -164,13 +165,20 @@ const CompaniesList = () => {
     console.log(`Toggle favorite for company ${id}`);
   };
 
+  const formatAum = (aum: number) => {
+    if (aum >= 1000) {
+      return `${(aum / 1000).toFixed(1)}B`;
+    }
+    return `${aum.toFixed(1)}M`;
+  };
+
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Companies</h1>
       </div>
       
-      <div className="bg-white rounded-lg mb-6">
+      <div className="bg-white rounded-lg shadow-sm mb-6">
         <div className="flex items-center gap-4 p-4">
           <div className="relative flex-1">
             <Input
@@ -199,7 +207,7 @@ const CompaniesList = () => {
         </div>
       </div>
       
-      <div className="bg-white rounded-lg overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -247,21 +255,21 @@ const CompaniesList = () => {
                     </button>
                   </TableCell>
                   <TableCell>
-                    <span className="px-3 py-1 bg-[#EEF0F7] text-[#343C6A] rounded-full text-sm">
+                    <Badge className="bg-[#EEF0F7] text-[#343C6A] hover:bg-[#EEF0F7] rounded-full font-medium">
                       {company.type}
-                    </span>
+                    </Badge>
                   </TableCell>
-                  <TableCell>{company.aum}</TableCell>
+                  <TableCell>{formatAum(company.aum)}</TableCell>
                   <TableCell>{company.foundedYear}</TableCell>
                   <TableCell>
                     <div className="flex items-center">
-                      <span className="px-3 py-1 bg-[#EEF0F7] text-blue-600 rounded-full text-sm mr-2">
+                      <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium mr-2">
                         {company.team && company.team[0]}
-                      </span>
+                      </Badge>
                       {company.team && company.team.length > 1 && (
-                        <span className="px-3 py-1 bg-[#EEF0F7] text-blue-600 rounded-full text-sm">
+                        <Badge className="bg-[#EEF0F7] text-blue-600 hover:bg-[#EEF0F7] rounded-full font-medium">
                           +{company.team.length - 1}
-                        </span>
+                        </Badge>
                       )}
                     </div>
                   </TableCell>
