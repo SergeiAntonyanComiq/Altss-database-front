@@ -39,7 +39,7 @@ const App = () => (
                 <Index />
               </ProtectedRoute>
             } />
-            <Route path="/cabinet3" element={
+            <Route path="/persons" element={
               <ProtectedRoute>
                 <PersonalCabinet3 />
               </ProtectedRoute>
