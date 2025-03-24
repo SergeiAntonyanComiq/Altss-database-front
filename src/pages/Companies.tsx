@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import CompaniesList from "@/components/companies/CompaniesList";
+import ContactsList from "@/components/contacts/ContactsList";
 
 const Companies = () => {
   const [activeSection, setActiveSection] = useState<string>("companies");
@@ -14,6 +15,7 @@ const Companies = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
+  const section = searchParams.get('section');
   
   const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
   const itemsPerPage = perPageParam ? parseInt(perPageParam, 10) : 10;
@@ -33,7 +35,10 @@ const Companies = () => {
   };
 
   const renderContent = () => {
-    switch (activeSection) {
+    // Use the section from URL or fallback to activeSection state
+    const currentSection = section || activeSection;
+    
+    switch (currentSection) {
       case "companies":
         return (
           <CompaniesList 

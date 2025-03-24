@@ -38,23 +38,23 @@ const CompaniesTable = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
+            <TableRow className="hover:bg-transparent border-b border-gray-200">
               <TableHead className="w-12">
                 <Checkbox 
                   checked={selectedCompanies.length === companies.length && companies.length > 0} 
                   onCheckedChange={toggleAllCompanies}
                 />
               </TableHead>
-              <TableHead className="font-medium text-[#343C6A]">Company Name</TableHead>
-              <TableHead className="font-medium text-[#343C6A]">Company Type</TableHead>
-              <TableHead className="font-medium text-[#343C6A]">Location</TableHead>
-              <TableHead className="font-medium text-[#343C6A]">AUM, $mln.</TableHead>
-              <TableHead className="font-medium text-[#343C6A]">Founded year</TableHead>
-              <TableHead className="font-medium text-[#343C6A]">Staff Count</TableHead>
+              <TableHead className="font-medium">Company Name</TableHead>
+              <TableHead className="font-medium">Company Type</TableHead>
+              <TableHead className="font-medium">Location</TableHead>
+              <TableHead className="font-medium">AUM, $mln.</TableHead>
+              <TableHead className="font-medium">Founded year</TableHead>
+              <TableHead className="font-medium">Staff Count</TableHead>
               <TableHead className="w-12">
                 <LayoutGrid className="h-4 w-4 mx-auto text-gray-500" />
               </TableHead>
@@ -64,44 +64,53 @@ const CompaniesTable = ({
             {companies.map((company) => (
               <TableRow 
                 key={company.id} 
-                className="border-t border-gray-100 cursor-pointer hover:bg-blue-50"
+                className={`${selectedCompanies.includes(company.id || '') ? "bg-blue-50" : ""}`}
+                data-state={selectedCompanies.includes(company.id || '') ? "selected" : undefined}
                 onClick={() => handleViewCompany(company.id || '')}
               >
-                <TableCell className="p-3">
+                <TableCell>
                   <Checkbox 
                     checked={isCompanySelected(company.id)}
                     onCheckedChange={() => toggleCompanySelection(company.id || '')}
                     onClick={(e) => e.stopPropagation()}
-                    className="text-blue-600"
+                    className="h-4 w-4"
                   />
                 </TableCell>
-                <TableCell className="font-medium text-[#343C6A] flex items-center">
+                <TableCell className="font-medium text-gray-800 flex items-center">
                   {company.firm_name}
                   <button 
                     className="ml-2"
                     onClick={(e) => toggleFavorite(company.id || '', e)}
                   >
                     <Heart 
-                      className={`h-5 w-5 ${company.isFavorite ? 'fill-blue-600 text-blue-600' : 'text-gray-400'}`} 
+                      className={`h-4 w-4 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
                     />
                   </button>
                 </TableCell>
                 <TableCell>
-                  <Badge className="bg-[#EEF0F7] text-[#343C6A] hover:bg-[#EEF0F7] rounded-full font-medium">
+                  <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 rounded-md text-xs border-blue-100 font-normal px-2 py-1">
                     {company.firm_type || company.type || 'N/A'}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {company.city ? `${company.city}, ${company.country || company.state_county || ''}` : 'N/A'}
+                  <span className="text-sm text-gray-600">
+                    {company.city ? `${company.city}, ${company.country || company.state_county || ''}` : 'N/A'}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  {formatAum(company.aum)}
+                  <span className="text-sm text-gray-600">
+                    {formatAum(company.aum)}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  {company.year_est || 'N/A'}
+                  <span className="text-sm text-gray-600">
+                    {company.year_est || 'N/A'}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  {company.total_staff || 'N/A'}
+                  <span className="text-sm text-gray-600">
+                    {company.total_staff || 'N/A'}
+                  </span>
                 </TableCell>
                 <TableCell></TableCell>
               </TableRow>

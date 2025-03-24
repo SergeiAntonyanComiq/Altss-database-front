@@ -9,6 +9,13 @@ import { CompanyType } from "@/types/company";
 import CompaniesSearchBar from "./CompaniesSearchBar";
 import CompaniesTable from "./CompaniesTable";
 import CompaniesTableSkeleton from "./CompaniesTableSkeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
 
@@ -173,6 +180,13 @@ const CompaniesList = ({
       <div className="container py-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Companies</h1>
+          <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Show:</span>
+              <Skeleton className="h-8 w-20" />
+            </div>
+            <Skeleton className="h-5 w-40" />
+          </div>
         </div>
         
         <div className="bg-white rounded-lg shadow-sm mb-6">
@@ -215,6 +229,29 @@ const CompaniesList = ({
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Companies</h1>
+        <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Show:</span>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => onItemsPerPageChange(parseInt(value, 10))}
+            >
+              <SelectTrigger className="w-[80px] h-8">
+                <SelectValue placeholder="10" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <span className="text-sm text-muted-foreground">
+            {`Showing ${companies.length} of ${TOTAL_COMPANIES} items`}
+          </span>
+        </div>
       </div>
       
       <CompaniesSearchBar 
@@ -222,19 +259,21 @@ const CompaniesList = ({
         setSearchQuery={setSearchQuery}
       />
       
-      <CompaniesTable 
-        companies={companies}
-        selectedCompanies={selectedCompanies}
-        toggleCompanySelection={toggleCompanySelection}
-        toggleAllCompanies={toggleAllCompanies}
-        handleViewCompany={handleViewCompany}
-        toggleFavorite={toggleFavorite}
-        formatAum={formatAum}
-        isCompanySelected={isCompanySelected}
-        isLoading={isLoading}
-      />
+      <div className="mt-4">
+        <CompaniesTable 
+          companies={companies}
+          selectedCompanies={selectedCompanies}
+          toggleCompanySelection={toggleCompanySelection}
+          toggleAllCompanies={toggleAllCompanies}
+          handleViewCompany={handleViewCompany}
+          toggleFavorite={toggleFavorite}
+          formatAum={formatAum}
+          isCompanySelected={isCompanySelected}
+          isLoading={isLoading}
+        />
+      </div>
       
-      <div className="p-4 border-t border-gray-100 bg-white rounded-lg shadow-sm mt-4">
+      <div className="mt-4">
         <PersonsPagination 
           currentPage={currentPage}
           onPageChange={onPageChange}
