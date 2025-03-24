@@ -48,7 +48,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
                 {item.logo}
               </div>
               <div className="flex-1">
-                <p className="text-gray-700">{item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || "")}</p>
+                <p className="text-gray-700">{item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || company.name || "")}</p>
                 <div className="flex justify-between mt-1">
                   <a href="#" className="text-blue-600 hover:underline inline-block">Read more</a>
                   <span className="text-sm text-gray-500">{item.date}</span>

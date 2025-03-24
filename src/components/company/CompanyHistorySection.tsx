@@ -59,7 +59,7 @@ const CompanyHistorySection: React.FC<CompanyHistorySectionProps> = ({ company }
                   <CardContent className="p-4">
                     <h3 className="font-medium text-lg">{event.title}</h3>
                     <p className="text-gray-600 mt-1">
-                      {event.description.replace("COMPANY_NAME", company.firm_name || "")}
+                      {event.description.replace("COMPANY_NAME", company.firm_name || company.name || "")}
                     </p>
                   </CardContent>
                 </Card>

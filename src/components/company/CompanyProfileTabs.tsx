@@ -4,23 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CompanyDetailsSection from "./CompanyDetailsSection";
 import CompanyNewsSection from "./CompanyNewsSection";
 import CompanyHistorySection from "./CompanyHistorySection";
+import { CompanyType } from "@/types/company";
 
 interface CompanyProfileTabsProps {
-  company: {
-    name: string;
-    industry: string;
-    location: string;
-    founded_year: number;
-    description: string;
-    website: string;
-    linkedin: string;
-    twitter: string;
-    employees_count: string;
-    revenue: string;
-    ceo: string;
-    headquarters: string;
-    registration_id: string;
-  };
+  company: CompanyType;
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
