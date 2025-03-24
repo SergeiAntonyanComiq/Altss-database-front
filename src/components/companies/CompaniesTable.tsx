@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Heart, LayoutGrid } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -67,22 +68,18 @@ const CompaniesTable = ({
                 data-state={selectedCompanies.includes(company.id || '') ? "selected" : undefined}
                 onClick={() => handleViewCompany(company.id || '')}
               >
-                <TableCell className="align-middle">
-                  <Checkbox 
-                    checked={isCompanySelected(company.id)}
-                    onCheckedChange={() => toggleCompanySelection(company.id || '')}
-                    onClick={(e) => e.stopPropagation()}
-                    className="h-4 w-4"
-                  />
-                </TableCell>
-                <TableCell className="font-medium text-gray-800 flex items-center">
-                  <div className="flex items-center gap-2">
+                <TableCell className="align-middle w-12 p-0 pl-3">
+                  <div className="flex items-center justify-center">
                     <Checkbox 
                       checked={isCompanySelected(company.id)}
                       onCheckedChange={() => toggleCompanySelection(company.id || '')}
                       onClick={(e) => e.stopPropagation()}
-                      className="h-4 w-4 mr-2 lg:hidden"
+                      className="h-4 w-4"
                     />
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium text-gray-800">
+                  <div className="flex items-center">
                     {company.firm_name}
                     <button 
                       className="ml-2"
