@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Filter, Save, Heart, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, LayoutGrid } from "lucide-react";
@@ -24,7 +23,6 @@ const CompaniesList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Generate an array of IDs to fetch (for demonstration purposes)
   const companyIds = Array.from({ length: 9 }, (_, i) => i + 1);
 
   useEffect(() => {
@@ -33,7 +31,6 @@ const CompaniesList = () => {
       setError(null);
       
       try {
-        // Fetch multiple companies in parallel
         const companyPromises = companyIds.map(id => 
           fetch(`${API_BASE_URL}/fund_managers/${id}`)
             .then(response => {
@@ -46,7 +43,6 @@ const CompaniesList = () => {
         
         const results = await Promise.allSettled(companyPromises);
         
-        // Process the results
         const fetchedCompanies = results
           .filter(result => result.status === 'fulfilled')
           .map((result, index) => {
@@ -57,15 +53,15 @@ const CompaniesList = () => {
               name: company.firm_name,
               type: company.firm_type || 'Family Office',
               location: `${company.city || ''}, ${company.state_county || ''}`,
-              employees: Math.floor(Math.random() * 800) + 50, // Random for demo
-              revenue: `$${Math.floor(Math.random() * 70) + 5}M`, // Random for demo
-              status: Math.random() > 0.2 ? 'Active' : 'Inactive', // Random for demo
+              employees: Math.floor(Math.random() * 800) + 50,
+              revenue: `$${Math.floor(Math.random() * 70) + 5}M`,
+              status: Math.random() > 0.2 ? 'Active' : 'Inactive',
               aum: company.total_assets_under_management_usd_mn || 
                   company.pe_portfolio_company_maximum_value_usd_mn || 
-                  (Math.random() * 3000) + 100, // Fallback to random for demo
+                  (Math.random() * 3000) + 100,
               foundedYear: company.year_est ? `${company.year_est} y.` : '2000 y.',
-              team: ["Jonny Smitter"], // Placeholder
-              isFavorite: Math.random() > 0.7 // Random for demo
+              team: ["Jonny Smitter"],
+              isFavorite: Math.random() > 0.7
             };
           });
         
@@ -110,20 +106,22 @@ const CompaniesList = () => {
 
   const toggleFavorite = (id: string, event: React.MouseEvent) => {
     event.stopPropagation();
-    // In a real app, this would update the favorites in the backend
     setCompanies(prev => prev.map(company => 
       company.id === id ? { ...company, isFavorite: !company.isFavorite } : company
     ));
   };
 
-  const formatAum = (aum: number) => {
-    if (aum >= 1000) {
-      return `${(aum / 1000).toFixed(1)}B`;
+  const formatAum = (aum: number | string | undefined | null) => {
+    if (aum === null || aum === undefined || isNaN(Number(aum))) {
+      return 'N/A';
     }
-    return `${aum.toFixed(1)}M`;
+    const numAum = typeof aum === 'string' ? parseFloat(aum) : aum;
+    if (numAum >= 1000) {
+      return `${(numAum / 1000).toFixed(1)}B`;
+    }
+    return `${numAum.toFixed(1)}M`;
   };
 
-  // Render skeletons while loading
   if (isLoading) {
     return (
       <div className="container py-6">
@@ -176,7 +174,6 @@ const CompaniesList = () => {
     );
   }
 
-  // Display error message if there is an error
   if (error) {
     return (
       <div className="container py-6">
@@ -285,7 +282,7 @@ const CompaniesList = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {company.aum ? formatAum(company.aum) : 'N/A'}
+                    {company.aum !== undefined ? formatAum(company.aum) : 'N/A'}
                   </TableCell>
                   <TableCell>
                     {company.foundedYear || (company.year_est ? `${company.year_est} y.` : 'N/A')}
