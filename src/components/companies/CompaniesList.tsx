@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Building2,
   Search,
@@ -19,6 +25,8 @@ import {
   Users,
   Globe,
   Phone,
+  ArrowUpDown,
+  ChevronDown,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -103,6 +111,7 @@ const CompaniesList = () => {
   const [companies, setCompanies] = useState<Company[]>(mockCompanies);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
 
   const filteredCompanies = companies.filter((company) => {
     const matchesSearch = company.name
@@ -157,6 +166,24 @@ const CompaniesList = () => {
               </SelectContent>
             </Select>
           </div>
+          <div className="flex gap-2">
+            <Button 
+              variant={viewMode === "table" ? "default" : "outline"} 
+              size="sm" 
+              onClick={() => setViewMode("table")}
+              className={viewMode === "table" ? "bg-[#9b87f5] hover:bg-[#8a74e8]" : ""}
+            >
+              Table
+            </Button>
+            <Button 
+              variant={viewMode === "cards" ? "default" : "outline"} 
+              size="sm" 
+              onClick={() => setViewMode("cards")}
+              className={viewMode === "cards" ? "bg-[#9b87f5] hover:bg-[#8a74e8]" : ""}
+            >
+              Cards
+            </Button>
+          </div>
           <div className="relative w-64">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
             <Input
@@ -166,18 +193,101 @@ const CompaniesList = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button>
+          <Button className="bg-[#9b87f5] hover:bg-[#8a74e8]">
             <Plus className="h-4 w-4 mr-2" />
             <span>Add Company</span>
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredCompanies.length > 0 ? (
-          filteredCompanies.map((company) => (
-            <Card key={company.id} className="overflow-hidden">
-              <CardContent className="p-0">
+      {viewMode === "table" ? (
+        <div className="rounded-md border bg-white overflow-hidden">
+          <Table>
+            <TableHeader className="bg-[#F9F8FF]">
+              <TableRow>
+                <TableHead className="w-[300px] text-[#9b87f5]">
+                  <div className="flex items-center">
+                    Company
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </div>
+                </TableHead>
+                <TableHead className="text-[#9b87f5]">Industry</TableHead>
+                <TableHead className="text-[#9b87f5]">Location</TableHead>
+                <TableHead className="text-[#9b87f5]">Employees</TableHead>
+                <TableHead className="text-[#9b87f5]">Status</TableHead>
+                <TableHead className="text-right text-[#9b87f5]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCompanies.length > 0 ? (
+                filteredCompanies.map((company) => (
+                  <TableRow key={company.id} className="hover:bg-[#F9F8FF]">
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-9 w-9">
+                          {company.logo ? (
+                            <AvatarImage src={company.logo} alt={company.name} />
+                          ) : (
+                            <AvatarFallback className="bg-[#D6BCFA] text-[#6E59A5]">
+                              {getInitials(company.name)}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{company.name}</div>
+                          <div className="text-xs text-muted-foreground">{company.website}</div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{company.industry}</TableCell>
+                    <TableCell>{company.location}</TableCell>
+                    <TableCell>{company.employees}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={getStatusColor(company.status)}
+                      >
+                        {company.status.charAt(0).toUpperCase() +
+                          company.status.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>View Profile</DropdownMenuItem>
+                          <DropdownMenuItem>Edit Company</DropdownMenuItem>
+                          <DropdownMenuItem>View Employees</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-red-600">
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center">
+                    No companies found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredCompanies.length > 0 ? (
+            filteredCompanies.map((company) => (
+              <div key={company.id} className="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
                 <div className="p-6 bg-[#9b87f5] h-16"></div>
                 <div className="px-6 pt-6 pb-4 relative">
                   <Avatar className="h-16 w-16 absolute -top-8 border-4 border-white bg-white">
@@ -252,15 +362,15 @@ const CompaniesList = () => {
                     View Employees
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="col-span-3 text-center p-12 text-muted-foreground">
-            No companies found
-          </div>
-        )}
-      </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-3 text-center p-12 text-muted-foreground">
+              No companies found
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

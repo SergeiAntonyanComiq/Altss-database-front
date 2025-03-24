@@ -96,7 +96,7 @@ const AppSidebar = () => {
         <SidebarHeader className="pt-6 pb-4">
           <div className="flex justify-between items-center px-6">
             <div className="flex items-center">
-              <div className="bg-[#2546F3] text-white font-bold text-sm h-10 w-10 rounded flex items-center justify-center">
+              <div className="bg-[#9b87f5] text-white font-bold text-sm h-10 w-10 rounded flex items-center justify-center">
                 Altss
               </div>
             </div>
@@ -111,8 +111,9 @@ const AppSidebar = () => {
                 <SidebarMenuButton
                   data-active={isActive(item.path)}
                   onClick={() => handleNavigation(item.path)}
-                  className={`flex items-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-6 ${
-                    isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
+                  tooltip={item.title}
+                  className={`flex items-center text-gray-500 hover:bg-blue-50 hover:text-[#9b87f5] text-[15px] px-6 ${
+                    isActive(item.path) ? "bg-blue-50 text-[#9b87f5] border-r-4 border-[#9b87f5]" : ""
                   }`}
                 >
                   <item.icon className="h-5 w-5 mr-3" />
@@ -143,7 +144,7 @@ const AppSidebar = () => {
             
             <Button 
               variant="outline" 
-              className="flex items-center justify-start text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-4 h-10 w-full border-gray-200"
+              className="flex items-center justify-start text-gray-500 hover:bg-blue-50 hover:text-[#9b87f5] text-[15px] px-4 h-10 w-full border-gray-200"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-3" />
