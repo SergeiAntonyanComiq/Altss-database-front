@@ -96,7 +96,7 @@ const AppSidebar = () => {
         <SidebarHeader className="pt-6 pb-4">
           <div className="flex justify-between items-center px-6">
             <div className="flex items-center">
-              <div className="bg-[#9b87f5] text-white font-bold text-sm h-10 w-10 rounded flex items-center justify-center">
+              <div className="bg-[#2546F3] text-white font-bold text-sm h-10 w-10 rounded flex items-center justify-center">
                 Altss
               </div>
             </div>
@@ -111,9 +111,8 @@ const AppSidebar = () => {
                 <SidebarMenuButton
                   data-active={isActive(item.path)}
                   onClick={() => handleNavigation(item.path)}
-                  tooltip={item.title}
-                  className={`flex items-center text-gray-500 hover:bg-[#F1F0FB] hover:text-[#9b87f5] text-[15px] px-6 ${
-                    isActive(item.path) ? "bg-[#F1F0FB] text-[#9b87f5] border-r-4 border-[#9b87f5]" : ""
+                  className={`flex items-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-6 ${
+                    isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
                   <item.icon className="h-5 w-5 mr-3" />
@@ -130,7 +129,7 @@ const AppSidebar = () => {
         <SidebarFooter className="mt-auto p-6 border-t border-[#F1F0FB]">
           <div className="flex flex-col gap-4">
             <div 
-              className="flex items-center gap-3 cursor-pointer hover:bg-[#F1F0FB] p-2 rounded-md transition-colors"
+              className="flex items-center gap-3 cursor-pointer hover:bg-blue-50 p-2 rounded-md transition-colors"
               onClick={() => handleNavigation("/profile")}
             >
               <Avatar>
@@ -144,7 +143,7 @@ const AppSidebar = () => {
             
             <Button 
               variant="outline" 
-              className="flex items-center justify-start text-gray-500 hover:bg-[#F1F0FB] hover:text-[#9b87f5] text-[15px] px-4 h-10 w-full border-gray-200"
+              className="flex items-center justify-start text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-4 h-10 w-full border-gray-200"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-3" />
