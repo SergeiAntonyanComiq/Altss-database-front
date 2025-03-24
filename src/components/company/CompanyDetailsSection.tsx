@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Linkedin, Twitter, Mail, Phone, Globe } from "lucide-react";
+import { Linkedin, Twitter, Mail, Phone, Globe, Fax } from "lucide-react";
 import { CompanyType } from "@/types/company";
 
 interface CompanyDetailsSectionProps {
@@ -9,11 +9,13 @@ interface CompanyDetailsSectionProps {
 
 const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }) => {
   // Basic company information
-  const hasBasicInfo = company.industry || company.firm_type || 
-    company.headquarters || company.location || company.city || company.state_county || 
-    company.founded_year || company.year_est || 
-    company.employees || company.employees_count || company.total_staff ||
-    company.revenue || company.ceo || company.registration_id;
+  const hasBasicInfo = company.firm_type || 
+    company.city || company.state_county || 
+    company.year_est || 
+    company.total_staff ||
+    company.firm_ownership || company.listed || 
+    company["women-led_firm"] || company["minority-led_firm"] ||
+    company.address;
 
   // Financial information
   const hasFinancialInfo = company.total_assets_under_management_usd_mn ||
@@ -29,22 +31,22 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
     company.pe_industries ||
     company.pe_industry_verticals ||
     company.pe_company_size ||
-    company.pe_company_situation;
+    company.pe_company_situation ||
+    company.pe_main_expertise_provided;
 
   // Investment details
-  const hasInvestmentDetails = company.pe_initial_minimum_equity_investment_size_usd_mn ||
-    company.pe_initial_maximum_equity_investment_size_usd_mn ||
-    company.pe_minimum_transaction_size_usd_mn ||
-    company.pe_maximum_transaction_size_usd_mn ||
-    company.pe_minimum_holding_period_years ||
-    company.pe_maximum_holding_period_years;
+  const hasInvestmentDetails = 
+    (company.pe_initial_minimum_equity_investment_size_usd_mn && company.pe_initial_maximum_equity_investment_size_usd_mn) ||
+    (company.pe_minimum_transaction_size_usd_mn && company.pe_maximum_transaction_size_usd_mn) ||
+    (company.pe_minimum_holding_period_years && company.pe_maximum_holding_period_years) ||
+    company.pe_gp_position_in_investment ||
+    company.pe_board_representation ||
+    company.pe_share_holding ||
+    company.pe_investor_co_investment_rights;
   
   // Contact information
   const hasContactInfo = company.website || 
-    (company.social?.linkedin) || 
-    (company.social?.twitter) || 
     company.email || 
-    company.phone || 
     company.tel || 
     company.fax;
 
@@ -55,25 +57,24 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
         <section>
           <h2 className="text-xl font-medium mb-4">Basic Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-            {(company.industry || company.firm_type) && (
+            {company.firm_type && (
               <div className="flex flex-col">
                 <span className="text-gray-500 text-sm mb-1">Industry</span>
                 <div className="flex gap-2">
                   <span 
                     className="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm"
                   >
-                    {company.industry || company.firm_type}
+                    {company.firm_type}
                   </span>
                 </div>
               </div>
             )}
             
-            {(company.headquarters || company.location || company.city || company.state_county) && (
+            {(company.city || company.state_county) && (
               <div className="flex flex-col">
                 <span className="text-gray-500 text-sm mb-1">Headquarters</span>
                 <span>
-                  {company.headquarters || company.location || 
-                    `${company.city || ''} ${company.state_county || ''}`.trim()}
+                  {company.city ? `${company.city}${company.state_county ? `, ${company.state_county}` : ''}` : company.state_county}
                 </span>
               </div>
             )}
@@ -85,38 +86,17 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
               </div>
             )}
             
-            {(company.founded_year || company.year_est) && (
+            {company.year_est && (
               <div className="flex flex-col">
                 <span className="text-gray-500 text-sm mb-1">Founded</span>
-                <span>{company.founded_year || company.year_est}</span>
+                <span>{company.year_est}</span>
               </div>
             )}
             
-            {(company.employees || company.employees_count || company.total_staff) && (
+            {company.total_staff && (
               <div className="flex flex-col">
                 <span className="text-gray-500 text-sm mb-1">Employees</span>
-                <span>{company.employees || company.employees_count || company.total_staff}</span>
-              </div>
-            )}
-            
-            {company.revenue && (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-sm mb-1">Revenue</span>
-                <span>{company.revenue}</span>
-              </div>
-            )}
-            
-            {company.ceo && (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-sm mb-1">CEO</span>
-                <span>{company.ceo}</span>
-              </div>
-            )}
-            
-            {company.registration_id && (
-              <div className="flex flex-col">
-                <span className="text-gray-500 text-sm mb-1">SEC Registration</span>
-                <span>{company.registration_id}</span>
+                <span>{company.total_staff}</span>
               </div>
             )}
             
@@ -247,7 +227,7 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
                       key={index}
                       className="inline-block bg-green-50 text-green-600 px-3 py-1 rounded-full text-sm"
                     >
-                      {industry.trim()}
+                      {industry.trim().replace(/\\u0026/g, '&')}
                     </span>
                   ))}
                 </div>
@@ -368,32 +348,6 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
                 </span>
               </div>
             )}
-            
-            {company.social?.linkedin && (
-              <div className="flex items-center">
-                <div className="w-8 h-8 flex items-center justify-center mr-3">
-                  <Linkedin className="h-5 w-5 text-blue-600" />
-                </div>
-                <span className="text-blue-600 hover:underline">
-                  <a href={`https://${company.social.linkedin}`} target="_blank" rel="noopener noreferrer">
-                    {company.social.linkedin}
-                  </a>
-                </span>
-              </div>
-            )}
-            
-            {company.social?.twitter && (
-              <div className="flex items-center">
-                <div className="w-8 h-8 flex items-center justify-center mr-3">
-                  <Twitter className="h-5 w-5 text-blue-600" />
-                </div>
-                <span className="text-blue-600 hover:underline">
-                  <a href={`https://${company.social.twitter}`} target="_blank" rel="noopener noreferrer">
-                    {company.social.twitter}
-                  </a>
-                </span>
-              </div>
-            )}
 
             {company.email && (
               <div className="flex items-center">
@@ -404,24 +358,19 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
               </div>
             )}
 
-            {(company.phone || company.tel) && (
+            {company.tel && (
               <div className="flex items-center">
                 <div className="w-8 h-8 flex items-center justify-center mr-3">
                   <Phone className="h-5 w-5 text-blue-600" />
                 </div>
-                <span>{company.phone || company.tel}</span>
+                <span>{company.tel}</span>
               </div>
             )}
             
             {company.fax && (
               <div className="flex items-center">
                 <div className="w-8 h-8 flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M6 8v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2Z" />
-                    <path d="M6 8H4a2 2 0 0 0-2 2v8" />
-                    <path d="M14 2v4" />
-                    <path d="M18 2v4" />
-                  </svg>
+                  <Fax className="h-5 w-5 text-blue-600" />
                 </div>
                 <span>{company.fax}</span>
               </div>
@@ -434,7 +383,7 @@ const CompanyDetailsSection: React.FC<CompanyDetailsSectionProps> = ({ company }
       {company.background && (
         <section>
           <h2 className="text-xl font-medium mb-4">Background</h2>
-          <p className="text-gray-700">{company.background}</p>
+          <p className="text-gray-700">{company.background.replace(/\\u0027/g, "'")}</p>
         </section>
       )}
     </div>
