@@ -68,7 +68,7 @@ const CompaniesTable = ({
                 key={company.id} 
                 className={`${selectedCompanies.includes(company.id || '') ? "bg-blue-50" : ""}`}
                 data-state={selectedCompanies.includes(company.id || '') ? "selected" : undefined}
-                onClick={() => handleViewCompany(company.id || '')}
+                onClick={() => toggleCompanySelection(company.id || '')}
               >
                 <TableCell className="align-middle w-12 p-0 pl-3">
                   <div className="flex items-center justify-center">
@@ -82,10 +82,21 @@ const CompaniesTable = ({
                 </TableCell>
                 <TableCell className="font-medium text-gray-800">
                   <div className="flex items-center">
-                    {company.firm_name}
+                    <span 
+                      className="cursor-pointer hover:text-blue-600 hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewCompany(company.id || '');
+                      }}
+                    >
+                      {company.firm_name}
+                    </span>
                     <button 
                       className="ml-2"
-                      onClick={(e) => toggleFavorite(company.id || '', e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(company.id || '', e);
+                      }}
                     >
                       <Heart 
                         className={`h-4 w-4 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
