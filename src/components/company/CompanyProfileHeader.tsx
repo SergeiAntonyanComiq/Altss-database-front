@@ -1,0 +1,74 @@
+
+import React from "react";
+import { Link } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface CompanyProfileHeaderProps {
+  company: {
+    name: string;
+    last_updated?: string;
+  };
+}
+
+const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) => {
+  return (
+    <>
+      <div className="mb-6 flex items-center text-gray-500 text-sm">
+        <Link to="/companies" className="flex items-center hover:text-blue-600">
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          <span>Companies</span>
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-gray-700 font-medium">{company.name}</span>
+      </div>
+
+      <div className="mb-8">
+        {company.last_updated && (
+          <div className="text-sm text-gray-500 mb-2">
+            Last update: {company.last_updated}
+          </div>
+        )}
+        
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-semibold">{company.name}</h1>
+          <div className="flex gap-2">
+            <Button variant="outline" className="text-gray-600">
+              Claim a mistake
+            </Button>
+            <Button variant="outline" className="flex items-center gap-2 text-gray-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M14 16H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M16 4V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M8 12V16H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 20V16H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M4 8V4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Order Enrich
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mb-6">
+          <Button 
+            variant="outline" 
+            className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3] flex items-center"
+          >
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12H15M12 9V15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" 
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Add to Favorites
+          </Button>
+          
+          <Button variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
+            Order Enrich
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default CompanyProfileHeader;

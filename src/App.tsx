@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 import PersonalCabinet3 from "./pages/PersonalCabinet3";
 import ProfilePage from "./pages/ProfilePage";
+import CompanyProfile from "./pages/CompanyProfile";
 import Auth from "./pages/Auth";
 import Companies from "./pages/Companies";
 import CompanyDetails from "./pages/CompanyDetails";
@@ -44,6 +45,11 @@ const App = () => (
             <Route path="/profile/:id" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/companyprofile/:id" element={
+              <ProtectedRoute>
+                <CompanyProfile />
               </ProtectedRoute>
             } />
             <Route path="/companies" element={
