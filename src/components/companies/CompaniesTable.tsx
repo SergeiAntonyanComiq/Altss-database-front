@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Heart, LayoutGrid } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -68,7 +67,7 @@ const CompaniesTable = ({
                 data-state={selectedCompanies.includes(company.id || '') ? "selected" : undefined}
                 onClick={() => handleViewCompany(company.id || '')}
               >
-                <TableCell>
+                <TableCell className="align-middle">
                   <Checkbox 
                     checked={isCompanySelected(company.id)}
                     onCheckedChange={() => toggleCompanySelection(company.id || '')}
@@ -77,15 +76,23 @@ const CompaniesTable = ({
                   />
                 </TableCell>
                 <TableCell className="font-medium text-gray-800 flex items-center">
-                  {company.firm_name}
-                  <button 
-                    className="ml-2"
-                    onClick={(e) => toggleFavorite(company.id || '', e)}
-                  >
-                    <Heart 
-                      className={`h-4 w-4 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      checked={isCompanySelected(company.id)}
+                      onCheckedChange={() => toggleCompanySelection(company.id || '')}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-4 w-4 mr-2 lg:hidden"
                     />
-                  </button>
+                    {company.firm_name}
+                    <button 
+                      className="ml-2"
+                      onClick={(e) => toggleFavorite(company.id || '', e)}
+                    >
+                      <Heart 
+                        className={`h-4 w-4 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                      />
+                    </button>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 rounded-md text-xs border-blue-100 font-normal px-2 py-1">
