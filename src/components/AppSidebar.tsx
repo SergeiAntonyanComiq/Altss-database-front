@@ -53,7 +53,7 @@ const AppSidebar = () => {
   const menuItems = [
     {
       title: "Companies",
-      path: "/cabinet",
+      path: "/cabinet2",
       icon: Building2,
     },
     {
@@ -63,18 +63,18 @@ const AppSidebar = () => {
     },
     {
       title: "My Orders",
-      path: "/cabinet3",
+      path: "/cabinet4",
       icon: ShoppingBag,
     },
     {
       title: "Favorites",
-      path: "/cabinet3?section=favorites",
+      path: "/persons?section=favorites",
       icon: Heart,
       hasDropdown: true,
     },
     {
       title: "Saved Searches",
-      path: "/cabinet3?section=saved",
+      path: "/persons?section=saved",
       icon: Search,
       hasDropdown: true,
     },
