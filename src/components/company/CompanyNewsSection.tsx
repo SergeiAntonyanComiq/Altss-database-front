@@ -45,12 +45,10 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [corsError, setCorsError] = useState(false);
   const { toast } = useToast();
 
   const fetchCompanyNews = async () => {
     setIsSearching(true);
-    setCorsError(false);
     
     try {
       const searchQuery = `${company.firm_name || company.name || ""} company news last year`;
@@ -77,7 +75,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         "optimizationMode": "speed"
       };
 
-      // Use a proxy server or direct API call
       const response = await fetch("https://vcstudio.us/api/search", {
         method: "POST",
         headers: {
@@ -132,28 +129,11 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       
     } catch (error) {
       console.error("Error fetching company news:", error);
-      
-      // Check if it's likely a CORS error
-      if (error instanceof TypeError && error.message === "Failed to fetch") {
-        setCorsError(true);
-        toast({
-          title: "CORS Error",
-          description: "Unable to fetch data due to browser security restrictions. Using sample data instead.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch company news. Please try again later.",
-          variant: "destructive",
-        });
-      }
-      
-      // Show sample results in case of error
-      setSearchResults(`Sample news results for ${company.firm_name || company.name || ""}:\n\n` +
-        `1. ${company.firm_name || company.name || ""} announced a new strategic partnership in Q1 2024.\n\n` +
-        `2. ${company.firm_name || company.name || ""} was featured in Forbes' list of fastest growing companies.\n\n` +
-        `3. The CEO of ${company.firm_name || company.name || ""} spoke at an industry conference about future trends.`);
+      toast({
+        title: "Error",
+        description: "Failed to fetch company news. Please try again later.",
+        variant: "destructive",
+      });
     } finally {
       setIsSearching(false);
     }
@@ -179,14 +159,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
               <DialogHeader>
                 <DialogTitle>News Results for {company.firm_name || company.name || ""}</DialogTitle>
               </DialogHeader>
-              {corsError && (
-                <Alert variant="destructive" className="mb-4">
-                  <Info className="h-4 w-4" />
-                  <AlertDescription>
-                    Unable to fetch live news data due to CORS restrictions. Showing sample data instead.
-                  </AlertDescription>
-                </Alert>
-              )}
               <div className="mt-4 whitespace-pre-wrap">
                 {searchResults || "No results found."}
               </div>
