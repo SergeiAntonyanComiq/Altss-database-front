@@ -1,19 +1,28 @@
+
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
 import { Search, Info } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface CompanyNewsSectionProps {
   company: CompanyType;
 }
 
+interface NewsItem {
+  id: string;
+  logo: string;
+  color: string;
+  textColor: string;
+  content: string;
+  date: string;
+  url?: string;
+}
+
 // Default news items to display when no search has been performed
-const defaultNewsItems = [
+const defaultNewsItems: NewsItem[] = [
   {
     id: "1",
     logo: "TC",
@@ -41,42 +50,104 @@ const defaultNewsItems = [
 ];
 
 const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
-  const [newsItems, setNewsItems] = useState(defaultNewsItems);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<string>("");
+  const [newsItems, setNewsItems] = useState<NewsItem[]>(defaultNewsItems);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const parseNewsResults = (rawText: string): any[] => {
-    // Simple parsing of the results to create news items
-    // This can be improved based on the actual format of the API response
-    const lines = rawText.split('\n').filter(line => line.trim().length > 0);
-    
-    return lines.map((line, index) => {
-      // Extract date if present (assuming format like "2023-05-15: News content")
-      let date = "";
-      let content = line;
+  const parseNewsResults = (responseData: any): NewsItem[] => {
+    try {
+      // Check if the response has the expected structure
+      if (!responseData || !responseData.message) {
+        throw new Error("Invalid response format");
+      }
+
+      const newsText = responseData.message;
       
-      const dateMatch = line.match(/^(\d{4}-\d{2}-\d{2})[:\s-]+(.+)$/);
-      if (dateMatch) {
-        date = dateMatch[1];
-        content = dateMatch[2];
+      // Extract news items from the formatted message
+      // Looking for bullet points or similar patterns in the response
+      const newsRegex = /\*\s*\*\*([^*]+)\*\*\s*-\s*(.+?)(?=\n\*|\n\*\*|$)/gs;
+      const matches = [...newsText.matchAll(newsRegex)];
+      
+      if (matches.length === 0) {
+        // If the regex didn't find matches, try another approach - look for numbered items
+        const lines = newsText.split('\n').filter(line => 
+          line.trim().startsWith('*') || /^\d+\./.test(line.trim())
+        );
+        
+        if (lines.length > 0) {
+          return lines.map((line, index) => {
+            // Try to extract date if it exists
+            const datePrefixRegex = /\*\*([^*]+)\*\*/;
+            const dateMatch = line.match(datePrefixRegex);
+            
+            let date = "Current";
+            let content = line.replace(/^\*\s*/, '').trim();
+            
+            if (dateMatch && dateMatch[1]) {
+              date = dateMatch[1].trim();
+              content = content.replace(datePrefixRegex, '').replace(/^\s*-\s*/, '').trim();
+            }
+            
+            return {
+              id: `news-${index}`,
+              logo: getSourceLogo(content),
+              color: getRandomColor(index),
+              textColor: "#ffffff",
+              content: content,
+              date: date
+            };
+          });
+        }
       }
       
-      return {
-        id: `fetched-${index}`,
-        logo: "AI",
-        color: "#8b5cf6", // Purple color for AI-fetched news
-        textColor: "#ffffff",
-        content: content,
-        date: date || new Date().toISOString().split('T')[0]
-      };
-    });
+      return matches.map((match, index) => {
+        const date = match[1].trim();
+        const content = match[2].trim();
+        
+        return {
+          id: `news-${index}`,
+          logo: getSourceLogo(content),
+          color: getRandomColor(index),
+          textColor: "#ffffff",
+          content: content,
+          date: date
+        };
+      });
+    } catch (error) {
+      console.error("Error parsing news results:", error);
+      return [];
+    }
+  };
+  
+  // Generate a logo based on the content
+  const getSourceLogo = (content: string): string => {
+    if (content.includes("PRNewswire") || content.includes("PR Newswire")) return "PR";
+    if (content.includes("Bloomberg")) return "BL";
+    if (content.includes("Reuters")) return "RT";
+    if (content.includes("WSJ") || content.includes("Wall Street Journal")) return "WSJ";
+    if (content.includes("Financial Times") || content.includes("FT")) return "FT";
+    if (content.includes("Forbes")) return "FB";
+    if (content.includes("TechCrunch")) return "TC";
+    if (content.includes("LinkedIn")) return "LI";
+    return "AI"; // Default logo
+  };
+  
+  // Generate a random color based on index
+  const getRandomColor = (index: number): string => {
+    const colors = [
+      "#f43f5e", // Red
+      "#3b82f6", // Blue
+      "#10b981", // Green
+      "#8b5cf6", // Purple
+      "#f59e0b", // Orange
+      "#6366f1", // Indigo
+      "#ec4899"  // Pink
+    ];
+    return colors[index % colors.length];
   };
 
   const fetchCompanyNews = async () => {
     setIsLoading(true);
-    setIsSearching(true);
     
     try {
       const searchQuery = `show ${company.firm_name || company.name || ""} company news. Format: date, news, link to news`;
@@ -131,10 +202,12 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         }
       }
 
-      setSearchResults(result);
+      // Parse the JSON response
+      const jsonResponse = JSON.parse(result);
+      console.log("News API response:", jsonResponse);
       
       // Parse the results and update the news items
-      const parsedNews = parseNewsResults(result);
+      const parsedNews = parseNewsResults(jsonResponse);
       
       if (parsedNews.length > 0) {
         setNewsItems(parsedNews);
@@ -166,7 +239,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         });
       }
     } finally {
-      setIsSearching(false);
       setIsLoading(false);
     }
   };
@@ -178,11 +250,11 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           <h2 className="text-xl font-medium">Company News</h2>
           <Button 
             onClick={fetchCompanyNews} 
-            disabled={isSearching}
+            disabled={isLoading}
             className="flex items-center gap-2"
           >
             <Search className="h-4 w-4" />
-            {isSearching ? "Searching..." : "Search News"}
+            {isLoading ? "Searching..." : "Search News"}
           </Button>
         </div>
 
@@ -207,7 +279,11 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
                       {item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || company.name || "")}
                     </p>
                     <div className="flex justify-between mt-1">
-                      <a href="#" className="text-blue-600 hover:underline inline-block">Read more</a>
+                      {item.url ? (
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-block">Read more</a>
+                      ) : (
+                        <span className="text-blue-600 opacity-50">Read more</span>
+                      )}
                       <span className="text-sm text-gray-500">{item.date}</span>
                     </div>
                   </div>
@@ -223,14 +299,14 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           </div>
         )}
 
-        {searchResults && (
+        {newsItems.length > 0 && newsItems[0].logo === "AI" && (
           <div className="mt-6">
             <Alert className="bg-blue-50 text-blue-800 border-blue-200">
               <AlertDescription>
                 <div className="flex items-start gap-2">
                   <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
                   <p>
-                    Raw search results are available. To see the full text, click the search button again.
+                    News items have been processed by AI. Click the search button to refresh with the latest data.
                   </p>
                 </div>
               </AlertDescription>
