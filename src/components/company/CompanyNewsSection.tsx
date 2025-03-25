@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,7 @@ const defaultNewsItems: NewsItem[] = [
     color: "#f43f5e",
     textColor: "#ffffff",
     content: "TechCrunch reports that " + "ACME Long Name Super Long Inc. " + "has secured a $50M Series C funding round led by Sequoia Capital.",
-    date: "2023-05-15"
+    date: "May 15, 2023"
   },
   {
     id: "2",
@@ -35,7 +36,7 @@ const defaultNewsItems: NewsItem[] = [
     color: "#3b82f6",
     textColor: "#ffffff",
     content: "Financial Times announces " + "ACME Long Name Super Long Inc. " + "expansion into European markets with new offices in London and Berlin.",
-    date: "2023-04-22"
+    date: "April 22, 2023"
   },
   {
     id: "3",
@@ -43,7 +44,7 @@ const defaultNewsItems: NewsItem[] = [
     color: "#10b981",
     textColor: "#ffffff",
     content: "Wall Street Journal covers " + "ACME Long Name Super Long Inc. " + "latest product innovation that's disrupting the industry.",
-    date: "2023-03-10"
+    date: "March 10, 2023"
   }
 ];
 
@@ -51,6 +52,30 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [newsItems, setNewsItems] = useState<NewsItem[]>(defaultNewsItems);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  // Format date to "Month Day, Year" format
+  const formatDate = (dateStr: string): string => {
+    if (!dateStr || dateStr === "Current" || dateStr === "n/a") {
+      return "n/a";
+    }
+    
+    try {
+      // Try to parse the date string
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        return dateStr; // If parsing fails, return the original string
+      }
+      
+      // Format the date as "Month Day, Year"
+      return date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    } catch (e) {
+      return dateStr;
+    }
+  };
 
   const parseNewsResults = (responseData: any): NewsItem[] => {
     try {
@@ -67,6 +92,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       const newsRegex = /\*\s*\*\*([^*]+)\*\*\s*-\s*(.+?)(?=\n\*|\n\*\*|$)/gs;
       const matches = [...newsText.matchAll(newsRegex)];
       
+      let newsItems: NewsItem[] = [];
+      
       if (matches.length === 0) {
         // If the regex didn't find matches, try another approach - look for numbered items
         const lines = newsText.split('\n').filter(line => 
@@ -74,12 +101,12 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         );
         
         if (lines.length > 0) {
-          return lines.map((line, index) => {
+          newsItems = lines.map((line, index) => {
             // Try to extract date if it exists
             const datePrefixRegex = /\*\*([^*]+)\*\*/;
             const dateMatch = line.match(datePrefixRegex);
             
-            let date = "Current";
+            let date = "n/a";
             let content = line.replace(/^\*\s*/, '').trim();
             
             if (dateMatch && dateMatch[1]) {
@@ -88,11 +115,14 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
             }
             
             // Remove citation references like [10] from content
-            content = content.replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
+            content = content.replace(/\[\d+(?:,\s*\d+)*\](?:\[\d+\])*/g, '').trim();
             // Remove asterisks and plus signs
             content = content.replace(/[\*\+]/g, '').trim();
             // Remove dash prefix if present
             content = content.replace(/^-\s+/, '').trim();
+            // Remove date prefixes from content if they exist
+            content = content.replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*[-–—]\s*/, '');
+            content = content.replace(/^\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},\s*\d{4}\s*[-–—]\s*/, '');
 
             // Get the source URL and extract domain for logo
             const url = index < sources.length ? sources[index].metadata?.url : undefined;
@@ -104,35 +134,52 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
               color: getRandomColor(index),
               textColor: "#ffffff",
               content: content,
-              date: date,
+              date: formatDate(date),
               url: url
             };
           });
         }
+      } else {
+        newsItems = matches.map((match, index) => {
+          const date = match[1].trim();
+          // Remove citation references like [10] from content
+          let content = match[2].trim().replace(/\[\d+(?:,\s*\d+)*\](?:\[\d+\])*/g, '').trim();
+          // Remove asterisks and plus signs
+          content = content.replace(/[\*\+]/g, '').trim();
+          // Remove dash prefix if present
+          content = content.replace(/^-\s+/, '').trim();
+          // Remove date prefixes from content if they exist
+          content = content.replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*[-–—]\s*/, '');
+          content = content.replace(/^\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},\s*\d{4}\s*[-–—]\s*/, '');
+          
+          // Get the source URL and extract domain for logo
+          const url = index < sources.length ? sources[index].metadata?.url : undefined;
+          const sourceDomain = url ? extractDomainForLogo(url) : "";
+          
+          return {
+            id: `news-${index}`,
+            logo: getSourceLogo(content, sourceDomain),
+            color: getRandomColor(index),
+            textColor: "#ffffff",
+            content: content,
+            date: formatDate(date),
+            url: url
+          };
+        });
       }
       
-      return matches.map((match, index) => {
-        const date = match[1].trim();
-        // Remove citation references like [10] from content
-        let content = match[2].trim().replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
-        // Remove asterisks and plus signs
-        content = content.replace(/[\*\+]/g, '').trim();
-        // Remove dash prefix if present
-        content = content.replace(/^-\s+/, '').trim();
+      // Sort news items by date, newest first
+      return newsItems.sort((a, b) => {
+        if (a.date === "n/a") return 1;
+        if (b.date === "n/a") return -1;
         
-        // Get the source URL and extract domain for logo
-        const url = index < sources.length ? sources[index].metadata?.url : undefined;
-        const sourceDomain = url ? extractDomainForLogo(url) : "";
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
         
-        return {
-          id: `news-${index}`,
-          logo: getSourceLogo(content, sourceDomain),
-          color: getRandomColor(index),
-          textColor: "#ffffff",
-          content: content,
-          date: date,
-          url: url
-        };
+        if (isNaN(dateA.getTime())) return 1;
+        if (isNaN(dateB.getTime())) return -1;
+        
+        return dateB.getTime() - dateA.getTime();
       });
     } catch (error) {
       console.error("Error parsing news results:", error);
