@@ -33,6 +33,8 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
       // Parse news items from the text response
       const newsItems = parseNewsItemsFromText(newsText);
       
+      console.log("Parsed news items:", newsItems);
+      
       return { newsItems, apiResponse: apiResponseData };
     }
   } catch (perplexicaError) {

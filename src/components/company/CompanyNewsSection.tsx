@@ -31,6 +31,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     try {
       console.log("Searching news for company:", company.firm_name || company.name);
       const result = await fetchCompanyNews(company);
+      console.log("News search result:", result);
+      
       setNewsItems(result.newsItems);
       setApiResponseData(result.apiResponse);
       setHasSearched(true);
