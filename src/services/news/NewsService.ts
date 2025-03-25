@@ -1,3 +1,4 @@
+
 import { CompanyType } from "@/types/company";
 
 export interface NewsItem {
@@ -101,7 +102,7 @@ export const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Updated to use the requested query format
+// Updated with the exact requested format
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
     console.log("Searching news via Perplexica for:", companyName);
@@ -109,7 +110,7 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
     // Define the API endpoint that would be used
     const endpoint = "http://162.254.26.189:3000/";
     
-    // Create request body with the updated format
+    // Create request body with the exact format requested
     const requestBody = {
       chatModel: {
         provider: "ollama",
@@ -121,8 +122,10 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
       },
       optimizationMode: "speed",
       focusMode: "webSearch",
-      query: `show ${companyName} company news. format: date, news, link to news`,
-      history: []
+      query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
+      history: [],
+      chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
+      messageId: "b283ac04535b9b"
     };
     
     // Attempt to make the actual API call
