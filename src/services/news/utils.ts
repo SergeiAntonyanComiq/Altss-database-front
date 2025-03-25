@@ -41,7 +41,7 @@ export const parseNewsItemsFromText = (newsText: string) => {
     }
     
     return {
-      id: `perplexica-${index}`,
+      id: `news-${index}`,
       logo: source ? source.substring(0, 2).toUpperCase() : "NW",
       color: getRandomColor(),
       textColor: '#ffffff',
@@ -56,7 +56,7 @@ export const parseNewsItemsFromText = (newsText: string) => {
 // Create a mock API response
 export const createMockApiResponse = (companyName: string, newsData: any[]) => {
   // Define the API endpoint
-  const endpoint = "http://162.254.26.189:3000/";
+  const endpoint = "http://162.254.26.189:3000/api/search";
   
   // Create a mock request that would have been sent
   const mockRequest = {
@@ -71,21 +71,24 @@ export const createMockApiResponse = (companyName: string, newsData: any[]) => {
     optimizationMode: "speed",
     focusMode: "webSearch",
     query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
-    history: [],
-    chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
-    messageId: "b283ac04535b9b"
+    history: []
   };
+  
+  // Format news items into a text response
+  const newsText = `Here are the latest news items for ${companyName}:\n\n` + 
+    newsData.map((item: any) => 
+      `${item.date}: ${item.content} ${item.url || 'https://example.com/news'}`
+    ).join('\n');
   
   return {
     answer: {
-      text: `Here are the latest news items for ${companyName}:\n\n` + 
-            newsData.map((item: any) => `${item.date}: ${item.content} ${item.url}`).join('\n')
+      text: newsText
     },
     sources: newsData.map((item: any, index: number) => ({
       pageContent: item.content,
       metadata: {
-        title: item.source || "News Source",
-        url: item.url || "#"
+        title: item.title || item.source || "News Source",
+        url: item.url || "https://example.com/news"
       }
     })),
     request: mockRequest,

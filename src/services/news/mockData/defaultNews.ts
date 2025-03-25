@@ -1,4 +1,5 @@
 
+// Default mock news items for when the API call fails
 export const defaultNews = [
   {
     title: "Company Secures Major Investment Round",
