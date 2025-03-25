@@ -8,9 +8,16 @@ interface NewsListProps {
   hasSearched: boolean;
   companyName: string;
   apiResponseData?: any;
+  isFallbackData?: boolean;
 }
 
-const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName, apiResponseData }) => {
+const NewsList: React.FC<NewsListProps> = ({ 
+  newsItems, 
+  hasSearched, 
+  companyName, 
+  apiResponseData,
+  isFallbackData = false
+}) => {
   const hasDirectAnswer = apiResponseData && apiResponseData.answer && apiResponseData.answer.text;
   const hasSourcesData = apiResponseData && apiResponseData.sources && apiResponseData.sources.length > 0;
   const hasRequestData = apiResponseData && apiResponseData.request;
@@ -30,7 +37,14 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
         {/* Display news items if we have them */}
         {newsItems.length > 0 && (
           <div className="space-y-4 mb-8">
-            <h3 className="text-lg font-semibold">News Items</h3>
+            <h3 className="text-lg font-semibold">
+              News Items
+              {isFallbackData && (
+                <span className="ml-2 text-sm text-amber-600 font-normal">
+                  (Sample Data)
+                </span>
+              )}
+            </h3>
             {newsItems.map(item => (
               <NewsItem 
                 key={item.id} 
@@ -43,7 +57,14 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
         
         {/* Display the API response details */}
         <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">API Response Details</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            API Response Details
+            {isFallbackData && (
+              <span className="ml-2 text-sm text-amber-600 font-normal">
+                (Sample Data)
+              </span>
+            )}
+          </h3>
           
           {/* Display API endpoint if available */}
           {apiEndpoint && (
@@ -51,6 +72,11 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
               <h4 className="font-medium text-purple-800 mb-2">API Endpoint:</h4>
               <div className="font-mono text-sm text-purple-900 break-all">
                 {apiEndpoint}
+                {isFallbackData && (
+                  <span className="ml-2 text-amber-600">
+                    (not actually called due to mixed content restrictions)
+                  </span>
+                )}
               </div>
             </div>
           )}

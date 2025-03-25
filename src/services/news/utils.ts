@@ -93,6 +93,7 @@ export const createMockApiResponse = (companyName: string, newsData: any[]) => {
       }
     })),
     request: mockRequest,
-    endpoint: endpoint
+    endpoint: endpoint,
+    isFallbackData: true  // Flag to indicate this is fallback data
   };
 };

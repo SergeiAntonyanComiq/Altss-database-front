@@ -6,6 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { fetchCompanyNews, NewsItem } from "@/services/news/NewsService";
 import NewsList from "./news/NewsList";
 import NewsSearch from "./news/NewsSearch";
+import { InfoCircle } from "lucide-react";
 
 interface CompanyNewsSectionProps {
   company: CompanyType;
@@ -17,6 +18,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [apiResponseData, setApiResponseData] = useState<any>(null);
+  const [isFallbackData, setIsFallbackData] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -26,6 +28,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const handleSearchNews = async () => {
     setIsSearching(true);
     setError(null);
+    setIsFallbackData(false);
     
     try {
       console.log("Searching news for company:", company.firm_name || company.name);
@@ -36,7 +39,15 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       setApiResponseData(result.apiResponse);
       setHasSearched(true);
       
-      if (result.newsItems.length === 0) {
+      // Check if we got fallback data
+      if (result.apiResponse && result.apiResponse.isFallbackData) {
+        setIsFallbackData(true);
+        toast({
+          title: "Using sample data",
+          description: "Could not connect to the news API. Showing sample data instead.",
+          variant: "default",
+        });
+      } else if (result.newsItems.length === 0) {
         toast({
           title: "No news found",
           description: `Couldn't find any news for ${company.firm_name || company.name}. Try adjusting your search.`,
@@ -77,12 +88,25 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        
+        {isFallbackData && (
+          <Alert variant="warning" className="mb-4 bg-amber-50 border-amber-200">
+            <InfoCircle className="h-4 w-4 text-amber-500" />
+            <AlertTitle className="text-amber-700">Using Demo Data</AlertTitle>
+            <AlertDescription className="text-amber-600">
+              Unable to connect to the news API due to security restrictions. 
+              Showing example data instead. In a production environment, 
+              this would require a secure HTTPS endpoint.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <NewsList 
           newsItems={newsItems} 
           hasSearched={hasSearched} 
           companyName={companyName}
           apiResponseData={apiResponseData}
+          isFallbackData={isFallbackData}
         />
       </section>
     </div>
