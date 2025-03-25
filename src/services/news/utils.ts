@@ -8,8 +8,7 @@ export const getRandomColor = () => {
 
 // Parse news items from text response
 export const parseNewsItemsFromText = (newsText: string) => {
-  // Try to extract news items from the text response
-  // The format might be varied, so we'll try to be flexible
+  // Extract news items from the text response
   const newsLines = newsText.split('\n').filter(line => line.trim() !== '');
   
   return newsLines.map((line, index) => {

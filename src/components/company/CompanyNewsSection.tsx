@@ -19,7 +19,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [apiResponseData, setApiResponseData] = useState<any>(null);
   const { toast } = useToast();
 
-  // Log company info for debugging
   useEffect(() => {
     console.log("CompanyNewsSection mounted with company:", company);
   }, [company]);
@@ -37,13 +36,21 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       setApiResponseData(result.apiResponse);
       setHasSearched(true);
       
-      toast({
-        title: "Success",
-        description: `Found ${result.newsItems.length} news items for ${company.firm_name || company.name}`,
-      });
+      if (result.newsItems.length === 0) {
+        toast({
+          title: "No news found",
+          description: `Couldn't find any news for ${company.firm_name || company.name}. Try adjusting your search.`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: `Found ${result.newsItems.length} news items for ${company.firm_name || company.name}`,
+        });
+      }
     } catch (error) {
       console.error("Error fetching company news:", error);
-      setError(`Failed to fetch company news: ${error.message}`);
+      setError(`Failed to fetch company news: ${error instanceof Error ? error.message : 'Unknown error'}`);
       toast({
         title: "Error",
         description: "Failed to fetch company news. Please try again later.",

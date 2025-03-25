@@ -1,16 +1,16 @@
 
-import { getRandomColor, parseNewsItemsFromText, createMockApiResponse } from './utils';
-import { NewsItem, NewsApiResponse } from './types';
+import { parseNewsItemsFromText } from './utils';
+import { NewsApiResponse } from './types';
 
 // API call to search news via Perplexica
 export const searchNewsViaPerplexica = async (companyName: string): Promise<NewsApiResponse> => {
   try {
     console.log("Searching news via Perplexica for:", companyName);
     
-    // Define the API endpoint that would be used
+    // Define the API endpoint
     const endpoint = "http://162.254.26.189:3000/";
     
-    // Create request body with the simplified format
+    // Create request body
     const requestBody = {
       chatModel: {
         provider: "ollama",
@@ -28,36 +28,30 @@ export const searchNewsViaPerplexica = async (companyName: string): Promise<News
     
     console.log("Sending Perplexica request:", requestBody);
     
-    // Attempt to make the actual API call
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log("Received actual Perplexica response:", data);
-      
-      // Add request data and endpoint to the response
-      const fullResponse = {
-        ...data,
-        request: requestBody,
-        endpoint: endpoint
-      };
-      
-      return fullResponse;
-    } catch (apiError) {
-      console.error('Error calling Perplexica API:', apiError);
-      // Fallback to mock response on API error
-      throw apiError;
+    // Make the API call
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API responded with status: ${response.status}`);
     }
+    
+    const data = await response.json();
+    console.log("Received Perplexica response:", data);
+    
+    // Add request data and endpoint to the response for transparency
+    const fullResponse = {
+      ...data,
+      request: requestBody,
+      endpoint: endpoint
+    };
+    
+    return fullResponse;
   } catch (error) {
     console.error('Perplexica search error:', error);
     throw error;

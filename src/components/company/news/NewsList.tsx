@@ -16,12 +16,34 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
   const hasRequestData = apiResponseData && apiResponseData.request;
   const apiEndpoint = apiResponseData && apiResponseData.endpoint;
   
+  if (hasSearched && newsItems.length === 0) {
+    return (
+      <div className="text-center py-10 text-gray-500">
+        No news found for this company. Try another search or check back later.
+      </div>
+    );
+  }
+  
   if (hasSearched && apiResponseData) {
     return (
       <div className="space-y-6">
-        {/* Display the full Perplexica response */}
+        {/* Display news items if we have them */}
+        {newsItems.length > 0 && (
+          <div className="space-y-4 mb-8">
+            <h3 className="text-lg font-semibold">News Items</h3>
+            {newsItems.map(item => (
+              <NewsItem 
+                key={item.id} 
+                item={item} 
+                companyName={companyName} 
+              />
+            ))}
+          </div>
+        )}
+        
+        {/* Display the API response details */}
         <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Perplexica Response</h3>
+          <h3 className="text-lg font-semibold mb-4">API Response Details</h3>
           
           {/* Display API endpoint if available */}
           {apiEndpoint && (
@@ -46,7 +68,7 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
           {/* Display direct answer if available */}
           {hasDirectAnswer && (
             <div className="mb-6 bg-blue-50 p-4 rounded-md border border-blue-200">
-              <h4 className="font-medium text-blue-800 mb-2">Answer:</h4>
+              <h4 className="font-medium text-blue-800 mb-2">Raw Answer:</h4>
               <div className="text-gray-800 whitespace-pre-line">
                 {apiResponseData.answer.text}
               </div>
@@ -78,51 +100,7 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
               ))}
             </div>
           )}
-          
-          {/* Display the complete raw response */}
-          <div className="mt-6 border-t pt-4">
-            <h4 className="font-medium text-gray-800 mb-2">Complete Response:</h4>
-            <pre className="text-xs whitespace-pre-wrap overflow-auto max-h-96 bg-gray-100 p-2 rounded">
-              {JSON.stringify(apiResponseData, null, 2)}
-            </pre>
-          </div>
         </div>
-        
-        {/* Still show news items if we have them */}
-        {newsItems.length > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">News Items</h3>
-            {newsItems.map(item => (
-              <NewsItem 
-                key={item.id} 
-                item={item} 
-                companyName={companyName} 
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-  
-  if (newsItems.length > 0) {
-    return (
-      <div className="space-y-4">
-        {newsItems.map(item => (
-          <NewsItem 
-            key={item.id} 
-            item={item} 
-            companyName={companyName} 
-          />
-        ))}
-      </div>
-    );
-  }
-  
-  if (hasSearched) {
-    return (
-      <div className="text-center py-10 text-gray-500">
-        No news found for this company. Try another search.
       </div>
     );
   }
