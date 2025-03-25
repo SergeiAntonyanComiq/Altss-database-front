@@ -69,7 +69,7 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
                       href={source.metadata.url}
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm inline-flex items-center gap-1"
+                      className="text-blue-600 hover:underline text-sm inline-flex items-center gap-1 break-all"
                     >
                       {source.metadata.url}
                     </a>
