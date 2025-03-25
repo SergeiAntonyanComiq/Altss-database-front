@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
@@ -53,15 +52,15 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     try {
       const searchQuery = `show ${company.firm_name || company.name || ""} company news. Format: date, news, link to news`;
       
-      // Updated payload format with corrected model names (dash instead of colon)
+      // Updated payload format with the correct model names using colons (:) instead of dashes (-)
       const payload = {
         "chatModel": {
           "provider": "ollama",
-          "name": "gemma3-27b"
+          "name": "gemma3:27b"
         },
         "embeddingModel": {
           "provider": "ollama",
-          "name": "gemma3-27b"
+          "name": "gemma3:27b"
         },
         "optimizationMode": "speed",
         "focusMode": "webSearch",
@@ -134,7 +133,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         toast({
           title: "Network Error",
           description: "Unable to connect to news service. Using sample data instead.",
-          variant: "warning",
+          variant: "destructive",
         });
       }
     } finally {
