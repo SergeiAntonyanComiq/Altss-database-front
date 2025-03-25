@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface CompanyNewsSectionProps {
   company: CompanyType;
@@ -44,13 +44,17 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchCompanyNews = async () => {
     setIsSearching(true);
+    setError(null);
     
     try {
-      const searchQuery = `${company.firm_name || company.name || ""} company news last year`;
+      const companyName = company.firm_name || company.name || "";
+      const searchQuery = `${companyName} company news last year`;
+      console.log("Fetching news with query:", searchQuery);
       
       const payload = {
         "content": searchQuery,
@@ -74,6 +78,9 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         "optimizationMode": "speed"
       };
 
+      // Log the request payload for debugging
+      console.log("Request payload:", JSON.stringify(payload));
+
       const response = await fetch("http://162.254.26.189:3000", {
         method: "POST",
         headers: {
@@ -86,8 +93,10 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         body: JSON.stringify(payload)
       });
 
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error(`Failed to fetch news: ${response.statusText}`);
+        throw new Error(`Failed to fetch news: ${response.status} ${response.statusText}`);
       }
 
       // Handle the streamed response
@@ -106,21 +115,28 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         if (value) {
           // Convert the Uint8Array to a string
           const text = new TextDecoder().decode(value);
+          console.log("Received chunk:", text);
           result += text;
         }
       }
 
-      setSearchResults(result);
+      console.log("Final result:", result);
+      
+      if (!result || result.trim() === "") {
+        setSearchResults("No results found for this company.");
+      } else {
+        setSearchResults(result);
+      }
+
       setIsDialogOpen(true);
       
       // After successful search, update the news items with a placeholder result
-      // In a real implementation, we would parse the result and format it properly
       const newNewsItem = {
         id: `news-${Date.now()}`,
         logo: "AI",
         color: "#8b5cf6",
         textColor: "#ffffff",
-        content: `Latest news about ${company.firm_name || company.name || ""} fetched from the API. Click 'Search News' to view the full results.`,
+        content: `Latest news about ${companyName} fetched from the API.`,
         date: new Date().toISOString().split('T')[0]
       };
       
@@ -128,6 +144,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       
     } catch (error) {
       console.error("Error fetching company news:", error);
+      setError(`Failed to fetch company news: ${error.message}`);
       toast({
         title: "Error",
         description: "Failed to fetch company news. Please try again later.",
@@ -158,12 +175,20 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
               <DialogHeader>
                 <DialogTitle>News Results for {company.firm_name || company.name || ""}</DialogTitle>
               </DialogHeader>
-              <div className="mt-4 whitespace-pre-wrap">
-                {searchResults || "No results found."}
-              </div>
+              {error ? (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              ) : (
+                <div className="mt-4 whitespace-pre-wrap">
+                  {searchResults || "No results found."}
+                </div>
+              )}
             </DialogContent>
           </Dialog>
         </div>
+
         <div className="space-y-4">
           {newsItems.map(item => (
             <div key={item.id} className="flex gap-4">
