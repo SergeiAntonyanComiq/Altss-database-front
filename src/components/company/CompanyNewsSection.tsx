@@ -128,7 +128,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         
         if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
           // Transform Perplexica results to news items
-          const newItems = perplexicaData.sources.slice(0, 3).map((source, index) => ({
+          const newItems = perplexicaData.sources.map((source, index) => ({
             id: `perplexica-${index}`,
             logo: source.metadata.title.substring(0, 2).toUpperCase(),
             color: getRandomColor(),
@@ -143,7 +143,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           setHasSearched(true);
           toast({
             title: "Success",
-            description: "Found latest news about " + companyName,
+            description: `Found ${newItems.length} news items about ${companyName}`,
           });
           return;
         }
@@ -172,7 +172,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       
       toast({
         title: "Success",
-        description: "Found news for " + companyName,
+        description: `Found ${formattedNewsItems.length} news items for ${companyName}`,
       });
       
     } catch (error) {
