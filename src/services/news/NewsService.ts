@@ -1,3 +1,4 @@
+
 import { CompanyType } from "@/types/company";
 
 export interface NewsItem {
@@ -119,7 +120,7 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
         provider: "ollama",
         name: "gemma3:27b"
       },
-      optimizationMode: "speed",
+      optimizationMode: "balanced",
       focusMode: "webSearch",
       query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
       history: [],
