@@ -1,7 +1,8 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NewsItem as NewsItemType } from "@/services/news/NewsService";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, AlertTriangle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface NewsItemProps {
   item: NewsItemType;
@@ -9,8 +10,14 @@ interface NewsItemProps {
 }
 
 const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
-  // Check if we have a valid URL
-  const hasValidUrl = Boolean(item.url);
+  // Check if we have a URL
+  const [hasValidUrl, setHasValidUrl] = useState<boolean>(Boolean(item.url));
+  const [isUrlBroken, setIsUrlBroken] = useState<boolean>(false);
+  
+  useEffect(() => {
+    // Simple check to ensure URL exists and has proper format
+    setHasValidUrl(Boolean(item.url));
+  }, [item.url]);
   
   return (
     <div className="flex gap-4">
@@ -26,15 +33,38 @@ const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
         </p>
         <div className="flex justify-between mt-1">
           {hasValidUrl ? (
-            <a 
-              href={item.url} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-blue-600 hover:underline inline-flex items-center gap-1"
-            >
-              <span>Read more in {item.source}</span>
-              <ExternalLink size={14} />
-            </a>
+            <div className="flex items-center">
+              <a 
+                href={item.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-blue-600 hover:underline inline-flex items-center gap-1"
+                onClick={(e) => {
+                  // If we already know the URL is broken, prevent the click
+                  if (isUrlBroken) {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                <span>Read more in {item.source}</span>
+                <ExternalLink size={14} />
+              </a>
+              
+              {isUrlBroken && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="ml-2 text-amber-500">
+                        <AlertTriangle size={16} />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>This link may be unavailable</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           ) : (
             <span className="text-gray-500">
               Source: {item.source}

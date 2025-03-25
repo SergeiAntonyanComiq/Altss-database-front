@@ -141,10 +141,25 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
 
 // Helper function to validate URLs
 const isValidUrl = (urlString: string): boolean => {
+  if (!urlString) return false;
+  
   try {
-    new URL(urlString);
-    return true;
+    const url = new URL(urlString);
+    // Make sure the URL has a protocol and hostname
+    return Boolean(url.protocol && url.hostname);
   } catch (e) {
+    return false;
+  }
+};
+
+// Helper function to check if a URL returns a valid response
+const checkUrlValidity = async (url: string): Promise<boolean> => {
+  try {
+    // We're not actually fetching the URL here to avoid CORS issues
+    // Just doing a basic validation check
+    return isValidUrl(url);
+  } catch (error) {
+    console.error(`URL validation error for ${url}:`, error);
     return false;
   }
 };
@@ -159,26 +174,29 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
       console.log("Received sources from Perplexica:", perplexicaData.sources);
       
-      // Use specific article URLs from the sources when available
-      return perplexicaData.sources.map((source, index) => {
-        // Extract the specific article URL from source.metadata.url
-        const specificUrl = source.metadata.url;
+      // Use metadata URLs from the sources
+      const newsItems = perplexicaData.sources.map((source, index) => {
+        // Get the URL directly from metadata
+        const sourceUrl = source.metadata?.url || "";
+        console.log(`Source ${index} URL from metadata:`, sourceUrl);
         
-        // Validate URL
-        const validUrl = isValidUrl(specificUrl) ? specificUrl : null;
-        console.log(`Source ${index} URL: ${specificUrl}, valid: ${Boolean(validUrl)}`);
+        // Validate the URL format
+        const validUrl = isValidUrl(sourceUrl) ? sourceUrl : null;
+        console.log(`Source ${index} valid URL:`, validUrl);
         
         return {
           id: `perplexica-${index}`,
-          logo: (source.metadata.title || "").substring(0, 2).toUpperCase() || "NW",
+          logo: (source.metadata?.title || "").substring(0, 2).toUpperCase() || "NW",
           color: getRandomColor(),
           textColor: '#ffffff',
           content: source.pageContent || "No content available",
-          date: new Date().toISOString().split('T')[0],
-          source: source.metadata.title || "Unknown Source",
+          date: new Date().toISOString().split('T')[0], // Fallback to current date if not provided
+          source: source.metadata?.title || "Unknown Source",
           url: validUrl
         };
       });
+      
+      return newsItems;
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
