@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, Info } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 
 interface CompanyNewsSectionProps {
@@ -74,7 +75,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         "optimizationMode": "speed"
       };
 
-      const response = await fetch("http://162.254.26.189:3000", {
+      const response = await fetch("https://vcstudio.us/api/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
