@@ -1,6 +1,8 @@
 
 import { formatDate } from "@/utils/dateUtils";
-import { cleanNewsContent, extractDomainForLogo, getRandomColor, getSourceLogo } from "@/utils/newsUtils";
+import { cleanNewsContent } from "@/utils/contentUtils";
+import { extractDomainForLogo, getSourceLogo } from "@/utils/newsUtils";
+import { getRandomColor } from "@/utils/colorUtils";
 
 export interface NewsItem {
   id: string;
@@ -146,7 +148,7 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
  * @param companyName Company name to fetch news for
  * @returns Promise with the fetched news
  */
-export const fetchCompanyNews = async (companyName: string) => {
+export const fetchCompanyNews = async (companyName: string): Promise<NewsItem[]> => {
   try {
     const searchQuery = `show ${companyName} company news. Format: date, news, link to news`;
     
