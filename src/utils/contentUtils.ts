@@ -21,5 +21,9 @@ export const cleanNewsContent = (content: string): string => {
   cleanedContent = cleanedContent.replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*[-–—]\s*/, '');
   cleanedContent = cleanedContent.replace(/^\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},\s*\d{4}\s*[-–—]\s*/, '');
   
+  // Handle the specific pattern "Month Year – Content" (with various dash types)
+  cleanedContent = cleanedContent.replace(/^(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s*[-–—]\s*/, '');
+  cleanedContent = cleanedContent.replace(/^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s*[-–—]\s*/, '');
+  
   return cleanedContent;
 };

@@ -82,7 +82,27 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
           
           if (dateMatch && dateMatch[1]) {
             date = dateMatch[1].trim();
-            content = content.replace(datePrefixRegex, '').replace(/^\s*-\s*/, '').trim();
+            content = content.replace(datePrefixRegex, '').replace(/^\s*[-–—]\s*/, '').trim();
+          }
+          
+          // Check for date patterns at the beginning of content and move them to the date field
+          const datePatterns = [
+            /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s+[-–—]\s*/i,
+            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s+[-–—]\s*/i,
+            /^(\d{1,2}\/\d{1,2}\/\d{2,4})\s+[-–—]\s*/,
+            /^(\d{1,2}\.\d{1,2}\.\d{2,4})\s+[-–—]\s*/,
+            /^(\d{4}[-–—]\d{1,2}[-–—]\d{1,2})\s+[-–—]\s*/,
+          ];
+          
+          for (const pattern of datePatterns) {
+            const match = content.match(pattern);
+            if (match) {
+              if (date === "n/a") {
+                date = match[1];
+              }
+              content = content.replace(pattern, '');
+              break;
+            }
           }
           
           // Clean the content
