@@ -53,15 +53,15 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     try {
       const searchQuery = `show ${company.firm_name || company.name || ""} company news. Format: date, news, link to news`;
       
-      // Updated payload format based on the correct example
+      // Updated payload format with corrected model names (dash instead of colon)
       const payload = {
         "chatModel": {
           "provider": "ollama",
-          "name": "gemma3:27b"
+          "name": "gemma3-27b"
         },
         "embeddingModel": {
           "provider": "ollama",
-          "name": "gemma3:27b"
+          "name": "gemma3-27b"
         },
         "optimizationMode": "speed",
         "focusMode": "webSearch",
