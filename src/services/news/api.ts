@@ -7,7 +7,7 @@ export const searchNewsViaPerplexica = async (companyName: string): Promise<News
     console.log("Searching news for:", companyName);
     
     // Define the API endpoint
-    const endpoint = "http://162.254.26.189:3000/api/search";
+    const endpoint = "https://162.254.26.189:3000/api/search";
     
     // Create request body
     const requestBody = {
@@ -28,12 +28,15 @@ export const searchNewsViaPerplexica = async (companyName: string): Promise<News
     console.log("Sending search request to endpoint:", endpoint);
     console.log("Request body:", requestBody);
     
-    // Make the real API call
+    // Make the real API call with proper CORS headers
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': window.location.origin,
       },
+      mode: 'cors', // Enable CORS mode explicitly
       body: JSON.stringify(requestBody),
     });
     

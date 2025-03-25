@@ -1,3 +1,4 @@
+
 // Utility functions for news service
 
 // Generate a random color for news items
@@ -56,7 +57,7 @@ export const parseNewsItemsFromText = (newsText: string) => {
 // Create a mock API response
 export const createMockApiResponse = (companyName: string, newsData: any[]) => {
   // Define the API endpoint
-  const endpoint = "http://162.254.26.189:3000/api/search";
+  const endpoint = "https://162.254.26.189:3000/api/search";
   
   // Create a mock request that would have been sent
   const mockRequest = {
