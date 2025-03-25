@@ -19,9 +19,9 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
   if (hasSearched && apiResponseData) {
     return (
       <div className="space-y-6">
-        {/* Display the full Perplexity response */}
+        {/* Display the full Perplexica response */}
         <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Perplexity Response</h3>
+          <h3 className="text-lg font-semibold mb-4">Perplexica Response</h3>
           
           {/* Display API endpoint if available */}
           {apiEndpoint && (

@@ -101,74 +101,62 @@ export const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Modified to handle errors more gracefully and use a mock API response
+// Modified to use the correct Perplexica endpoint and request format
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
     console.log("Searching news via Perplexica for:", companyName);
     
-    // Create a request object to show what would be sent to the API
-    const requestBody = {
-      model: "llama-3.1-sonar-small-128k-online",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant that finds relevant news about companies."
-        },
-        {
-          role: "user",
-          content: `Search for the latest news about ${companyName}. Find information about recent developments, financial results, acquisitions, partnerships, and other significant events.`
-        }
-      ],
-      temperature: 0.2,
-      top_p: 0.9,
-      max_tokens: 1000,
-      search_domain_filter: ["business", "finance", "news"],
-      search_recency_filter: "month"
-    };
-    
     // Define the API endpoint that would be used
-    const endpoint = "https://api.perplexity.ai/chat/completions";
+    const endpoint = "http://162.254.26.189:3000/";
     
-    // Since the external API is not working, we'll create a mock response
-    // This simulates what would come back from the Perplexity API
-    const mockResponse = {
-      answer: {
-        text: `Recent news about ${companyName}:\n\n1. ${companyName} has expanded its portfolio with strategic acquisitions in the technology sector.\n\n2. The company reported strong quarterly earnings, exceeding market expectations.\n\n3. New partnerships have been announced to enhance market presence in Europe and Asia.`
+    // Create request body in the correct format
+    const requestBody = {
+      chatModel: {
+        provider: "ollama",
+        name: "gemma3:27b"
       },
-      sources: [
-        {
-          pageContent: `${companyName} announced today its expansion plans in the technology sector with three strategic acquisitions valued at over $50 million. These acquisitions are expected to strengthen the company's position in the market and provide new growth opportunities.`,
-          metadata: {
-            title: "Strategic Expansion News",
-            url: "https://www.businessnews.com/strategic-expansion"
-          }
-        },
-        {
-          pageContent: `Quarterly financial results for ${companyName} show a 15% increase in revenue compared to the same period last year. The company attributes this growth to successful market expansion and new product launches.`,
-          metadata: {
-            title: "Financial Results",
-            url: "https://www.financialtimes.com/quarterly-results"
-          }
-        },
-        {
-          pageContent: `${companyName} has established new partnerships with leading European and Asian firms to enhance its global market presence. These partnerships will provide access to new markets and technologies.`,
-          metadata: {
-            title: "Global Partnerships",
-            url: "https://www.globalbusiness.com/partnerships"
-          }
-        }
-      ]
+      embeddingModel: {
+        provider: "ollama",
+        name: "gemma3:27b"
+      },
+      optimizationMode: "speed",
+      focusMode: "webSearch",
+      query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
+      history: [],
+      chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
+      messageId: "b283ac04535b9b"
     };
     
-    // Add request data and endpoint to the mock response
-    const fullResponse = {
-      ...mockResponse,
-      request: requestBody,
-      endpoint: endpoint
-    };
-    
-    console.log("Generated mock Perplexity response for:", companyName);
-    return fullResponse;
+    // Attempt to make the actual API call
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Received actual Perplexica response:", data);
+      
+      // Add request data and endpoint to the response
+      const fullResponse = {
+        ...data,
+        request: requestBody,
+        endpoint: endpoint
+      };
+      
+      return fullResponse;
+    } catch (apiError) {
+      console.error('Error calling Perplexica API:', apiError);
+      // Fallback to mock response on API error
+      throw apiError;
+    }
   } catch (error) {
     console.error('Perplexica search error:', error);
     throw error;
@@ -183,34 +171,68 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
   let apiResponseData: any = null;
   
   try {
-    // Get mock perplexity data with the company name
+    // Get actual perplexity data with the company name
     const perplexicaData = await searchNewsViaPerplexica(companyName);
     apiResponseData = perplexicaData;
     
     // Process the API response to create news items
-    if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
-      console.log("Using Perplexity data with sources:", perplexicaData.sources.length);
-      const newsItems = perplexicaData.sources.map((source: any, index: number) => {
-        // Extract the URL from metadata
-        const sourceUrl = source.metadata && source.metadata.url ? source.metadata.url : undefined;
-        console.log(`Source ${index}: URL = ${sourceUrl}`);
+    // The API response format might be different from what we expected before
+    // We'll extract news items from the content or text field
+    if (perplexicaData && perplexicaData.answer && perplexicaData.answer.text) {
+      console.log("Using Perplexica data with answer:", perplexicaData.answer.text);
+      
+      // Parse the text response which should have date, news, link format
+      const newsText = perplexicaData.answer.text;
+      
+      // Try to extract news items from the text response
+      // The format might be varied, so we'll try to be flexible
+      const newsLines = newsText.split('\n').filter(line => line.trim() !== '');
+      
+      const newsItems = newsLines.map((line, index) => {
+        // Try to extract date, content, and link
+        let date = "Unknown date";
+        let content = line;
+        let url = undefined;
+        let source = "News Source";
+        
+        // Try to extract date (assuming it's at the beginning of the line)
+        const dateMatch = line.match(/^(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4}|\w+ \d{1,2}, \d{4})/);
+        if (dateMatch) {
+          date = dateMatch[0];
+          content = line.substring(dateMatch[0].length).trim();
+        }
+        
+        // Try to extract URL (assuming it's at the end of the line or separated)
+        const urlMatch = content.match(/(https?:\/\/[^\s]+)/);
+        if (urlMatch) {
+          url = urlMatch[0];
+          content = content.replace(urlMatch[0], '').trim();
+          
+          // Try to extract source from URL
+          try {
+            const urlObj = new URL(url);
+            source = urlObj.hostname.replace('www.', '');
+          } catch (e) {
+            // Keep default source if URL parsing fails
+          }
+        }
         
         return {
           id: `perplexica-${index}`,
-          logo: source.metadata.title ? source.metadata.title.substring(0, 2).toUpperCase() : "NW",
+          logo: source ? source.substring(0, 2).toUpperCase() : "NW",
           color: getRandomColor(),
           textColor: '#ffffff',
-          content: source.pageContent,
-          date: new Date().toISOString().split('T')[0],
-          source: source.metadata.title || "News Source",
-          url: sourceUrl
+          content: content,
+          date: date,
+          source: source,
+          url: url
         };
       });
       
       return { newsItems, apiResponse: apiResponseData };
     }
   } catch (perplexicaError) {
-    console.error("Perplexity API error:", perplexicaError);
+    console.error("Perplexica API error:", perplexicaError);
     // Continue to fallback
   }
   
@@ -233,29 +255,30 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
   // Create a mock API response if we don't have one from Perplexity
   if (!apiResponseData) {
     // Define the API endpoint
-    const endpoint = "https://api.perplexity.ai/chat/completions";
+    const endpoint = "http://162.254.26.189:3000/";
     
     // Create a mock request that would have been sent
     const mockRequest = {
-      model: "llama-3.1-sonar-small-128k-online",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant that finds relevant news about companies."
-        },
-        {
-          role: "user",
-          content: `Search for the latest news about ${companyName}. Find information about recent developments, financial results, acquisitions, partnerships, and other significant events.`
-        }
-      ],
-      temperature: 0.2,
-      top_p: 0.9,
-      max_tokens: 1000
+      chatModel: {
+        provider: "ollama",
+        name: "gemma3:27b"
+      },
+      embeddingModel: {
+        provider: "ollama",
+        name: "gemma3:27b"
+      },
+      optimizationMode: "speed",
+      focusMode: "webSearch",
+      query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
+      history: [],
+      chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
+      messageId: "b283ac04535b9b"
     };
     
     apiResponseData = {
       answer: {
-        text: `Here are the latest news items for ${companyName}:`
+        text: `Here are the latest news items for ${companyName}:\n\n` + 
+              newsData.map((item: any) => `${item.date}: ${item.content} ${item.url}`).join('\n')
       },
       sources: newsData.map((item: any, index: number) => ({
         pageContent: item.content,
