@@ -1,3 +1,4 @@
+
 import { CompanyType } from "@/types/company";
 
 export interface NewsItem {
@@ -103,7 +104,6 @@ export const getRandomColor = () => {
 
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
-    console.log(`Searching news for: ${companyName}`);
     const response = await fetch('http://localhost:3000/api/search', {
       method: 'POST',
       headers: {
@@ -130,24 +130,10 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
     }
 
     const data = await response.json();
-    console.log("Perplexica response:", data);
     return data;
   } catch (error) {
     console.error('Perplexica search error:', error);
     throw error;
-  }
-};
-
-// Helper function to validate URLs
-const isValidUrl = (urlString: string): boolean => {
-  if (!urlString) return false;
-  
-  try {
-    const url = new URL(urlString);
-    // Make sure the URL has a protocol and hostname
-    return Boolean(url.protocol && url.hostname);
-  } catch (e) {
-    return false;
   }
 };
 
@@ -159,44 +145,22 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     const perplexicaData = await searchNewsViaPerplexica(companyName);
     
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
-      console.log("Received sources from Perplexica:", perplexicaData.sources);
-      
-      // Create news items from the sources
-      const newsItems = perplexicaData.sources.map((source, index) => {
-        // Get URL directly from metadata.url field (this is the actual working URL)
-        const sourceUrl = source.metadata?.url || "";
-        console.log(`Source ${index} URL from metadata:`, sourceUrl);
-        
-        // Extract content from the page
-        const content = source.pageContent || "No content available";
-        
-        // Extract source name from the title in metadata
-        const sourceName = source.metadata?.title || "Unknown Source";
-        
-        // For date, we'll use current date if one isn't available
-        const date = new Date().toISOString().split('T')[0];
-        
-        return {
-          id: `perplexica-${index}-${Date.now()}`,
-          logo: (sourceName.substring(0, 2) || "NW").toUpperCase(),
-          color: getRandomColor(),
-          textColor: '#ffffff',
-          content: content,
-          date: date,
-          source: sourceName,
-          url: sourceUrl // Use the direct URL from metadata
-        };
-      });
-      
-      console.log("Created news items from Perplexica:", newsItems);
-      return newsItems;
+      return perplexicaData.sources.map((source, index) => ({
+        id: `perplexica-${index}`,
+        logo: source.metadata.title.substring(0, 2).toUpperCase(),
+        color: getRandomColor(),
+        textColor: '#ffffff',
+        content: source.pageContent,
+        date: new Date().toISOString().split('T')[0],
+        source: source.metadata.title,
+        url: source.metadata.url
+      }));
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
   }
   
-  // Fallback to simulated news data if Perplexica fails
-  console.log("Falling back to simulated news data");
+  // Fallback to simulated news data
   const newsData = companyNewsMap[companyName] || companyNewsMap.default;
   
   return newsData.map((item, index) => ({
