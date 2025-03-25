@@ -1,10 +1,8 @@
-
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
-import { Search, Info } from "lucide-react";
+import { Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface CompanyNewsSectionProps {
@@ -91,6 +89,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
             
             // Remove citation references like [10] from content
             content = content.replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
+            // Remove asterisks and plus signs
+            content = content.replace(/[\*\+]/g, '').trim();
 
             // Try to find a URL from the sources
             const url = index < sources.length ? sources[index].metadata?.url : undefined;
@@ -112,6 +112,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         const date = match[1].trim();
         // Remove citation references like [10] from content
         let content = match[2].trim().replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
+        // Remove asterisks and plus signs
+        content = content.replace(/[\*\+]/g, '').trim();
         
         // Try to find a URL from the sources
         const url = index < sources.length ? sources[index].metadata?.url : undefined;
@@ -157,14 +159,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       "#ec4899"  // Pink
     ];
     return colors[index % colors.length];
-  };
-
-  const formatNewsContent = (content: string): string => {
-    // Add a "+" prefix to make it look like in the screenshot
-    if (!content.startsWith("+")) {
-      return "+" + content;
-    }
-    return content;
   };
 
   const fetchCompanyNews = async () => {
@@ -297,7 +291,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
                   </div>
                   <div className="flex-1">
                     <p className="text-gray-700">
-                      {formatNewsContent(item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || company.name || ""))}
+                      {item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || company.name || "")}
                     </p>
                     <div className="flex justify-between mt-1">
                       {item.url ? (
@@ -317,21 +311,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
                 </CardContent>
               </Card>
             )}
-          </div>
-        )}
-
-        {newsItems.length > 0 && newsItems[0].logo === "AI" && (
-          <div className="mt-6">
-            <Alert className="bg-blue-50 text-blue-800 border-blue-200">
-              <AlertDescription>
-                <div className="flex items-start gap-2">
-                  <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                  <p>
-                    News items have been processed by AI. Click the search button to refresh with the latest data.
-                  </p>
-                </div>
-              </AlertDescription>
-            </Alert>
           </div>
         )}
       </section>
