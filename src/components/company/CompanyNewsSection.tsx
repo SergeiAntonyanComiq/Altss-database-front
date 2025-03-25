@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CompanyType } from "@/types/company";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -19,11 +19,17 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [apiResponseData, setApiResponseData] = useState<any>(null);
   const { toast } = useToast();
 
+  // Log company info for debugging
+  useEffect(() => {
+    console.log("CompanyNewsSection mounted with company:", company);
+  }, [company]);
+
   const handleSearchNews = async () => {
     setIsSearching(true);
     setError(null);
     
     try {
+      console.log("Searching news for company:", company.firm_name || company.name);
       const result = await fetchCompanyNews(company);
       setNewsItems(result.newsItems);
       setApiResponseData(result.apiResponse);
