@@ -91,13 +91,16 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
             content = content.replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
             // Remove asterisks and plus signs
             content = content.replace(/[\*\+]/g, '').trim();
+            // Remove dash prefix if present
+            content = content.replace(/^-\s+/, '').trim();
 
-            // Try to find a URL from the sources
+            // Get the source URL and extract domain for logo
             const url = index < sources.length ? sources[index].metadata?.url : undefined;
+            const sourceDomain = url ? extractDomainForLogo(url) : "";
             
             return {
               id: `news-${index}`,
-              logo: getSourceLogo(content),
+              logo: getSourceLogo(content, sourceDomain),
               color: getRandomColor(index),
               textColor: "#ffffff",
               content: content,
@@ -114,13 +117,16 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         let content = match[2].trim().replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
         // Remove asterisks and plus signs
         content = content.replace(/[\*\+]/g, '').trim();
+        // Remove dash prefix if present
+        content = content.replace(/^-\s+/, '').trim();
         
-        // Try to find a URL from the sources
+        // Get the source URL and extract domain for logo
         const url = index < sources.length ? sources[index].metadata?.url : undefined;
+        const sourceDomain = url ? extractDomainForLogo(url) : "";
         
         return {
           id: `news-${index}`,
-          logo: getSourceLogo(content),
+          logo: getSourceLogo(content, sourceDomain),
           color: getRandomColor(index),
           textColor: "#ffffff",
           content: content,
@@ -134,17 +140,58 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     }
   };
   
-  // Generate a logo based on the content
-  const getSourceLogo = (content: string): string => {
+  // Extract domain from URL to use for logo generation
+  const extractDomainForLogo = (url: string): string => {
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname;
+      
+      // Extract the main domain name for common formats
+      if (hostname.startsWith('www.')) {
+        const domain = hostname.substring(4);
+        
+        // Handle common domain patterns
+        if (domain.includes('prnewswire')) return 'PR';
+        if (domain.includes('bloomberg')) return 'BL';
+        if (domain.includes('reuters')) return 'RT';
+        if (domain.includes('wsj')) return 'WS';
+        if (domain.includes('ft.com')) return 'FT';
+        if (domain.includes('forbes')) return 'FB';
+        if (domain.includes('techcrunch')) return 'TC';
+        if (domain.includes('linkedin')) return 'LI';
+        if (domain.includes('crunchbase')) return 'CB';
+        if (domain.includes('pitchbook')) return 'PB';
+        
+        // Return first two letters capitalized for other domains
+        return domain.split('.')[0].substring(0, 2).toUpperCase();
+      }
+      
+      // If no www prefix, just use the first part of the hostname
+      return hostname.split('.')[0].substring(0, 2).toUpperCase();
+    } catch (e) {
+      return 'NW'; // Default for "News"
+    }
+  };
+  
+  // Generate a logo based on the content and domain
+  const getSourceLogo = (content: string, sourceDomain: string): string => {
+    // If we have a domain-based logo, use it
+    if (sourceDomain && sourceDomain !== 'NW') {
+      return sourceDomain;
+    }
+    
+    // Otherwise, try to extract from content
     if (content.includes("PRNewswire") || content.includes("PR Newswire")) return "PR";
     if (content.includes("Bloomberg")) return "BL";
     if (content.includes("Reuters")) return "RT";
-    if (content.includes("WSJ") || content.includes("Wall Street Journal")) return "WSJ";
+    if (content.includes("WSJ") || content.includes("Wall Street Journal")) return "WS";
     if (content.includes("Financial Times") || content.includes("FT")) return "FT";
     if (content.includes("Forbes")) return "FB";
     if (content.includes("TechCrunch")) return "TC";
     if (content.includes("LinkedIn")) return "LI";
-    return "AI"; // Default logo
+    if (content.includes("Crunchbase")) return "CB";
+    
+    return "NW"; // Default logo
   };
   
   // Generate a random color based on index
