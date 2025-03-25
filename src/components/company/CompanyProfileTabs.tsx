@@ -7,6 +7,7 @@ import CompanyTeamTab from "./tabs/CompanyTeamTab";
 import CompanyDealsTab from "./tabs/CompanyDealsTab";
 import CompanyGPLPTab from "./tabs/CompanyGPLPTab";
 import CompanyServiceProvidersTab from "./tabs/CompanyServiceProvidersTab";
+import CompanyNewsSection from "./CompanyNewsSection";
 import CompanyMandateTab from "./tabs/CompanyMandateTab";
 import CompanyOtherTab from "./tabs/CompanyOtherTab";
 import { CompanyType } from "@/types/company";
@@ -66,6 +67,12 @@ const CompanyProfileTabs: React.FC<CompanyProfileTabsProps> = ({
           Service Providers
         </TabsTrigger>
         <TabsTrigger 
+          value="news" 
+          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
+        >
+          News
+        </TabsTrigger>
+        <TabsTrigger 
           value="mandate" 
           className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
         >
@@ -101,6 +108,10 @@ const CompanyProfileTabs: React.FC<CompanyProfileTabsProps> = ({
 
       <TabsContent value="providers" className="pt-6">
         <CompanyServiceProvidersTab company={company} />
+      </TabsContent>
+
+      <TabsContent value="news" className="pt-6">
+        <CompanyNewsSection company={company} />
       </TabsContent>
 
       <TabsContent value="mandate" className="pt-6">
