@@ -1,3 +1,4 @@
+
 import React from "react";
 import { NewsItem as NewsItemType } from "@/services/news/NewsService";
 import NewsItem from "./NewsItem";
@@ -13,6 +14,7 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
   const hasDirectAnswer = apiResponseData && apiResponseData.answer && apiResponseData.answer.text;
   const hasSourcesData = apiResponseData && apiResponseData.sources && apiResponseData.sources.length > 0;
   const hasRequestData = apiResponseData && apiResponseData.request;
+  const apiEndpoint = apiResponseData && apiResponseData.endpoint;
   
   if (hasSearched && apiResponseData) {
     return (
@@ -20,6 +22,16 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
         {/* Display the full Perplexity response */}
         <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Perplexity Response</h3>
+          
+          {/* Display API endpoint if available */}
+          {apiEndpoint && (
+            <div className="mb-6 bg-purple-50 p-4 rounded-md border border-purple-200">
+              <h4 className="font-medium text-purple-800 mb-2">API Endpoint:</h4>
+              <div className="font-mono text-sm text-purple-900 break-all">
+                {apiEndpoint}
+              </div>
+            </div>
+          )}
           
           {/* Display request data if available */}
           {hasRequestData && (

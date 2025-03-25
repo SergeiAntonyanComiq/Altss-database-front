@@ -1,4 +1,3 @@
-
 import { CompanyType } from "@/types/company";
 
 export interface NewsItem {
@@ -127,6 +126,9 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
       search_recency_filter: "month"
     };
     
+    // Define the API endpoint that would be used
+    const endpoint = "https://api.perplexity.ai/chat/completions";
+    
     // Since the external API is not working, we'll create a mock response
     // This simulates what would come back from the Perplexity API
     const mockResponse = {
@@ -158,10 +160,11 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
       ]
     };
     
-    // Add request data to the mock response
+    // Add request data and endpoint to the mock response
     const fullResponse = {
       ...mockResponse,
-      request: requestBody
+      request: requestBody,
+      endpoint: endpoint
     };
     
     console.log("Generated mock Perplexity response for:", companyName);
@@ -229,6 +232,9 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
   
   // Create a mock API response if we don't have one from Perplexity
   if (!apiResponseData) {
+    // Define the API endpoint
+    const endpoint = "https://api.perplexity.ai/chat/completions";
+    
     // Create a mock request that would have been sent
     const mockRequest = {
       model: "llama-3.1-sonar-small-128k-online",
@@ -258,7 +264,8 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
           url: item.url || "#"
         }
       })),
-      request: mockRequest
+      request: mockRequest,
+      endpoint: endpoint
     };
   }
   
