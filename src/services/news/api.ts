@@ -10,7 +10,7 @@ export const searchNewsViaPerplexica = async (companyName: string): Promise<News
     // Define the API endpoint that would be used
     const endpoint = "http://162.254.26.189:3000/";
     
-    // Create request body with the exact format you requested
+    // Create request body with the simplified format
     const requestBody = {
       chatModel: {
         provider: "ollama",
@@ -23,9 +23,7 @@ export const searchNewsViaPerplexica = async (companyName: string): Promise<News
       optimizationMode: "speed",
       focusMode: "webSearch",
       query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
-      history: [],
-      chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
-      messageId: "b283ac04535b9b"
+      history: []
     };
     
     console.log("Sending Perplexica request:", requestBody);
