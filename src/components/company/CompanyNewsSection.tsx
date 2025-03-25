@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { fetchCompanyNews, NewsItem, NewsSourceLink } from "@/services/news/NewsService";
+import { fetchCompanyNews, NewsItem } from "@/services/news/NewsService";
 import NewsList from "./news/NewsList";
 import NewsSearch from "./news/NewsSearch";
 
@@ -16,7 +16,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [sourceLinks, setSourceLinks] = useState<NewsSourceLink[]>([]);
   const { toast } = useToast();
 
   const handleSearchNews = async () => {
@@ -24,16 +23,13 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     setError(null);
     
     try {
-      const companyName = company.firm_name || company.name || "";
-      const result = await fetchCompanyNews(company);
-      
-      setNewsItems(result.newsItems);
-      setSourceLinks(result.sourceLinks);
+      const items = await fetchCompanyNews(company);
+      setNewsItems(items);
       setHasSearched(true);
       
       toast({
         title: "Success",
-        description: `Found ${result.newsItems.length} news items for ${companyName}`,
+        description: `Found ${items.length} news items for ${company.firm_name || company.name}`,
       });
     } catch (error) {
       console.error("Error fetching company news:", error);
@@ -68,8 +64,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         <NewsList 
           newsItems={newsItems} 
           hasSearched={hasSearched} 
-          companyName={companyName}
-          sourceLinks={sourceLinks}
+          companyName={companyName} 
         />
       </section>
     </div>

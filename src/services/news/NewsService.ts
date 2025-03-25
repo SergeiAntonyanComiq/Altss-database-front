@@ -12,12 +12,6 @@ export interface NewsItem {
   url?: string;
 }
 
-// Interface for extracted source links
-export interface NewsSourceLink {
-  title: string;
-  url: string;
-}
-
 // Simulated news data for different companies - expanded with more news items
 const companyNewsMap = {
   "Alberleen Group": [
@@ -110,16 +104,8 @@ export const getRandomColor = () => {
 
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
-    console.log("Attempting to fetch news for:", companyName);
-    
-    // For now, we'll skip the Perplexica API call as it's causing issues
-    // Returning null will trigger the fallback mechanism
-    console.log("Skipping Perplexica API due to connection issues");
-    return null;
-    
-    // NOTE: The code below is commented out as it's not working in the current environment
-    /*
-    const response = await fetch('https://162.254.26.189:3000/api/search', {
+    console.log("Searching news via Perplexica for:", companyName);
+    const response = await fetch('http://localhost:3000/api/search', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,80 +133,22 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
     const data = await response.json();
     console.log("Perplexica API response:", data);
     return data;
-    */
   } catch (error) {
     console.error('Perplexica search error:', error);
-    return null;
+    throw error;
   }
 };
 
-export const extractAllSourceLinks = (perplexicaData: any): NewsSourceLink[] => {
-  if (!perplexicaData || !perplexicaData.sources || !Array.isArray(perplexicaData.sources)) {
-    return [];
-  }
-  
-  const links: NewsSourceLink[] = [];
-  
-  // Extract links from sources
-  perplexicaData.sources.forEach(source => {
-    if (source.metadata && source.metadata.url) {
-      // Check if URL is valid
-      const isValidUrl = source.metadata.url.startsWith('http://') || 
-                        source.metadata.url.startsWith('https://') || 
-                        source.metadata.url.startsWith('www.');
-      
-      if (isValidUrl) {
-        // Check if this URL is already in our links array
-        const urlExists = links.some(link => link.url === source.metadata.url);
-        if (!urlExists) {
-          links.push({
-            title: source.metadata.title || source.metadata.url,
-            url: source.metadata.url
-          });
-        }
-      }
-    }
-  });
-  
-  // Extract links from direct answer if present
-  if (perplexicaData.answer && typeof perplexicaData.answer === 'string') {
-    // Basic regex to find URLs in text
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const matches = perplexicaData.answer.match(urlRegex);
-    
-    if (matches) {
-      matches.forEach(url => {
-        // Check if this URL is already in our links array
-        const urlExists = links.some(link => link.url === url);
-        if (!urlExists) {
-          links.push({
-            title: url,
-            url: url
-          });
-        }
-      });
-    }
-  }
-  
-  return links;
-};
-
-export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItems: NewsItem[], sourceLinks: NewsSourceLink[] }> => {
+export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]> => {
   const companyName = company.firm_name?.trim() || company.name?.trim() || "";
   console.log("Fetching news for company:", companyName);
-  let sourceLinks: NewsSourceLink[] = [];
   
   try {
-    // Try to get data from Perplexica first (currently disabled)
     const perplexicaData = await searchNewsViaPerplexica(companyName);
-    
-    // Extract all source links, even if we don't use the full data
-    sourceLinks = extractAllSourceLinks(perplexicaData);
-    console.log("Extracted source links:", sourceLinks);
     
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
       console.log("Using Perplexica data with sources:", perplexicaData.sources.length);
-      const newsItems = perplexicaData.sources.map((source, index) => {
+      return perplexicaData.sources.map((source, index) => {
         // Extract the URL from metadata
         const sourceUrl = source.metadata && source.metadata.url ? source.metadata.url : undefined;
         console.log(`Source ${index}: URL = ${sourceUrl}`);
@@ -236,29 +164,16 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItem
           url: sourceUrl
         };
       });
-      
-      return { newsItems, sourceLinks };
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
-    // Continue to fallback - no need to rethrow
   }
   
   // Fallback to simulated news data
-  console.log("Using simulated news data");
+  console.log("Falling back to simulated news data");
   const newsData = companyNewsMap[companyName] || companyNewsMap.default;
   
-  // Generate source links from simulated data as well
-  if (sourceLinks.length === 0) {
-    sourceLinks = newsData
-      .filter(item => item.url)
-      .map(item => ({
-        title: item.source || "News Source",
-        url: item.url as string
-      }));
-  }
-  
-  const newsItems = newsData.map((item, index) => ({
+  return newsData.map((item, index) => ({
     id: `news-${Date.now()}-${index}`,
     logo: item.source.substring(0, 2).toUpperCase(),
     color: getRandomColor(),
@@ -268,6 +183,4 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItem
     source: item.source,
     url: item.url
   }));
-  
-  return { newsItems, sourceLinks };
 };
