@@ -2,6 +2,7 @@
 import React from "react";
 import { NewsItem as NewsItemType } from "@/services/news/NewsService";
 import NewsItem from "./NewsItem";
+import { ExternalLink } from "lucide-react";
 
 interface NewsListProps {
   newsItems: NewsItemType[];
