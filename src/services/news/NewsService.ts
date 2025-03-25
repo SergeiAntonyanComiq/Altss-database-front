@@ -105,7 +105,7 @@ export const getRandomColor = () => {
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
     console.log("Searching news via Perplexica for:", companyName);
-    const response = await fetch('http://localhost:3000/api/search', {
+    const response = await fetch('http://162.254.26.189:3000/api/search', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
