@@ -1,6 +1,7 @@
 
 import React from "react";
 import { NewsItem as NewsItemType } from "@/services/news/NewsService";
+import { ExternalLink } from "lucide-react";
 
 interface NewsItemProps {
   item: NewsItemType;
@@ -8,6 +9,9 @@ interface NewsItemProps {
 }
 
 const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
+  // Check if we have a valid URL
+  const hasValidUrl = Boolean(item.url);
+  
   return (
     <div className="flex gap-4">
       <div 
@@ -21,14 +25,21 @@ const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
           {item.content.replace("ACME Long Name Super Long Inc.", companyName)}
         </p>
         <div className="flex justify-between mt-1">
-          <a 
-            href={item.url || "#"} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-blue-600 hover:underline inline-block"
-          >
-            Read more in {item.source}
-          </a>
+          {hasValidUrl ? (
+            <a 
+              href={item.url} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-blue-600 hover:underline inline-flex items-center gap-1"
+            >
+              <span>Read more in {item.source}</span>
+              <ExternalLink size={14} />
+            </a>
+          ) : (
+            <span className="text-gray-500">
+              Source: {item.source}
+            </span>
+          )}
           <span className="text-sm text-gray-500">{item.date}</span>
         </div>
       </div>

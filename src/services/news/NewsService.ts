@@ -104,6 +104,7 @@ export const getRandomColor = () => {
 
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
+    console.log(`Searching news for: ${companyName}`);
     const response = await fetch('http://localhost:3000/api/search', {
       method: 'POST',
       headers: {
@@ -130,10 +131,21 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
     }
 
     const data = await response.json();
+    console.log("Perplexica response:", data);
     return data;
   } catch (error) {
     console.error('Perplexica search error:', error);
     throw error;
+  }
+};
+
+// Helper function to validate URLs
+const isValidUrl = (urlString: string): boolean => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (e) {
+    return false;
   }
 };
 
@@ -145,21 +157,26 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     const perplexicaData = await searchNewsViaPerplexica(companyName);
     
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
+      console.log("Received sources from Perplexica:", perplexicaData.sources);
+      
       // Use specific article URLs from the sources when available
       return perplexicaData.sources.map((source, index) => {
         // Extract the specific article URL from source.metadata.url
-        // This is the direct link to the news article
         const specificUrl = source.metadata.url;
+        
+        // Validate URL
+        const validUrl = isValidUrl(specificUrl) ? specificUrl : null;
+        console.log(`Source ${index} URL: ${specificUrl}, valid: ${Boolean(validUrl)}`);
         
         return {
           id: `perplexica-${index}`,
-          logo: source.metadata.title.substring(0, 2).toUpperCase(),
+          logo: (source.metadata.title || "").substring(0, 2).toUpperCase() || "NW",
           color: getRandomColor(),
           textColor: '#ffffff',
-          content: source.pageContent,
+          content: source.pageContent || "No content available",
           date: new Date().toISOString().split('T')[0],
-          source: source.metadata.title,
-          url: specificUrl // Using the specific URL from the source
+          source: source.metadata.title || "Unknown Source",
+          url: validUrl
         };
       });
     }
@@ -178,6 +195,6 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     content: item.content,
     date: item.date,
     source: item.source,
-    url: item.url // This is already set correctly in the mock data
+    url: isValidUrl(item.url) ? item.url : null
   }));
 };
