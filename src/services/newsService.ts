@@ -3,6 +3,7 @@ import { formatDate } from "@/utils/dateUtils";
 import { cleanNewsContent } from "@/utils/contentUtils";
 import { extractDomainForLogo, getSourceLogo } from "@/utils/newsUtils";
 import { getRandomColor } from "@/utils/colorUtils";
+import { performSearch } from "./apiService";
 
 export interface NewsItem {
   id: string;
@@ -125,22 +126,31 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
     }
     
     // Sort news items by date, newest first
-    return newsItems.sort((a, b) => {
-      if (a.date === "n/a") return 1;
-      if (b.date === "n/a") return -1;
-      
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      
-      if (isNaN(dateA.getTime())) return 1;
-      if (isNaN(dateB.getTime())) return -1;
-      
-      return dateB.getTime() - dateA.getTime();
-    });
+    return sortNewsByDate(newsItems);
   } catch (error) {
     console.error("Error parsing news results:", error);
     return [];
   }
+};
+
+/**
+ * Sort news items by date, newest first
+ * @param newsItems Array of NewsItem objects
+ * @returns Sorted array of NewsItem objects
+ */
+const sortNewsByDate = (newsItems: NewsItem[]): NewsItem[] => {
+  return newsItems.sort((a, b) => {
+    if (a.date === "n/a") return 1;
+    if (b.date === "n/a") return -1;
+    
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    
+    if (isNaN(dateA.getTime())) return 1;
+    if (isNaN(dateB.getTime())) return -1;
+    
+    return dateB.getTime() - dateA.getTime();
+  });
 };
 
 /**
@@ -152,58 +162,8 @@ export const fetchCompanyNews = async (companyName: string): Promise<NewsItem[]>
   try {
     const searchQuery = `show ${companyName} company news. Format: date, news, link to news`;
     
-    const payload = {
-      "chatModel": {
-        "provider": "ollama",
-        "name": "gemma3:27b"
-      },
-      "embeddingModel": {
-        "provider": "ollama",
-        "name": "gemma3:27b"
-      },
-      "optimizationMode": "speed",
-      "focusMode": "webSearch",
-      "query": searchQuery
-    };
-
-    const response = await fetch("https://vcstudio.us/api/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip, deflate",
-        "Accept-Language": "en-US",
-        "Connection": "keep-alive"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch news: ${response.statusText}`);
-    }
-
-    // Handle the streamed response
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error("Response body is not readable");
-    }
-
-    let result = "";
-    let done = false;
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      
-      if (value) {
-        // Convert the Uint8Array to a string
-        const text = new TextDecoder().decode(value);
-        result += text;
-      }
-    }
-
-    // Parse the JSON response
-    const jsonResponse = JSON.parse(result);
+    // Call the API service to perform the search
+    const jsonResponse = await performSearch(searchQuery);
     console.log("News API response:", jsonResponse);
     
     // Parse the results
