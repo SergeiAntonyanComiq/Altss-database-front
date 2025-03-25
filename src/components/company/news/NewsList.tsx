@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NewsItem as NewsItemType } from "@/services/news/NewsService";
 import NewsItem from "./NewsItem";
@@ -13,6 +12,7 @@ interface NewsListProps {
 const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName, apiResponseData }) => {
   const hasDirectAnswer = apiResponseData && apiResponseData.answer && apiResponseData.answer.text;
   const hasSourcesData = apiResponseData && apiResponseData.sources && apiResponseData.sources.length > 0;
+  const hasRequestData = apiResponseData && apiResponseData.request;
   
   if (hasSearched && apiResponseData) {
     return (
@@ -20,6 +20,16 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
         {/* Display the full Perplexity response */}
         <div className="bg-white p-6 rounded-md border border-gray-200 shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Perplexity Response</h3>
+          
+          {/* Display request data if available */}
+          {hasRequestData && (
+            <div className="mb-6 bg-slate-50 p-4 rounded-md border border-slate-200">
+              <h4 className="font-medium text-slate-800 mb-2">Request:</h4>
+              <pre className="text-xs whitespace-pre-wrap overflow-auto max-h-60 bg-slate-100 p-2 rounded">
+                {JSON.stringify(apiResponseData.request, null, 2)}
+              </pre>
+            </div>
+          )}
           
           {/* Display direct answer if available */}
           {hasDirectAnswer && (
@@ -57,14 +67,13 @@ const NewsList: React.FC<NewsListProps> = ({ newsItems, hasSearched, companyName
             </div>
           )}
           
-          {/* Display the raw response if no sources or answer */}
-          {!hasDirectAnswer && !hasSourcesData && (
-            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-              <pre className="text-xs whitespace-pre-wrap overflow-auto max-h-96">
-                {JSON.stringify(apiResponseData, null, 2)}
-              </pre>
-            </div>
-          )}
+          {/* Display the complete raw response */}
+          <div className="mt-6 border-t pt-4">
+            <h4 className="font-medium text-gray-800 mb-2">Complete Response:</h4>
+            <pre className="text-xs whitespace-pre-wrap overflow-auto max-h-96 bg-gray-100 p-2 rounded">
+              {JSON.stringify(apiResponseData, null, 2)}
+            </pre>
+          </div>
         </div>
         
         {/* Still show news items if we have them */}

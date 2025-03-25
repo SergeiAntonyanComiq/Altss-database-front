@@ -107,6 +107,26 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
     console.log("Searching news via Perplexica for:", companyName);
     
+    // Create a request object to show what would be sent to the API
+    const requestBody = {
+      model: "llama-3.1-sonar-small-128k-online",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant that finds relevant news about companies."
+        },
+        {
+          role: "user",
+          content: `Search for the latest news about ${companyName}. Find information about recent developments, financial results, acquisitions, partnerships, and other significant events.`
+        }
+      ],
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 1000,
+      search_domain_filter: ["business", "finance", "news"],
+      search_recency_filter: "month"
+    };
+    
     // Since the external API is not working, we'll create a mock response
     // This simulates what would come back from the Perplexity API
     const mockResponse = {
@@ -138,8 +158,14 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
       ]
     };
     
+    // Add request data to the mock response
+    const fullResponse = {
+      ...mockResponse,
+      request: requestBody
+    };
+    
     console.log("Generated mock Perplexity response for:", companyName);
-    return mockResponse;
+    return fullResponse;
   } catch (error) {
     console.error('Perplexica search error:', error);
     throw error;
@@ -203,6 +229,24 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
   
   // Create a mock API response if we don't have one from Perplexity
   if (!apiResponseData) {
+    // Create a mock request that would have been sent
+    const mockRequest = {
+      model: "llama-3.1-sonar-small-128k-online",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant that finds relevant news about companies."
+        },
+        {
+          role: "user",
+          content: `Search for the latest news about ${companyName}. Find information about recent developments, financial results, acquisitions, partnerships, and other significant events.`
+        }
+      ],
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 1000
+    };
+    
     apiResponseData = {
       answer: {
         text: `Here are the latest news items for ${companyName}:`
@@ -213,7 +257,8 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
           title: item.source || "News Source",
           url: item.url || "#"
         }
-      }))
+      })),
+      request: mockRequest
     };
   }
   
