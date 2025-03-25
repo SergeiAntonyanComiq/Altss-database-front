@@ -11,15 +11,17 @@ interface NewsItemProps {
 
 const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
   // Check if we have a URL
-  const [hasValidUrl, setHasValidUrl] = useState<boolean>(Boolean(item.url));
+  const [hasValidUrl, setHasValidUrl] = useState<boolean>(false);
   const [isUrlBroken, setIsUrlBroken] = useState<boolean>(false);
   
   useEffect(() => {
-    // Simple check to ensure URL exists and has proper format
-    const isValid = Boolean(item.url) && item.url.startsWith('http');
+    // Validate the URL format
+    const isValid = Boolean(item.url) && 
+      (item.url.startsWith('http://') || item.url.startsWith('https://'));
+    
     setHasValidUrl(isValid);
     
-    // Log for debugging
+    // For debugging
     console.log(`NewsItem URL: ${item.url}, valid: ${isValid}`);
   }, [item.url]);
   
@@ -44,13 +46,13 @@ const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
                 rel="noopener noreferrer" 
                 className="text-blue-600 hover:underline inline-flex items-center gap-1"
                 onClick={(e) => {
-                  // If we already know the URL is broken, prevent the click
+                  // Log the URL being clicked for debugging
+                  console.log(`Clicked URL: ${item.url}`);
+                  
+                  // If we know the URL is broken, prevent the click
                   if (isUrlBroken) {
                     e.preventDefault();
                   }
-                  
-                  // Log the URL being clicked
-                  console.log(`Clicked URL: ${item.url}`);
                 }}
               >
                 <span>Read more in {item.source}</span>

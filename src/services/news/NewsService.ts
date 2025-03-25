@@ -1,4 +1,3 @@
-
 import { CompanyType } from "@/types/company";
 
 export interface NewsItem {
@@ -152,18 +151,6 @@ const isValidUrl = (urlString: string): boolean => {
   }
 };
 
-// Helper function to check if a URL returns a valid response
-const checkUrlValidity = async (url: string): Promise<boolean> => {
-  try {
-    // We're not actually fetching the URL here to avoid CORS issues
-    // Just doing a basic validation check
-    return isValidUrl(url);
-  } catch (error) {
-    console.error(`URL validation error for ${url}:`, error);
-    return false;
-  }
-};
-
 export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]> => {
   const companyName = company.firm_name?.trim() || company.name?.trim() || "";
   console.log("Fetching news for company:", companyName);
@@ -174,9 +161,9 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
       console.log("Received sources from Perplexica:", perplexicaData.sources);
       
-      // Extract and process the data from Perplexica response
+      // Create news items from the sources
       const newsItems = perplexicaData.sources.map((source, index) => {
-        // Get URL from metadata field
+        // Get URL directly from metadata.url field (this is the actual working URL)
         const sourceUrl = source.metadata?.url || "";
         console.log(`Source ${index} URL from metadata:`, sourceUrl);
         
@@ -186,8 +173,8 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
         // Extract source name from the title in metadata
         const sourceName = source.metadata?.title || "Unknown Source";
         
-        // Use current date if not available
-        const date = new Date().toISOString().split('T')[0]; 
+        // For date, we'll use current date if one isn't available
+        const date = new Date().toISOString().split('T')[0];
         
         return {
           id: `perplexica-${index}-${Date.now()}`,
@@ -197,20 +184,19 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
           content: content,
           date: date,
           source: sourceName,
-          url: sourceUrl // Use the URL directly from metadata
+          url: sourceUrl // Use the direct URL from metadata
         };
       });
       
-      // Log the created news items for debugging
       console.log("Created news items from Perplexica:", newsItems);
-      
       return newsItems;
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
   }
   
-  // Fallback to simulated news data
+  // Fallback to simulated news data if Perplexica fails
+  console.log("Falling back to simulated news data");
   const newsData = companyNewsMap[companyName] || companyNewsMap.default;
   
   return newsData.map((item, index) => ({
