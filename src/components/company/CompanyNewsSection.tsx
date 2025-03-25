@@ -63,7 +63,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       // Try to parse the date string
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) {
-        return dateStr; // If parsing fails, return the original string
+        return "n/a"; // If parsing fails, return n/a
       }
       
       // Format the date as "Month Day, Year"
@@ -73,7 +73,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         year: 'numeric' 
       });
     } catch (e) {
-      return dateStr;
+      return "n/a";
     }
   };
 
@@ -119,7 +119,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
             // Remove asterisks and plus signs
             content = content.replace(/[\*\+]/g, '').trim();
             // Remove dash prefix if present
-            content = content.replace(/^-\s+/, '').trim();
+            content = content.replace(/^-\s*/, '').trim();
+            content = content.replace(/^–\s*/, '').trim();
             // Remove date prefixes from content if they exist
             content = content.replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*[-–—]\s*/, '');
             content = content.replace(/^\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},\s*\d{4}\s*[-–—]\s*/, '');
@@ -147,7 +148,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           // Remove asterisks and plus signs
           content = content.replace(/[\*\+]/g, '').trim();
           // Remove dash prefix if present
-          content = content.replace(/^-\s+/, '').trim();
+          content = content.replace(/^-\s*/, '').trim();
+          content = content.replace(/^–\s*/, '').trim();
           // Remove date prefixes from content if they exist
           content = content.replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4}\s*[-–—]\s*/, '');
           content = content.replace(/^\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},\s*\d{4}\s*[-–—]\s*/, '');
