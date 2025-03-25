@@ -120,7 +120,7 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
         },
         optimizationMode: 'balanced',
         focusMode: 'webSearch',
-        query: `Latest news about ${companyName} company`,
+        query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
         history: []
       }),
     });
