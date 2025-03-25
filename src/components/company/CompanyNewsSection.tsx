@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
@@ -64,8 +65,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         },
         "optimizationMode": "speed",
         "focusMode": "webSearch",
-        "query": searchQuery,
-        "history": []
+        "query": searchQuery
       };
 
       const response = await fetch("https://vcstudio.us/api/search", {
