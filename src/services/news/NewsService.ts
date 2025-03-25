@@ -145,16 +145,23 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     const perplexicaData = await searchNewsViaPerplexica(companyName);
     
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
-      return perplexicaData.sources.map((source, index) => ({
-        id: `perplexica-${index}`,
-        logo: source.metadata.title.substring(0, 2).toUpperCase(),
-        color: getRandomColor(),
-        textColor: '#ffffff',
-        content: source.pageContent,
-        date: new Date().toISOString().split('T')[0],
-        source: source.metadata.title,
-        url: source.metadata.url
-      }));
+      // Use specific article URLs from the sources when available
+      return perplexicaData.sources.map((source, index) => {
+        // Extract the specific article URL from source.metadata.url
+        // This is the direct link to the news article
+        const specificUrl = source.metadata.url;
+        
+        return {
+          id: `perplexica-${index}`,
+          logo: source.metadata.title.substring(0, 2).toUpperCase(),
+          color: getRandomColor(),
+          textColor: '#ffffff',
+          content: source.pageContent,
+          date: new Date().toISOString().split('T')[0],
+          source: source.metadata.title,
+          url: specificUrl // Using the specific URL from the source
+        };
+      });
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
@@ -171,6 +178,6 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     content: item.content,
     date: item.date,
     source: item.source,
-    url: item.url
+    url: item.url // This is already set correctly in the mock data
   }));
 };
