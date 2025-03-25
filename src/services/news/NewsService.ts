@@ -132,6 +132,10 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
 
     const data = await response.json();
     console.log("Perplexica API response:", data);
+    
+    // Логируем полный ответ от API для отладки
+    console.log("Full API response data:", JSON.stringify(data, null, 2));
+    
     return data;
   } catch (error) {
     console.error('Perplexica search error:', error);
@@ -139,16 +143,19 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
   }
 };
 
-export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]> => {
+export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems: NewsItem[], apiResponse: any}> => {
   const companyName = company.firm_name?.trim() || company.name?.trim() || "";
   console.log("Fetching news for company:", companyName);
   
+  let apiResponseData: any = null;
+  
   try {
     const perplexicaData = await searchNewsViaPerplexica(companyName);
+    apiResponseData = perplexicaData;
     
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
       console.log("Using Perplexica data with sources:", perplexicaData.sources.length);
-      return perplexicaData.sources.map((source, index) => {
+      const newsItems = perplexicaData.sources.map((source, index) => {
         // Extract the URL from metadata
         const sourceUrl = source.metadata && source.metadata.url ? source.metadata.url : undefined;
         console.log(`Source ${index}: URL = ${sourceUrl}`);
@@ -164,6 +171,8 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
           url: sourceUrl
         };
       });
+      
+      return { newsItems, apiResponse: apiResponseData };
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
@@ -173,7 +182,7 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
   console.log("Falling back to simulated news data");
   const newsData = companyNewsMap[companyName] || companyNewsMap.default;
   
-  return newsData.map((item, index) => ({
+  const newsItems = newsData.map((item, index) => ({
     id: `news-${Date.now()}-${index}`,
     logo: item.source.substring(0, 2).toUpperCase(),
     color: getRandomColor(),
@@ -183,4 +192,6 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     source: item.source,
     url: item.url
   }));
+  
+  return { newsItems, apiResponse: apiResponseData };
 };

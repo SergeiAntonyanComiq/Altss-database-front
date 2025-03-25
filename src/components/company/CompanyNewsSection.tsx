@@ -16,6 +16,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [apiResponseData, setApiResponseData] = useState<any>(null);
   const { toast } = useToast();
 
   const handleSearchNews = async () => {
@@ -23,13 +24,14 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     setError(null);
     
     try {
-      const items = await fetchCompanyNews(company);
-      setNewsItems(items);
+      const result = await fetchCompanyNews(company);
+      setNewsItems(result.newsItems);
+      setApiResponseData(result.apiResponse);
       setHasSearched(true);
       
       toast({
         title: "Success",
-        description: `Found ${items.length} news items for ${company.firm_name || company.name}`,
+        description: `Found ${result.newsItems.length} news items for ${company.firm_name || company.name}`,
       });
     } catch (error) {
       console.error("Error fetching company news:", error);
@@ -61,10 +63,21 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           </Alert>
         )}
 
+        {/* API Response Data Display for debugging */}
+        {apiResponseData && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200 overflow-auto max-h-96">
+            <h3 className="text-lg font-medium mb-2">API Response Data:</h3>
+            <pre className="text-xs whitespace-pre-wrap">
+              {JSON.stringify(apiResponseData, null, 2)}
+            </pre>
+          </div>
+        )}
+
         <NewsList 
           newsItems={newsItems} 
           hasSearched={hasSearched} 
-          companyName={companyName} 
+          companyName={companyName}
+          apiResponseData={apiResponseData}
         />
       </section>
     </div>
