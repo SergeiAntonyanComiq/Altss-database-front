@@ -7,7 +7,7 @@ export const searchNewsViaPerplexica = async (companyName: string): Promise<News
     console.log("Searching news for:", companyName);
     
     // Define the API endpoint
-    const endpoint = "https://162.254.26.189:3000/api/search";
+    const endpoint = "http://162.254.26.189:3000/api/search";
     
     // Create request body
     const requestBody = {
