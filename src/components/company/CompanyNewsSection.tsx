@@ -51,28 +51,22 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     setIsSearching(true);
     
     try {
-      const searchQuery = `${company.firm_name || company.name || ""} company news last year`;
+      const searchQuery = `show ${company.firm_name || company.name || ""} company news. Format: date, news, link to news`;
       
+      // Updated payload format based on the correct example
       const payload = {
-        "content": searchQuery,
-        "chatId": `chat-${Date.now()}`,
         "chatModel": {
-          "name": "gemma3.27b", 
-          "provider": "ollama"
+          "provider": "ollama",
+          "name": "gemma3:27b"
         },
         "embeddingModel": {
-          "name": "gemma3.27b",
-          "provider": "ollama"
+          "provider": "ollama",
+          "name": "gemma3:27b"
         },
-        "files": [],
+        "optimizationMode": "speed",
         "focusMode": "webSearch",
-        "history": [],
-        "message": {
-          "messageId": `msg-${Date.now()}`,
-          "chatId": `chat-${Date.now()}`,
-          "content": searchQuery
-        },
-        "optimizationMode": "speed"
+        "query": searchQuery,
+        "history": []
       };
 
       const response = await fetch("https://vcstudio.us/api/search", {
@@ -134,6 +128,15 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         description: "Failed to fetch company news. Please try again later.",
         variant: "destructive",
       });
+      
+      // If there's a CORS error or other network issue, show a more specific message
+      if (error instanceof TypeError && error.message.includes('network')) {
+        toast({
+          title: "Network Error",
+          description: "Unable to connect to news service. Using sample data instead.",
+          variant: "warning",
+        });
+      }
     } finally {
       setIsSearching(false);
     }
