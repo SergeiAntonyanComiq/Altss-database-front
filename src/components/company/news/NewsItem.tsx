@@ -16,7 +16,11 @@ const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
   
   useEffect(() => {
     // Simple check to ensure URL exists and has proper format
-    setHasValidUrl(Boolean(item.url));
+    const isValid = Boolean(item.url) && item.url.startsWith('http');
+    setHasValidUrl(isValid);
+    
+    // Log for debugging
+    console.log(`NewsItem URL: ${item.url}, valid: ${isValid}`);
   }, [item.url]);
   
   return (
@@ -44,6 +48,9 @@ const NewsItem: React.FC<NewsItemProps> = ({ item, companyName }) => {
                   if (isUrlBroken) {
                     e.preventDefault();
                   }
+                  
+                  // Log the URL being clicked
+                  console.log(`Clicked URL: ${item.url}`);
                 }}
               >
                 <span>Read more in {item.source}</span>

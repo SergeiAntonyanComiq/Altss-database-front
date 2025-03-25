@@ -174,27 +174,35 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
       console.log("Received sources from Perplexica:", perplexicaData.sources);
       
-      // Use metadata URLs from the sources
+      // Extract and process the data from Perplexica response
       const newsItems = perplexicaData.sources.map((source, index) => {
-        // Get the URL directly from metadata
+        // Get URL from metadata field
         const sourceUrl = source.metadata?.url || "";
         console.log(`Source ${index} URL from metadata:`, sourceUrl);
         
-        // Validate the URL format
-        const validUrl = isValidUrl(sourceUrl) ? sourceUrl : null;
-        console.log(`Source ${index} valid URL:`, validUrl);
+        // Extract content from the page
+        const content = source.pageContent || "No content available";
+        
+        // Extract source name from the title in metadata
+        const sourceName = source.metadata?.title || "Unknown Source";
+        
+        // Use current date if not available
+        const date = new Date().toISOString().split('T')[0]; 
         
         return {
-          id: `perplexica-${index}`,
-          logo: (source.metadata?.title || "").substring(0, 2).toUpperCase() || "NW",
+          id: `perplexica-${index}-${Date.now()}`,
+          logo: (sourceName.substring(0, 2) || "NW").toUpperCase(),
           color: getRandomColor(),
           textColor: '#ffffff',
-          content: source.pageContent || "No content available",
-          date: new Date().toISOString().split('T')[0], // Fallback to current date if not provided
-          source: source.metadata?.title || "Unknown Source",
-          url: validUrl
+          content: content,
+          date: date,
+          source: sourceName,
+          url: sourceUrl // Use the URL directly from metadata
         };
       });
+      
+      // Log the created news items for debugging
+      console.log("Created news items from Perplexica:", newsItems);
       
       return newsItems;
     }
@@ -213,6 +221,6 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     content: item.content,
     date: item.date,
     source: item.source,
-    url: isValidUrl(item.url) ? item.url : null
+    url: item.url
   }));
 };
