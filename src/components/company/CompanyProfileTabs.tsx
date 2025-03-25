@@ -1,9 +1,14 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CompanyDetailsSection from "./CompanyDetailsSection";
-import CompanyNewsSection from "./CompanyNewsSection";
-import CompanyHistorySection from "./CompanyHistorySection";
+import CompanyOverviewTab from "./tabs/CompanyOverviewTab";
+import CompanyInvestmentFocusTab from "./tabs/CompanyInvestmentFocusTab";
+import CompanyTeamTab from "./tabs/CompanyTeamTab";
+import CompanyDealsTab from "./tabs/CompanyDealsTab";
+import CompanyGPLPTab from "./tabs/CompanyGPLPTab";
+import CompanyServiceProvidersTab from "./tabs/CompanyServiceProvidersTab";
+import CompanyMandateTab from "./tabs/CompanyMandateTab";
+import CompanyOtherTab from "./tabs/CompanyOtherTab";
 import { CompanyType } from "@/types/company";
 
 interface CompanyProfileTabsProps {
@@ -25,35 +30,85 @@ const CompanyProfileTabs: React.FC<CompanyProfileTabsProps> = ({
     >
       <TabsList className="bg-transparent p-0 h-auto">
         <TabsTrigger 
-          value="details" 
+          value="overview" 
           className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
         >
-          Details
+          Overview
         </TabsTrigger>
         <TabsTrigger 
-          value="news" 
+          value="investment" 
           className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
         >
-          News & Updates
+          Investment Focus
         </TabsTrigger>
         <TabsTrigger 
-          value="history" 
+          value="team" 
           className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
         >
-          Company History
+          Team
+        </TabsTrigger>
+        <TabsTrigger 
+          value="deals" 
+          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
+        >
+          Deals
+        </TabsTrigger>
+        <TabsTrigger 
+          value="gplp" 
+          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
+        >
+          GP & LP
+        </TabsTrigger>
+        <TabsTrigger 
+          value="providers" 
+          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
+        >
+          Service Providers
+        </TabsTrigger>
+        <TabsTrigger 
+          value="mandate" 
+          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
+        >
+          Mandate
+        </TabsTrigger>
+        <TabsTrigger 
+          value="other" 
+          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
+        >
+          Other
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="details" className="pt-6">
-        <CompanyDetailsSection company={company} />
+      <TabsContent value="overview" className="pt-6">
+        <CompanyOverviewTab company={company} />
       </TabsContent>
 
-      <TabsContent value="news" className="pt-6">
-        <CompanyNewsSection company={company} />
+      <TabsContent value="investment" className="pt-6">
+        <CompanyInvestmentFocusTab company={company} />
       </TabsContent>
 
-      <TabsContent value="history" className="pt-6">
-        <CompanyHistorySection company={company} />
+      <TabsContent value="team" className="pt-6">
+        <CompanyTeamTab company={company} />
+      </TabsContent>
+
+      <TabsContent value="deals" className="pt-6">
+        <CompanyDealsTab company={company} />
+      </TabsContent>
+
+      <TabsContent value="gplp" className="pt-6">
+        <CompanyGPLPTab company={company} />
+      </TabsContent>
+
+      <TabsContent value="providers" className="pt-6">
+        <CompanyServiceProvidersTab company={company} />
+      </TabsContent>
+
+      <TabsContent value="mandate" className="pt-6">
+        <CompanyMandateTab company={company} />
+      </TabsContent>
+
+      <TabsContent value="other" className="pt-6">
+        <CompanyOtherTab company={company} />
       </TabsContent>
     </Tabs>
   );
