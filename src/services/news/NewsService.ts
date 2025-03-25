@@ -1,4 +1,3 @@
-
 import { CompanyType } from "@/types/company";
 
 export interface NewsItem {
@@ -102,7 +101,7 @@ export const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Updated to use the new request format
+// Updated to use the requested query format
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
     console.log("Searching news via Perplexica for:", companyName);
@@ -120,12 +119,10 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
         provider: "ollama",
         name: "gemma3:27b"
       },
-      optimizationMode: "balanced",
+      optimizationMode: "speed",
       focusMode: "webSearch",
-      query: `show ${companyName} company news format: date, news, link to news`,
-      history: [],
-      chatId: "9f12833e3772487acc172e62a3b1237e423e3cba",
-      messageId: "b283ac04535b9b"
+      query: `show ${companyName} company news. format: date, news, link to news`,
+      history: []
     };
     
     // Attempt to make the actual API call
