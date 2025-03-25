@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { CompanyType } from "@/types/company";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ interface CompanyNewsSectionProps {
   company: CompanyType;
 }
 
-// Simulated news data for different companies
+// Simulated news data for different companies - expanded with more news items
 const companyNewsMap = {
   "Alberleen Group": [
     {
@@ -33,6 +32,20 @@ const companyNewsMap = {
       source: "Financial Times",
       date: "2024-09-03",
       url: "https://www.ft.com/content/alberleen-growth-report"
+    },
+    {
+      title: "Alberleen Group Expands European Presence with New London Office",
+      content: "Alberleen Group has expanded its international footprint by opening a new office in London's financial district. This strategic move aims to strengthen the firm's presence in European markets and provide closer support to its growing client base in the region.",
+      source: "Reuters",
+      date: "2024-08-15",
+      url: "https://www.reuters.com/business/finance/alberleen-european-expansion"
+    },
+    {
+      title: "Alberleen Group CEO Featured in 'Top 50 Financial Leaders' List",
+      content: "The CEO of Alberleen Group has been recognized in the annual 'Top 50 Financial Leaders' list by Finance Monthly magazine. The recognition highlights the firm's innovative approach to investment management and its commitment to sustainable finance practices.",
+      source: "Finance Monthly",
+      date: "2024-07-10",
+      url: "https://www.financemonthly.com/top-financial-leaders"
     }
   ],
   "default": [
@@ -56,6 +69,27 @@ const companyNewsMap = {
       source: "Financial Review",
       date: "2024-07-22",
       url: "https://www.financialreview.com/annual-results"
+    },
+    {
+      title: "New Product Launch Exceeds Expectations",
+      content: "The company's recent product launch has exceeded market expectations, with strong initial sales and positive customer feedback across all regions.",
+      source: "Tech Journal",
+      date: "2024-06-14",
+      url: "https://www.techjournal.com/product-launch-success"
+    },
+    {
+      title: "Company Recognized for Innovation Excellence",
+      content: "The company has received an industry award for innovation excellence, highlighting its commitment to developing cutting-edge solutions for its customers.",
+      source: "Innovation Today",
+      date: "2024-05-03",
+      url: "https://www.innovationtoday.com/excellence-awards"
+    },
+    {
+      title: "Expansion into Asian Markets Announced",
+      content: "The company has announced plans to expand operations into key Asian markets, establishing new offices and distribution networks to support growth in the region.",
+      source: "Global Business Review",
+      date: "2024-04-18",
+      url: "https://www.globalbusinessreview.com/asian-market-expansion"
     }
   ]
 };
@@ -78,7 +112,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [hasSearched, setHasSearched] = useState(false);
   const { toast } = useToast();
 
-  // Function to search news via Perplexica API
   const searchNewsViaPerplexica = async (companyName: string) => {
     try {
       const response = await fetch('http://localhost:3000/api/search', {
@@ -122,12 +155,10 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       const companyName = company.firm_name?.trim() || company.name?.trim() || "";
       console.log("Fetching news for company:", companyName);
       
-      // First try to get news from the Perplexica API
       try {
         const perplexicaData = await searchNewsViaPerplexica(companyName);
         
         if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
-          // Transform Perplexica results to news items
           const newItems = perplexicaData.sources.map((source, index) => ({
             id: `perplexica-${index}`,
             logo: source.metadata.title.substring(0, 2).toUpperCase(),
@@ -149,13 +180,10 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
         }
       } catch (perplexicaError) {
         console.error("Perplexica API error:", perplexicaError);
-        // Continue with fallback
       }
       
-      // Fallback to our simulated news data
       const newsData = companyNewsMap[companyName] || companyNewsMap.default;
       
-      // Format the news data for display
       const formattedNewsItems = newsData.map((item, index) => ({
         id: `news-${Date.now()}-${index}`,
         logo: item.source.substring(0, 2).toUpperCase(),
@@ -188,7 +216,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     }
   };
 
-  // Function to generate random color for news source logos
   const getRandomColor = () => {
     const colors = ['#f43f5e', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6'];
     return colors[Math.floor(Math.random() * colors.length)];
