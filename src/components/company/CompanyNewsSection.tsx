@@ -62,9 +62,10 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       }
 
       const newsText = responseData.message;
+      const sources = responseData.sources || [];
       
       // Extract news items from the formatted message
-      // Looking for bullet points or similar patterns in the response
+      // Looking for bullet points
       const newsRegex = /\*\s*\*\*([^*]+)\*\*\s*-\s*(.+?)(?=\n\*|\n\*\*|$)/gs;
       const matches = [...newsText.matchAll(newsRegex)];
       
@@ -88,13 +89,20 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
               content = content.replace(datePrefixRegex, '').replace(/^\s*-\s*/, '').trim();
             }
             
+            // Remove citation references like [10] from content
+            content = content.replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
+
+            // Try to find a URL from the sources
+            const url = index < sources.length ? sources[index].metadata?.url : undefined;
+            
             return {
               id: `news-${index}`,
               logo: getSourceLogo(content),
               color: getRandomColor(index),
               textColor: "#ffffff",
               content: content,
-              date: date
+              date: date,
+              url: url
             };
           });
         }
@@ -102,7 +110,11 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       
       return matches.map((match, index) => {
         const date = match[1].trim();
-        const content = match[2].trim();
+        // Remove citation references like [10] from content
+        let content = match[2].trim().replace(/\[\d+\](?:\[\d+\])*/g, '').trim();
+        
+        // Try to find a URL from the sources
+        const url = index < sources.length ? sources[index].metadata?.url : undefined;
         
         return {
           id: `news-${index}`,
@@ -110,7 +122,8 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           color: getRandomColor(index),
           textColor: "#ffffff",
           content: content,
-          date: date
+          date: date,
+          url: url
         };
       });
     } catch (error) {
@@ -144,6 +157,14 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       "#ec4899"  // Pink
     ];
     return colors[index % colors.length];
+  };
+
+  const formatNewsContent = (content: string): string => {
+    // Add a "+" prefix to make it look like in the screenshot
+    if (!content.startsWith("+")) {
+      return "+" + content;
+    }
+    return content;
   };
 
   const fetchCompanyNews = async () => {
@@ -276,7 +297,7 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
                   </div>
                   <div className="flex-1">
                     <p className="text-gray-700">
-                      {item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || company.name || "")}
+                      {formatNewsContent(item.content.replace("ACME Long Name Super Long Inc.", company.firm_name || company.name || ""))}
                     </p>
                     <div className="flex justify-between mt-1">
                       {item.url ? (
