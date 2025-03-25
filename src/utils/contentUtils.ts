@@ -13,6 +13,9 @@ export const cleanNewsContent = (content: string): string => {
   // Remove asterisks and plus signs
   cleanedContent = cleanedContent.replace(/[\*\+]/g, '').trim();
   
+  // Remove numbered bullet points (e.g., "1.", "2.", etc.)
+  cleanedContent = cleanedContent.replace(/^\d+\.\s*/, '').trim();
+  
   // Remove dash prefix if present
   cleanedContent = cleanedContent.replace(/^-\s*/, '').trim();
   cleanedContent = cleanedContent.replace(/^–\s*/, '').trim();
@@ -24,6 +27,9 @@ export const cleanNewsContent = (content: string): string => {
   // Handle the specific pattern "Month Year – Content" (with various dash types)
   cleanedContent = cleanedContent.replace(/^(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s*[-–—]\s*/, '');
   cleanedContent = cleanedContent.replace(/^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s*[-–—]\s*/, '');
+  
+  // Handle Month DD, YYYY - content pattern (with or without bullet points)
+  cleanedContent = cleanedContent.replace(/^(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4}\s*[-–—]\s*/, '');
   
   return cleanedContent;
 };

@@ -1,4 +1,3 @@
-
 import { formatDate } from "@/utils/dateUtils";
 import { cleanNewsContent } from "@/utils/contentUtils";
 import { extractDomainForLogo, getSourceLogo } from "@/utils/newsUtils";
@@ -66,9 +65,11 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
     let newsItems: NewsItem[] = [];
     
     if (matches.length === 0) {
-      // If the regex didn't find matches, try another approach - look for numbered items
+      // If the regex didn't find matches, try another approach - look for numbered items or bullet points
       const lines = newsText.split('\n').filter(line => 
-        line.trim().startsWith('*') || /^\d+\./.test(line.trim())
+        line.trim().startsWith('*') || 
+        /^\d+\./.test(line.trim()) || 
+        line.trim().length > 0 // Include any non-empty line as a fallback
       );
       
       if (lines.length > 0) {
@@ -78,7 +79,8 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
           const dateMatch = line.match(datePrefixRegex);
           
           let date = "n/a";
-          let content = line.replace(/^\*\s*/, '').trim();
+          // Remove numbering and asterisks
+          let content = line.replace(/^\s*\*\s*/, '').replace(/^\s*\d+\.\s*/, '').trim();
           
           if (dateMatch && dateMatch[1]) {
             date = dateMatch[1].trim();
@@ -87,8 +89,10 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
           
           // Check for date patterns at the beginning of content and move them to the date field
           const datePatterns = [
-            /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s+[-–—]\s*/i,
-            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s+[-–—]\s*/i,
+            /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4}\s*[-–—]\s*/i,
+            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s*\d{4}\s*[-–—]\s*/i,
+            /^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\s*[-–—]\s*/i,
+            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\s*[-–—]\s*/i,
             /^(\d{1,2}\/\d{1,2}\/\d{2,4})\s+[-–—]\s*/,
             /^(\d{1,2}\.\d{1,2}\.\d{2,4})\s+[-–—]\s*/,
             /^(\d{4}[-–—]\d{1,2}[-–—]\d{1,2})\s+[-–—]\s*/,
@@ -98,7 +102,7 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
             const match = content.match(pattern);
             if (match) {
               if (date === "n/a") {
-                date = match[1];
+                date = match[0].replace(/[-–—]\s*$/, '').trim();
               }
               content = content.replace(pattern, '');
               break;
