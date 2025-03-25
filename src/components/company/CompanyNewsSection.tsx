@@ -63,16 +63,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           </Alert>
         )}
 
-        {/* API Response Data Display for debugging */}
-        {apiResponseData && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200 overflow-auto max-h-96">
-            <h3 className="text-lg font-medium mb-2">API Response Data:</h3>
-            <pre className="text-xs whitespace-pre-wrap">
-              {JSON.stringify(apiResponseData, null, 2)}
-            </pre>
-          </div>
-        )}
-
         <NewsList 
           newsItems={newsItems} 
           hasSearched={hasSearched} 
