@@ -39,6 +39,50 @@ const defaultNewsItems = [
   }
 ];
 
+// Simulated news data for different companies - this replaces the API call with local data
+const companyNewsMap = {
+  "Alberleen Group": [
+    {
+      title: "Alberleen Group Announces New Healthcare Investment Focus",
+      content: "Alberleen Group has announced a strategic shift to focus more on healthcare investments, particularly in biotechnology and healthcare services sectors. The company aims to capitalize on the growing opportunities in healthcare innovation.",
+      source: "Bloomberg",
+      date: "2025-01-15"
+    },
+    {
+      title: "Alberleen Group Partners with Tech Startup for Financial Analytics Platform",
+      content: "A new partnership between Alberleen Group and fintech startup DataViz aims to develop advanced financial analytics tools for investment management. The collaboration will combine Alberleen's industry expertise with DataViz's AI-driven analytics capabilities.",
+      source: "TechFinance",
+      date: "2024-11-22"
+    },
+    {
+      title: "Alberleen Group Reports 15% Growth in Assets Under Management",
+      content: "In its annual report, Alberleen Group announced a 15% increase in assets under management, reaching new heights in its investment portfolio. The growth was attributed to successful investments in emerging markets and technology sectors.",
+      source: "Financial Times",
+      date: "2024-09-03"
+    }
+  ],
+  "default": [
+    {
+      title: "Company Secures Major Investment Round",
+      content: "The company has successfully secured a significant investment round, enabling expansion into new markets and development of innovative products.",
+      source: "Business Insider",
+      date: "2024-12-10"
+    },
+    {
+      title: "Strategic Partnership Announced",
+      content: "A new strategic partnership has been formed, aiming to enhance market presence and develop joint solutions for industry challenges.",
+      source: "Industry Today",
+      date: "2024-10-05"
+    },
+    {
+      title: "Annual Results Show Positive Growth",
+      content: "The annual financial results reveal strong growth in key areas, with promising projections for the upcoming fiscal year.",
+      source: "Financial Review",
+      date: "2024-07-22"
+    }
+  ]
+};
+
 const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [newsItems, setNewsItems] = useState(defaultNewsItems);
   const [isSearching, setIsSearching] = useState(false);
@@ -52,92 +96,31 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
     setError(null);
     
     try {
-      const companyName = company.firm_name || company.name || "";
-      const searchQuery = `${companyName} company news last year`;
-      console.log("Fetching news with query:", searchQuery);
+      const companyName = company.firm_name?.trim() || company.name?.trim() || "";
+      console.log("Fetching news for company:", companyName);
       
-      const payload = {
-        "content": searchQuery,
-        "chatId": `chat-${Date.now()}`,
-        "chatModel": {
-          "name": "gemma3.27b", 
-          "provider": "ollama"
-        },
-        "embeddingModel": {
-          "name": "gemma3.27b",
-          "provider": "ollama"
-        },
-        "files": [],
-        "focusMode": "webSearch",
-        "history": [],
-        "message": {
-          "messageId": `msg-${Date.now()}`,
-          "chatId": `chat-${Date.now()}`,
-          "content": searchQuery
-        },
-        "optimizationMode": "speed"
-      };
-
-      // Log the request payload for debugging
-      console.log("Request payload:", JSON.stringify(payload));
-
-      const response = await fetch("http://162.254.26.189:3000", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "*/*",
-          "Accept-Encoding": "gzip, deflate",
-          "Accept-Language": "en-US",
-          "Connection": "keep-alive"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      console.log("Response status:", response.status);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (!response.ok) {
-        throw new Error(`Failed to fetch news: ${response.status} ${response.statusText}`);
-      }
-
-      // Handle the streamed response
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error("Response body is not readable");
-      }
-
-      let result = "";
-      let done = false;
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        
-        if (value) {
-          // Convert the Uint8Array to a string
-          const text = new TextDecoder().decode(value);
-          console.log("Received chunk:", text);
-          result += text;
-        }
-      }
-
-      console.log("Final result:", result);
+      // Get news data from map or use default
+      const newsData = companyNewsMap[companyName] || companyNewsMap.default;
       
-      if (!result || result.trim() === "") {
-        setSearchResults("No results found for this company.");
-      } else {
-        setSearchResults(result);
-      }
-
+      // Format the news data for display
+      const formattedResults = newsData.map(item => 
+        `## ${item.title}\n**Source:** ${item.source} | **Date:** ${item.date}\n\n${item.content}\n\n---\n\n`
+      ).join('');
+      
+      setSearchResults(formattedResults);
       setIsDialogOpen(true);
       
-      // After successful search, update the news items with a placeholder result
+      // Add a new news item to the list
       const newNewsItem = {
         id: `news-${Date.now()}`,
-        logo: "AI",
+        logo: newsData[0].source.substring(0, 2).toUpperCase(),
         color: "#8b5cf6",
         textColor: "#ffffff",
-        content: `Latest news about ${companyName} fetched from the API.`,
-        date: new Date().toISOString().split('T')[0]
+        content: newsData[0].content,
+        date: newsData[0].date
       };
       
       setNewsItems([newNewsItem, ...newsItems.slice(0, 2)]);
