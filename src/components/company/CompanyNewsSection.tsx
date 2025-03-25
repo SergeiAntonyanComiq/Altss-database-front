@@ -17,7 +17,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [sourceLinks, setSourceLinks] = useState<NewsSourceLink[]>([]);
-  const [rawApiData, setRawApiData] = useState<any>(null);
   const { toast } = useToast();
 
   const handleSearchNews = async () => {
@@ -30,7 +29,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
       
       setNewsItems(result.newsItems);
       setSourceLinks(result.sourceLinks);
-      setRawApiData(result.rawApiData);
       setHasSearched(true);
       
       toast({
@@ -73,15 +71,6 @@ const CompanyNewsSection: React.FC<CompanyNewsSectionProps> = ({ company }) => {
           companyName={companyName}
           sourceLinks={sourceLinks}
         />
-
-        {rawApiData && (
-          <div className="mt-8 border-t pt-4">
-            <h3 className="text-lg font-medium mb-2">Raw API Data</h3>
-            <div className="bg-gray-100 p-4 rounded overflow-auto max-h-[500px] text-xs">
-              <pre>{JSON.stringify(rawApiData, null, 2)}</pre>
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );

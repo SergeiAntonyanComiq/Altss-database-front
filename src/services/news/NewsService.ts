@@ -145,13 +145,7 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
     }
 
     const data = await response.json();
-    console.log("Perplexica API full response:", data);
-    
-    // Log all relevant parts of the response for debugging
-    if (data.sources) console.log("API sources:", JSON.stringify(data.sources, null, 2));
-    if (data.answer) console.log("API answer:", data.answer);
-    if (data.relatedQuestions) console.log("API related questions:", data.relatedQuestions);
-    
+    console.log("Perplexica API response:", data);
     return data;
     */
   } catch (error) {
@@ -211,21 +205,14 @@ export const extractAllSourceLinks = (perplexicaData: any): NewsSourceLink[] => 
   return links;
 };
 
-export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItems: NewsItem[], sourceLinks: NewsSourceLink[], rawApiData?: any }> => {
+export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItems: NewsItem[], sourceLinks: NewsSourceLink[] }> => {
   const companyName = company.firm_name?.trim() || company.name?.trim() || "";
   console.log("Fetching news for company:", companyName);
   let sourceLinks: NewsSourceLink[] = [];
-  let rawApiData = null;
   
   try {
     // Try to get data from Perplexica first (currently disabled)
     const perplexicaData = await searchNewsViaPerplexica(companyName);
-    
-    if (perplexicaData) {
-      // Store the raw API data to return it
-      rawApiData = perplexicaData;
-      console.log("Raw API data:", JSON.stringify(perplexicaData, null, 2));
-    }
     
     // Extract all source links, even if we don't use the full data
     sourceLinks = extractAllSourceLinks(perplexicaData);
@@ -250,7 +237,7 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItem
         };
       });
       
-      return { newsItems, sourceLinks, rawApiData };
+      return { newsItems, sourceLinks };
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
@@ -282,5 +269,5 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{ newsItem
     url: item.url
   }));
   
-  return { newsItems, sourceLinks, rawApiData };
+  return { newsItems, sourceLinks };
 };
