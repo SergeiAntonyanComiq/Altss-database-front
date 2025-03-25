@@ -1,175 +1,20 @@
 
 import { CompanyType } from "@/types/company";
+import { NewsItem, NewsApiResponse } from './types';
+import { getRandomColor, parseNewsItemsFromText, createMockApiResponse } from './utils';
+import { searchNewsViaPerplexica } from './api';
+import { companyNewsMap } from './mockData';
 
-export interface NewsItem {
-  id: string;
-  logo: string;
-  color: string;
-  textColor: string;
-  content: string;
-  date: string;
-  source?: string;
-  url?: string;
-}
+export type { NewsItem, NewsApiResponse } from './types';
+export { getRandomColor } from './utils';
+export { searchNewsViaPerplexica } from './api';
 
-// Simulated news data for different companies - expanded with more news items
-const companyNewsMap = {
-  "Alberleen Group": [
-    {
-      title: "Alberleen Group Announces New Healthcare Investment Focus",
-      content: "Alberleen Group has announced a strategic shift to focus more on healthcare investments, particularly in biotechnology and healthcare services sectors. The company aims to capitalize on the growing opportunities in healthcare innovation.",
-      source: "Bloomberg",
-      date: "2025-01-15",
-      url: "https://www.bloomberg.com/news/articles/healthcare-investments"
-    },
-    {
-      title: "Alberleen Group Partners with Tech Startup for Financial Analytics Platform",
-      content: "A new partnership between Alberleen Group and fintech startup DataViz aims to develop advanced financial analytics tools for investment management. The collaboration will combine Alberleen's industry expertise with DataViz's AI-driven analytics capabilities.",
-      source: "TechFinance",
-      date: "2024-11-22",
-      url: "https://www.techfinance.com/partnerships/alberleen-dataviz"
-    },
-    {
-      title: "Alberleen Group Reports 15% Growth in Assets Under Management",
-      content: "In its annual report, Alberleen Group announced a 15% increase in assets under management, reaching new heights in its investment portfolio. The growth was attributed to successful investments in emerging markets and technology sectors.",
-      source: "Financial Times",
-      date: "2024-09-03",
-      url: "https://www.ft.com/content/alberleen-growth-report"
-    },
-    {
-      title: "Alberleen Group Expands European Presence with New London Office",
-      content: "Alberleen Group has expanded its international footprint by opening a new office in London's financial district. This strategic move aims to strengthen the firm's presence in European markets and provide closer support to its growing client base in the region.",
-      source: "Reuters",
-      date: "2024-08-15",
-      url: "https://www.reuters.com/business/finance/alberleen-european-expansion"
-    },
-    {
-      title: "Alberleen Group CEO Featured in 'Top 50 Financial Leaders' List",
-      content: "The CEO of Alberleen Group has been recognized in the annual 'Top 50 Financial Leaders' list by Finance Monthly magazine. The recognition highlights the firm's innovative approach to investment management and its commitment to sustainable finance practices.",
-      source: "Finance Monthly",
-      date: "2024-07-10",
-      url: "https://www.financemonthly.com/top-financial-leaders"
-    }
-  ],
-  "default": [
-    {
-      title: "Company Secures Major Investment Round",
-      content: "The company has successfully secured a significant investment round, enabling expansion into new markets and development of innovative products.",
-      source: "Business Insider",
-      date: "2024-12-10",
-      url: "https://www.businessinsider.com/company-investment"
-    },
-    {
-      title: "Strategic Partnership Announced",
-      content: "A new strategic partnership has been formed, aiming to enhance market presence and develop joint solutions for industry challenges.",
-      source: "Industry Today",
-      date: "2024-10-05",
-      url: "https://www.industrytoday.com/strategic-partnership"
-    },
-    {
-      title: "Annual Results Show Positive Growth",
-      content: "The annual financial results reveal strong growth in key areas, with promising projections for the upcoming fiscal year.",
-      source: "Financial Review",
-      date: "2024-07-22",
-      url: "https://www.financialreview.com/annual-results"
-    },
-    {
-      title: "New Product Launch Exceeds Expectations",
-      content: "The company's recent product launch has exceeded market expectations, with strong initial sales and positive customer feedback across all regions.",
-      source: "Tech Journal",
-      date: "2024-06-14",
-      url: "https://www.techjournal.com/product-launch-success"
-    },
-    {
-      title: "Company Recognized for Innovation Excellence",
-      content: "The company has received an industry award for innovation excellence, highlighting its commitment to developing cutting-edge solutions for its customers.",
-      source: "Innovation Today",
-      date: "2024-05-03",
-      url: "https://www.innovationtoday.com/excellence-awards"
-    },
-    {
-      title: "Expansion into Asian Markets Announced",
-      content: "The company has announced plans to expand operations into key Asian markets, establishing new offices and distribution networks to support growth in the region.",
-      source: "Global Business Review",
-      date: "2024-04-18",
-      url: "https://www.globalbusinessreview.com/asian-market-expansion"
-    }
-  ]
-};
-
-export const getRandomColor = () => {
-  const colors = ['#f43f5e', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#f97316', '#14b8a6'];
-  return colors[Math.floor(Math.random() * colors.length)];
-};
-
-// Updated with the exact requested format
-export const searchNewsViaPerplexica = async (companyName: string) => {
-  try {
-    console.log("Searching news via Perplexica for:", companyName);
-    
-    // Define the API endpoint that would be used
-    const endpoint = "http://162.254.26.189:3000/";
-    
-    // Create request body with the exact format requested
-    const requestBody = {
-      chatModel: {
-        provider: "ollama",
-        name: "gemma3:27b"
-      },
-      embeddingModel: {
-        provider: "ollama",
-        name: "gemma3:27b"
-      },
-      optimizationMode: "speed",
-      focusMode: "webSearch",
-      query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
-      history: [],
-      chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
-      messageId: "b283ac04535b9b"
-    };
-    
-    // Attempt to make the actual API call
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log("Received actual Perplexica response:", data);
-      
-      // Add request data and endpoint to the response
-      const fullResponse = {
-        ...data,
-        request: requestBody,
-        endpoint: endpoint
-      };
-      
-      return fullResponse;
-    } catch (apiError) {
-      console.error('Error calling Perplexica API:', apiError);
-      // Fallback to mock response on API error
-      throw apiError;
-    }
-  } catch (error) {
-    console.error('Perplexica search error:', error);
-    throw error;
-  }
-};
-
-export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems: NewsItem[], apiResponse: any}> => {
+export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems: NewsItem[], apiResponse: NewsApiResponse}> => {
   // Make sure we're using the correct company name
   const companyName = company.firm_name?.trim() || company.name?.trim() || "";
   console.log("Fetching news for company:", companyName);
   
-  let apiResponseData: any = null;
+  let apiResponseData: NewsApiResponse | null = null;
   
   try {
     // Get actual perplexity data with the company name
@@ -185,50 +30,8 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
       // Parse the text response which should have date, news, link format
       const newsText = perplexicaData.answer.text;
       
-      // Try to extract news items from the text response
-      // The format might be varied, so we'll try to be flexible
-      const newsLines = newsText.split('\n').filter(line => line.trim() !== '');
-      
-      const newsItems = newsLines.map((line, index) => {
-        // Try to extract date, content, and link
-        let date = "Unknown date";
-        let content = line;
-        let url = undefined;
-        let source = "News Source";
-        
-        // Try to extract date (assuming it's at the beginning of the line)
-        const dateMatch = line.match(/^(\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4}|\w+ \d{1,2}, \d{4})/);
-        if (dateMatch) {
-          date = dateMatch[0];
-          content = line.substring(dateMatch[0].length).trim();
-        }
-        
-        // Try to extract URL (assuming it's at the end of the line or separated)
-        const urlMatch = content.match(/(https?:\/\/[^\s]+)/);
-        if (urlMatch) {
-          url = urlMatch[0];
-          content = content.replace(urlMatch[0], '').trim();
-          
-          // Try to extract source from URL
-          try {
-            const urlObj = new URL(url);
-            source = urlObj.hostname.replace('www.', '');
-          } catch (e) {
-            // Keep default source if URL parsing fails
-          }
-        }
-        
-        return {
-          id: `perplexica-${index}`,
-          logo: source ? source.substring(0, 2).toUpperCase() : "NW",
-          color: getRandomColor(),
-          textColor: '#ffffff',
-          content: content,
-          date: date,
-          source: source,
-          url: url
-        };
-      });
+      // Parse news items from the text response
+      const newsItems = parseNewsItemsFromText(newsText);
       
       return { newsItems, apiResponse: apiResponseData };
     }
@@ -255,42 +58,7 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<{newsItems
   
   // Create a mock API response if we don't have one from Perplexity
   if (!apiResponseData) {
-    // Define the API endpoint
-    const endpoint = "http://162.254.26.189:3000/";
-    
-    // Create a mock request that would have been sent
-    const mockRequest = {
-      chatModel: {
-        provider: "ollama",
-        name: "gemma3:27b"
-      },
-      embeddingModel: {
-        provider: "ollama",
-        name: "gemma3:27b"
-      },
-      optimizationMode: "speed",
-      focusMode: "webSearch",
-      query: `show ${companyName} company news for last year with dates and links to the news format: date, news, link`,
-      history: [],
-      chatId: "9f12833e3772487acc775e62a3b1237e423e3cba",
-      messageId: "b283ac04535b9b"
-    };
-    
-    apiResponseData = {
-      answer: {
-        text: `Here are the latest news items for ${companyName}:\n\n` + 
-              newsData.map((item: any) => `${item.date}: ${item.content} ${item.url}`).join('\n')
-      },
-      sources: newsData.map((item: any, index: number) => ({
-        pageContent: item.content,
-        metadata: {
-          title: item.source || "News Source",
-          url: item.url || "#"
-        }
-      })),
-      request: mockRequest,
-      endpoint: endpoint
-    };
+    apiResponseData = createMockApiResponse(companyName, newsData);
   }
   
   return { newsItems, apiResponse: apiResponseData };
