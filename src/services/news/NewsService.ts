@@ -104,6 +104,7 @@ export const getRandomColor = () => {
 
 export const searchNewsViaPerplexica = async (companyName: string) => {
   try {
+    console.log("Searching news via Perplexica for:", companyName);
     const response = await fetch('http://localhost:3000/api/search', {
       method: 'POST',
       headers: {
@@ -130,6 +131,7 @@ export const searchNewsViaPerplexica = async (companyName: string) => {
     }
 
     const data = await response.json();
+    console.log("Perplexica API response:", data);
     return data;
   } catch (error) {
     console.error('Perplexica search error:', error);
@@ -145,22 +147,30 @@ export const fetchCompanyNews = async (company: CompanyType): Promise<NewsItem[]
     const perplexicaData = await searchNewsViaPerplexica(companyName);
     
     if (perplexicaData && perplexicaData.sources && perplexicaData.sources.length > 0) {
-      return perplexicaData.sources.map((source, index) => ({
-        id: `perplexica-${index}`,
-        logo: source.metadata.title.substring(0, 2).toUpperCase(),
-        color: getRandomColor(),
-        textColor: '#ffffff',
-        content: source.pageContent,
-        date: new Date().toISOString().split('T')[0],
-        source: source.metadata.title,
-        url: source.metadata.url
-      }));
+      console.log("Using Perplexica data with sources:", perplexicaData.sources.length);
+      return perplexicaData.sources.map((source, index) => {
+        // Extract the URL from metadata
+        const sourceUrl = source.metadata && source.metadata.url ? source.metadata.url : undefined;
+        console.log(`Source ${index}: URL = ${sourceUrl}`);
+        
+        return {
+          id: `perplexica-${index}`,
+          logo: source.metadata.title ? source.metadata.title.substring(0, 2).toUpperCase() : "NW",
+          color: getRandomColor(),
+          textColor: '#ffffff',
+          content: source.pageContent,
+          date: new Date().toISOString().split('T')[0],
+          source: source.metadata.title || "News Source",
+          url: sourceUrl
+        };
+      });
     }
   } catch (perplexicaError) {
     console.error("Perplexica API error:", perplexicaError);
   }
   
   // Fallback to simulated news data
+  console.log("Falling back to simulated news data");
   const newsData = companyNewsMap[companyName] || companyNewsMap.default;
   
   return newsData.map((item, index) => ({
