@@ -31,5 +31,11 @@ export const cleanNewsContent = (content: string): string => {
   // Handle Month DD, YYYY - content pattern (with or without bullet points)
   cleanedContent = cleanedContent.replace(/^(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4}\s*[-–—]\s*/, '');
   
+  // Handle YYYY-MM-DD date format with pipe or dash separator
+  cleanedContent = cleanedContent.replace(/^\d{4}-\d{2}-\d{2}\s*[\|–—-]\s*/, '');
+  
+  // Handle plain date format with pipe separator (common in some sources)
+  cleanedContent = cleanedContent.replace(/^[^|]+\|\s*/, '');
+  
   return cleanedContent;
 };

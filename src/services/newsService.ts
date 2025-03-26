@@ -1,3 +1,4 @@
+
 import { formatDate } from "@/utils/dateUtils";
 import { cleanNewsContent } from "@/utils/contentUtils";
 import { extractDomainForLogo, getSourceLogo } from "@/utils/newsUtils";
@@ -96,13 +97,17 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
             /^(\d{1,2}\/\d{1,2}\/\d{2,4})\s+[-–—]\s*/,
             /^(\d{1,2}\.\d{1,2}\.\d{2,4})\s+[-–—]\s*/,
             /^(\d{4}[-–—]\d{1,2}[-–—]\d{1,2})\s+[-–—]\s*/,
+            // Add new date pattern for YYYY-MM-DD format
+            /^(\d{4}-\d{2}-\d{2})\s*[\|–—-]\s*/,
+            // Add pattern for date with pipe symbol
+            /^([^|]+)\|\s*/
           ];
           
           for (const pattern of datePatterns) {
             const match = content.match(pattern);
             if (match) {
               if (date === "n/a") {
-                date = match[0].replace(/[-–—]\s*$/, '').trim();
+                date = match[0].replace(/[-–—|]\s*$/, '').trim();
               }
               content = content.replace(pattern, '');
               break;
