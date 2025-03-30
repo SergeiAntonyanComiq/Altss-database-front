@@ -62,14 +62,12 @@ const ProfilePage: React.FC = () => {
   }, [id, navigate, toast]);
 
   return (
-    <div className="overflow-hidden">
-      <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
-        <div className="w-[19%] max-md:w-full">
-          <AppSidebar />
-        </div>
+    <SidebarProvider>
+      <div className="flex w-full min-h-screen bg-background">
+        <AppSidebar />
         
-        <div className="w-[81%] ml-5 max-md:w-full max-md:ml-0">
-          <div className="bg-gray-100 p-5 min-h-[900px]">
+        <div className="flex-1 bg-gray-100">
+          <div className="p-5 min-h-[900px]">
             {isLoading ? (
               <ProfileSkeleton />
             ) : !contact ? (
@@ -90,7 +88,7 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
