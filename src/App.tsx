@@ -16,6 +16,7 @@ import CompanyDetails from "./pages/CompanyDetails";
 import MyOrders from "./pages/MyOrders";
 import Favorites from "./pages/Favorites";
 import SavedSearches from "./pages/SavedSearches";
+import Test from "./pages/Test";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,9 @@ const App = () => (
             
             {/* NotFound should remain accessible */}
             <Route path="*" element={<NotFound />} />
+            
+            {/* Test route - no protection */}
+            <Route path="/test" element={<Test />} />
             
             {/* All protected routes */}
             <Route path="/persons" element={
