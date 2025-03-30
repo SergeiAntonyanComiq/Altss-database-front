@@ -31,7 +31,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
       value={activeTab} 
       onValueChange={setActiveTab}
     >
-      <div className="px-4 flex gap-6 border-b">
+      <div className="flex gap-6 border-b mb-6">
         <TabsList className="bg-transparent p-0 h-auto">
           <TabsTrigger 
             value="details" 
@@ -54,22 +54,20 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
         </TabsList>
       </div>
 
-      <div className="p-4">
-        <TabsContent value="details" className="mt-0">
-          <div className="space-y-10">
-            <ProfileAboutSection contact={contact} />
-            <ProfileContactsSection contact={contact} />
-          </div>
-        </TabsContent>
+      <TabsContent value="details" className="mt-0">
+        <div className="space-y-10">
+          <ProfileAboutSection contact={contact} />
+          <ProfileContactsSection contact={contact} />
+        </div>
+      </TabsContent>
 
-        <TabsContent value="bio" className="mt-0">
-          <ProfileBioSection contact={contact} newsItems={newsItems} />
-        </TabsContent>
+      <TabsContent value="bio" className="mt-0">
+        <ProfileBioSection contact={contact} newsItems={newsItems} />
+      </TabsContent>
 
-        <TabsContent value="job" className="mt-0">
-          <ProfileJobSection contact={contact} />
-        </TabsContent>
-      </div>
+      <TabsContent value="job" className="mt-0">
+        <ProfileJobSection contact={contact} />
+      </TabsContent>
     </Tabs>
   );
 };

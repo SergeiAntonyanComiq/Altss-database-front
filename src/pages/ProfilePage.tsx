@@ -73,15 +73,17 @@ const ProfilePage: React.FC = () => {
             ) : !contact ? (
               <ProfileNotFound />
             ) : (
-              <div className="bg-white shadow rounded-lg">
+              <>
                 <ProfileHeader contact={contact} />
-                <ProfileTabs 
-                  contact={contact} 
-                  activeTab={activeTab} 
-                  setActiveTab={setActiveTab} 
-                  newsItems={newsItems}
-                />
-              </div>
+                <div className="bg-white shadow rounded-lg p-4">
+                  <ProfileTabs 
+                    contact={contact} 
+                    activeTab={activeTab} 
+                    setActiveTab={setActiveTab} 
+                    newsItems={newsItems}
+                  />
+                </div>
+              </>
             )}
           </div>
         </div>
