@@ -62,28 +62,35 @@ const ProfilePage: React.FC = () => {
   }, [id, navigate, toast]);
 
   return (
-    <SidebarProvider>
-      <div className="flex w-full min-h-screen bg-background">
-        <AppSidebar />
-        <main className="flex-1 bg-[#F6F6F7] p-6 overflow-auto">
-          {isLoading ? (
-            <ProfileSkeleton />
-          ) : !contact ? (
-            <ProfileNotFound />
-          ) : (
-            <div className="max-w-6xl mx-auto">
-              <ProfileHeader contact={contact} />
-              <ProfileTabs 
-                contact={contact} 
-                activeTab={activeTab} 
-                setActiveTab={setActiveTab} 
-                newsItems={newsItems}
-              />
-            </div>
-          )}
-        </main>
+    <div className="overflow-hidden">
+      <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
+        <div className="w-[19%] max-md:w-full">
+          <AppSidebar />
+        </div>
+        
+        <div className="w-[81%] ml-5 max-md:w-full max-md:ml-0">
+          <div className="bg-gray-100 p-5 min-h-[900px]">
+            {isLoading ? (
+              <ProfileSkeleton />
+            ) : !contact ? (
+              <ProfileNotFound />
+            ) : (
+              <>
+                <ProfileHeader contact={contact} />
+                <div className="bg-white shadow rounded-lg p-4">
+                  <ProfileTabs 
+                    contact={contact} 
+                    activeTab={activeTab} 
+                    setActiveTab={setActiveTab} 
+                    newsItems={newsItems}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
