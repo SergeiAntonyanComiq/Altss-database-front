@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Linkedin, Twitter, Mail, Phone, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContactType } from "@/types/contact";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProfileContactsSectionProps {
   contact: ContactType;
@@ -14,6 +14,7 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
     work: false,
     personal: false
   });
+  const { toast } = useToast();
 
   const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
     setShowEmails(prev => ({
@@ -31,47 +32,47 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
     });
   };
 
-  const hiddenEmail = contact.email ? contact.email.replace(/(.{2})(.*)(@.*)/, '$1••••••$3') : '••••••••••••@••.•••';
+  const hiddenEmail = contact.email ? contact.email.replace(/(.{2})(.*)(@.*)/, '$1••••••••••$3') : '•••••••••••@••.•••';
 
   return (
     <section>
-      <h2 className="text-xl font-bold mb-2">Contacts</h2>
-      <hr className="mb-4" />
-      <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
-        {contact.linkedin && (
-          <>
-            <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Linkedin className="h-4 w-4" />LinkedIn
-            </span>
-            <a 
-              href={`https://${contact.linkedin}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              {contact.linkedin}
-            </a>
-          </>
+      <h2 className="text-xl font-bold mb-4">Contacts</h2>
+      <hr className="mb-6" />
+      <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-6 text-base">
+        <span className="flex items-center text-gray-600">
+          <Linkedin className="h-4 w-4 mr-2 text-blue-600" /> LinkedIn
+        </span>
+        {contact.linkedin ? (
+          <a 
+            href={`https://${contact.linkedin}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            {contact.linkedin}
+          </a>
+        ) : (
+          <span>no data</span>
         )}
         
-        {contact.twitter && (
-          <>
-            <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Twitter className="h-4 w-4" />X (Twitter)
-            </span>
-            <a 
-              href={`https://x.com/${contact.twitter}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              {`x.com/${contact.twitter}`}
-            </a>
-          </>
+        <span className="flex items-center text-gray-600">
+          <Twitter className="h-4 w-4 mr-2 text-gray-600" /> X (Twitter)
+        </span>
+        {contact.twitter ? (
+          <a 
+            href={`https://x.com/${contact.twitter}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            {`x.com/${contact.twitter}`}
+          </a>
+        ) : (
+          <span>no data</span>
         )}
         
-        <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <Mail className="h-4 w-4" />Work Emails
+        <span className="flex items-center text-gray-600">
+          <Mail className="h-4 w-4 mr-2 text-gray-600" /> Work Emails
         </span>
         {contact.email ? (
           <div>
@@ -89,18 +90,18 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
           <span>no data</span>
         )}
         
-        <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <Mail className="h-4 w-4" />Personal Email
+        <span className="flex items-center text-gray-600">
+          <Mail className="h-4 w-4 mr-2 text-gray-600" /> Personal Email
         </span>
         <span>no data</span>
         
-        {contact.tel && (
-          <>
-            <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Phone className="h-4 w-4" />Phone number
-            </span>
-            <span>{contact.tel}</span>
-          </>
+        <span className="flex items-center text-gray-600">
+          <Phone className="h-4 w-4 mr-2 text-gray-600" /> Phone number
+        </span>
+        {contact.tel ? (
+          <span>{contact.tel}</span>
+        ) : (
+          <span>no data</span>
         )}
       </div>
     </section>
