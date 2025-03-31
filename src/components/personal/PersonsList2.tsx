@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
