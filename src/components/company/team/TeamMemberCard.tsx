@@ -31,7 +31,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ contact, isPrimary = fa
       <div className="flex-1">
         <div className="flex justify-between">
           <div>
-            <Link to={`/profile/${contact.contact_id}`} className="font-medium text-blue-600 hover:underline">
+            <Link to={`/profile/${contact.id}`} className="font-medium text-blue-600 hover:underline">
               {contact.title} {contact.name}
             </Link>
             {isPrimary && (
