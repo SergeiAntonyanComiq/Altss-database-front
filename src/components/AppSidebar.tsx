@@ -97,7 +97,7 @@ const AppSidebar = () => {
   return (
     <>
       <Sidebar className="border-r border-[#DFE4EA] bg-white transition-all duration-300 ease-in-out">
-        <SidebarHeader className="pt-4 pb-3">
+        <SidebarHeader className="pt-4 pb-2">
           <div className="flex w-full items-center justify-between px-6">
             <div className="flex items-center">
               <img 
@@ -110,26 +110,26 @@ const AppSidebar = () => {
           </div>
         </SidebarHeader>
         
-        <SidebarContent className="px-4 mt-10">
+        <SidebarContent className="px-4 mt-6">
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
-                {index === 2 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
+                {index === 3 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     data-active={isActive(item.path)}
                     onClick={() => handleNavigation(item.path)}
-                    className={`flex items-center justify-between text-[#637381] hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md transition-all duration-200 ${
+                    className={`flex items-center justify-between text-[#637381] py-3 px-4 rounded-md transition-all duration-200 mb-1 ${
                       isActive(item.path) 
-                        ? "bg-[#3758F9]/10 text-[#3758F9] font-medium" 
-                        : "font-medium"
+                        ? "bg-[#101828] text-white" 
+                        : ""
                     }`}
                   >
                     <div className="flex items-center">
                       <img 
                         src={item.iconSrc} 
                         alt={item.title} 
-                        className={`h-6 w-6 mr-3 object-contain ${isActive(item.path) ? "filter-[#3758F9]" : ""}`}
+                        className={`h-6 w-6 mr-3 object-contain ${isActive(item.path) ? "filter brightness-0 invert" : ""}`}
                       />
                       <span>{item.title}</span>
                     </div>
@@ -158,7 +158,7 @@ const AppSidebar = () => {
                 <AvatarFallback className="bg-[#9747FF] text-white">{getUserInitials()}</AvatarFallback>
               </Avatar>
               <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">
-                {user?.email || "User Name"}
+                {user?.email || "alexmobile4"}
               </span>
             </div>
             
