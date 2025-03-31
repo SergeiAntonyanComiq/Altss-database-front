@@ -26,10 +26,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
       <div className="text-xs text-gray-600 mb-1 font-montserrat">Last update: 4 weeks ago</div>
 
       <div className="flex items-center justify-between w-full">
-        <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">{contact.name}</h1>
-        
-        <div className="flex items-center gap-2.5">
-          <button className="bg-white flex items-center gap-2.5 text-base text-[rgba(0,126,96,1)] font-medium text-center justify-center px-6 py-[5px] rounded-[50px] max-md:px-5 border border-gray-200">
+        <div className="flex items-center gap-2">
+          <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">{contact.name}</h1>
+          <button className="bg-white flex items-center gap-2.5 text-base text-[rgba(0,126,96,1)] font-medium text-center justify-center px-6 py-[5px] rounded-[50px] max-md:px-5">
             <img
               src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ca51bf083c87bb6765db009254de1b519ea4a3ec"
               alt="Star"
@@ -37,7 +36,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
             />
             <span className="self-stretch my-auto">Add to Favorites</span>
           </button>
-          
+        </div>
+        
+        <div className="flex items-center gap-2.5">
           <button className="bg-white border flex items-center gap-2.5 justify-center px-6 py-[5px] rounded-[50px] border-[rgba(223,228,234,1)] border-solid max-md:px-5 text-[rgba(99,115,129,1)] font-medium">
             <img 
               src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/0bd597c769172697ba7e1f8d0385eb32afeed632" 
