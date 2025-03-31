@@ -24,16 +24,31 @@ export const useContactsSearch = () => {
     
     try {
       console.log('Searching with params:', params);
+      
+      // Filter out empty parameters
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined && value !== "")
+      );
+      
+      // Skip API call if all parameters are empty
+      if (Object.keys(filteredParams).length === 0) {
+        console.log('All parameters are empty, skipping API call');
+        setData([]);
+        setIsLoading(false);
+        toast({
+          title: "No Search Parameters",
+          description: "Please enter at least one search term",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       const response = await fetch('https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: params.name || "",
-          investor: params.investor || "",
-          firm_type: params.firm_type || ""
-        }),
+        body: JSON.stringify(filteredParams),
       });
 
       if (!response.ok) {

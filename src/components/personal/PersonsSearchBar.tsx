@@ -57,7 +57,9 @@ const PersonsSearchBar = ({
     setSearchParams(localFilters);
     
     // Set search query to match the name filter for consistency
-    setSearchQuery(localFilters.name);
+    if (localFilters.name) {
+      setSearchQuery(localFilters.name);
+    }
     
     // Close the popover
     setIsPopoverOpen(false);

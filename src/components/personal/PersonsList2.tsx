@@ -66,18 +66,23 @@ const PersonsList2 = () => {
   };
 
   const handleSearch = () => {
-    console.log('Performing search with:', { ...searchParams, name: searchQuery || searchParams.name });
-    search({
+    // Prepare search parameters
+    const params = {
       name: searchQuery || searchParams.name,
       investor: searchParams.investor,
       firm_type: searchParams.firm_type
-    });
+    };
     
-    // Notify the user that search is being performed
-    toast({
-      title: "Searching",
-      description: "Searching for contacts with the specified filters",
-    });
+    console.log('Performing search with:', params);
+    
+    // Perform the search
+    search(params);
+    
+    // Update searchParams with the most recent values
+    setSearchParams(prev => ({
+      ...prev,
+      name: searchQuery || prev.name
+    }));
   };
 
   const handleClearSearch = () => {
