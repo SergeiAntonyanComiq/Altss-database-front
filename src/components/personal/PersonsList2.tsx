@@ -6,24 +6,26 @@ import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
 import PersonsPagination from "./PersonsPagination";
 
-const PersonsList2 = () => {
+interface PersonsList2Props {
+  currentPage: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+  onItemsPerPageChange: (perPage: number) => void;
+}
+
+const PersonsList2 = ({
+  currentPage,
+  itemsPerPage,
+  onPageChange,
+  onItemsPerPageChange
+}: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [currentPage, setCurrentPage] = useState(2);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons] = useState<PersonType[]>(mockPersons);
+  const [isLoading] = useState(false);
   
   // Calculate total pages based on the number of persons
   const totalPages = Math.ceil(persons.length / itemsPerPage);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (perPage: number) => {
-    setItemsPerPage(perPage);
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 
@@ -46,8 +48,12 @@ const PersonsList2 = () => {
     console.log(`Toggle favorite for person with ID: ${id}`);
   };
 
+  const isPersonSelected = (id: string | undefined) => {
+    return id ? selectedPersons.includes(id) : false;
+  };
+
   return (
-    <div className="container py-6">
+    <div className="px-6 py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
@@ -69,16 +75,18 @@ const PersonsList2 = () => {
           handleCheckboxChange={handleCheckboxChange}
           handleSelectAll={handleSelectAll}
           toggleFavorite={toggleFavorite}
+          isPersonSelected={isPersonSelected}
+          isLoading={isLoading}
         />
       </div>
       
       <div className="mt-4">
         <PersonsPagination 
           currentPage={currentPage}
-          onPageChange={handlePageChange}
+          onPageChange={onPageChange}
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={handleItemsPerPageChange}
+          onItemsPerPageChange={onItemsPerPageChange}
         />
       </div>
     </div>

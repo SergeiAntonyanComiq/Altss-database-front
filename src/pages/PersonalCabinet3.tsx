@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import ContactsList from "@/components/contacts/ContactsList";
+import PersonsList2 from "@/components/personal/PersonsList2";
 
 const PersonalCabinet3 = () => {
   const [activeSection, setActiveSection] = useState<string>("contacts");
@@ -40,8 +41,20 @@ const PersonalCabinet3 = () => {
     switch (currentSection) {
       case "contacts":
         return <ContactsList />;
+      case "persons":
+        return <PersonsList2 
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />;
       default:
-        return <ContactsList />;
+        return <PersonsList2 
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />;
     }
   };
 
@@ -49,7 +62,7 @@ const PersonalCabinet3 = () => {
     <SidebarProvider>
       <div className="flex w-full min-h-screen bg-background">
         <AppSidebar />
-        <main className="flex-1 bg-[#F6F6F7] overflow-auto">
+        <main className="flex-1 bg-[#FEFEFE] min-w-0 min-h-[900px] overflow-auto">
           {renderContent()}
         </main>
       </div>
