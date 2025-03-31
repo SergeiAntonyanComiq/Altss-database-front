@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Filter, Bookmark, Heart, Search, X, Loader2 } from "lucide-react";
@@ -67,9 +67,17 @@ const PersonsSearchBar = ({
     setSearchParams(emptyFilters);
   };
 
-  // Sync local filters with searchParams when they change externally
-  React.useEffect(() => {
-    setLocalFilters(searchParams);
+  // Only update local filters when searchParams changes and they're different
+  useEffect(() => {
+    // Deep comparison to avoid unnecessary updates
+    const isDifferent = 
+      localFilters.name !== searchParams.name || 
+      localFilters.investor !== searchParams.investor || 
+      localFilters.firm_type !== searchParams.firm_type;
+      
+    if (isDifferent) {
+      setLocalFilters(searchParams);
+    }
   }, [searchParams]);
 
   return (
