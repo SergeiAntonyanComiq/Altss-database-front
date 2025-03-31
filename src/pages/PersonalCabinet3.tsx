@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
@@ -7,7 +6,6 @@ import ContactsList from "@/components/contacts/ContactsList";
 import PersonsList2 from "@/components/personal/PersonsList2";
 
 const PersonalCabinet3 = () => {
-  const [activeSection, setActiveSection] = useState<string>("contacts");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -17,22 +15,39 @@ const PersonalCabinet3 = () => {
   const perPageParam = searchParams.get('perPage');
   const section = searchParams.get('section');
   
-  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
-  const itemsPerPage = perPageParam ? parseInt(perPageParam, 10) : 10;
+  const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
+  const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
+  const [activeSection, setActiveSection] = useState<string>(section || "persons");
 
   // Update URL when page or items per page changes
   const handlePageChange = (page: number) => {
+    setCurrentPage(page);
     const params = new URLSearchParams(location.search);
     params.set('page', page.toString());
     navigate(`${location.pathname}?${params.toString()}`);
   };
 
   const handleItemsPerPageChange = (perPage: number) => {
+    setItemsPerPage(perPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
     const params = new URLSearchParams(location.search);
     params.set('perPage', perPage.toString());
-    params.set('page', '1'); // Reset to first page when changing items per page
+    params.set('page', '1');
     navigate(`${location.pathname}?${params.toString()}`);
   };
+
+  // Keep URL and state in sync
+  useEffect(() => {
+    if (pageParam) {
+      setCurrentPage(parseInt(pageParam, 10));
+    }
+    if (perPageParam) {
+      setItemsPerPage(parseInt(perPageParam, 10));
+    }
+    if (section) {
+      setActiveSection(section);
+    }
+  }, [pageParam, perPageParam, section]);
 
   const renderContent = () => {
     // Use the section from URL or fallback to activeSection state
@@ -42,19 +57,15 @@ const PersonalCabinet3 = () => {
       case "contacts":
         return <ContactsList />;
       case "persons":
-        return <PersonsList2 
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />;
       default:
-        return <PersonsList2 
-          currentPage={currentPage}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />;
+        return (
+          <PersonsList2 
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        );
     }
   };
 

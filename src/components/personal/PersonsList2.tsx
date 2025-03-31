@@ -4,7 +4,16 @@ import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
-import PersonsPagination from "./PersonsPagination";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationEllipsis, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -51,6 +60,48 @@ const PersonsList2 = ({
   const isPersonSelected = (id: string | undefined) => {
     return id ? selectedPersons.includes(id) : false;
   };
+  
+  // Generate array of page numbers for pagination
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+    
+    if (totalPages <= maxPagesToShow) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+      
+      if (currentPage <= 3) {
+        start = 2;
+        end = Math.min(4, totalPages - 1);
+      } 
+      else if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - 3);
+        end = totalPages - 1;
+      }
+      
+      if (start > 2) {
+        pages.push('ellipsis');
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (end < totalPages - 1) {
+        pages.push('ellipsis');
+      }
+      
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  };
 
   return (
     <div className="px-6 py-6">
@@ -80,14 +131,79 @@ const PersonsList2 = ({
         />
       </div>
       
-      <div className="mt-4">
-        <PersonsPagination 
-          currentPage={currentPage}
-          onPageChange={onPageChange}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={onItemsPerPageChange}
-        />
+      <div className="flex justify-between items-center w-full mt-4">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => onPageChange(1)}
+                disabled={currentPage === 1}
+                className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+            
+            {getPageNumbers().map((page, index) => 
+              page === 'ellipsis' ? (
+                <PaginationItem key={`ellipsis-${index}`}>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              ) : (
+                <PaginationItem key={`page-${page}`}>
+                  <PaginationLink
+                    onClick={() => onPageChange(page as number)}
+                    isActive={currentPage === page}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            )}
+            
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => onPageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+        
+        <div className="w-[200px]">
+          <select 
+            className="w-full h-10 border border-input bg-background px-3 py-2 text-sm rounded-md"
+            value={itemsPerPage}
+            onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
+          >
+            <option value="10">10 results per page</option>
+            <option value="25">25 results per page</option>
+            <option value="50">50 results per page</option>
+            <option value="100">100 results per page</option>
+          </select>
+        </div>
       </div>
     </div>
   );
