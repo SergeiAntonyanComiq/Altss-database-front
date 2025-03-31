@@ -37,15 +37,28 @@ export const useContactsSearch = () => {
       });
 
       if (!response.ok) {
+        console.error('API response not OK:', response.status, response.statusText);
         throw new Error('Failed to fetch contacts');
       }
 
       const result = await response.json();
       console.log('Search results:', result);
-      setData(result);
+      
+      if (Array.isArray(result)) {
+        setData(result);
+      } else {
+        console.error('API returned unexpected data format:', result);
+        setData([]);
+        toast({
+          title: "Warning",
+          description: "The API returned an unexpected data format",
+          variant: "destructive",
+        });
+      }
     } catch (err) {
       console.error('Search error:', err);
       setError('Data is unavailable');
+      setData(null);
       toast({
         title: "Error",
         description: "Failed to fetch contacts data",

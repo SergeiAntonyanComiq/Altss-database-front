@@ -82,15 +82,24 @@ const PersonsList2 = () => {
     clearSearch();
   };
 
-  // Render contacts table if we have contact search results
+  // Render contacts data in the table when search results are available
   const renderContactsTable = () => {
+    if (isLoading) {
+      return <div className="p-4 text-center">Loading contacts...</div>;
+    }
+
     if (error) {
-      return <div className="p-4 text-center text-red-500">Data is unavailable</div>;
+      return <div className="p-4 text-center text-red-500">{error}</div>;
     }
 
     if (!contacts || contacts.length === 0) {
       return <div className="p-4 text-center">No results found</div>;
     }
+
+    // Get a subset of contacts for the current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, contacts.length);
+    const currentContacts = contacts.slice(startIndex, endIndex);
 
     return (
       <Table>
@@ -105,7 +114,7 @@ const PersonsList2 = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {contacts.map((contact) => (
+          {currentContacts.map((contact) => (
             <TableRow key={contact.id}>
               <TableCell>{contact.name}</TableCell>
               <TableCell>{contact.investor}</TableCell>
@@ -143,7 +152,9 @@ const PersonsList2 = () => {
       
       <div className="mt-4">
         {hasSearched ? (
-          renderContactsTable()
+          <div className="bg-white rounded-lg shadow">
+            {renderContactsTable()}
+          </div>
         ) : (
           <PersonsTable2 
             persons={persons}
