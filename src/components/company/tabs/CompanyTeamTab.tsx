@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 interface CompanyTeamTabProps {
   company: CompanyType;
@@ -21,18 +22,20 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
   const [teamMembers, setTeamMembers] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchTeamMembers = async () => {
-      if (!company.id) {
-        setError("Company ID not available");
+      // Use firm_id instead of id
+      if (!company.firm_id) {
+        setError("Firm ID not available");
         setIsLoading(false);
         return;
       }
 
       try {
         setIsLoading(true);
-        console.log("Fetching team members for company ID:", company.id);
+        console.log("Fetching team members for company firm_id:", company.firm_id);
         
         const response = await fetch("https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/", {
           method: "POST",
@@ -40,7 +43,7 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            firm_id: parseInt(company.id)
+            firm_id: parseInt(String(company.firm_id))
           })
         });
 
@@ -54,13 +57,18 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
       } catch (err) {
         console.error("Error fetching team members:", err);
         setError("Failed to load team members. Please try again later.");
+        toast({
+          title: "Error",
+          description: "Failed to load team members. Please try again later.",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTeamMembers();
-  }, [company.id]);
+  }, [company.firm_id, toast]);
 
   // Find primary contact (assuming it's the first one with a specific role or just the first one)
   const primaryContact = teamMembers.length > 0 ? teamMembers[0] : null;
