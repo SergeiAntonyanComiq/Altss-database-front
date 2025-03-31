@@ -9,7 +9,7 @@ import PersonsPagination from "./PersonsPagination";
 const PersonsList2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [currentPage, setCurrentPage] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons] = useState<PersonType[]>(mockPersons);
   
