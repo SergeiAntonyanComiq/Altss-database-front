@@ -297,7 +297,7 @@ const ContactsList = () => {
         )}
       </div>
       
-      <div className="mt-4 w-full">
+      <div className="mt-4">
         <PersonsPagination 
           currentPage={currentPage} 
           onPageChange={handlePageChange}
