@@ -1,4 +1,3 @@
-
 import React from "react";
 import { LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -118,7 +117,7 @@ const AppSidebar = () => {
                   <img 
                     src={item.iconSrc} 
                     alt={item.title} 
-                    className="h-5 w-5 mr-3.5 object-contain"
+                    className="h-5 w-5 mr-2 object-contain"
                   />
                   <span className="font-medium">{item.title}</span>
                 </SidebarMenuButton>
@@ -150,7 +149,7 @@ const AppSidebar = () => {
               className="flex items-center justify-start text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-4 h-10 w-full border-gray-200"
               onClick={handleLogout}
             >
-              <LogOut className="h-5 w-5 mr-3" />
+              <LogOut className="h-5 w-5 mr-2" />
               <span>Log Out</span>
             </Button>
           </div>
