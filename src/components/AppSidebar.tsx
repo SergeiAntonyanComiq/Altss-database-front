@@ -24,6 +24,7 @@ type MenuItem = {
   title: string;
   path: string;
   icon: React.ComponentType<{ className?: string }> | (() => React.ReactNode);
+  isCustomIcon?: boolean;
 };
 
 const AppSidebar = () => {
@@ -62,21 +63,25 @@ const AppSidebar = () => {
       title: "Companies",
       path: "/companies",
       icon: Building2,
+      isCustomIcon: false,
     },
     {
       title: "Persons",
       path: "/persons",
       icon: Users,
+      isCustomIcon: false,
     },
     {
       title: "My Orders",
       path: "/my-orders",
       icon: ShoppingBag,
+      isCustomIcon: false,
     },
     {
       title: "Favorites",
       path: "/favorites",
       icon: Heart,
+      isCustomIcon: false,
     },
     {
       title: "Saved Searches",
@@ -87,6 +92,7 @@ const AppSidebar = () => {
           <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
+      isCustomIcon: true,
     },
   ];
 
@@ -127,11 +133,11 @@ const AppSidebar = () => {
                     isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
-                  {typeof item.icon === 'function' ? 
+                  {item.isCustomIcon ? 
                     item.icon() : 
-                    <item.icon className="h-5 w-5 mr-3" />
+                    React.createElement(item.icon, { className: "h-5 w-5 mr-3" })
                   }
-                  <span className={typeof item.icon === 'function' ? "ml-3" : ""}>{item.title}</span>
+                  <span className={item.isCustomIcon ? "ml-3" : ""}>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
