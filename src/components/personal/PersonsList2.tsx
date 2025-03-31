@@ -33,9 +33,10 @@ const PersonsList2 = ({
   const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   const [persons, setPersons] = useState<PersonType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
   const { toast } = useToast();
   
-  const totalPages = Math.ceil(persons.length / itemsPerPage);
+  const totalPages = Math.ceil(totalCount / itemsPerPage) || 1;
 
   // Fetch persons data from Xano
   useEffect(() => {
@@ -43,8 +44,7 @@ const PersonsList2 = ({
       try {
         setIsLoading(true);
         
-        // Fetch from Xano API
-        const response = await fetch("https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons", {
+        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons?page=${currentPage}&per_page=${itemsPerPage}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -52,26 +52,25 @@ const PersonsList2 = ({
         });
         
         if (!response.ok) {
+          console.error(`Failed to fetch persons: ${response.status} ${response.statusText}`);
           throw new Error(`Failed to fetch persons: ${response.statusText}`);
         }
 
         const data = await response.json();
         console.log("Persons data fetched from Xano:", data);
         
-        // Transform data if needed to match PersonType
-        const formattedData: PersonType[] = Array.isArray(data) ? data.map((item: any) => ({
-          id: item.id.toString(),
-          name: item.name || "Unknown",
-          favorite: item.favorite || false,
-          responsibilities: item.responsibilities ? item.responsibilities.split(',') : [],
-          linkedin: item.linkedin || "",
-          location: item.city ? `${item.city}, ${item.country_territory || ""}` : item.country_territory || "",
-          companies: item.investor ? [item.investor] : [],
-          shortBio: item.short_bio || "",
-          currentPosition: item.job_title || "",
-        })) : [];
-        
-        setPersons(formattedData);
+        // Handle the response data based on its structure
+        if (Array.isArray(data.persons)) {
+          // If response has a persons array and total count
+          setPersons(data.persons);
+          setTotalCount(data.total || data.persons.length);
+        } else if (Array.isArray(data)) {
+          // If response is just an array of persons
+          setPersons(data);
+          setTotalCount(data.length);
+        } else {
+          throw new Error("Unexpected response format");
+        }
       } catch (err) {
         console.error("Exception fetching persons from Xano:", err);
         toast({
@@ -80,13 +79,14 @@ const PersonsList2 = ({
           variant: "destructive",
         });
         setPersons(mockPersons);
+        setTotalCount(mockPersons.length);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchPersons();
-  }, [toast]);
+  }, [currentPage, itemsPerPage, toast]);
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 
@@ -194,7 +194,7 @@ const PersonsList2 = ({
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
           <span className="text-sm text-muted-foreground">
-            {isLoading ? "Loading..." : `Showing ${persons.length} items`}
+            {isLoading ? "Loading..." : `Showing ${persons.length} items of ${totalCount}`}
           </span>
         </div>
       </div>
