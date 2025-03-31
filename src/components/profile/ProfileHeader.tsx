@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Star } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContactType } from "@/types/contact";
 
@@ -33,7 +33,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
           <div className="flex items-center gap-3">
             <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">{contact.name}</h1>
             <button className="bg-white flex items-center gap-2 text-[#03887E] border-none font-medium text-center justify-center px-4 py-1 rounded-[50px]">
-              <Star className="h-4 w-4" />
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ca51bf083c87bb6765db009254de1b519ea4a3ec" 
+                className="w-[18px] h-[18px] object-contain" 
+                alt="Favorites icon" 
+              />
               <span>Add to Favorites</span>
             </button>
           </div>
