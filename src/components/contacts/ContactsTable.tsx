@@ -94,7 +94,7 @@ const ContactsTable = ({
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage 
-                      src="/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png" 
+                      src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
                       alt={contact.name} 
                     />
                     <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
