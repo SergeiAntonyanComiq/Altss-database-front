@@ -1,8 +1,19 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Filter, Bookmark, Heart, Search, X, Loader2 } from "lucide-react";
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
+
+interface SearchParams {
+  name: string;
+  investor: string;
+  firm_type: string;
+}
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -10,6 +21,8 @@ interface PersonsSearchBarProps {
   onSearch?: () => void;
   onClear?: () => void;
   isLoading?: boolean;
+  searchParams?: SearchParams;
+  setSearchParams?: (params: SearchParams) => void;
 }
 
 const PersonsSearchBar = ({ 
@@ -17,13 +30,33 @@ const PersonsSearchBar = ({
   setSearchQuery,
   onSearch,
   onClear,
-  isLoading = false
+  isLoading = false,
+  searchParams = { name: "", investor: "", firm_type: "" },
+  setSearchParams = () => {}
 }: PersonsSearchBarProps) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
       e.preventDefault();
       onSearch();
     }
+  };
+
+  const handleFilterChange = (param: keyof SearchParams, value: string) => {
+    setSearchParams({
+      ...searchParams,
+      [param]: value
+    });
+  };
+
+  const handleApplyFilters = () => {
+    setSearchQuery(searchParams.name);
+    if (onSearch) {
+      onSearch();
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchParams({ name: "", investor: "", firm_type: "" });
   };
 
   return (
@@ -65,10 +98,64 @@ const PersonsSearchBar = ({
         Search
       </Button>
       
-      <Button variant="outline" className="flex items-center gap-2">
-        <Filter className="h-4 w-4" />
-        Filters
-      </Button>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            Filters
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-4">
+          <div className="space-y-4">
+            <h4 className="font-medium">Filter Contacts</h4>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="name">
+                Name
+              </label>
+              <Input
+                id="name"
+                placeholder="Contact name"
+                value={searchParams.name}
+                onChange={(e) => handleFilterChange('name', e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="investor">
+                Investor
+              </label>
+              <Input
+                id="investor"
+                placeholder="Investor name"
+                value={searchParams.investor}
+                onChange={(e) => handleFilterChange('investor', e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="firm_type">
+                Firm Type
+              </label>
+              <Input
+                id="firm_type"
+                placeholder="Firm type"
+                value={searchParams.firm_type}
+                onChange={(e) => handleFilterChange('firm_type', e.target.value)}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between pt-2">
+              <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                Clear
+              </Button>
+              <Button size="sm" onClick={handleApplyFilters}>
+                Apply Filters
+              </Button>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
       
       <Button variant="outline" className="flex items-center gap-2">
         <Bookmark className="h-4 w-4" />

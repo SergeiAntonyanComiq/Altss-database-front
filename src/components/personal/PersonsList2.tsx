@@ -21,7 +21,7 @@ const PersonsList2 = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons] = useState<PersonType[]>(mockPersons);
   
-  const { isLoading, error, data: contacts, search, hasSearched } = useContactsSearch();
+  const { isLoading, error, data: contacts, search, clearSearch, hasSearched } = useContactsSearch();
   
   // Calculate total pages based on the available data
   const totalPages = Math.ceil((hasSearched && contacts ? contacts.length : persons.length) / itemsPerPage);
@@ -58,9 +58,9 @@ const PersonsList2 = () => {
 
   const handleSearch = () => {
     search({
-      name: searchQuery,
-      investor: "",
-      firm_type: ""
+      name: searchQuery || searchParams.name,
+      investor: searchParams.investor,
+      firm_type: searchParams.firm_type
     });
   };
 
@@ -71,8 +71,7 @@ const PersonsList2 = () => {
       investor: "",
       firm_type: ""
     });
-    // Reset the search state
-    // The table will show the original persons data again
+    clearSearch();
   };
 
   // Render contacts table if we have contact search results
@@ -130,6 +129,8 @@ const PersonsList2 = () => {
         onSearch={handleSearch}
         onClear={handleClearSearch}
         isLoading={isLoading}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
       />
       
       <div className="mt-4">
