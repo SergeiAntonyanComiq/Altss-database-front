@@ -1,3 +1,4 @@
+
 import React from "react";
 import { LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -95,9 +96,9 @@ const AppSidebar = () => {
             <img 
               src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
               alt="Altss Logo" 
-              className="h-8 w-auto object-contain"
+              className="h-8 w-auto object-contain my-auto"
             />
-            <SidebarTrigger className="text-gray-400" />
+            <SidebarTrigger className="text-gray-400 my-auto" />
           </div>
         </SidebarHeader>
         
