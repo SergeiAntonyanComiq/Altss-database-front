@@ -1,6 +1,5 @@
-
 import React from "react";
-import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut, User } from "lucide-react";
+import { Building2, Users, ShoppingBag, Heart, ChevronDown, PanelLeft, LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -74,7 +73,12 @@ const AppSidebar = () => {
     {
       title: "Saved Searches",
       path: "/saved-searches",
-      icon: Search,
+      icon: () => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="stroke-current">
+          <circle cx="11" cy="11" r="7" strokeWidth="2"/>
+          <path d="M20 20L16 16" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      ),
     },
   ];
 
@@ -115,8 +119,11 @@ const AppSidebar = () => {
                     isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
-                  <item.icon className="h-5 w-5 mr-3" />
-                  <span>{item.title}</span>
+                  {typeof item.icon === 'function' ? 
+                    <item.icon /> : 
+                    <item.icon className="h-5 w-5 mr-3" />
+                  }
+                  <span className="ml-3">{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -133,7 +140,7 @@ const AppSidebar = () => {
                 <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
                 <AvatarFallback>{getUserInitials()}</AvatarFallback>
               </Avatar>
-              <span className="text-gray-700 text-sm truncate max-w-[120px]">
+              <span className="text-gray-700 text-sm truncate max-w-[120px] font-montserrat">
                 {user?.email || "User"}
               </span>
             </div>

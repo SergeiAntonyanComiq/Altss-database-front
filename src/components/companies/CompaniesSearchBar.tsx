@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Search, Filter, Save, Heart } from "lucide-react";
+import { Filter, Save, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -20,7 +20,12 @@ const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarP
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="stroke-current">
+              <circle cx="11" cy="11" r="7" strokeWidth="2"/>
+              <path d="M20 20L16 16" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
         </div>
         
         <Button variant="outline" className="gap-2 text-gray-500 border-gray-200">
