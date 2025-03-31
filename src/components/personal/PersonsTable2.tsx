@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, Plus, Mail, Linkedin, Facebook, Twitter } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { Badge } from "@/components/ui/badge";
+import UserAvatar from "./UserAvatar";
 
 interface PersonsTable2Props {
   persons: PersonType[];
@@ -101,16 +102,7 @@ const PersonsTable2 = ({
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage 
-                      src="/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png" 
-                      alt={person.name} 
-                    />
-                    <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
-                      {person.name.charAt(0)}
-                      {person.name.split(' ')[1]?.charAt(0) || ''}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar name={person.name} />
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1">
                       <span className="font-medium text-gray-800">
