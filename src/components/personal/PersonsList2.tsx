@@ -1,20 +1,30 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PersonType } from "@/types/person";
+import { ContactType } from "@/types/contact";
 import { mockPersons } from "@/data/mockPersons";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
 import PersonsPagination from "./PersonsPagination";
+import { useContactsSearch } from "@/hooks/useContactsSearch";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const PersonsList2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useState({
+    name: "",
+    investor: "",
+    firm_type: ""
+  });
   const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [currentPage, setCurrentPage] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons] = useState<PersonType[]>(mockPersons);
   
-  // Calculate total pages based on the number of persons
-  const totalPages = Math.ceil(persons.length / itemsPerPage);
+  const { isLoading, error, data: contacts, search, hasSearched } = useContactsSearch();
+  
+  // Calculate total pages based on the available data
+  const totalPages = Math.ceil((hasSearched && contacts ? contacts.length : persons.length) / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -46,13 +56,70 @@ const PersonsList2 = () => {
     console.log(`Toggle favorite for person with ID: ${id}`);
   };
 
+  const handleSearch = () => {
+    search({
+      name: searchQuery,
+      investor: "",
+      firm_type: ""
+    });
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSearchParams({
+      name: "",
+      investor: "",
+      firm_type: ""
+    });
+    // Reset the search state
+    // The table will show the original persons data again
+  };
+
+  // Render contacts table if we have contact search results
+  const renderContactsTable = () => {
+    if (error) {
+      return <div className="p-4 text-center text-red-500">Data is unavailable</div>;
+    }
+
+    if (!contacts || contacts.length === 0) {
+      return <div className="p-4 text-center">No results found</div>;
+    }
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Investor</TableHead>
+            <TableHead>Firm Type</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Location</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {contacts.map((contact) => (
+            <TableRow key={contact.id}>
+              <TableCell>{contact.name}</TableCell>
+              <TableCell>{contact.investor}</TableCell>
+              <TableCell>{contact.firm_type}</TableCell>
+              <TableCell>{contact.title}</TableCell>
+              <TableCell>{contact.email}</TableCell>
+              <TableCell>{`${contact.city}, ${contact.state}`}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
+
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
           <span className="text-sm text-muted-foreground">
-            Showing {persons.length} items
+            Showing {hasSearched && contacts ? contacts.length : persons.length} items
           </span>
         </div>
       </div>
@@ -60,19 +127,26 @@ const PersonsList2 = () => {
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        onSearch={handleSearch}
+        onClear={handleClearSearch}
+        isLoading={isLoading}
       />
       
       <div className="mt-4">
-        <PersonsTable2 
-          persons={persons}
-          selectedPersons={selectedPersons}
-          handleCheckboxChange={handleCheckboxChange}
-          handleSelectAll={handleSelectAll}
-          toggleFavorite={toggleFavorite}
-        />
+        {hasSearched ? (
+          renderContactsTable()
+        ) : (
+          <PersonsTable2 
+            persons={persons}
+            selectedPersons={selectedPersons}
+            handleCheckboxChange={handleCheckboxChange}
+            handleSelectAll={handleSelectAll}
+            toggleFavorite={toggleFavorite}
+          />
+        )}
       </div>
       
-      <div className="mt-4">
+      <div className="mt-4 w-full">
         <PersonsPagination 
           currentPage={currentPage}
           onPageChange={handlePageChange}
