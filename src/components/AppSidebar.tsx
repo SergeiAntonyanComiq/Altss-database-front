@@ -1,4 +1,3 @@
-
 import React from "react";
 import { LogOut, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -133,7 +132,7 @@ const AppSidebar = () => {
                       <span>{item.title}</span>
                     </div>
                     {item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381]" />
+                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
                     )}
                   </button>
                 </SidebarMenuItem>
