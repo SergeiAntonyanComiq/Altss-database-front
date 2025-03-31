@@ -53,7 +53,7 @@ const CompaniesTable = ({
           </div>
         </div>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none flex-[2_2_0%] border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none flex-[3_3_0%] border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Name</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
@@ -100,10 +100,10 @@ const CompaniesTable = ({
               </div>
             </div>
             
-            <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-[2_2_0%] shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
+            <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-[3_3_0%] shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
                 <div 
-                  className="flex-1 flex items-center cursor-pointer truncate"
+                  className="flex-1 flex items-center cursor-pointer whitespace-normal"
                   onClick={() => handleViewCompany(company.id || '')}
                 >
                   {company.firm_name}
