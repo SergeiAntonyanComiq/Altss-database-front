@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Copy } from "lucide-react";
+import { Copy, Link } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContactType } from "@/types/contact";
 import { toast } from "@/components/ui/use-toast";
@@ -89,19 +89,30 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
           Work Emails
         </span>
         {contact.email ? (
-          <div>
-            <span className="mr-2">{showEmails.work ? contact.email : hiddenEmail}</span>
+          <div className="flex items-center">
+            <button 
+              onClick={() => toggleEmailVisibility('work')}
+              className="mr-2 hover:text-blue-600"
+            >
+              {showEmails.work ? contact.email : hiddenEmail}
+            </button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-5 w-5 p-0 mr-1" 
+              onClick={() => copyToClipboard(contact.email || "")}
+              title="Copy email address"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
             <Button 
               variant="ghost" 
               size="icon" 
               className="h-5 w-5 p-0" 
-              onClick={() => copyToClipboard(contact.email || "")}
+              onClick={() => window.location.href = `mailto:${contact.email}`}
+              title="Send email"
             >
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/b68eb65475b5dddf5cba016b221934f4ba784c1c" 
-                alt="Copy" 
-                className="w-5 h-5 object-contain"
-              />
+              <Link className="h-4 w-4" />
             </Button>
           </div>
         ) : (
