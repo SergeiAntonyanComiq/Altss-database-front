@@ -1,7 +1,8 @@
+
 import React from "react";
 import { Heart } from "lucide-react";
 import { CompanyType } from "@/types/company";
-import CustomCheckbox from "./CustomCheckbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CompaniesTableProps {
   companies: CompanyType[];
@@ -42,10 +43,12 @@ const CompaniesTable = ({
       <div className="bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap">
         <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r">
           <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-            <CustomCheckbox
+            <Checkbox
               id="selectAll"
               checked={allSelected}
-              onChange={toggleAllCompanies}
+              onCheckedChange={toggleAllCompanies}
+              aria-label="Select all companies"
+              className="h-5 w-5 rounded-md"
             />
           </div>
         </div>
@@ -87,10 +90,12 @@ const CompaniesTable = ({
           <div key={company.id} className="flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA]">
             <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-                <CustomCheckbox
+                <Checkbox
                   id={`company-${company.id}`}
                   checked={isCompanySelected(company.id)}
-                  onChange={() => toggleCompanySelection(company.id || '')}
+                  onCheckedChange={() => toggleCompanySelection(company.id || '')}
+                  aria-label={`Select ${company.firm_name}`}
+                  className="h-5 w-5 rounded-md"
                 />
               </div>
             </div>
