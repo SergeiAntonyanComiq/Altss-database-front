@@ -38,14 +38,20 @@ const PersonsSearchBar = ({
   const [localFilters, setLocalFilters] = useState<SearchParams>(searchParams);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   
+  console.log('PersonsSearchBar - Render with searchQuery:', searchQuery);
+  console.log('PersonsSearchBar - Current searchParams:', searchParams);
+  console.log('PersonsSearchBar - Current localFilters:', localFilters);
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
+      console.log('PersonsSearchBar - Enter key pressed in search input');
       e.preventDefault();
       onSearch();
     }
   };
 
   const handleFilterChange = (param: keyof SearchParams, value: string) => {
+    console.log(`PersonsSearchBar - Filter changed: ${param} = "${value}"`);
     setLocalFilters(prev => ({
       ...prev,
       [param]: value
@@ -53,11 +59,16 @@ const PersonsSearchBar = ({
   };
 
   const handleApplyFilters = () => {
+    console.log('PersonsSearchBar - Apply filters clicked');
+    console.log('PersonsSearchBar - Applying filters:', localFilters);
+    
     // First update the parent component's search params with our local filter values
     setSearchParams(localFilters);
+    console.log('PersonsSearchBar - After setSearchParams call');
     
     // Set search query to match the name filter for consistency
     if (localFilters.name) {
+      console.log(`PersonsSearchBar - Setting searchQuery to "${localFilters.name}"`);
       setSearchQuery(localFilters.name);
     }
     
@@ -66,11 +77,13 @@ const PersonsSearchBar = ({
     
     // Trigger the search to apply filters
     if (onSearch) {
+      console.log('PersonsSearchBar - Calling onSearch()');
       onSearch();
     }
   };
 
   const handleClearFilters = () => {
+    console.log('PersonsSearchBar - Clear filters clicked');
     const emptyFilters = { name: "", investor: "", firm_type: "" };
     setLocalFilters(emptyFilters);
     setSearchParams(emptyFilters);
@@ -80,6 +93,7 @@ const PersonsSearchBar = ({
   useEffect(() => {
     // Only run this effect on initial mount to prevent update loops
     if (searchParams) {
+      console.log('PersonsSearchBar - Initial useEffect - Setting localFilters:', searchParams);
       setLocalFilters(searchParams);
     }
   }, []); // Empty dependency array - only run on mount
@@ -91,13 +105,19 @@ const PersonsSearchBar = ({
           type="text"
           placeholder="Search person"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            console.log(`PersonsSearchBar - Search input changed to: "${e.target.value}"`);
+            setSearchQuery(e.target.value);
+          }}
           onKeyDown={handleKeyDown}
           className="pl-3 pr-10"
         />
         {searchQuery && (
           <button
-            onClick={onClear}
+            onClick={() => {
+              console.log('PersonsSearchBar - Clear search button clicked');
+              if (onClear) onClear();
+            }}
             className="absolute inset-y-0 right-10 flex items-center pr-2"
             type="button"
           >
@@ -116,7 +136,10 @@ const PersonsSearchBar = ({
       <Button 
         variant="outline" 
         className="flex items-center gap-2"
-        onClick={onSearch}
+        onClick={() => {
+          console.log('PersonsSearchBar - Search button clicked');
+          if (onSearch) onSearch();
+        }}
         disabled={isLoading}
       >
         <Search className="h-4 w-4" />

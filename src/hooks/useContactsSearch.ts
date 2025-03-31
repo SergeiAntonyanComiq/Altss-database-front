@@ -17,22 +17,36 @@ export const useContactsSearch = () => {
   const [lastSearchParams, setLastSearchParams] = useState<SearchParams | null>(null);
 
   const search = async (params: SearchParams) => {
+    console.log('useContactsSearch.search() - Called with params:', params);
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
     setLastSearchParams(params);
     
     try {
-      console.log('Searching with params:', params);
+      console.log('useContactsSearch - Raw search params:', params);
+      console.log('useContactsSearch - Search params types:', {
+        name: typeof params.name,
+        investor: typeof params.investor,
+        firm_type: typeof params.firm_type
+      });
+      console.log('useContactsSearch - Search params values:', {
+        nameLength: params.name?.length || 0,
+        investorLength: params.investor?.length || 0,
+        firm_typeLength: params.firm_type?.length || 0
+      });
       
       // Filter out empty parameters
       const filteredParams = Object.fromEntries(
         Object.entries(params).filter(([_, value]) => value !== undefined && value !== "")
       );
       
+      console.log('useContactsSearch - Filtered params:', filteredParams);
+      console.log('useContactsSearch - Filtered params count:', Object.keys(filteredParams).length);
+      
       // Skip API call if all parameters are empty
       if (Object.keys(filteredParams).length === 0) {
-        console.log('All parameters are empty, skipping API call');
+        console.log('useContactsSearch - All parameters are empty, skipping API call');
         setData([]);
         setIsLoading(false);
         toast({
@@ -43,7 +57,11 @@ export const useContactsSearch = () => {
         return;
       }
       
-      const response = await fetch('https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0', {
+      const apiUrl = 'https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0';
+      console.log('useContactsSearch - Making API request to:', apiUrl);
+      console.log('useContactsSearch - Request body:', JSON.stringify(filteredParams));
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,13 +69,18 @@ export const useContactsSearch = () => {
         body: JSON.stringify(filteredParams),
       });
 
+      console.log('useContactsSearch - API response status:', response.status);
+      
       if (!response.ok) {
-        console.error('API response not OK:', response.status, response.statusText);
+        console.error('useContactsSearch - API response not OK:', response.status, response.statusText);
         throw new Error('Failed to fetch contacts');
       }
 
       const result = await response.json();
-      console.log('Search results:', result);
+      console.log('useContactsSearch - API result type:', typeof result);
+      console.log('useContactsSearch - API result is array?', Array.isArray(result));
+      console.log('useContactsSearch - API result length:', Array.isArray(result) ? result.length : 'N/A');
+      console.log('useContactsSearch - First result item (if any):', Array.isArray(result) && result.length > 0 ? result[0] : 'No results');
       
       if (Array.isArray(result)) {
         setData(result);
@@ -66,7 +89,7 @@ export const useContactsSearch = () => {
           description: `Found ${result.length} contacts matching your criteria`,
         });
       } else {
-        console.error('API returned unexpected data format:', result);
+        console.error('useContactsSearch - API returned unexpected data format:', result);
         setData([]);
         toast({
           title: "Warning",
@@ -75,7 +98,7 @@ export const useContactsSearch = () => {
         });
       }
     } catch (err) {
-      console.error('Search error:', err);
+      console.error('useContactsSearch - Search error:', err);
       setError('Failed to fetch contacts');
       setData(null);
       toast({
@@ -84,11 +107,13 @@ export const useContactsSearch = () => {
         variant: "destructive",
       });
     } finally {
+      console.log('useContactsSearch - Search completed, setting isLoading to false');
       setIsLoading(false);
     }
   };
 
   const clearSearch = () => {
+    console.log('useContactsSearch - Clearing search data and state');
     setData(null);
     setError(null);
     setHasSearched(false);
