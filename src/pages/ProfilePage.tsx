@@ -73,7 +73,7 @@ const ProfilePage: React.FC = () => {
             ) : !contact ? (
               <ProfileNotFound />
             ) : (
-              <div className="bg-white shadow rounded-lg">
+              <div className="bg-white shadow rounded-lg overflow-hidden">
                 <ProfileHeader contact={contact} />
                 <ProfileTabs 
                   contact={contact} 

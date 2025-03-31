@@ -14,22 +14,25 @@ interface CompanyProfileHeaderProps {
 const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) => {
   return (
     <>
-      <div className="mb-6 flex items-center text-gray-500 text-sm">
-        <Link to="/companies" className="flex items-center hover:text-blue-600">
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          <span>Companies</span>
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-700 font-medium">{company.name}</span>
-      </div>
-
-      <div className="mb-8">
+      {/* Navigation and last update on light gray background */}
+      <div className="bg-[#F6F6F7] p-4 mb-4 rounded-t-lg">
+        <div className="flex items-center text-gray-500 text-sm">
+          <Link to="/companies" className="flex items-center hover:text-blue-600">
+            <span>Companies</span>
+          </Link>
+          <ChevronLeft className="h-4 w-4 mx-1 rotate-180" />
+          <span className="text-gray-700 font-medium">{company.name}</span>
+        </div>
+        
         {company.last_updated && (
-          <div className="text-sm text-gray-500 mb-2 font-montserrat">
+          <div className="text-xs text-gray-600 mt-1 font-montserrat">
             Last update: {company.last_updated}
           </div>
         )}
-        
+      </div>
+
+      {/* Main header content */}
+      <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold font-montserrat">{company.name}</h1>
           <div className="flex gap-2">
