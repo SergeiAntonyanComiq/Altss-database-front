@@ -19,9 +19,9 @@ const CompaniesTableSkeleton = () => {
               <TableHead className="w-12 align-middle"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="divide-y divide-[#DFE4EA]">
             {Array.from({ length: 9 }).map((_, index) => (
-              <TableRow key={index} className="border-t border-gray-100">
+              <TableRow key={index} className="border-b border-[#DFE4EA]">
                 <TableCell className="p-3 align-middle"><Skeleton className="h-4 w-4" /></TableCell>
                 <TableCell className="align-middle"><Skeleton className="h-6 w-32" /></TableCell>
                 <TableCell className="align-middle"><Skeleton className="h-6 w-24" /></TableCell>
