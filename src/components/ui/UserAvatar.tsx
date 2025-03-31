@@ -18,7 +18,7 @@ const UserAvatar = ({ name, className }: UserAvatarProps) => {
   return (
     <Avatar className={className}>
       <AvatarImage 
-        src="/lovable-uploads/34fdd9ea-188e-4001-8e0a-c89150b27c25.png" 
+        src="/lovable-uploads/789cfd5d-d179-4c0b-8ee6-68da45fa9ff3.png" 
         alt={name} 
       />
       <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
