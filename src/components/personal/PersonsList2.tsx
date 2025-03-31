@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
@@ -33,7 +32,6 @@ const PersonsList2 = ({
   const [persons] = useState<PersonType[]>(mockPersons);
   const [isLoading] = useState(false);
   
-  // Calculate total pages based on the number of persons
   const totalPages = Math.ceil(persons.length / itemsPerPage);
 
   const handleCheckboxChange = (personId: string) => {
@@ -53,7 +51,6 @@ const PersonsList2 = ({
   };
 
   const toggleFavorite = (id: string) => {
-    // In a real application, this would be an API call to change the favorite status
     console.log(`Toggle favorite for person with ID: ${id}`);
   };
 
@@ -61,7 +58,6 @@ const PersonsList2 = ({
     return id ? selectedPersons.includes(id) : false;
   };
   
-  // Generate array of page numbers for pagination
   const getPageNumbers = () => {
     const pages = [];
     const maxPagesToShow = 5;
@@ -137,8 +133,8 @@ const PersonsList2 = ({
             <PaginationItem>
               <PaginationLink
                 onClick={() => onPageChange(1)}
-                disabled={currentPage === 1}
-                className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`${currentPage === 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
+                aria-disabled={currentPage === 1}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </PaginationLink>
@@ -146,8 +142,8 @@ const PersonsList2 = ({
             <PaginationItem>
               <PaginationLink
                 onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`${currentPage === 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
+                aria-disabled={currentPage === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </PaginationLink>
@@ -174,8 +170,8 @@ const PersonsList2 = ({
             <PaginationItem>
               <PaginationLink
                 onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`${currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
+                aria-disabled={currentPage === totalPages}
               >
                 <ChevronRight className="h-4 w-4" />
               </PaginationLink>
@@ -183,8 +179,8 @@ const PersonsList2 = ({
             <PaginationItem>
               <PaginationLink
                 onClick={() => onPageChange(totalPages)}
-                disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`${currentPage === totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
+                aria-disabled={currentPage === totalPages}
               >
                 <ChevronsRight className="h-4 w-4" />
               </PaginationLink>
