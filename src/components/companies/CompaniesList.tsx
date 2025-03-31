@@ -200,7 +200,7 @@ const CompaniesList = ({
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4">
-      <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
+      <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Companies</h1>
       
       <CompaniesSearchBar 
         searchQuery={searchQuery}
@@ -221,7 +221,7 @@ const CompaniesList = ({
         />
       </div>
       
-      <div className="flex w-full gap-5 justify-between flex-wrap mt-[122px] max-md:mt-10">
+      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-[122px] max-md:mt-10">
         <PersonsPagination 
           currentPage={currentPage}
           onPageChange={onPageChange}

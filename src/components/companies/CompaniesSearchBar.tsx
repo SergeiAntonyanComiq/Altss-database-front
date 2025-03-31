@@ -12,7 +12,7 @@ const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarP
     <div className="flex min-h-11 gap-4 text-base text-[rgba(99,115,129,1)] font-medium flex-wrap mt-10 w-full">
       <div className="min-w-60 min-h-11 text-gray-400 font-normal w-[363px]">
         <div className="w-full flex-1">
-          <div className="justify-between items-center border border-[#DFE4EA] bg-white flex w-full gap-5 flex-1 h-full pl-5 pr-4 py-3 rounded-[50px]">
+          <div className="justify-between items-center border border-[#DFE4EA] bg-white flex w-full gap-[40px_100px] flex-1 h-full pl-5 pr-4 py-3 rounded-[50px]">
             <input 
               type="text"
               placeholder="Search the company"
@@ -33,7 +33,7 @@ const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarP
       </button>
       
       <button 
-        className="justify-center items-center border border-[#DFE4EA] bg-gray-200 flex gap-2 text-[#889AA8] px-[15px] py-2.5 rounded-[50px]"
+        className="justify-center items-center border border-[#DFE4EA] bg-gray-200 flex gap-2 text-[rgba(136,153,168,1)] px-[15px] py-2.5 rounded-[50px]"
       >
         <Save className="h-[18px] w-[18px]" />
         <span>Save this Search</span>
