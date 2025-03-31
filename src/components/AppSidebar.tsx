@@ -110,7 +110,8 @@ const AppSidebar = () => {
           </div>
         </SidebarHeader>
         
-        <SidebarContent className="px-4">
+        {/* Added mt-10 to create space of one menu item between logo and menu */}
+        <SidebarContent className="px-4 mt-10">
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
@@ -132,7 +133,7 @@ const AppSidebar = () => {
                       <span>{item.title}</span>
                     </div>
                     {item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381]" />
+                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
