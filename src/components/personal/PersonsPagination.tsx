@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
@@ -59,9 +60,9 @@ const PersonsPagination = ({
   };
   
   return (
-    <>
-      <div className="items-stretch bg-white flex min-w-60 min-h-[46px] flex-col justify-center px-[13px] py-[11px] rounded-[3px]">
-        <div className="flex items-center gap-4 flex-wrap">
+    <div className="flex items-center gap-4 justify-between">
+      <div className="items-stretch bg-white flex min-h-[46px] flex-row justify-center px-[13px] py-[11px] rounded-[3px]">
+        <div className="flex items-center gap-4">
           <div className="self-stretch flex items-center gap-2 my-auto">
             <button 
               onClick={() => onPageChange(1)} 
@@ -142,8 +143,9 @@ const PersonsPagination = ({
           <option value="100">100 results per page</option>
         </select>
       </div>
-    </>
+    </div>
   );
 };
 
 export default PersonsPagination;
+
