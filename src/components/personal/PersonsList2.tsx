@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
@@ -44,7 +43,10 @@ const PersonsList2 = ({
       try {
         setIsLoading(true);
         
-        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons?page=${currentPage}&per_page=${itemsPerPage}`, {
+        const url = `https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons?page=${currentPage}&per_page=${itemsPerPage}`;
+        console.log(`Fetching persons data from: ${url}`);
+        
+        const response = await fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -57,7 +59,7 @@ const PersonsList2 = ({
         }
 
         const data = await response.json();
-        console.log("Persons data fetched from Xano:", data);
+        console.log("Persons data fetched:", data);
         
         // Handle the response data based on its structure
         if (Array.isArray(data.persons)) {
