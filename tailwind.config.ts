@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -72,7 +73,9 @@ export default {
 					'slate': '#475569',
 					'light-gray': '#F1F5F9',
 					'orange': '#FF5A1F',
-					'green': '#05603A'
+					'green': '#05603A',
+					'purple': '#9747FF',
+					'bright-blue': '#3758F9'
 				}
 			},
 			borderRadius: {
@@ -104,6 +107,14 @@ export default {
 				'float': {
 					'0%, 100%': { transform: 'translateY(0)' },
 					'50%': { transform: 'translateY(-10px)' }
+				},
+				'slide-in': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(0)' }
+				},
+				'slide-out': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(-100%)' }
 				}
 			},
 			animation: {
@@ -112,7 +123,9 @@ export default {
 				'fade-in': 'fade-in 0.7s ease-out forwards',
 				'fade-in-up': 'fade-in-up 0.7s ease-out forwards',
 				'fade-in-down': 'fade-in-down 0.7s ease-out forwards',
-				'float': 'float 5s ease-in-out infinite'
+				'float': 'float 5s ease-in-out infinite',
+				'slide-in': 'slide-in 0.3s ease-out forwards',
+				'slide-out': 'slide-out 0.3s ease-out forwards'
 			}
 		}
 	},
