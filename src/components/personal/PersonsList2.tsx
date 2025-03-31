@@ -7,8 +7,6 @@ import PersonsPagination from "./PersonsPagination";
 import { usePersonsSearch } from "@/hooks/usePersonsSearch";
 import { ContactType } from "@/types/contact";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
 
 // Helper function to convert ContactType to PersonType
 const mapContactToPerson = (contact: ContactType): PersonType => {
@@ -32,7 +30,7 @@ const PersonsList2 = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons, setPersons] = useState<PersonType[]>([]);
-  const { searchResults, isLoading, error, searchPersons, resetSearch, loadInitialContacts } = usePersonsSearch();
+  const { searchResults, isLoading, error, searchPersons } = usePersonsSearch();
   const { toast } = useToast();
   
   console.log("PersonsList2 rendering. searchResults:", searchResults.length, "isLoading:", isLoading, "error:", error);
@@ -54,10 +52,10 @@ const PersonsList2 = () => {
     }
   }, [searchResults, isLoading, error, toast]);
 
-  // Initial search to load all data
+  // Initial search to load data
   useEffect(() => {
-    console.log("Running initial data load");
-    loadInitialContacts();
+    console.log("Running initial search");
+    handleSearch({ name: "", investor: "", firm_type: "" });
   }, []);
 
   // Calculate total pages based on the number of persons
@@ -99,12 +97,6 @@ const PersonsList2 = () => {
     searchPersons(params);
   };
 
-  // Handle reset
-  const handleReset = () => {
-    console.log("Resetting search");
-    resetSearch();
-  };
-
   // Get current persons for this page
   const getCurrentPagePersons = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -116,15 +108,7 @@ const PersonsList2 = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="flex items-center gap-2"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Reset Filters
-          </Button>
-          <span className="text-sm text-muted-foreground self-center">
+          <span className="text-sm text-muted-foreground">
             {isLoading ? 'Loading...' : `Showing ${persons.length} items`}
           </span>
         </div>
@@ -134,7 +118,6 @@ const PersonsList2 = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onSearch={handleSearch}
-        onReset={handleReset}
         isSearching={isLoading}
       />
       
