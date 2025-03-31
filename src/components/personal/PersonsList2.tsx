@@ -32,7 +32,7 @@ const PersonsList2 = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons, setPersons] = useState<PersonType[]>([]);
-  const { searchResults, isLoading, error, searchPersons, resetSearch } = usePersonsSearch();
+  const { searchResults, isLoading, error, searchPersons, resetSearch, loadInitialContacts } = usePersonsSearch();
   const { toast } = useToast();
   
   console.log("PersonsList2 rendering. searchResults:", searchResults.length, "isLoading:", isLoading, "error:", error);
@@ -56,8 +56,8 @@ const PersonsList2 = () => {
 
   // Initial search to load all data
   useEffect(() => {
-    console.log("Running initial search to load all data");
-    searchPersons({});
+    console.log("Running initial data load");
+    loadInitialContacts();
   }, []);
 
   // Calculate total pages based on the number of persons
