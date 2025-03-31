@@ -96,7 +96,7 @@ const AppSidebar = () => {
 
   return (
     <>
-      <Sidebar className="border-r border-[#DFE4EA] bg-white transition-all duration-300 ease-in-out">
+      <Sidebar className="border-r border-[#DFE4EA] bg-white">
         <SidebarHeader className="pt-4 pb-3">
           <div className="flex w-full items-center justify-between px-6">
             <div className="flex items-center">
@@ -106,35 +106,34 @@ const AppSidebar = () => {
                 className="h-10 w-auto object-contain rounded-md"
               />
             </div>
-            <SidebarTrigger className="text-[#637381] w-6 h-6 hover:bg-gray-100 rounded transition-colors" />
+            <SidebarTrigger className="text-[#637381] w-6 h-6" />
           </div>
         </SidebarHeader>
         
+        {/* Added mt-10 to create space of one menu item between logo and menu */}
         <SidebarContent className="px-4 mt-10">
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
-                {index === 3 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
+                {index === 2 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     data-active={isActive(item.path)}
                     onClick={() => handleNavigation(item.path)}
-                    className={`flex items-center justify-between text-[#637381] hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md transition-all duration-200 ${
-                      isActive(item.path) 
-                        ? "bg-[#3758F9] text-white font-medium" 
-                        : "font-medium"
+                    className={`flex items-center justify-between text-[#637381] hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
+                      isActive(item.path) ? "bg-blue-50 text-blue-600 font-medium" : "font-medium"
                     }`}
                   >
                     <div className="flex items-center">
                       <img 
                         src={item.iconSrc} 
                         alt={item.title} 
-                        className={`h-6 w-6 mr-3 object-contain ${isActive(item.path) ? "filter brightness-0 invert" : ""}`}
+                        className="h-6 w-6 mr-3 object-contain"
                       />
                       <span>{item.title}</span>
                     </div>
                     {item.hasRightIcon && (
-                      <ChevronRight className={`h-5 w-5 ${isActive(item.path) ? "text-white" : "text-[#637381]"} ${isActive(item.path) ? "" : "rotate-90"} transition-transform duration-200`} />
+                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -155,7 +154,7 @@ const AppSidebar = () => {
                   alt="User Profile"
                   className="rounded-full" 
                 />
-                <AvatarFallback className="bg-[#3758F9] text-white">{getUserInitials()}</AvatarFallback>
+                <AvatarFallback className="bg-gray-200 text-gray-700">{getUserInitials()}</AvatarFallback>
               </Avatar>
               <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">
                 {user?.email || "User Name"}
@@ -164,7 +163,7 @@ const AppSidebar = () => {
             
             <Button 
               variant="outline" 
-              className="flex items-center justify-start text-[#637381] hover:bg-gray-100 hover:text-gray-700 text-[15px] px-4 h-10 w-full border-gray-200 transition-colors"
+              className="flex items-center justify-start text-[#637381] hover:bg-gray-100 hover:text-gray-700 text-[15px] px-4 h-10 w-full border-gray-200"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-3" />
@@ -176,7 +175,7 @@ const AppSidebar = () => {
       
       {state === "collapsed" && (
         <div className="fixed top-6 left-3 z-50 md:flex">
-          <SidebarTrigger className="bg-white shadow-md rounded-md p-1.5 hover:bg-gray-100 transition-colors" />
+          <SidebarTrigger className="bg-white shadow-md rounded-md p-1.5 hover:bg-gray-100" />
         </div>
       )}
     </>
