@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Filter, Bookmark, Heart, Search, X, Loader2 } from "lucide-react";
@@ -67,9 +67,17 @@ const PersonsSearchBar = ({
     setSearchParams(emptyFilters);
   };
 
-  // Sync local filters with searchParams when they change externally
-  React.useEffect(() => {
-    setLocalFilters(searchParams);
+  // This effect was causing the infinite loop - we need to add a proper comparison
+  useEffect(() => {
+    // Only update local filters if the searchParams have actually changed
+    const isDifferent = 
+      searchParams.name !== localFilters.name ||
+      searchParams.investor !== localFilters.investor ||
+      searchParams.firm_type !== localFilters.firm_type;
+      
+    if (isDifferent) {
+      setLocalFilters(searchParams);
+    }
   }, [searchParams]);
 
   return (
