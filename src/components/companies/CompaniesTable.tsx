@@ -53,32 +53,32 @@ const CompaniesTable = ({
         </div>
         
         <div className="overflow-hidden text-lg text-[rgba(99,115,129,1)] font-medium leading-none flex-1 border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
-          <div className="self-stretch min-h-11 w-full gap-2.5 px-4">Company Name</div>
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Name</div>
           <div className="border min-h-px w-full mt-1 border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
         <div className="overflow-hidden text-lg text-[rgba(99,115,129,1)] font-medium leading-none flex-1 border-[rgba(223,228,234,1)] border-r">
-          <div className="self-stretch min-h-11 w-full gap-2.5 px-4">Company Type</div>
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Type</div>
           <div className="border min-h-px w-full mt-1 border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
         <div className="overflow-hidden text-lg text-[rgba(99,115,129,1)] font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
-          <div className="self-stretch min-h-11 w-full gap-2.5 px-4">AUM, $mln.</div>
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">AUM, $mln.</div>
           <div className="border min-h-px w-full mt-1 border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
         <div className="overflow-hidden text-lg text-[rgba(99,115,129,1)] font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
-          <div className="self-stretch min-h-11 w-full gap-2.5 px-4">Founded year</div>
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Founded year</div>
           <div className="border min-h-px w-full mt-1 border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
         <div className="overflow-hidden text-lg text-[rgba(99,115,129,1)] font-medium leading-none flex-1 border-[rgba(223,228,234,1)] border-r">
-          <div className="self-stretch min-h-11 w-full gap-2.5 px-4">Known Team</div>
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Known Team</div>
           <div className="border min-h-px w-full mt-1 border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
         <div className="overflow-hidden text-lg text-[rgba(99,115,129,1)] font-medium leading-none w-11">
-          <div className="self-stretch min-h-11 w-full gap-2.5 px-4">+</div>
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">+</div>
           <div className="border min-h-px w-full mt-1 border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
       </div>
@@ -109,14 +109,14 @@ const CompaniesTable = ({
           <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-lg text-[rgba(31,42,55,1)] font-medium leading-none flex-1 shrink basis-[0%] border-[rgba(223,228,234,1)] border-r">
             <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
               <div 
-                className="self-stretch my-auto cursor-pointer"
+                className="flex-1 flex items-center cursor-pointer"
                 onClick={() => handleViewCompany(company.id || '')}
               >
                 {company.firm_name}
               </div>
               <button
                 onClick={(e) => toggleFavorite(company.id || '', e)}
-                className="ml-2"
+                className="ml-2 flex items-center justify-center"
               >
                 <Heart 
                   className={`h-5 w-5 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
@@ -127,20 +127,20 @@ const CompaniesTable = ({
           
           <div className="overflow-hidden text-lg text-[rgba(1,69,199,1)] font-medium leading-none flex-1 shrink basis-[0%] border-[rgba(223,228,234,1)] border-r">
             <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-              <div className="self-stretch bg-[rgba(219,229,254,1)] gap-2 my-auto px-3.5 py-[5px] rounded-[30px]">
+              <div className="bg-[rgba(219,229,254,1)] gap-2 px-3.5 py-[5px] rounded-[30px] flex items-center">
                 {company.firm_type || company.type || 'N/A'}
               </div>
             </div>
           </div>
           
           <div className="overflow-hidden text-lg text-[rgba(31,42,55,1)] font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
-            <div className="self-stretch min-h-11 w-full gap-2.5 px-4">
+            <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
               {formatAum(company.aum)}
             </div>
           </div>
           
           <div className="overflow-hidden text-lg text-[rgba(31,42,55,1)] font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
-            <div className="self-stretch min-h-11 w-full gap-2.5 px-4">
+            <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
               {company.year_est ? `${company.year_est} y.` : 'N/A'}
             </div>
           </div>
@@ -148,17 +148,17 @@ const CompaniesTable = ({
           <div className="overflow-hidden text-lg text-[rgba(0,126,96,1)] font-medium leading-none flex-1 shrink basis-[0%] border-[rgba(223,228,234,1)] border-r">
             <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
               {company.total_staff ? (
-                <div className="self-stretch bg-[rgba(0,126,96,0.1)] gap-2 my-auto px-3.5 py-[5px] rounded-[30px]">
+                <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3.5 py-[5px] rounded-[30px] flex items-center">
                   {company.total_staff}
                 </div>
               ) : (
-                <span>N/A</span>
+                <span className="flex items-center">N/A</span>
               )}
             </div>
           </div>
           
           <div className="overflow-hidden w-11">
-            <div className="flex min-h-11 w-full gap-2.5"></div>
+            <div className="flex min-h-11 w-full items-center gap-2.5"></div>
           </div>
         </div>
       ))}
