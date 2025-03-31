@@ -1,8 +1,8 @@
-
-import React from "react";
-import { Heart } from "lucide-react";
+import React, { useState } from "react";
+import { Heart, GripVertical } from "lucide-react";
 import { CompanyType } from "@/types/company";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 interface CompaniesTableProps {
   companies: CompanyType[];
@@ -36,12 +36,21 @@ const CompaniesTable = ({
   }
 
   const allSelected = selectedCompanies.length === companies.length && companies.length > 0;
+  
+  const [columnSizes, setColumnSizes] = useState({
+    checkbox: 5,
+    companyName: 35,
+    companyType: 20,
+    aum: 15,
+    foundedYear: 10,
+    knownTeam: 10,
+    actions: 5
+  });
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      {/* Table Header */}
-      <div className="bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap">
-        <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r">
+      <ResizablePanelGroup direction="horizontal" className="bg-gray-100 flex h-14 w-full">
+        <ResizablePanel defaultSize={columnSizes.checkbox} minSize={3} className="flex items-center justify-center min-w-[40px]">
           <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
             <Checkbox
               id="selectAll"
@@ -51,109 +60,128 @@ const CompaniesTable = ({
               className="h-5 w-5 rounded-md"
             />
           </div>
-        </div>
+        </ResizablePanel>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none flex-[8_8_0%] border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
+        <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
+          <GripVertical className="h-4 w-4" />
+        </ResizableHandle>
+        
+        <ResizablePanel defaultSize={columnSizes.companyName} minSize={15} className="overflow-hidden text-sm text-gray-600 font-medium leading-none">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Name</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
+        </ResizablePanel>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[300px] border-[rgba(223,228,234,1)] border-r">
+        <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
+          <GripVertical className="h-4 w-4" />
+        </ResizableHandle>
+        
+        <ResizablePanel defaultSize={columnSizes.companyType} minSize={10} className="overflow-hidden text-sm text-gray-600 font-medium leading-none">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Type</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
+        </ResizablePanel>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[200px] border-[rgba(223,228,234,1)] border-r">
+        <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
+          <GripVertical className="h-4 w-4" />
+        </ResizableHandle>
+        
+        <ResizablePanel defaultSize={columnSizes.aum} minSize={10} className="overflow-hidden text-sm text-gray-600 font-medium leading-none">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">AUM, $mln.</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
+        </ResizablePanel>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
+        <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
+          <GripVertical className="h-4 w-4" />
+        </ResizableHandle>
+        
+        <ResizablePanel defaultSize={columnSizes.foundedYear} minSize={8} className="overflow-hidden text-sm text-gray-600 font-medium leading-none">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Founded year</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
+        </ResizablePanel>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[180px] border-[rgba(223,228,234,1)] border-r">
+        <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
+          <GripVertical className="h-4 w-4" />
+        </ResizableHandle>
+        
+        <ResizablePanel defaultSize={columnSizes.knownTeam} minSize={8} className="overflow-hidden text-sm text-gray-600 font-medium leading-none">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Known Team</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
+        </ResizablePanel>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-11">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">+</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
-      </div>
+        <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
+          <GripVertical className="h-4 w-4" />
+        </ResizableHandle>
+        
+        <ResizablePanel defaultSize={columnSizes.actions} minSize={3} className="overflow-hidden text-sm text-gray-600 font-medium leading-none min-w-[40px]">
+          <div className="flex items-center min-h-11 w-full gap-2.5 justify-center">+</div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
       
-      {/* Table Rows */}
       <div className="divide-y divide-[#DFE4EA]">
         {companies.map((company, index) => (
-          <div key={company.id} className="flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA]">
-            <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-                <Checkbox
-                  id={`company-${company.id}`}
-                  checked={isCompanySelected(company.id)}
-                  onCheckedChange={() => toggleCompanySelection(company.id || '')}
-                  aria-label={`Select ${company.firm_name}`}
-                  className="h-5 w-5 rounded-md"
-                />
-              </div>
-            </div>
-            
-            <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-[8_8_0%] shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                <div 
-                  className="flex-1 flex items-center cursor-pointer whitespace-normal overflow-visible"
-                  onClick={() => handleViewCompany(company.id || '')}
-                >
-                  {company.firm_name}
-                </div>
-                <button
-                  onClick={(e) => toggleFavorite(company.id || '', e)}
-                  className="ml-2 flex items-center justify-center flex-shrink-0"
-                >
-                  <Heart 
-                    className={`h-5 w-5 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+          <div key={company.id} className="flex min-h-[50px] w-full overflow-hidden border-b border-[#DFE4EA]">
+            <ResizablePanelGroup direction="horizontal" className="w-full">
+              <ResizablePanel defaultSize={columnSizes.checkbox} minSize={3} className="flex items-center justify-center min-w-[40px]">
+                <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
+                  <Checkbox
+                    id={`company-${company.id}`}
+                    checked={isCompanySelected(company.id)}
+                    onCheckedChange={() => toggleCompanySelection(company.id || '')}
+                    aria-label={`Select ${company.firm_name}`}
+                    className="h-5 w-5 rounded-md"
                   />
-                </button>
-              </div>
-            </div>
-            
-            <div className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight w-[300px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[280px] overflow-hidden">
-                  <span className="truncate block w-full text-sm">{company.firm_type || company.type || 'N/A'}</span>
                 </div>
-              </div>
-            </div>
-            
-            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[200px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                {formatAum(company.aum)}
-              </div>
-            </div>
-            
-            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[170px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                {company.year_est ? `${company.year_est} y.` : 'N/A'}
-              </div>
-            </div>
-            
-            <div className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight w-[180px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                {company.total_staff ? (
-                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[160px] overflow-hidden">
-                    <span className="truncate block w-full text-sm">{company.total_staff}</span>
+              </ResizablePanel>
+              
+              <ResizablePanel defaultSize={columnSizes.companyName} minSize={15} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+                <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                  <div 
+                    className="flex-1 cursor-pointer truncate"
+                    onClick={() => handleViewCompany(company.id || '')}
+                  >
+                    {company.firm_name}
                   </div>
-                ) : (
-                  <span className="flex items-center">N/A</span>
-                )}
-              </div>
-            </div>
-            
-            <div className="overflow-hidden w-11 flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5"></div>
-            </div>
+                  <button
+                    onClick={(e) => toggleFavorite(company.id || '', e)}
+                    className="ml-2 flex items-center justify-center flex-shrink-0"
+                  >
+                    <Heart 
+                      className={`h-5 w-5 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                    />
+                  </button>
+                </div>
+              </ResizablePanel>
+              
+              <ResizablePanel defaultSize={columnSizes.companyType} minSize={10} className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight">
+                <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                  <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center overflow-hidden">
+                    <span className="truncate block w-full text-sm">{company.firm_type || company.type || 'N/A'}</span>
+                  </div>
+                </div>
+              </ResizablePanel>
+              
+              <ResizablePanel defaultSize={columnSizes.aum} minSize={10} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+                <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                  {formatAum(company.aum)}
+                </div>
+              </ResizablePanel>
+              
+              <ResizablePanel defaultSize={columnSizes.foundedYear} minSize={8} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+                <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                  {company.year_est ? `${company.year_est} y.` : 'N/A'}
+                </div>
+              </ResizablePanel>
+              
+              <ResizablePanel defaultSize={columnSizes.knownTeam} minSize={8} className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight">
+                <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                  {company.total_staff ? (
+                    <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center overflow-hidden">
+                      <span className="truncate block w-full text-sm">{company.total_staff}</span>
+                    </div>
+                  ) : (
+                    <span className="flex items-center">N/A</span>
+                  )}
+                </div>
+              </ResizablePanel>
+              
+              <ResizablePanel defaultSize={columnSizes.actions} minSize={3} className="overflow-hidden min-w-[40px] flex items-center justify-center">
+                <div className="flex min-h-11 w-full items-center gap-2.5 justify-center"></div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </div>
         ))}
       </div>
