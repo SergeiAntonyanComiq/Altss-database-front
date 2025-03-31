@@ -25,9 +25,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
 
       <div className="text-xs text-gray-600 mb-1 font-montserrat">Last update: 4 weeks ago</div>
 
-      <div className="flex justify-between items-center flex-wrap gap-4 mb-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-semibold font-montserrat">{contact.name}</h1>
+      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap max-md:max-w-full">
+        <div className="flex min-w-60 gap-4">
+          <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">{contact.name}</h1>
           <button className="bg-white flex items-center gap-2.5 text-base text-[rgba(0,126,96,1)] font-medium text-center justify-center px-6 py-[5px] rounded-[50px] max-md:px-5 border border-gray-200">
             <img
               src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ca51bf083c87bb6765db009254de1b519ea4a3ec"
@@ -37,18 +37,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
             <span className="self-stretch my-auto">Add to Favorites</span>
           </button>
         </div>
-        <div className="flex gap-2.5">
-          <button className="bg-white flex items-center gap-2.5 text-base font-medium text-center justify-center px-6 py-[5px] rounded-[50px] max-md:px-5 border border-gray-200">
+        <div className="flex min-w-60 gap-2.5 text-base text-[rgba(99,115,129,1)] font-medium text-center">
+          <button className="bg-white border flex items-center gap-2.5 justify-center px-6 py-[5px] rounded-[50px] border-[rgba(223,228,234,1)] border-solid max-md:px-5">
             <img 
-              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6" 
-              alt="Order Enrich" 
+              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/0bd597c769172697ba7e1f8d0385eb32afeed632" 
+              alt="Enrich" 
               className="aspect-[1] object-contain w-[18px] self-stretch shrink-0 my-auto"
             />
             <span className="self-stretch my-auto">Order Enrich</span>
           </button>
-          <Button variant="outline" className="px-4 py-1 h-auto rounded-full">
+          <button className="self-stretch bg-white border gap-2.5 px-6 py-[5px] rounded-[50px] border-[rgba(223,228,234,1)] border-solid max-md:px-5">
             Claim a mistake
-          </Button>
+          </button>
         </div>
       </div>
     </div>
