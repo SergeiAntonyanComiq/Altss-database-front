@@ -94,28 +94,29 @@ const CompanyDetails: React.FC = () => {
     <SidebarProvider>
       <div className="flex w-full min-h-screen bg-background">
         <AppSidebar />
-        <main className="flex-1 bg-[#F6F6F7] p-6 overflow-auto">
-          {isLoading ? (
-            <CompanyProfileSkeleton />
-          ) : !company ? (
-            <CompanyNotFound />
-          ) : (
-            <div className="max-w-6xl mx-auto">
-              <CompanyProfileHeader 
-                company={{
-                  name: company.firm_name,
-                  last_updated: company.last_updated
-                }} 
-              />
-              
-              <CompanyProfileTabs 
-                company={company}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-              />
-            </div>
-          )}
-        </main>
+        <div className="flex-1 bg-gray-100">
+          <div className="p-5 min-h-[900px]">
+            {isLoading ? (
+              <CompanyProfileSkeleton />
+            ) : !company ? (
+              <CompanyNotFound />
+            ) : (
+              <div className="bg-white shadow rounded-lg overflow-hidden">
+                <CompanyProfileHeader 
+                  company={{
+                    name: company.firm_name,
+                    last_updated: company.last_updated
+                  }} 
+                />
+                <CompanyProfileTabs 
+                  company={company}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </SidebarProvider>
   );

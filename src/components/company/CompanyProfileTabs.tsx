@@ -11,6 +11,7 @@ import CompanyNewsSection from "./CompanyNewsSection";
 import CompanyMandateTab from "./tabs/CompanyMandateTab";
 import CompanyOtherTab from "./tabs/CompanyOtherTab";
 import { CompanyType } from "@/types/company";
+import { Lock } from "lucide-react";
 
 interface CompanyProfileTabsProps {
   company: CompanyType;
@@ -27,100 +28,96 @@ const CompanyProfileTabs: React.FC<CompanyProfileTabsProps> = ({
     <Tabs 
       value={activeTab} 
       onValueChange={setActiveTab}
-      className="border-b border-gray-200"
     >
-      <TabsList className="bg-transparent p-0 h-auto">
-        <TabsTrigger 
-          value="overview" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Overview
-        </TabsTrigger>
-        <TabsTrigger 
-          value="investment" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Investment Focus
-        </TabsTrigger>
-        <TabsTrigger 
-          value="team" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Team
-        </TabsTrigger>
-        <TabsTrigger 
-          value="deals" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Deals
-        </TabsTrigger>
-        <TabsTrigger 
-          value="gplp" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          GP & LP
-        </TabsTrigger>
-        <TabsTrigger 
-          value="providers" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Service Providers
-        </TabsTrigger>
-        <TabsTrigger 
-          value="news" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          News
-        </TabsTrigger>
-        <TabsTrigger 
-          value="mandate" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Mandate
-        </TabsTrigger>
-        <TabsTrigger 
-          value="other" 
-          className="rounded-none px-4 py-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600"
-        >
-          Other
-        </TabsTrigger>
-      </TabsList>
+      <div className="px-4 flex gap-6 border-b">
+        <TabsList className="bg-transparent p-0 h-auto">
+          <TabsTrigger 
+            value="overview" 
+            className="py-3 px-0 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="investment" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            Investment focus
+          </TabsTrigger>
+          <TabsTrigger 
+            value="team" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            Team
+          </TabsTrigger>
+          <TabsTrigger 
+            value="deals" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            Deals
+          </TabsTrigger>
+          <TabsTrigger 
+            value="gplp" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            GP & LP
+          </TabsTrigger>
+          <TabsTrigger 
+            value="news" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            News
+          </TabsTrigger>
+          <TabsTrigger 
+            value="mandate" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            <div className="flex items-center">
+              <Lock className="h-3.5 w-3.5 mr-1.5" />
+              Mandate
+            </div>
+          </TabsTrigger>
+          <TabsTrigger 
+            value="providers" 
+            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+          >
+            Service Providers
+          </TabsTrigger>
+        </TabsList>
+      </div>
 
-      <TabsContent value="overview" className="pt-6">
-        <CompanyOverviewTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="investment" className="pt-6">
-        <CompanyInvestmentFocusTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="team" className="pt-6">
-        <CompanyTeamTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="deals" className="pt-6">
-        <CompanyDealsTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="gplp" className="pt-6">
-        <CompanyGPLPTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="providers" className="pt-6">
-        <CompanyServiceProvidersTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="news" className="pt-6">
-        <CompanyNewsSection company={company} />
-      </TabsContent>
-
-      <TabsContent value="mandate" className="pt-6">
-        <CompanyMandateTab company={company} />
-      </TabsContent>
-
-      <TabsContent value="other" className="pt-6">
-        <CompanyOtherTab company={company} />
-      </TabsContent>
+      <div className="p-4">
+        <TabsContent value="overview" className="mt-0">
+          <CompanyOverviewTab company={company} />
+        </TabsContent>
+        
+        <TabsContent value="investment" className="mt-0">
+          <CompanyInvestmentFocusTab company={company} />
+        </TabsContent>
+        
+        <TabsContent value="team" className="mt-0">
+          <CompanyTeamTab company={company} />
+        </TabsContent>
+        
+        <TabsContent value="deals" className="mt-0">
+          <CompanyDealsTab company={company} />
+        </TabsContent>
+        
+        <TabsContent value="gplp" className="mt-0">
+          <CompanyGPLPTab company={company} />
+        </TabsContent>
+        
+        <TabsContent value="providers" className="mt-0">
+          <CompanyServiceProvidersTab company={company} />
+        </TabsContent>
+        
+        <TabsContent value="news" className="mt-0">
+          <CompanyNewsSection company={company} />
+        </TabsContent>
+        
+        <TabsContent value="mandate" className="mt-0">
+          <CompanyMandateTab company={company} />
+        </TabsContent>
+      </div>
     </Tabs>
   );
 };

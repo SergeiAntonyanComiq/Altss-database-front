@@ -13,15 +13,15 @@ interface CompanyProfileHeaderProps {
 
 const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) => {
   return (
-    <>
+    <div>
       {/* Navigation and last update on light gray background */}
-      <div className="bg-[#F6F6F7] p-4 mb-4 rounded-t-lg">
+      <div className="bg-[#F6F6F7] p-4">
         <div className="flex items-center text-gray-500 text-sm">
           <Link to="/companies" className="flex items-center hover:text-blue-600">
             <span>Companies</span>
           </Link>
           <ChevronLeft className="h-4 w-4 mx-1 rotate-180" />
-          <span className="text-gray-700 font-medium">{company.name}</span>
+          <span className="text-blue-600 font-medium">{company.name}</span>
         </div>
         
         {company.last_updated && (
@@ -31,43 +31,51 @@ const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) 
         )}
       </div>
 
-      {/* Main header content */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold font-montserrat">{company.name}</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" className="text-gray-600">
+      {/* Main header content on white background */}
+      <div className="p-4 border-b">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">{company.name}</h1>
+            <button className="bg-white flex items-center gap-2 text-[#03887E] border-none font-medium text-center justify-center px-4 py-1 rounded-[50px]">
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ca51bf083c87bb6765db009254de1b519ea4a3ec" 
+                className="w-[18px] h-[18px] object-contain" 
+                alt="Favorites icon" 
+              />
+              <span>Add to Favorites</span>
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-2.5">
+            <button className="bg-white border flex items-center gap-2 justify-center px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/0bd597c769172697ba7e1f8d0385eb32afeed632" 
+                className="w-[18px] h-[18px] object-contain" 
+                alt="Enrich icon" 
+              />
+              <span className="ml-1">Order Enrich</span>
+            </button>
+            
+            <button className="bg-white border gap-2.5 px-6 py-[5px] rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
               Claim a mistake
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2 text-gray-600">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 12V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M14 16H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M16 4V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M8 12V16H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 20V16H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 8V4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              Order Enrich
-            </Button>
+            </button>
           </div>
         </div>
 
-        <div className="flex gap-2 mb-6">
-          <Button 
-            variant="outline" 
-            className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3] flex items-center"
-          >
-            <Star className="w-4 h-4 mr-2" />
-            Add to Favorites
-          </Button>
-          
-          <Button variant="outline" className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3]">
-            Order Enrich
-          </Button>
+        {/* List tags section */}
+        <div className="mt-4 flex gap-2">
+          <span className="inline-block bg-[#E0F2EF] text-[#03887E] px-4 py-1 rounded-full text-sm">
+            My Long Super List
+          </span>
+          <span className="inline-block bg-[#E0F2EF] text-[#03887E] px-4 py-1 rounded-full text-sm">
+            UserList1
+          </span>
+          <span className="inline-block bg-[#E0F2EF] text-[#03887E] px-4 py-1 rounded-full text-sm">
+            Update Subscription
+          </span>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
