@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Heart } from "lucide-react";
 import { CompanyType } from "@/types/company";
@@ -103,7 +102,7 @@ const CompaniesTable = ({
             <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-[8_8_0%] shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
                 <div 
-                  className="flex-1 flex items-center cursor-pointer whitespace-normal overflow-visible"
+                  className="flex-1 flex items-center cursor-pointer truncate overflow-hidden"
                   onClick={() => handleViewCompany(company.id || '')}
                 >
                   {company.firm_name}
