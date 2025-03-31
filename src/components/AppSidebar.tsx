@@ -1,4 +1,3 @@
-
 import React from "react";
 import { LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -92,14 +91,12 @@ const AppSidebar = () => {
     <>
       <Sidebar className="border-r border-[#F1F0FB]">
         <SidebarHeader className="pt-6 pb-4">
-          <div className="flex justify-between items-center px-6">
-            <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
-                alt="Altss Logo" 
-                className="h-10 w-auto object-contain rounded-md"
-              />
-            </div>
+          <div className="flex items-center justify-between px-6">
+            <img 
+              src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
+              alt="Altss Logo" 
+              className="h-8 w-auto object-contain"
+            />
             <SidebarTrigger className="text-gray-400" />
           </div>
         </SidebarHeader>
