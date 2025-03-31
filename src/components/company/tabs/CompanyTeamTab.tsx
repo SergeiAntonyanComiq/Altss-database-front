@@ -32,6 +32,8 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
 
       try {
         setIsLoading(true);
+        console.log("Fetching team members for company ID:", company.id);
+        
         const response = await fetch("https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/", {
           method: "POST",
           headers: {
@@ -47,6 +49,7 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
         }
 
         const data = await response.json();
+        console.log("Team members fetched:", data);
         setTeamMembers(data);
       } catch (err) {
         console.error("Error fetching team members:", err);
