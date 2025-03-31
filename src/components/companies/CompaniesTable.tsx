@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Heart, Check } from "lucide-react";
+import { Heart } from "lucide-react";
 import { CompanyType } from "@/types/company";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -43,11 +43,12 @@ const CompaniesTable = ({
       <div className="bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap">
         <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r">
           <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-            <img 
-              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/4c9a3c7052d8f24afeb1a4d1e91f16560aecd56b?placeholderIfAbsent=true" 
-              alt="Select all" 
-              className="aspect-[1] object-contain w-5 self-stretch my-auto rounded-[0px_0px_0px_0px] cursor-pointer"
-              onClick={toggleAllCompanies}
+            <Checkbox
+              id="selectAll"
+              checked={allSelected}
+              onCheckedChange={toggleAllCompanies}
+              aria-label="Select all companies"
+              className="h-5 w-5 rounded-md"
             />
           </div>
         </div>
@@ -57,7 +58,7 @@ const CompaniesTable = ({
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[240px] border-[rgba(223,228,234,1)] border-r">
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[300px] border-[rgba(223,228,234,1)] border-r">
           <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Type</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
@@ -89,21 +90,13 @@ const CompaniesTable = ({
           <div key={company.id} className="flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA]">
             <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-                {isCompanySelected(company.id) ? (
-                  <div 
-                    className="bg-[rgba(38,101,240,1)] border-[rgba(55,88,249,1)] border flex min-h-5 w-5 flex-col items-center justify-center h-5 my-auto px-[5px] rounded-md border-solid cursor-pointer"
-                    onClick={() => toggleCompanySelection(company.id || '')}
-                  >
-                    <Check className="h-3 w-3 text-white" />
-                  </div>
-                ) : (
-                  <img 
-                    src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/4c9a3c7052d8f24afeb1a4d1e91f16560aecd56b?placeholderIfAbsent=true" 
-                    alt="Select" 
-                    className="aspect-[1] object-contain w-5 self-stretch my-auto rounded-[0px_0px_0px_0px] cursor-pointer"
-                    onClick={() => toggleCompanySelection(company.id || '')}
-                  />
-                )}
+                <Checkbox
+                  id={`company-${company.id}`}
+                  checked={isCompanySelected(company.id)}
+                  onCheckedChange={() => toggleCompanySelection(company.id || '')}
+                  aria-label={`Select ${company.firm_name}`}
+                  className="h-5 w-5 rounded-md"
+                />
               </div>
             </div>
             
@@ -126,10 +119,10 @@ const CompaniesTable = ({
               </div>
             </div>
             
-            <div className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight w-[240px] border-[rgba(223,228,234,1)] border-r flex items-center">
+            <div className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight w-[300px] border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                <div className="bg-[rgba(219,229,254,1)] gap-2 px-4 py-1.5 rounded-[30px] flex items-center whitespace-normal text-sm max-w-[220px] break-words">
-                  <span className="truncate block w-full">{company.firm_type || company.type || 'N/A'}</span>
+                <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[280px] overflow-hidden">
+                  <span className="truncate block w-full text-sm">{company.firm_type || company.type || 'N/A'}</span>
                 </div>
               </div>
             </div>
@@ -149,8 +142,8 @@ const CompaniesTable = ({
             <div className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight w-[180px] border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
                 {company.total_staff ? (
-                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-4 py-1.5 rounded-[30px] flex items-center text-sm max-w-[160px]">
-                    <span className="truncate block w-full">{company.total_staff}</span>
+                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[160px] overflow-hidden">
+                    <span className="truncate block w-full text-sm">{company.total_staff}</span>
                   </div>
                 ) : (
                   <span className="flex items-center">N/A</span>
