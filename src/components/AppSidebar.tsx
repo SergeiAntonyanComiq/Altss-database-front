@@ -19,14 +19,6 @@ import {
   useSidebar
 } from "@/components/ui/sidebar";
 
-// Define a type for menu items that can have either a Lucide icon component or a custom SVG function
-type MenuItem = {
-  title: string;
-  path: string;
-  icon: React.ComponentType<{ className?: string }> | (() => React.ReactNode);
-  isCustomIcon?: boolean;
-};
-
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -58,30 +50,26 @@ const AppSidebar = () => {
     }
   };
 
-  const menuItems: MenuItem[] = [
+  const menuItems = [
     {
       title: "Companies",
       path: "/companies",
       icon: Building2,
-      isCustomIcon: false,
     },
     {
       title: "Persons",
       path: "/persons",
       icon: Users,
-      isCustomIcon: false,
     },
     {
       title: "My Orders",
       path: "/my-orders",
       icon: ShoppingBag,
-      isCustomIcon: false,
     },
     {
       title: "Favorites",
       path: "/favorites",
       icon: Heart,
-      isCustomIcon: false,
     },
     {
       title: "Saved Searches",
@@ -92,7 +80,6 @@ const AppSidebar = () => {
           <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
-      isCustomIcon: true,
     },
   ];
 
@@ -133,11 +120,11 @@ const AppSidebar = () => {
                     isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
-                  {item.isCustomIcon ? 
-                    (item.icon as () => React.ReactNode)() : 
-                    React.createElement(item.icon as React.ComponentType<{ className?: string }>, { className: "h-5 w-5 mr-3" })
+                  {typeof item.icon === 'function' ? 
+                    item.icon() : 
+                    <item.icon className="h-5 w-5 mr-3" />
                   }
-                  <span className={item.isCustomIcon ? "ml-3" : ""}>{item.title}</span>
+                  <span className={typeof item.icon === 'function' ? "ml-3" : ""}>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
