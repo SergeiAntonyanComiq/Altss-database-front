@@ -9,6 +9,7 @@ import PersonsPagination from "./PersonsPagination";
 import { useContactsSearch } from "@/hooks/useContactsSearch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 const PersonsList2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,6 +27,13 @@ const PersonsList2 = () => {
   
   // Calculate total pages based on the available data
   const totalPages = Math.ceil((hasSearched && contacts ? contacts.length : persons.length) / itemsPerPage);
+
+  // Reset to first page when new search results are received
+  useEffect(() => {
+    if (contacts) {
+      setCurrentPage(1);
+    }
+  }, [contacts]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -85,7 +93,12 @@ const PersonsList2 = () => {
   // Render contacts data in the table when search results are available
   const renderContactsTable = () => {
     if (isLoading) {
-      return <div className="p-4 text-center">Loading contacts...</div>;
+      return (
+        <div className="p-8 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 text-primary" />
+          <p>Loading contacts...</p>
+        </div>
+      );
     }
 
     if (error) {
@@ -121,7 +134,7 @@ const PersonsList2 = () => {
               <TableCell>{contact.firm_type}</TableCell>
               <TableCell>{contact.title}</TableCell>
               <TableCell>{contact.email}</TableCell>
-              <TableCell>{`${contact.city}, ${contact.state}`}</TableCell>
+              <TableCell>{`${contact.city}${contact.state ? `, ${contact.state}` : ''}`}</TableCell>
             </TableRow>
           ))}
         </TableBody>

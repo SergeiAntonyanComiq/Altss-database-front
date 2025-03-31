@@ -46,6 +46,10 @@ export const useContactsSearch = () => {
       
       if (Array.isArray(result)) {
         setData(result);
+        toast({
+          title: "Search Complete",
+          description: `Found ${result.length} contacts matching your criteria`,
+        });
       } else {
         console.error('API returned unexpected data format:', result);
         setData([]);
@@ -57,7 +61,7 @@ export const useContactsSearch = () => {
       }
     } catch (err) {
       console.error('Search error:', err);
-      setError('Data is unavailable');
+      setError('Failed to fetch contacts');
       setData(null);
       toast({
         title: "Error",
