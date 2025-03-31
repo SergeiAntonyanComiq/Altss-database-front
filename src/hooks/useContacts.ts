@@ -7,41 +7,54 @@ export function useContacts(page: number = 1, perPage: number = 10) {
   const [contacts, setContacts] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(119418); // Total contacts from 1 to 119418
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchContacts = async () => {
       try {
         setIsLoading(true);
-        console.log(`Fetching contacts for page ${page}, per page ${perPage}`);
         
-        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts?page=${page}&per_page=${perPage}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch contacts: ${response.statusText}`);
+        // Calculate the range of contact IDs to fetch based on pagination
+        const startId = (page - 1) * perPage + 1;
+        const endId = Math.min(startId + perPage - 1, totalCount);
+        
+        console.log(`Fetching contacts from ID ${startId} to ${endId}`);
+        
+        // Create an array of promises to fetch multiple contacts in parallel
+        const promises = [];
+        for (let id = startId; id <= endId; id++) {
+          promises.push(
+            fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${id}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              }
+            }).then(response => {
+              if (!response.ok) {
+                console.error(`Failed to fetch contact ${id}: ${response.status}`);
+                return null;
+              }
+              return response.json();
+            }).catch(err => {
+              console.error(`Error fetching contact ${id}:`, err);
+              return null;
+            })
+          );
         }
-
-        const data = await response.json();
-        console.log("Contacts fetched:", data);
         
-        // Check if the response contains contacts data and total count
-        if (Array.isArray(data.contacts)) {
-          setContacts(data.contacts);
-          setTotalCount(data.total || data.contacts.length);
-        } else if (Array.isArray(data)) {
-          // If response is just an array of contacts
-          setContacts(data);
-          setTotalCount(data.length);
-        } else {
-          throw new Error("Unexpected response format");
+        // Wait for all promises to resolve
+        const results = await Promise.all(promises);
+        
+        // Filter out any null results (failed requests)
+        const validContacts = results.filter(contact => contact !== null) as ContactType[];
+        
+        if (validContacts.length === 0) {
+          throw new Error("No valid contacts retrieved");
         }
         
+        console.log(`Successfully fetched ${validContacts.length} contacts`);
+        setContacts(validContacts);
         setError(null);
       } catch (err) {
         console.error("Error fetching contacts:", err);
