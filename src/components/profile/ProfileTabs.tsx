@@ -31,23 +31,23 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
       value={activeTab} 
       onValueChange={setActiveTab}
     >
-      <div className="px-4 flex gap-6 border-b">
-        <TabsList className="bg-transparent p-0 h-auto">
+      <div className="border-b">
+        <TabsList className="bg-transparent p-0 h-auto px-4">
           <TabsTrigger 
             value="details" 
-            className="py-3 px-0 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+            className="py-3 px-0 mr-6 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
           >
             Details
           </TabsTrigger>
           <TabsTrigger 
             value="bio" 
-            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+            className="py-3 px-0 mr-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
           >
             Bio & News
           </TabsTrigger>
           <TabsTrigger 
             value="job" 
-            className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+            className="py-3 px-0 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
           >
             Job history
           </TabsTrigger>
