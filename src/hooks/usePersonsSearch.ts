@@ -13,6 +13,7 @@ export const usePersonsSearch = () => {
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasPerformedInitialSearch, setHasPerformedInitialSearch] = useState(false);
   const { toast } = useToast();
 
   const searchPersons = async (params: SearchParams) => {
@@ -39,6 +40,7 @@ export const usePersonsSearch = () => {
       const data = await response.json();
       console.log("Search results:", data);
       setSearchResults(Array.isArray(data) ? data : []);
+      setHasPerformedInitialSearch(true);
     } catch (err: any) {
       console.error("Error searching persons:", err);
       setError("Failed to search. Please try again.");
@@ -53,5 +55,11 @@ export const usePersonsSearch = () => {
     }
   };
 
-  return { searchResults, isLoading, error, searchPersons };
+  return { 
+    searchResults, 
+    isLoading, 
+    error, 
+    searchPersons, 
+    hasPerformedInitialSearch 
+  };
 };
