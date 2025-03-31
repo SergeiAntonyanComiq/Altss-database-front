@@ -47,7 +47,7 @@ const PersonsList2 = () => {
   };
 
   return (
-    <div className="w-full px-6 py-8">
+    <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
@@ -62,7 +62,7 @@ const PersonsList2 = () => {
         setSearchQuery={setSearchQuery}
       />
       
-      <div className="mt-4 w-full overflow-hidden">
+      <div className="mt-4">
         <PersonsTable2 
           persons={persons}
           selectedPersons={selectedPersons}
