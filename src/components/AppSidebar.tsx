@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Building2, Users, ShoppingBag, Heart, Search, ChevronDown, PanelLeft, LogOut, User } from "lucide-react";
+import { Building2, Users, ShoppingBag, Heart, ChevronDown, PanelLeft, LogOut, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -74,7 +74,12 @@ const AppSidebar = () => {
     {
       title: "Saved Searches",
       path: "/saved-searches",
-      icon: Search,
+      icon: () => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
     },
   ];
 
@@ -115,8 +120,11 @@ const AppSidebar = () => {
                     isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
-                  <item.icon className="h-5 w-5 mr-3" />
-                  <span>{item.title}</span>
+                  {typeof item.icon === 'function' ? 
+                    item.icon() : 
+                    <item.icon className="h-5 w-5 mr-3" />
+                  }
+                  <span className={typeof item.icon === 'function' ? "ml-3" : ""}>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
