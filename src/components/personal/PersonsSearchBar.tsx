@@ -38,20 +38,20 @@ const PersonsSearchBar = ({
   const [localFilters, setLocalFilters] = useState<SearchParams>(searchParams);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   
-  console.log('PersonsSearchBar - Render with searchQuery:', searchQuery);
-  console.log('PersonsSearchBar - Current searchParams:', searchParams);
-  console.log('PersonsSearchBar - Current localFilters:', localFilters);
+  console.log('🔍 PersonsSearchBar - Render with searchQuery:', searchQuery);
+  console.log('🔍 PersonsSearchBar - Current searchParams:', searchParams);
+  console.log('🔍 PersonsSearchBar - Current localFilters:', localFilters);
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
-      console.log('PersonsSearchBar - Enter key pressed in search input');
+      console.log('👆 PersonsSearchBar - Enter key pressed in search input');
       e.preventDefault();
       onSearch();
     }
   };
 
   const handleFilterChange = (param: keyof SearchParams, value: string) => {
-    console.log(`PersonsSearchBar - Filter changed: ${param} = "${value}"`);
+    console.log(`🔄 PersonsSearchBar - Filter changed: ${param} = "${value}"`);
     setLocalFilters(prev => ({
       ...prev,
       [param]: value
@@ -59,16 +59,16 @@ const PersonsSearchBar = ({
   };
 
   const handleApplyFilters = () => {
-    console.log('PersonsSearchBar - Apply filters clicked');
-    console.log('PersonsSearchBar - Applying filters:', localFilters);
+    console.log('✅ PersonsSearchBar - Apply filters clicked');
+    console.log('✅ PersonsSearchBar - Applying filters:', localFilters);
     
     // First update the parent component's search params with our local filter values
     setSearchParams(localFilters);
-    console.log('PersonsSearchBar - After setSearchParams call');
+    console.log('✅ PersonsSearchBar - After setSearchParams call, filters applied');
     
     // Set search query to match the name filter for consistency
     if (localFilters.name) {
-      console.log(`PersonsSearchBar - Setting searchQuery to "${localFilters.name}"`);
+      console.log(`✅ PersonsSearchBar - Setting searchQuery to "${localFilters.name}"`);
       setSearchQuery(localFilters.name);
     }
     
@@ -77,26 +77,23 @@ const PersonsSearchBar = ({
     
     // Trigger the search to apply filters
     if (onSearch) {
-      console.log('PersonsSearchBar - Calling onSearch()');
+      console.log('🔍 PersonsSearchBar - Calling onSearch() after applying filters');
       onSearch();
     }
   };
 
   const handleClearFilters = () => {
-    console.log('PersonsSearchBar - Clear filters clicked');
+    console.log('🧹 PersonsSearchBar - Clear filters clicked');
     const emptyFilters = { name: "", investor: "", firm_type: "" };
     setLocalFilters(emptyFilters);
     setSearchParams(emptyFilters);
   };
 
-  // Initialize localFilters with searchParams only when component mounts
+  // Initialize localFilters with searchParams when the component mounts or when searchParams change
   useEffect(() => {
-    // Only run this effect on initial mount to prevent update loops
-    if (searchParams) {
-      console.log('PersonsSearchBar - Initial useEffect - Setting localFilters:', searchParams);
-      setLocalFilters(searchParams);
-    }
-  }, []); // Empty dependency array - only run on mount
+    console.log('🔄 PersonsSearchBar - searchParams changed, updating localFilters:', searchParams);
+    setLocalFilters(searchParams);
+  }, [searchParams]); 
 
   return (
     <div className="flex flex-wrap gap-4 mb-6">
@@ -106,8 +103,14 @@ const PersonsSearchBar = ({
           placeholder="Search person"
           value={searchQuery}
           onChange={(e) => {
-            console.log(`PersonsSearchBar - Search input changed to: "${e.target.value}"`);
+            console.log(`🔤 PersonsSearchBar - Search input changed to: "${e.target.value}"`);
             setSearchQuery(e.target.value);
+            
+            // Update name in localFilters when typing in main search
+            setLocalFilters(prev => ({
+              ...prev,
+              name: e.target.value
+            }));
           }}
           onKeyDown={handleKeyDown}
           className="pl-3 pr-10"
@@ -115,7 +118,7 @@ const PersonsSearchBar = ({
         {searchQuery && (
           <button
             onClick={() => {
-              console.log('PersonsSearchBar - Clear search button clicked');
+              console.log('🧹 PersonsSearchBar - Clear search button clicked');
               if (onClear) onClear();
             }}
             className="absolute inset-y-0 right-10 flex items-center pr-2"
@@ -137,7 +140,12 @@ const PersonsSearchBar = ({
         variant="outline" 
         className="flex items-center gap-2"
         onClick={() => {
-          console.log('PersonsSearchBar - Search button clicked');
+          console.log('🔍 PersonsSearchBar - Search button clicked');
+          // Make sure name in searchParams matches the input field
+          setSearchParams({
+            ...localFilters,
+            name: searchQuery
+          });
           if (onSearch) onSearch();
         }}
         disabled={isLoading}
