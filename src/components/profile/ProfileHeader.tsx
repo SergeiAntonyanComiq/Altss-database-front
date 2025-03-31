@@ -10,6 +10,8 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="p-4 border-b">
       <div className="mb-6 flex items-center text-gray-500 text-sm">
@@ -21,11 +23,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
         <span className="text-blue-600 font-medium">{contact.name}</span>
       </div>
 
-      <div className="text-xs text-gray-600 mb-1">Last update: 4 weeks ago</div>
+      <div className="text-xs text-gray-600 mb-1 font-montserrat">Last update: 4 weeks ago</div>
 
       <div className="flex justify-between items-center flex-wrap gap-4 mb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-semibold">{contact.name}</h1>
+          <h1 className="text-2xl font-semibold font-montserrat">{contact.name}</h1>
           <button className="flex items-center gap-2 text-green-700 bg-white px-4 py-1 rounded-full border">
             <Star className="h-4 w-4" />
             <span>Add to Favorites</span>

@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CompanyProfileHeaderProps {
@@ -25,13 +25,13 @@ const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) 
 
       <div className="mb-8">
         {company.last_updated && (
-          <div className="text-sm text-gray-500 mb-2">
+          <div className="text-sm text-gray-500 mb-2 font-montserrat">
             Last update: {company.last_updated}
           </div>
         )}
         
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">{company.name}</h1>
+          <h1 className="text-2xl font-semibold font-montserrat">{company.name}</h1>
           <div className="flex gap-2">
             <Button variant="outline" className="text-gray-600">
               Claim a mistake
@@ -55,10 +55,7 @@ const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) 
             variant="outline" 
             className="bg-[#E0F2EF] border-none text-[#03887E] hover:bg-[#C5E8E3] flex items-center"
           >
-            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 12H15M12 9V15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" 
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <Star className="w-4 h-4 mr-2" />
             Add to Favorites
           </Button>
           
