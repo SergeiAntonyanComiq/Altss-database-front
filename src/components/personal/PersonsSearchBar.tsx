@@ -53,9 +53,16 @@ const PersonsSearchBar = ({
   };
 
   const handleApplyFilters = () => {
+    // First update the parent component's search params with our local filter values
     setSearchParams(localFilters);
+    
+    // Set search query to match the name filter for consistency
     setSearchQuery(localFilters.name);
+    
+    // Close the popover
     setIsPopoverOpen(false);
+    
+    // Trigger the search to apply filters
     if (onSearch) {
       onSearch();
     }

@@ -14,13 +14,16 @@ export const useContactsSearch = () => {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<ContactType[] | null>(null);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [lastSearchParams, setLastSearchParams] = useState<SearchParams | null>(null);
 
   const search = async (params: SearchParams) => {
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
+    setLastSearchParams(params);
     
     try {
+      console.log('Searching with params:', params);
       const response = await fetch('https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0', {
         method: 'POST',
         headers: {
@@ -38,8 +41,10 @@ export const useContactsSearch = () => {
       }
 
       const result = await response.json();
+      console.log('Search results:', result);
       setData(result);
     } catch (err) {
+      console.error('Search error:', err);
       setError('Data is unavailable');
       toast({
         title: "Error",
@@ -55,12 +60,14 @@ export const useContactsSearch = () => {
     setData(null);
     setError(null);
     setHasSearched(false);
+    setLastSearchParams(null);
   };
 
   return {
     isLoading,
     error,
     data,
+    lastSearchParams,
     search,
     clearSearch,
     hasSearched

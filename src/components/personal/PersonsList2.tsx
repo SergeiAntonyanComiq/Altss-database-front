@@ -8,6 +8,7 @@ import PersonsTable2 from "./PersonsTable2";
 import PersonsPagination from "./PersonsPagination";
 import { useContactsSearch } from "@/hooks/useContactsSearch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 
 const PersonsList2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -57,10 +58,17 @@ const PersonsList2 = () => {
   };
 
   const handleSearch = () => {
+    console.log('Performing search with:', { ...searchParams, name: searchQuery || searchParams.name });
     search({
       name: searchQuery || searchParams.name,
       investor: searchParams.investor,
       firm_type: searchParams.firm_type
+    });
+    
+    // Notify the user that search is being performed
+    toast({
+      title: "Searching",
+      description: "Searching for contacts with the specified filters",
     });
   };
 
