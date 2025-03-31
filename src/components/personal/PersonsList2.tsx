@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import PersonsSearchBar from "./PersonsSearchBar";
@@ -51,11 +51,17 @@ const PersonsList2 = ({
   const {
     contacts,
     isLoading,
-    totalContacts
+    totalContacts,
+    setItemsPerPage: setContactsItemsPerPage
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage
   });
+
+  // Synchronize itemsPerPage changes with the hook's state
+  useEffect(() => {
+    setContactsItemsPerPage(itemsPerPage);
+  }, [itemsPerPage, setContactsItemsPerPage]);
 
   // Convert contacts to persons format for the table
   const persons = contacts.map(contactToPerson);
@@ -128,6 +134,13 @@ const PersonsList2 = ({
     }
     
     return pages;
+  };
+
+  // Handle items per page change
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newItemsPerPage = parseInt(e.target.value);
+    onItemsPerPageChange(newItemsPerPage);
+    console.log(`Changed items per page to: ${newItemsPerPage}`);
   };
 
   return (
@@ -229,7 +242,7 @@ const PersonsList2 = ({
           <select 
             className="w-full h-10 border border-input bg-background px-3 py-2 text-sm rounded-md"
             value={itemsPerPage}
-            onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
+            onChange={handleItemsPerPageChange}
           >
             <option value="10">10 results per page</option>
             <option value="25">25 results per page</option>

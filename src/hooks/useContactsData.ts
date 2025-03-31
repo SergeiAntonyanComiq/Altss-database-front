@@ -46,6 +46,8 @@ export const useContactsData = ({
         const startId = (currentPage - 1) * itemsPerPage + 1;
         const endId = Math.min(startId + itemsPerPage - 1, MAX_CONTACTS);
         
+        console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}`);
+        
         const contactPromises: Promise<ContactType>[] = [];
         
         // Fetch contacts one by one
@@ -56,6 +58,7 @@ export const useContactsData = ({
         // Wait for all requests to complete
         const fetchedContacts = await Promise.all(contactPromises);
         setContacts(fetchedContacts);
+        console.log(`Fetched ${fetchedContacts.length} contacts`);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An unknown error occurred'));
         toast({
