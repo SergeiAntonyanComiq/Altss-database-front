@@ -1,10 +1,8 @@
 
 import React from "react";
-import { Heart, LayoutGrid } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+import { Heart } from "lucide-react";
 import { CompanyType } from "@/types/company";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CompaniesTableProps {
   companies: CompanyType[];
@@ -30,86 +28,137 @@ const CompaniesTable = ({
   isLoading
 }: CompaniesTableProps) => {
   if (companies.length === 0 && !isLoading) {
-    return <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+    return (
+      <div className="bg-white rounded-lg p-6 text-center">
         <p className="text-gray-500">No companies found for the current page</p>
-      </div>;
-  }
-  
-  return <div className="bg-white rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-gray-200">
-              <TableHead className="w-12 p-0 pl-3">
-                <div className="flex items-center justify-center">
-                  <Checkbox checked={selectedCompanies.length === companies.length && companies.length > 0} onCheckedChange={toggleAllCompanies} />
-                </div>
-              </TableHead>
-              <TableHead className="font-medium min-w-[300px]">Company Name</TableHead>
-              <TableHead className="font-medium">Company Type</TableHead>
-              <TableHead className="font-medium">Location</TableHead>
-              <TableHead className="font-medium my-[2px] mx-0">AUM, $mln.</TableHead>
-              <TableHead className="font-medium">Founded year</TableHead>
-              <TableHead className="font-medium">Staff Count</TableHead>
-              <TableHead className="w-12">
-                <LayoutGrid className="h-4 w-4 mx-auto text-gray-500" />
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {companies.map(company => <TableRow key={company.id} className={`${selectedCompanies.includes(company.id || '') ? "bg-blue-50" : ""}`} data-state={selectedCompanies.includes(company.id || '') ? "selected" : undefined} onClick={() => toggleCompanySelection(company.id || '')}>
-                <TableCell className="align-middle w-12 p-0 pl-3">
-                  <div className="flex items-center justify-center">
-                    <Checkbox checked={isCompanySelected(company.id)} onCheckedChange={() => toggleCompanySelection(company.id || '')} onClick={e => e.stopPropagation()} className="h-4 w-4" />
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium text-gray-800 min-w-[300px]">
-                  <div className="flex items-center">
-                    <span className="cursor-pointer hover:text-blue-600 hover:underline whitespace-normal break-words" onClick={e => {
-                  e.stopPropagation();
-                  handleViewCompany(company.id || '');
-                }}>
-                      {company.firm_name}
-                    </span>
-                    <button className="ml-2 flex-shrink-0" onClick={e => {
-                  e.stopPropagation();
-                  toggleFavorite(company.id || '', e);
-                }}>
-                      <Heart className={`h-4 w-4 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} />
-                    </button>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 rounded-md text-xs border-blue-100 font-normal px-2 py-1">
-                    {company.firm_type || company.type || 'N/A'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-gray-600">
-                    {company.city ? `${company.city}, ${company.country || company.state_county || ''}` : 'N/A'}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-gray-600">
-                    {formatAum(company.aum)}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-gray-600">
-                    {company.year_est || 'N/A'}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm text-gray-600">
-                    {company.total_staff || 'N/A'}
-                  </span>
-                </TableCell>
-                <TableCell></TableCell>
-              </TableRow>)}
-          </TableBody>
-        </Table>
       </div>
-    </div>;
+    );
+  }
+
+  const allSelected = selectedCompanies.length === companies.length && companies.length > 0;
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      {/* Table Header */}
+      <div className="bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap">
+        <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r">
+          <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
+            <Checkbox
+              id="selectAll"
+              checked={allSelected}
+              onCheckedChange={toggleAllCompanies}
+              aria-label="Select all companies"
+              className="h-5 w-5 rounded-md"
+            />
+          </div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none flex-auto min-w-[300px] border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Name</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[300px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Type</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[200px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">AUM, $mln.</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Founded year</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[180px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Known Team</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-11">
+          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">+</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+      </div>
+      
+      {/* Table Rows */}
+      <div className="divide-y divide-[#DFE4EA]">
+        {companies.map((company, index) => (
+          <div key={company.id} className="flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA]">
+            <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
+                <Checkbox
+                  id={`company-${company.id}`}
+                  checked={isCompanySelected(company.id)}
+                  onCheckedChange={() => toggleCompanySelection(company.id || '')}
+                  aria-label={`Select ${company.firm_name}`}
+                  className="h-5 w-5 rounded-md"
+                />
+              </div>
+            </div>
+            
+            <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-auto min-w-[300px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                <div 
+                  className="flex-1 flex items-center cursor-pointer overflow-visible whitespace-normal break-words"
+                  onClick={() => handleViewCompany(company.id || '')}
+                >
+                  {company.firm_name}
+                </div>
+                <button
+                  onClick={(e) => toggleFavorite(company.id || '', e)}
+                  className="ml-2 flex items-center justify-center flex-shrink-0"
+                >
+                  <Heart 
+                    className={`h-5 w-5 cursor-pointer ${company.isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+                  />
+                </button>
+              </div>
+            </div>
+            
+            <div className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight w-[300px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[280px] overflow-hidden">
+                  <span className="truncate block w-full text-sm">{company.firm_type || company.type || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[200px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                {formatAum(company.aum)}
+              </div>
+            </div>
+            
+            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[170px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                {company.year_est ? `${company.year_est} y.` : 'N/A'}
+              </div>
+            </div>
+            
+            <div className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight w-[180px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+                {company.total_staff ? (
+                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[160px] overflow-hidden">
+                    <span className="truncate block w-full text-sm">{company.total_staff}</span>
+                  </div>
+                ) : (
+                  <span className="flex items-center">N/A</span>
+                )}
+              </div>
+            </div>
+            
+            <div className="overflow-hidden w-11 flex items-center">
+              <div className="flex min-h-11 w-full items-center gap-2.5"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default CompaniesTable;
