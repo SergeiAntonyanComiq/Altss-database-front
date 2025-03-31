@@ -1,5 +1,6 @@
+
 import React from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,26 +56,31 @@ const AppSidebar = () => {
       title: "Companies",
       path: "/companies",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
+      hasRightIcon: false
     },
     {
       title: "Persons",
       path: "/persons",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
+      hasRightIcon: false
     },
     {
       title: "My Orders",
       path: "/my-orders",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
+      hasRightIcon: false
     },
     {
       title: "Favorites",
       path: "/favorites",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/31a6ca2e49aa013c782f793e48805961b525cc26",
+      hasRightIcon: true
     },
     {
       title: "Saved Searches",
       path: "/saved-searches",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f69faa278a069ce4b2090e224b9110b1e63802ea",
+      hasRightIcon: true
     },
   ];
 
@@ -90,17 +96,17 @@ const AppSidebar = () => {
 
   return (
     <>
-      <Sidebar className="border-r border-[#F1F0FB]">
+      <Sidebar className="border-r border-[#DFE4EA] bg-white">
         <SidebarHeader className="pt-4 pb-3">
           <div className="flex w-full items-center justify-between px-6">
             <div className="flex items-center">
               <img 
                 src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
                 alt="Altss Logo" 
-                className="h-10 w-auto object-contain"
+                className="h-10 w-auto object-contain rounded-md"
               />
             </div>
-            <SidebarTrigger className="text-gray-400 w-6 h-6" />
+            <SidebarTrigger className="text-[#637381] w-6 h-6" />
           </div>
         </SidebarHeader>
         
@@ -108,21 +114,26 @@ const AppSidebar = () => {
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
-                {index === 2 && <SidebarSeparator className="my-2" />}
+                {index === 2 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     data-active={isActive(item.path)}
                     onClick={() => handleNavigation(item.path)}
-                    className={`flex items-center text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
-                      isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
+                    className={`flex items-center justify-between text-[#637381] hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
+                      isActive(item.path) ? "bg-blue-50 text-blue-600 font-medium" : "font-medium"
                     }`}
                   >
-                    <img 
-                      src={item.iconSrc} 
-                      alt={item.title} 
-                      className="h-5 w-5 mr-3 object-contain"
-                    />
-                    <span className="font-medium">{item.title}</span>
+                    <div className="flex items-center">
+                      <img 
+                        src={item.iconSrc} 
+                        alt={item.title} 
+                        className="h-6 w-6 mr-3 object-contain"
+                      />
+                      <span>{item.title}</span>
+                    </div>
+                    {item.hasRightIcon && (
+                      <ChevronRight className="h-5 w-5 text-[#637381]" />
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </React.Fragment>
@@ -130,27 +141,28 @@ const AppSidebar = () => {
           </SidebarMenu>
         </SidebarContent>
         
-        <SidebarFooter className="mt-auto p-6 border-t border-[#F1F0FB]">
+        <SidebarFooter className="mt-auto p-6 border-t border-[#DFE4EA]">
           <div className="flex flex-col gap-4">
             <div 
-              className="flex items-center gap-3 cursor-pointer hover:bg-blue-50 p-2 rounded-md transition-colors"
+              className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors"
               onClick={() => handleNavigation("/profile")}
             >
               <Avatar>
                 <AvatarImage 
                   src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/635dde9f8ef84a19da3d5dd766f2e72d108bd70c" 
-                  alt="User Profile" 
+                  alt="User Profile"
+                  className="rounded-full" 
                 />
-                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                <AvatarFallback className="bg-gray-200 text-gray-700">{getUserInitials()}</AvatarFallback>
               </Avatar>
-              <span className="text-gray-700 text-sm truncate max-w-[120px]">
+              <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">
                 {user?.email || "User Name"}
               </span>
             </div>
             
             <Button 
               variant="outline" 
-              className="flex items-center justify-start text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-4 h-10 w-full border-gray-200"
+              className="flex items-center justify-start text-[#637381] hover:bg-gray-100 hover:text-gray-700 text-[15px] px-4 h-10 w-full border-gray-200"
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5 mr-3" />
