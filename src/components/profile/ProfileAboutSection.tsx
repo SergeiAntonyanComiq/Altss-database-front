@@ -10,10 +10,10 @@ const ProfileAboutSection: React.FC<ProfileAboutSectionProps> = ({ contact }) =>
   return (
     <section>
       <h2 className="text-xl font-bold mb-4">About</h2>
-      <div className="border-t border-gray-200"></div>
-      <div className="pt-4 grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
-        <span className="text-gray-600 font-medium">Area of responsibility</span>
-        <div className="flex flex-wrap gap-2">
+      <hr className="mb-6" />
+      <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-6 text-base">
+        <span className="text-gray-600">Area of responsibility</span>
+        <div className="flex gap-2">
           {contact.asset_class.split(',').map((asset, index) => (
             <span 
               key={index}
@@ -24,18 +24,18 @@ const ProfileAboutSection: React.FC<ProfileAboutSectionProps> = ({ contact }) =>
           ))}
         </div>
         
-        <span className="text-gray-600 font-medium">Resident Location</span>
+        <span className="text-gray-600">Resident Location</span>
         <span>{`${contact.city}${contact.state ? `, ${contact.state}` : ''}, ${contact.country_territory}`}</span>
         
-        <span className="text-gray-600 font-medium">Current Company</span>
+        <span className="text-gray-600">Current Company</span>
         <span>{contact.investor || "No data"}</span>
         
-        <span className="text-gray-600 font-medium">Position title</span>
+        <span className="text-gray-600">Position title</span>
         <span>{contact.job_title || "No data"}</span>
         
         {contact.sec_registration && (
           <>
-            <span className="text-gray-600 font-medium">SEC Registration</span>
+            <span className="text-gray-600">SEC Registration</span>
             <span>{contact.sec_registration}</span>
           </>
         )}
