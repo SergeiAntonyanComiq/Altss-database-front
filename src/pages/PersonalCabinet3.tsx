@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -13,11 +14,11 @@ const PersonalCabinet3 = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
-  const section = searchParams.get('section');
+  const section = searchParams.get('section') || "persons";
   
   const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
   const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
-  const [activeSection, setActiveSection] = useState<string>(section || "persons");
+  const [activeSection, setActiveSection] = useState<string>(section);
 
   // Update URL when page or items per page changes
   const handlePageChange = (page: number) => {
@@ -36,6 +37,15 @@ const PersonalCabinet3 = () => {
     navigate(`${location.pathname}?${params.toString()}`);
   };
 
+  // Change section (persons/contacts)
+  const handleSectionChange = (newSection: string) => {
+    setActiveSection(newSection);
+    const params = new URLSearchParams(location.search);
+    params.set('section', newSection);
+    params.set('page', '1');
+    navigate(`${location.pathname}?${params.toString()}`);
+  };
+
   // Keep URL and state in sync
   useEffect(() => {
     if (pageParam) {
@@ -50,10 +60,7 @@ const PersonalCabinet3 = () => {
   }, [pageParam, perPageParam, section]);
 
   const renderContent = () => {
-    // Use the section from URL or fallback to activeSection state
-    const currentSection = section || activeSection;
-    
-    switch (currentSection) {
+    switch (activeSection) {
       case "contacts":
         return <ContactsList />;
       case "persons":
@@ -74,6 +81,22 @@ const PersonalCabinet3 = () => {
       <div className="flex w-full min-h-screen bg-background">
         <AppSidebar />
         <main className="flex-1 bg-[#FEFEFE] min-w-0 min-h-[900px] overflow-auto">
+          <div className="px-6 pt-6">
+            <div className="flex space-x-4 border-b">
+              <button
+                onClick={() => handleSectionChange("persons")}
+                className={`pb-2 px-1 ${activeSection === "persons" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-600"}`}
+              >
+                Persons
+              </button>
+              <button
+                onClick={() => handleSectionChange("contacts")}
+                className={`pb-2 px-1 ${activeSection === "contacts" ? "border-b-2 border-blue-600 text-blue-600 font-medium" : "text-gray-600"}`}
+              >
+                Contacts
+              </button>
+            </div>
+          </div>
           {renderContent()}
         </main>
       </div>

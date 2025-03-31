@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
@@ -42,15 +43,34 @@ const PersonsList2 = ({
       try {
         setIsLoading(true);
         
-        console.log(`Using mock data since the persons API endpoint is not functioning`);
+        // Настоящий эндпоинт для получения списка персон
+        const url = `https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons?page=${currentPage}&per_page=${itemsPerPage}`;
+        console.log(`Fetching persons data from: ${url}`);
         
-        setPersons(mockPersons.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
-        setTotalCount(mockPersons.length);
-        
-        toast({
-          title: "Info",
-          description: "Using mock data for persons as the API endpoint is not available.",
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
         });
+        
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Persons data fetched:", data);
+        
+        // Обработка структуры ответа API
+        if (Array.isArray(data)) {
+          setPersons(data);
+          setTotalCount(data.length * 10); // Примерная оценка общего количества
+        } else if (data && Array.isArray(data.persons)) {
+          setPersons(data.persons);
+          setTotalCount(data.total || data.count || data.persons.length * 10);
+        } else {
+          throw new Error("Unexpected API response format");
+        }
       } catch (err) {
         console.error("Exception fetching persons:", err);
         toast({
@@ -58,7 +78,9 @@ const PersonsList2 = ({
           description: "Failed to load persons data. Using mock data instead.",
           variant: "destructive",
         });
-        setPersons(mockPersons);
+        
+        // Используем моковые данные в случае ошибки
+        setPersons(mockPersons.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
         setTotalCount(mockPersons.length);
       } finally {
         setIsLoading(false);
