@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, Plus, Mail, Linkedin, Facebook, Twitter } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { Badge } from "@/components/ui/badge";
-import UserAvatar from "@/components/ui/UserAvatar";
 
 interface PersonsTable2Props {
   persons: PersonType[];
@@ -16,6 +16,7 @@ interface PersonsTable2Props {
   toggleFavorite: (id: string) => void;
 }
 
+// Helper function to get company logo based on company name
 const getCompanyLogo = (company: string) => {
   const logoMap: Record<string, string> = {
     "Goldman Sachs": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
@@ -33,6 +34,7 @@ const getCompanyLogo = (company: string) => {
   return logoMap[company] || "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png";
 };
 
+// Helper function to format LinkedIn URL
 const formatLinkedInUrl = (url: string) => {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -41,6 +43,7 @@ const formatLinkedInUrl = (url: string) => {
   return `https://${url}`;
 };
 
+// Helper function to format social media URLs
 const formatSocialUrl = (platform: string, username: string) => {
   return `https://${platform}.com/${username.toLowerCase().replace(' ', '')}`;
 };
@@ -98,7 +101,16 @@ const PersonsTable2 = ({
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-3">
-                  <UserAvatar name={person.name} className="h-10 w-10" />
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage 
+                      src="/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png" 
+                      alt={person.name} 
+                    />
+                    <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                      {person.name.charAt(0)}
+                      {person.name.split(' ')[1]?.charAt(0) || ''}
+                    </AvatarFallback>
+                  </Avatar>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1">
                       <span className="font-medium text-gray-800">

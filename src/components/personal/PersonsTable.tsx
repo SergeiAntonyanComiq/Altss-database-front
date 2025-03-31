@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -6,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, Plus, Mail, Linkedin, Facebook, Twitter } from "lucide-react";
 import { PersonType } from "@/types/person";
 import { Badge } from "@/components/ui/badge";
-import UserAvatar from "@/components/ui/UserAvatar";
 
 interface PersonsTableProps {
   persons: PersonType[];
@@ -16,6 +16,7 @@ interface PersonsTableProps {
   toggleFavorite: (id: string) => void;
 }
 
+// Helper function to get company logo based on company name
 const getCompanyLogo = (company: string) => {
   const logoMap: Record<string, string> = {
     "Goldman Sachs": "/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png",
@@ -86,7 +87,16 @@ const PersonsTable = ({
               </TableCell>
               <TableCell className="py-3 px-4 align-middle">
                 <div className="flex items-center gap-2">
-                  <UserAvatar name={person.name} className="h-8 w-8 shrink-0" />
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage 
+                      src="/lovable-uploads/d93bfc50-1e23-41d9-a778-41f673f31cb0.png" 
+                      alt={person.name} 
+                    />
+                    <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                      {person.name.charAt(0)}
+                      {person.name.split(' ')[1]?.charAt(0) || ''}
+                    </AvatarFallback>
+                  </Avatar>
                   <div className="flex items-center gap-1">
                     <span className="text-sm font-medium text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
                       {person.name}
