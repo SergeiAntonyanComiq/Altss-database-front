@@ -47,33 +47,29 @@ const PersonsList = () => {
   };
 
   return (
-    <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
-      <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Persons</h1>
+    <div className="container mx-auto py-6">
+      <h1 className="text-2xl font-bold mb-6">Persons</h1>
       
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
       
-      <div className="w-full mt-8">
-        <PersonsTable 
-          persons={persons}
-          selectedPersons={selectedPersons}
-          handleCheckboxChange={handleCheckboxChange}
-          handleSelectAll={handleSelectAll}
-          toggleFavorite={toggleFavorite}
-        />
-      </div>
+      <PersonsTable 
+        persons={persons}
+        selectedPersons={selectedPersons}
+        handleCheckboxChange={handleCheckboxChange}
+        handleSelectAll={handleSelectAll}
+        toggleFavorite={toggleFavorite}
+      />
       
-      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-[122px] max-md:mt-10">
-        <PersonsPagination 
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />
-      </div>
+      <PersonsPagination 
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+      />
     </div>
   );
 };
