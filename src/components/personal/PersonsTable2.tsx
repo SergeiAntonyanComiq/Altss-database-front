@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { useNavigate } from "react-router-dom";
 
 interface PersonsTable2Props {
   persons: PersonType[];
@@ -35,6 +36,12 @@ const PersonsTable2 = ({
   isPersonSelected,
   isLoading
 }: PersonsTable2Props) => {
+  const navigate = useNavigate();
+
+  const handleProfileClick = (personId: string) => {
+    navigate(`/profile/${personId}`);
+  };
+
   if (persons.length === 0 && !isLoading) {
     return (
       <div className="bg-white rounded-lg p-6 text-center">
@@ -182,8 +189,12 @@ const PersonsTable2 = ({
                 </div>
               </div>
               
-              {/* Full Name cell */}
-              <div style={{width: `${columnSizes.fullName}%`}} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+              {/* Full Name cell - Now clickable to navigate to profile */}
+              <div 
+                style={{width: `${columnSizes.fullName}%`}} 
+                className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight cursor-pointer hover:bg-gray-50"
+                onClick={() => handleProfileClick(person.id)}
+              >
                 <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage 
@@ -195,11 +206,14 @@ const PersonsTable2 = ({
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex items-center gap-1 ml-2">
-                    <span className="text-sm font-medium text-gray-800 truncate">
+                    <span className="text-sm font-medium text-gray-800 truncate hover:text-blue-600">
                       {person.name}
                     </span>
                     <button 
-                      onClick={() => toggleFavorite(person.id)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent navigation when clicking the heart
+                        toggleFavorite(person.id);
+                      }}
                       className="focus:outline-none ml-2"
                     >
                       <Heart 
@@ -249,13 +263,23 @@ const PersonsTable2 = ({
               <div style={{width: `${columnSizes.contacts}%`}} className="overflow-hidden">
                 <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
                   <div className="flex items-center gap-2">
-                    <a href={`mailto:${person.email || `${person.name.toLowerCase().replace(' ', '.')}@example.com`}`} className="text-gray-600 hover:text-blue-600">
+                    <a 
+                      href={`mailto:${person.email || `${person.name.toLowerCase().replace(' ', '.')}@example.com`}`} 
+                      className="text-gray-600 hover:text-blue-600"
+                      onClick={(e) => e.stopPropagation()} // Prevent parent click when clicking email
+                    >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect width="20" height="16" x="2" y="4" rx="2" />
                         <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                       </svg>
                     </a>
-                    <a href={person.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
+                    <a 
+                      href={person.linkedin || "#"} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-gray-600 hover:text-blue-600"
+                      onClick={(e) => e.stopPropagation()} // Prevent parent click when clicking LinkedIn
+                    >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
                         <rect width="4" height="12" x="2" y="9" />
