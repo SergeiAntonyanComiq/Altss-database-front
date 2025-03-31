@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ContactType } from "@/types/contact";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -14,6 +14,88 @@ export const usePersonsSearch = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Function to fetch a single contact by ID
+  const fetchSingleContact = async (contactId: number): Promise<ContactType | null> => {
+    try {
+      const apiUrl = `https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${contactId}`;
+      console.log(`Fetching contact with ID: ${contactId}`);
+      
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log(`Contact with ID ${contactId} not found`);
+          return null;
+        }
+        throw new Error(`Failed to fetch contact: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(`Successfully fetched contact: ${contactId}`, data);
+      return data;
+    } catch (err) {
+      console.error(`Error fetching contact ${contactId}:`, err);
+      return null;
+    }
+  };
+
+  // Function to fetch multiple individual contacts in parallel batches
+  const fetchMultipleContacts = async (startId: number, count: number, batchSize: number = 10) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const allContacts: ContactType[] = [];
+      const endId = startId + count - 1;
+      
+      console.log(`Fetching ${count} contacts from ID ${startId} to ${endId}`);
+      
+      // Process in batches to avoid overwhelming the API
+      for (let currentStart = startId; currentStart <= endId; currentStart += batchSize) {
+        const batchEnd = Math.min(currentStart + batchSize - 1, endId);
+        console.log(`Fetching batch from ${currentStart} to ${batchEnd}`);
+        
+        const batchPromises = [];
+        for (let id = currentStart; id <= batchEnd; id++) {
+          batchPromises.push(fetchSingleContact(id));
+        }
+        
+        const batchResults = await Promise.all(batchPromises);
+        const validContacts = batchResults.filter(contact => contact !== null) as ContactType[];
+        allContacts.push(...validContacts);
+        
+        console.log(`Batch complete. Found ${validContacts.length} valid contacts`);
+      }
+      
+      console.log(`Total contacts found: ${allContacts.length}`);
+      setSearchResults(allContacts);
+      
+      if (allContacts.length === 0) {
+        toast({
+          title: "No Data Found",
+          description: "Could not retrieve any valid contact data.",
+          variant: "destructive",
+        });
+      }
+    } catch (err: any) {
+      console.error("Error fetching contacts:", err);
+      setError("Failed to fetch contacts. Please try again.");
+      toast({
+        title: "Error Loading Data",
+        description: `Failed to fetch contacts: ${err.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const searchPersons = async (params: SearchParams) => {
     setIsLoading(true);
@@ -54,6 +136,13 @@ export const usePersonsSearch = () => {
       if (Array.isArray(data)) {
         setSearchResults(data);
         console.log("Found", data.length, "results");
+        
+        if (data.length === 0) {
+          toast({
+            title: "No Results",
+            description: "Your search didn't return any results. Please try different search terms.",
+          });
+        }
       } else {
         console.log("Received data is not an array:", data);
         setSearchResults([]);
@@ -72,5 +161,17 @@ export const usePersonsSearch = () => {
     }
   };
 
-  return { searchResults, isLoading, error, searchPersons };
+  const resetSearch = async () => {
+    // Reset to initial data - fetch first 20 contacts
+    await fetchMultipleContacts(1, 20);
+  };
+
+  return { 
+    searchResults, 
+    isLoading, 
+    error, 
+    searchPersons, 
+    fetchMultipleContacts,
+    resetSearch 
+  };
 };
