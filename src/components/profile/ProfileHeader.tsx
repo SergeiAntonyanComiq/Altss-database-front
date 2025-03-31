@@ -44,14 +44,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
           
           <div className="flex items-center gap-2.5">
             <button className="bg-white border flex items-center gap-2 justify-center px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 12V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M14 16H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M16 4V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M8 12V16H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 20V16H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M4 8V4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/0bd597c769172697ba7e1f8d0385eb32afeed632" 
+                className="w-[18px] h-[18px] object-contain" 
+                alt="Enrich icon" 
+              />
               <span className="ml-1">Order Enrich</span>
             </button>
             
