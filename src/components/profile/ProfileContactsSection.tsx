@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Linkedin, Twitter, Mail, Phone, Copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ContactType } from "@/types/contact";
 import { toast } from "@/components/ui/use-toast";
@@ -41,7 +41,12 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
         {contact.linkedin && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Linkedin className="h-4 w-4" />LinkedIn
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/beb16618d740a2aa8ec04b177ad0bb8cbdc7b395" 
+                alt="LinkedIn" 
+                className="w-4 h-4 object-contain"
+              />
+              LinkedIn
             </span>
             <a 
               href={`https://${contact.linkedin}`} 
@@ -57,7 +62,12 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
         {contact.twitter && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Twitter className="h-4 w-4" />X (Twitter)
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/bb26636b166183963917f2201fbb87cba7d39a94" 
+                alt="X (Twitter)" 
+                className="w-4 h-4 object-contain"
+              />
+              X (Twitter)
             </span>
             <a 
               href={`https://x.com/${contact.twitter}`} 
@@ -71,7 +81,12 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
         )}
         
         <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <Mail className="h-4 w-4" />Work Emails
+          <img 
+            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
+            alt="Email" 
+            className="w-4 h-4 object-contain"
+          />
+          Work Emails
         </span>
         {contact.email ? (
           <div>
@@ -82,7 +97,11 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
               className="h-5 w-5 p-0" 
               onClick={() => copyToClipboard(contact.email || "")}
             >
-              <Copy className="h-4 w-4" />
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/b68eb65475b5dddf5cba016b221934f4ba784c1c" 
+                alt="Copy" 
+                className="w-5 h-5 object-contain"
+              />
             </Button>
           </div>
         ) : (
@@ -90,14 +109,24 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
         )}
         
         <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <Mail className="h-4 w-4" />Personal Email
+          <img 
+            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
+            alt="Email" 
+            className="w-4 h-4 object-contain"
+          />
+          Personal Email
         </span>
         <span>no data</span>
         
         {contact.tel && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <Phone className="h-4 w-4" />Phone number
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b" 
+                alt="Phone" 
+                className="w-4 h-4 object-contain"
+              />
+              Phone number
             </span>
             <span>{contact.tel}</span>
           </>
