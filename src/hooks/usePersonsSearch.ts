@@ -18,33 +18,53 @@ export const usePersonsSearch = () => {
   const searchPersons = async (params: SearchParams) => {
     setIsLoading(true);
     setError(null);
+    
+    console.log("Search params:", params);
 
     try {
-      const response = await fetch("https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0", {
+      // Define the API endpoint
+      const apiUrl = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0";
+      
+      // Create request payload
+      const payload = {
+        name: params.name || "",
+        investor: params.investor || "",
+        firm_type: params.firm_type || ""
+      };
+      
+      console.log("Sending request to:", apiUrl);
+      console.log("With payload:", payload);
+      
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: params.name || "",
-          investor: params.investor || "",
-          firm_type: params.firm_type || ""
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error(`Search failed: ${response.statusText}`);
+        throw new Error(`Search failed: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       console.log("Search results:", data);
-      setSearchResults(Array.isArray(data) ? data : []);
+      
+      if (Array.isArray(data)) {
+        setSearchResults(data);
+        console.log("Found", data.length, "results");
+      } else {
+        console.log("Received data is not an array:", data);
+        setSearchResults([]);
+      }
     } catch (err: any) {
       console.error("Error searching persons:", err);
       setError("Failed to search. Please try again.");
       toast({
         title: "Search Error",
-        description: "Failed to search for persons. Please try again later.",
+        description: `Failed to search for persons: ${err.message}`,
         variant: "destructive",
       });
       setSearchResults([]);

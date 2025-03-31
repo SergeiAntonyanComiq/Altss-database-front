@@ -27,26 +27,35 @@ const mapContactToPerson = (contact: ContactType): PersonType => {
 
 const PersonsList2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
+  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [persons, setPersons] = useState<PersonType[]>(mockPersons);
+  const [persons, setPersons] = useState<PersonType[]>([]);
   const { searchResults, isLoading, error, searchPersons } = usePersonsSearch();
   const { toast } = useToast();
+  
+  console.log("PersonsList2 rendering. searchResults:", searchResults.length, "isLoading:", isLoading, "error:", error);
   
   // Effect to map search results to person format when results change
   useEffect(() => {
     if (searchResults.length > 0) {
+      console.log("Mapping search results to persons format");
       const mappedPersons = searchResults.map(mapContactToPerson);
       setPersons(mappedPersons);
-    } else if (searchResults.length === 0 && !isLoading && !error) {
-      // If search returned empty results, show that
+    } else if (searchResults.length === 0 && !isLoading && error === null) {
+      // If search returned empty results (not initial state, not loading, no error)
+      console.log("Search returned no results");
       setPersons([]);
+      toast({
+        title: "No Results",
+        description: "Your search didn't return any results. Please try different search terms.",
+      });
     }
-  }, [searchResults, isLoading, error]);
+  }, [searchResults, isLoading, error, toast]);
 
   // Initial search to load data
   useEffect(() => {
+    console.log("Running initial search");
     handleSearch({ name: "", investor: "", firm_type: "" });
   }, []);
 
@@ -85,6 +94,7 @@ const PersonsList2 = () => {
 
   // Handle search from the search bar
   const handleSearch = (params: { name: string; investor: string; firm_type: string }) => {
+    console.log("Searching with params:", params);
     searchPersons(params);
   };
 

@@ -30,10 +30,23 @@ const PersonsSearchBar = ({
   });
 
   const handleSubmit = form.handleSubmit((data) => {
+    console.log("Form submitted with data:", data);
     if (onSearch) {
       onSearch(data);
     }
   });
+
+  // Handle quick search when pressing Enter in the quick search field
+  const handleQuickSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onSearch) {
+      console.log("Quick search with query:", searchQuery);
+      onSearch({ 
+        name: searchQuery,
+        investor: "",
+        firm_type: ""
+      });
+    }
+  };
 
   const toggleAdvancedSearch = () => {
     setShowAdvancedSearch(!showAdvancedSearch);
@@ -49,9 +62,21 @@ const PersonsSearchBar = ({
             placeholder="Quick search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleQuickSearch}
             className="pl-3 pr-10"
           />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <div 
+            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+            onClick={() => {
+              if (onSearch) {
+                onSearch({ 
+                  name: searchQuery,
+                  investor: "",
+                  firm_type: ""
+                });
+              }
+            }}
+          >
             <Search className="w-5 h-5 text-gray-400" />
           </div>
         </div>
