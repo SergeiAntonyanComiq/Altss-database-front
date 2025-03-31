@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
@@ -28,15 +29,15 @@ const PersonsPagination = ({
     } else {
       pages.push(1);
       
-      let start = Math.max(2, currentPage - 2);
-      let end = Math.min(totalPages - 1, currentPage + 2);
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
       
       if (currentPage <= 3) {
         start = 2;
-        end = Math.min(5, totalPages - 1);
+        end = Math.min(4, totalPages - 1);
       } 
       else if (currentPage >= totalPages - 2) {
-        start = Math.max(2, totalPages - 4);
+        start = Math.max(2, totalPages - 3);
         end = totalPages - 1;
       }
       
@@ -59,26 +60,26 @@ const PersonsPagination = ({
   };
   
   return (
-    <>
+    <div className="flex items-center gap-4 justify-between w-full">
       <div className="items-stretch bg-white flex min-w-60 min-h-[46px] flex-col justify-center px-[13px] py-[11px] rounded-[3px]">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="self-stretch flex items-center gap-2 my-auto">
             <button 
               onClick={() => onPageChange(1)} 
               disabled={currentPage === 1}
-              className="disabled:opacity-50"
+              className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === 1 ? 'bg-gray-100' : ''}`}>
+              <div className="flex items-center justify-center w-[25px] h-[25px]">
                 <ChevronsLeft className="h-4 w-4" />
               </div>
             </button>
             
             <button 
-              onClick={() => onPageChange(currentPage - 1)} 
+              onClick={() => currentPage > 1 && onPageChange(currentPage - 1)} 
               disabled={currentPage === 1}
-              className="disabled:opacity-50"
+              className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === 1 ? 'bg-gray-100' : ''}`}>
+              <div className="flex items-center justify-center w-[25px] h-[25px]">
                 <ChevronLeft className="h-4 w-4" />
               </div>
             </button>
@@ -108,11 +109,11 @@ const PersonsPagination = ({
           
           <div className="self-stretch flex items-center gap-2 my-auto">
             <button 
-              onClick={() => onPageChange(currentPage + 1)} 
+              onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)} 
               disabled={currentPage === totalPages}
-              className="disabled:opacity-50"
+              className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === totalPages ? 'bg-gray-100' : ''}`}>
+              <div className="flex items-center justify-center w-[25px] h-[25px]">
                 <ChevronRight className="h-4 w-4" />
               </div>
             </button>
@@ -120,9 +121,9 @@ const PersonsPagination = ({
             <button 
               onClick={() => onPageChange(totalPages)} 
               disabled={currentPage === totalPages}
-              className="disabled:opacity-50"
+              className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
-              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === totalPages ? 'bg-gray-100' : ''} rounded-md`}>
+              <div className="flex items-center justify-center w-[25px] h-[25px]">
                 <ChevronsRight className="h-4 w-4" />
               </div>
             </button>
@@ -136,13 +137,12 @@ const PersonsPagination = ({
           value={itemsPerPage}
           onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
         >
-          <option value="50">50 results per page</option>
-          <option value="25">25 results per page</option>
           <option value="10">10 results per page</option>
-          <option value="100">100 results per page</option>
+          <option value="25">25 results per page</option>
+          <option value="50">50 results per page</option>
         </select>
       </div>
-    </>
+    </div>
   );
 };
 
