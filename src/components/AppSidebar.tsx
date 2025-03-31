@@ -19,6 +19,13 @@ import {
   useSidebar
 } from "@/components/ui/sidebar";
 
+// Define a type for menu items that can have either a Lucide icon component or a custom SVG function
+type MenuItem = {
+  title: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }> | (() => React.ReactNode);
+};
+
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,7 +57,7 @@ const AppSidebar = () => {
     }
   };
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       title: "Companies",
       path: "/companies",
