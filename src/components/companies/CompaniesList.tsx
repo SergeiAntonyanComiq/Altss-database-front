@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -33,10 +32,8 @@ const CompaniesList = ({
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Define the range of company IDs we'll use for pagination
-  const MIN_COMPANY_ID = 1;
-  const MAX_COMPANY_ID = 32646;
-  const TOTAL_COMPANIES = MAX_COMPANY_ID - MIN_COMPANY_ID + 1;
+  // Define the total number of records
+  const TOTAL_INVESTORS = 618634;
 
   useEffect(() => {
     fetchCompanies();
@@ -47,29 +44,28 @@ const CompaniesList = ({
     setError(null);
     
     try {
-      // Calculate the start and end IDs for the current page
-      const startId = MIN_COMPANY_ID + (currentPage - 1) * itemsPerPage;
-      let endId = startId + itemsPerPage - 1;
-      if (endId > MAX_COMPANY_ID) endId = MAX_COMPANY_ID;
+      // Calculate the range of investor IDs to fetch based on pagination
+      const startIndex = (currentPage - 1) * itemsPerPage + 1;
+      const endIndex = Math.min(startIndex + itemsPerPage - 1, TOTAL_INVESTORS);
       
-      // Create an array of IDs for the current page
-      const pageIds = Array.from({ length: endId - startId + 1 }, (_, i) => startId + i);
+      // Create an array of IDs to fetch
+      const idsToFetch = Array.from({ length: endIndex - startIndex + 1 }, (_, i) => startIndex + i);
       
-      // Fetch companies for these IDs
-      const companyPromises = pageIds.map(id => 
-        fetch(`${API_BASE_URL}/fund_managers/${id}`)
+      // Fetch investors data in parallel
+      const companyPromises = idsToFetch.map(id => 
+        fetch(`${API_BASE_URL}/investors/${id}`)
           .then(response => {
             if (!response.ok) {
               if (response.status === 404) {
                 // Not found is expected for some IDs, return null
                 return null;
               }
-              throw new Error(`Failed to fetch company with ID ${id}`);
+              throw new Error(`Failed to fetch investor with ID ${id}`);
             }
             return response.json();
           })
           .catch(err => {
-            console.warn(`Error fetching company ${id}:`, err);
+            console.warn(`Error fetching investor ${id}:`, err);
             return null; // Skip failed requests
           })
       );
@@ -84,10 +80,10 @@ const CompaniesList = ({
             ...company,
             // Make sure we have all required fields for the CompanyType
             id: String(company.id || ''),
-            firm_name: company.firm_name || 'N/A',
-            name: company.firm_name || 'N/A',
-            type: company.firm_type || 'N/A',
-            location: `${company.city || 'N/A'}, ${company.state_county || 'N/A'}`,
+            firm_name: company.firm_name || company.name || 'N/A',
+            name: company.firm_name || company.name || 'N/A',
+            type: company.firm_type || company.type || 'N/A',
+            location: `${company.city || 'N/A'}, ${company.state_county || company.country || 'N/A'}`,
             employees: company.total_staff ? parseInt(company.total_staff) : 'N/A',
             revenue: `$${Math.floor(Math.random() * 70) + 5}M`, // Mock data as not in API
             status: Math.random() > 0.2 ? 'Active' : 'Inactive', // Mock data as not in API
@@ -99,16 +95,16 @@ const CompaniesList = ({
           };
         });
 
-      // Calculate total pages based on total companies count
-      setTotalPages(Math.ceil(TOTAL_COMPANIES / itemsPerPage));
+      // Calculate total pages based on total investors count
+      setTotalPages(Math.ceil(TOTAL_INVESTORS / itemsPerPage));
       
       setCompanies(fetchedCompanies);
     } catch (err) {
-      console.error("Error fetching companies:", err);
-      setError("Failed to load companies. Please try again later.");
+      console.error("Error fetching investors:", err);
+      setError("Failed to load investors. Please try again later.");
       toast({
         title: "Error",
-        description: "Failed to load companies. Please try again later.",
+        description: "Failed to load investors. Please try again later.",
         variant: "destructive",
       });
     } finally {

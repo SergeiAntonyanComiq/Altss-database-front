@@ -1,9 +1,11 @@
+
 import React from "react";
 import { Heart, LayoutGrid } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { CompanyType } from "@/types/company";
+
 interface CompaniesTableProps {
   companies: CompanyType[];
   selectedCompanies: string[];
@@ -15,6 +17,7 @@ interface CompaniesTableProps {
   isCompanySelected: (id: string | undefined) => boolean;
   isLoading: boolean;
 }
+
 const CompaniesTable = ({
   companies,
   selectedCompanies,
@@ -31,6 +34,7 @@ const CompaniesTable = ({
         <p className="text-gray-500">No companies found for the current page</p>
       </div>;
   }
+  
   return <div className="bg-white rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
@@ -41,7 +45,7 @@ const CompaniesTable = ({
                   <Checkbox checked={selectedCompanies.length === companies.length && companies.length > 0} onCheckedChange={toggleAllCompanies} />
                 </div>
               </TableHead>
-              <TableHead className="font-medium">Company Name</TableHead>
+              <TableHead className="font-medium min-w-[300px]">Company Name</TableHead>
               <TableHead className="font-medium">Company Type</TableHead>
               <TableHead className="font-medium">Location</TableHead>
               <TableHead className="font-medium my-[2px] mx-0">AUM, $mln.</TableHead>
@@ -59,15 +63,15 @@ const CompaniesTable = ({
                     <Checkbox checked={isCompanySelected(company.id)} onCheckedChange={() => toggleCompanySelection(company.id || '')} onClick={e => e.stopPropagation()} className="h-4 w-4" />
                   </div>
                 </TableCell>
-                <TableCell className="font-medium text-gray-800">
+                <TableCell className="font-medium text-gray-800 min-w-[300px]">
                   <div className="flex items-center">
-                    <span className="cursor-pointer hover:text-blue-600 hover:underline" onClick={e => {
+                    <span className="cursor-pointer hover:text-blue-600 hover:underline whitespace-normal break-words" onClick={e => {
                   e.stopPropagation();
                   handleViewCompany(company.id || '');
                 }}>
                       {company.firm_name}
                     </span>
-                    <button className="ml-2" onClick={e => {
+                    <button className="ml-2 flex-shrink-0" onClick={e => {
                   e.stopPropagation();
                   toggleFavorite(company.id || '', e);
                 }}>
@@ -107,4 +111,5 @@ const CompaniesTable = ({
       </div>
     </div>;
 };
+
 export default CompaniesTable;
