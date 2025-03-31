@@ -1,69 +1,17 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { CompanyType } from "@/types/company";
-import { ContactType } from "@/types/contact";
-import { useToast } from "@/components/ui/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import TeamMemberCard from "../team/TeamMemberCard";
 import TeamLoadingSkeleton from "../team/TeamLoadingSkeleton";
+import { useTeamMembers } from "@/hooks/useTeamMembers";
 
 interface CompanyTeamTabProps {
   company: CompanyType;
 }
 
 const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
-  const [teamMembers, setTeamMembers] = useState<ContactType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchTeamMembers = async () => {
-      // Use firm_id instead of id
-      if (!company.firm_id) {
-        setError("Firm ID not available");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        console.log("Fetching team members for company firm_id:", company.firm_id);
-        
-        // Fix the URL to match the working endpoint format from the screenshot
-        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts?firm_id=${company.firm_id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch team members: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Team members fetched:", data);
-        setTeamMembers(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error("Error fetching team members:", err);
-        setError("Failed to load team members. Please try again later.");
-        toast({
-          title: "Error",
-          description: "Failed to load team members. Please try again later.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTeamMembers();
-  }, [company.firm_id, toast]);
-
-  // Find primary contact (assuming it's the first one with a specific role or just the first one)
-  const primaryContact = teamMembers.length > 0 ? teamMembers[0] : null;
-  const otherMembers = teamMembers.length > 1 ? teamMembers.slice(1) : [];
+  const { primaryContact, otherMembers, isLoading, error } = useTeamMembers(company.firm_id);
 
   if (isLoading) {
     return <TeamLoadingSkeleton />;
