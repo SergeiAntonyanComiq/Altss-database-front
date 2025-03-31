@@ -37,44 +37,22 @@ const PersonsList2 = ({
   
   const totalPages = Math.ceil(totalCount / itemsPerPage) || 1;
 
-  // Fetch persons data from Xano
   useEffect(() => {
     const fetchPersons = async () => {
       try {
         setIsLoading(true);
         
-        const url = `https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons?page=${currentPage}&per_page=${itemsPerPage}`;
-        console.log(`Fetching persons data from: ${url}`);
+        console.log(`Using mock data since the persons API endpoint is not functioning`);
         
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          }
+        setPersons(mockPersons.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
+        setTotalCount(mockPersons.length);
+        
+        toast({
+          title: "Info",
+          description: "Using mock data for persons as the API endpoint is not available.",
         });
-        
-        if (!response.ok) {
-          console.error(`Failed to fetch persons: ${response.status} ${response.statusText}`);
-          throw new Error(`Failed to fetch persons: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Persons data fetched:", data);
-        
-        // Handle the response data based on its structure
-        if (Array.isArray(data.persons)) {
-          // If response has a persons array and total count
-          setPersons(data.persons);
-          setTotalCount(data.total || data.persons.length);
-        } else if (Array.isArray(data)) {
-          // If response is just an array of persons
-          setPersons(data);
-          setTotalCount(data.length);
-        } else {
-          throw new Error("Unexpected response format");
-        }
       } catch (err) {
-        console.error("Exception fetching persons from Xano:", err);
+        console.error("Exception fetching persons:", err);
         toast({
           title: "Error",
           description: "Failed to load persons data. Using mock data instead.",
@@ -108,11 +86,9 @@ const PersonsList2 = ({
 
   const toggleFavorite = async (id: string) => {
     try {
-      // Find the person to toggle
       const personToUpdate = persons.find(p => p.id === id);
       if (!personToUpdate) return;
       
-      // Update the favorite status in Xano
       const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons/${id}`, {
         method: "PATCH",
         headers: {
@@ -125,7 +101,6 @@ const PersonsList2 = ({
         throw new Error(`Failed to update favorite status: ${response.statusText}`);
       }
       
-      // Update local state
       setPersons(prev => 
         prev.map(p => p.id === id ? { ...p, favorite: !p.favorite } : p)
       );
