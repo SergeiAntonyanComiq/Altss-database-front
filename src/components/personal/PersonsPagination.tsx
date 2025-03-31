@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
@@ -60,8 +59,8 @@ const PersonsPagination = ({
   };
   
   return (
-    <div className="flex justify-between items-center mt-4 w-full">
-      <div className="items-stretch bg-white flex min-h-[46px] flex-row justify-center px-[13px] py-[11px] rounded-[3px]">
+    <>
+      <div className="items-stretch bg-white flex min-w-60 min-h-[46px] flex-col justify-center px-[13px] py-[11px] rounded-[3px]">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="self-stretch flex items-center gap-2 my-auto">
             <button 
@@ -131,19 +130,19 @@ const PersonsPagination = ({
         </div>
       </div>
       
-      <div className="w-[250px]">
+      <div className="min-w-60 min-h-12 text-base text-[#637381] font-normal w-[250px] rounded-md">
         <select 
-          className="items-center border border-[#DFE4EA] bg-white flex w-full gap-2.5 h-[46px] px-5 py-3 rounded-md text-base text-[#637381] font-normal"
+          className="items-center border border-[#DFE4EA] bg-white flex w-full gap-2.5 flex-1 h-full px-5 py-3 rounded-md"
           value={itemsPerPage}
           onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
         >
-          <option value="10">10 results per page</option>
-          <option value="25">25 results per page</option>
           <option value="50">50 results per page</option>
+          <option value="25">25 results per page</option>
+          <option value="10">10 results per page</option>
           <option value="100">100 results per page</option>
         </select>
       </div>
-    </div>
+    </>
   );
 };
 

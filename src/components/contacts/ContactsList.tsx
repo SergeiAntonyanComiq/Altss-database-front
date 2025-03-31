@@ -1,11 +1,10 @@
 
-import React, { useState, useEffect } from "react";
-import { ContactType } from "@/types/contact";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 import ContactsTable from "./ContactsTable";
 import PersonsSearchBar from "../personal/PersonsSearchBar";
 import PersonsPagination from "../personal/PersonsPagination";
-import { toast } from "@/components/ui/use-toast";
+import { useContacts } from "@/hooks/useContacts";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,
@@ -14,197 +13,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Mock data to use when API fails or for initial load
-const mockContacts: ContactType[] = [
-  {
-    id: 2,
-    firm_id: 4,
-    contact_id: 59246,
-    investor: "3i",
-    firm_type: "Fund Manager",
-    title: "Mr.",
-    name: "Rémi Carnimolla",
-    alternative_name: "",
-    role: "Investment Team",
-    job_title: "Senior Partner, Managing Director, Global Head of Services & Software Sector and Member of the Investment Committee",
-    asset_class: "PE,INF,NR",
-    email: "remi.carnimolla@3i.com",
-    tel: "+33 (0)1 7315 1100",
-    city: "Paris",
-    state: "",
-    country_territory: "France",
-    zip_code: "75008",
-    linkedin: "www.linkedin.com/in/rémi-carnimolla-4227873/",
-    favorite: false
-  },
-  {
-    id: 3,
-    firm_id: 4,
-    contact_id: 59247,
-    investor: "Accel",
-    firm_type: "Fund Manager",
-    title: "Ms.",
-    name: "Jane Smith",
-    alternative_name: "",
-    role: "Investment Team",
-    job_title: "Partner",
-    asset_class: "VC",
-    email: "jane.smith@example.com",
-    tel: "+1 123 456 7890",
-    city: "London",
-    state: "",
-    country_territory: "UK",
-    zip_code: "EC1V",
-    linkedin: "www.linkedin.com/in/janesmith/",
-    favorite: false
-  },
-  {
-    id: 4,
-    firm_id: 5,
-    contact_id: 59248,
-    investor: "Blackstone",
-    firm_type: "Fund Manager",
-    title: "Mr.",
-    name: "John Doe",
-    alternative_name: "",
-    role: "Executive",
-    job_title: "Managing Director",
-    asset_class: "PE,RE",
-    email: "john.doe@example.com",
-    tel: "+1 987 654 3210",
-    city: "New York",
-    state: "NY",
-    country_territory: "USA",
-    zip_code: "10001",
-    linkedin: "www.linkedin.com/in/johndoe/",
-    favorite: false
-  }
-];
-
-const fetchContact = async (contactId: number): Promise<ContactType> => {
-  try {
-    const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${contactId}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch contact with ID ${contactId}`);
-    }
-    const data = await response.json();
-    return {
-      ...data,
-      favorite: false // Add favorite property
-    };
-  } catch (error) {
-    console.error(`Error fetching contact ${contactId}:`, error);
-    throw error;
-  }
-};
-
-const fetchContactIds = async (): Promise<number[]> => {
-  // In a real app, you would fetch a list of available contact IDs
-  // For now, we'll generate IDs for pagination demo
-  const totalContacts = 119418; // Total contacts in database
-  return Array.from({ length: totalContacts }, (_, i) => i + 1);
-};
-
 const ContactsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedContacts, setSelectedContacts] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [contactIds, setContactIds] = useState<number[]>([]);
-  const [contacts, setContacts] = useState<ContactType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const [contactsPerPage, setContactsPerPage] = useState(10);
-  const totalContacts = 119418; // Total contacts in database
+  const [selectedContacts, setSelectedContacts] = useState<number[]>([]);
+  
+  // Use our updated hook to fetch contacts
+  const { contacts, isLoading, error, totalCount, toggleFavorite } = useContacts(currentPage, contactsPerPage);
+  const { toast } = useToast();
 
-  // Get list of contact IDs for current page
-  useEffect(() => {
-    const getContactIds = async () => {
-      try {
-        // For demo, we'll generate sequential IDs based on pagination
-        const startId = (currentPage - 1) * contactsPerPage + 1;
-        const endId = Math.min(startId + contactsPerPage - 1, totalContacts);
-        const pageIds = Array.from(
-          { length: endId - startId + 1 },
-          (_, i) => startId + i
-        );
-        setContactIds(pageIds);
-      } catch (err) {
-        console.error("Failed to fetch contact IDs:", err);
-        setError(err instanceof Error ? err : new Error("Unknown error"));
-        // Use mock data if fetching IDs fails
-        setContactIds(mockContacts.map(contact => contact.id));
-      }
-    };
-    
-    getContactIds();
-  }, [currentPage, contactsPerPage]);
-
-  // Fetch contacts for current page
-  useEffect(() => {
-    const fetchCurrentPageContacts = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        if (contactIds.length === 0) {
-          // If no contact IDs, use mock data
-          setContacts(mockContacts);
-          setIsLoading(false);
-          return;
-        }
-        
-        // Fetch each contact
-        const contactPromises = contactIds.map(id => fetchContact(id));
-        const fetchedContacts = await Promise.all(
-          contactPromises.map(promise => 
-            promise.catch(err => {
-              console.error("Error fetching a contact:", err);
-              return null; // Return null for failed contacts
-            })
-          )
-        );
-        
-        // Filter out null values (failed fetches) and add to state
-        const validContacts = fetchedContacts.filter(contact => contact !== null) as ContactType[];
-        
-        if (validContacts.length === 0) {
-          // If all fetches failed, use mock data
-          setContacts(mockContacts);
-          toast({
-            title: "Warning",
-            description: "Using demo data as we couldn't load contacts from the server.",
-            variant: "default",
-          });
-        } else {
-          setContacts(validContacts);
-        }
-      } catch (err) {
-        console.error("Error in contact fetching process:", err);
-        setError(err instanceof Error ? err : new Error("Unknown error"));
-        setContacts(mockContacts); // Fallback to mock data
-        
-        toast({
-          title: "Error",
-          description: "Failed to load contacts. Using demo data instead.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchCurrentPageContacts();
-  }, [contactIds]);
-
-  useEffect(() => {
+  // Show toast if there's an error
+  React.useEffect(() => {
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to load contacts. Please try again later.",
+        description: error,
         variant: "destructive",
       });
     }
-  }, [error]);
+  }, [error, toast]);
 
   const handleCheckboxChange = (contactId: number) => {
     setSelectedContacts(prev => 
@@ -220,18 +48,6 @@ const ContactsList = () => {
     } else {
       setSelectedContacts(contacts.map(contact => contact.id));
     }
-  };
-
-  const toggleFavorite = (id: number) => {
-    // In a real application, this would be an API call to change the favorite status
-    setContacts(prev => 
-      prev.map(contact => 
-        contact.id === id 
-          ? { ...contact, favorite: !contact.favorite } 
-          : contact
-      )
-    );
-    console.log(`Toggle favorite for contact with ID: ${id}`);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -267,7 +83,7 @@ const ContactsList = () => {
             </Select>
           </div>
           <span className="text-sm text-muted-foreground">
-            {isLoading ? "Loading..." : `Showing ${contacts.length} of ${totalContacts} items`}
+            {isLoading ? "Loading..." : `Showing ${contacts.length} of ${totalCount} items`}
           </span>
         </div>
       </div>
@@ -301,7 +117,7 @@ const ContactsList = () => {
         <PersonsPagination 
           currentPage={currentPage} 
           onPageChange={handlePageChange}
-          totalPages={Math.ceil(totalContacts / contactsPerPage)}
+          totalPages={Math.ceil(totalCount / contactsPerPage)}
           itemsPerPage={contactsPerPage}
           onItemsPerPageChange={handleContactsPerPageChange}
         />
