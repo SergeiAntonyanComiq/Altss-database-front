@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
+import { useToast } from "@/components/ui/use-toast";
 import { 
   Pagination, 
   PaginationContent, 
@@ -28,11 +30,63 @@ const PersonsList2 = ({
   onItemsPerPageChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [persons] = useState<PersonType[]>(mockPersons);
-  const [isLoading] = useState(false);
+  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
+  const [persons, setPersons] = useState<PersonType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   
   const totalPages = Math.ceil(persons.length / itemsPerPage);
+
+  // Fetch persons data from Xano
+  useEffect(() => {
+    const fetchPersons = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch from Xano API
+        const response = await fetch("https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch persons: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log("Persons data fetched from Xano:", data);
+        
+        // Transform data if needed to match PersonType
+        const formattedData: PersonType[] = Array.isArray(data) ? data.map((item: any) => ({
+          id: item.id.toString(),
+          name: item.name || "Unknown",
+          favorite: item.favorite || false,
+          responsibilities: item.responsibilities ? item.responsibilities.split(',') : [],
+          linkedin: item.linkedin || "",
+          location: item.city ? `${item.city}, ${item.country_territory || ""}` : item.country_territory || "",
+          companies: item.investor ? [item.investor] : [],
+          shortBio: item.short_bio || "",
+          currentPosition: item.job_title || "",
+        })) : [];
+        
+        setPersons(formattedData);
+      } catch (err) {
+        console.error("Exception fetching persons from Xano:", err);
+        toast({
+          title: "Error",
+          description: "Failed to load persons data. Using mock data instead.",
+          variant: "destructive",
+        });
+        setPersons(mockPersons);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPersons();
+  }, [toast]);
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 
@@ -50,8 +104,43 @@ const PersonsList2 = ({
     }
   };
 
-  const toggleFavorite = (id: string) => {
-    console.log(`Toggle favorite for person with ID: ${id}`);
+  const toggleFavorite = async (id: string) => {
+    try {
+      // Find the person to toggle
+      const personToUpdate = persons.find(p => p.id === id);
+      if (!personToUpdate) return;
+      
+      // Update the favorite status in Xano
+      const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/persons/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ favorite: !personToUpdate.favorite })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to update favorite status: ${response.statusText}`);
+      }
+      
+      // Update local state
+      setPersons(prev => 
+        prev.map(p => p.id === id ? { ...p, favorite: !p.favorite } : p)
+      );
+      
+      toast({
+        title: "Success",
+        description: `${personToUpdate.name} ${!personToUpdate.favorite ? "added to" : "removed from"} favorites`,
+      });
+      
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+      toast({
+        title: "Error",
+        description: "Failed to update favorite status.",
+        variant: "destructive",
+      });
+    }
   };
 
   const isPersonSelected = (id: string | undefined) => {
@@ -105,7 +194,7 @@ const PersonsList2 = ({
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
           <span className="text-sm text-muted-foreground">
-            Showing {persons.length} items
+            {isLoading ? "Loading..." : `Showing ${persons.length} items`}
           </span>
         </div>
       </div>
