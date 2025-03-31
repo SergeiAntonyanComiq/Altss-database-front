@@ -114,7 +114,7 @@ const AppSidebar = () => {
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
-                {index === 2 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
+                {index === 3 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     data-active={isActive(item.path)}
@@ -134,7 +134,7 @@ const AppSidebar = () => {
                       <span>{item.title}</span>
                     </div>
                     {item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90 transition-transform duration-200" />
+                      <ChevronRight className={`h-5 w-5 text-[${isActive(item.path) ? "#3758F9" : "#637381"}] ${isActive(item.path) ? "" : "rotate-90"} transition-transform duration-200`} />
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -155,7 +155,7 @@ const AppSidebar = () => {
                   alt="User Profile"
                   className="rounded-full" 
                 />
-                <AvatarFallback className="bg-[#9747FF] text-white">{getUserInitials()}</AvatarFallback>
+                <AvatarFallback className="bg-[#3758F9] text-white">{getUserInitials()}</AvatarFallback>
               </Avatar>
               <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">
                 {user?.email || "User Name"}
