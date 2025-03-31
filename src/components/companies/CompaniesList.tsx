@@ -1,21 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import PersonsPagination from "@/components/personal/PersonsPagination";
 import { CompanyType } from "@/types/company";
 import CompaniesSearchBar from "./CompaniesSearchBar";
 import CompaniesTable from "./CompaniesTable";
 import CompaniesTableSkeleton from "./CompaniesTableSkeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
 
@@ -177,29 +168,12 @@ const CompaniesList = ({
 
   if (isLoading) {
     return (
-      <div className="container py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Companies</h1>
-          <div className="flex gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Show:</span>
-              <Skeleton className="h-8 w-20" />
-            </div>
-            <Skeleton className="h-5 w-40" />
-          </div>
+      <div className="bg-[#FEFEFE] w-full py-8 px-4">
+        <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
+        <div className="flex gap-4 items-center mt-10">
+          {/* Loading state for search bar */}
+          <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-sm mb-6">
-          <div className="flex items-center gap-4 p-4">
-            <div className="relative flex-1">
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-32" />
-          </div>
-        </div>
-        
         <CompaniesTableSkeleton />
       </div>
     );
@@ -207,12 +181,10 @@ const CompaniesList = ({
 
   if (error) {
     return (
-      <div className="container py-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Companies</h1>
-        </div>
+      <div className="bg-[#FEFEFE] w-full py-8 px-4">
+        <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
         
-        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+        <div className="bg-white rounded-lg shadow-sm p-6 text-center mt-10">
           <p className="text-red-500">{error}</p>
           <Button 
             className="mt-4" 
@@ -226,62 +198,33 @@ const CompaniesList = ({
   }
 
   return (
-    <div className="container py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Companies</h1>
-        <div className="flex gap-4 items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Show:</span>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => onItemsPerPageChange(parseInt(value, 10))}
-            >
-              <SelectTrigger className="w-[80px] h-8">
-                <SelectValue placeholder="10" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <span className="text-sm text-muted-foreground">
-            {`Showing ${companies.length} of ${TOTAL_COMPANIES} items`}
-          </span>
-        </div>
-      </div>
+    <div className="bg-[#FEFEFE] w-full py-8 px-4">
+      <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
       
       <CompaniesSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
       
-      <div className="mt-4">
-        <CompaniesTable 
-          companies={companies}
-          selectedCompanies={selectedCompanies}
-          toggleCompanySelection={toggleCompanySelection}
-          toggleAllCompanies={toggleAllCompanies}
-          handleViewCompany={handleViewCompany}
-          toggleFavorite={toggleFavorite}
-          formatAum={formatAum}
-          isCompanySelected={isCompanySelected}
-          isLoading={isLoading}
-        />
-      </div>
+      <CompaniesTable 
+        companies={companies}
+        selectedCompanies={selectedCompanies}
+        toggleCompanySelection={toggleCompanySelection}
+        toggleAllCompanies={toggleAllCompanies}
+        handleViewCompany={handleViewCompany}
+        toggleFavorite={toggleFavorite}
+        formatAum={formatAum}
+        isCompanySelected={isCompanySelected}
+        isLoading={isLoading}
+      />
       
-      <div className="mt-4">
-        <PersonsPagination 
-          currentPage={currentPage}
-          onPageChange={onPageChange}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={onItemsPerPageChange}
-        />
-      </div>
+      <PersonsPagination 
+        currentPage={currentPage}
+        onPageChange={onPageChange}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={onItemsPerPageChange}
+      />
     </div>
   );
 };

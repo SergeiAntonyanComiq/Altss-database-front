@@ -1,183 +1,165 @@
 
-import React from "react";
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious, 
-  PaginationEllipsis 
-} from "@/components/ui/pagination";
+import React from 'react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 interface PersonsPaginationProps {
   currentPage: number;
-  onPageChange?: (page: number) => void;
-  totalPages?: number;
-  itemsPerPage?: number;
-  onItemsPerPageChange?: (itemsPerPage: number) => void;
+  onPageChange: (page: number) => void;
+  totalPages: number;
+  itemsPerPage: number;
+  onItemsPerPageChange: (perPage: number) => void;
 }
 
-const PersonsPagination = ({ 
-  currentPage, 
-  onPageChange, 
-  totalPages = 12,
-  itemsPerPage = 10,
-  onItemsPerPageChange 
+const PersonsPagination = ({
+  currentPage,
+  onPageChange,
+  totalPages,
+  itemsPerPage,
+  onItemsPerPageChange
 }: PersonsPaginationProps) => {
-  const handlePageChange = (page: number) => {
-    if (onPageChange) {
-      onPageChange(page);
-    }
-  };
-
-  const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = parseInt(event.target.value, 10);
-    if (onItemsPerPageChange) {
-      onItemsPerPageChange(newValue);
-    }
-  };
-
-  const renderPageLinks = () => {
-    const pageLinks = [];
-    const maxVisiblePages = 5;
+  
+  // Calculate page numbers to display
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
     
-    // Determine which pages to show
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
-    // Adjust start if we're near the end
-    if (endPage - startPage < maxVisiblePages - 1) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-    
-    // First page
-    if (startPage > 1) {
-      pageLinks.push(
-        <PaginationItem key="page-1">
-          <PaginationLink 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); handlePageChange(1); }}
-          >
-            1
-          </PaginationLink>
-        </PaginationItem>
-      );
-      
-      // Add ellipsis if needed
-      if (startPage > 2) {
-        pageLinks.push(
-          <PaginationItem key="ellipsis-1">
-            <PaginationEllipsis />
-          </PaginationItem>
-        );
+    if (totalPages <= maxPagesToShow) {
+      // If total pages is less than maxPagesToShow, show all pages
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
       }
-    }
-    
-    // Numbered pages
-    for (let i = startPage; i <= endPage; i++) {
-      pageLinks.push(
-        <PaginationItem key={`page-${i}`}>
-          <PaginationLink 
-            href="#" 
-            isActive={currentPage === i}
-            onClick={(e) => { e.preventDefault(); handlePageChange(i); }}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    
-    // Last page
-    if (endPage < totalPages) {
-      // Add ellipsis if needed
-      if (endPage < totalPages - 1) {
-        pageLinks.push(
-          <PaginationItem key="ellipsis-2">
-            <PaginationEllipsis />
-          </PaginationItem>
-        );
+    } else {
+      // Always show first page
+      pages.push(1);
+      
+      // Calculate start and end of middle section
+      let start = Math.max(2, currentPage - 2);
+      let end = Math.min(totalPages - 1, currentPage + 2);
+      
+      // Adjust if we're near the beginning
+      if (currentPage <= 3) {
+        start = 2;
+        end = Math.min(5, totalPages - 1);
+      } 
+      // Adjust if we're near the end
+      else if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - 4);
+        end = totalPages - 1;
       }
       
-      pageLinks.push(
-        <PaginationItem key={`page-${totalPages}`}>
-          <PaginationLink 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); handlePageChange(totalPages); }}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
+      // Add ellipsis if needed before middle section
+      if (start > 2) {
+        pages.push('ellipsis');
+      }
+      
+      // Add middle section
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      // Add ellipsis if needed after middle section
+      if (end < totalPages - 1) {
+        pages.push('ellipsis');
+      }
+      
+      // Always show last page
+      pages.push(totalPages);
     }
     
-    return pageLinks;
+    return pages;
   };
-
+  
   return (
-    <div className="flex justify-between items-center mt-6">
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationLink 
-              href="#" 
-              aria-label="Go to first page"
-              onClick={(e) => { e.preventDefault(); handlePageChange(1); }}
+    <div className="flex w-full gap-5 justify-between flex-wrap mt-8">
+      <div className="items-stretch bg-white flex min-w-60 min-h-[46px] flex-col justify-center px-[13px] py-[11px] rounded-[3px]">
+        <div className="flex items-center gap-4 flex-wrap">
+          {/* First page and Previous page buttons */}
+          <div className="self-stretch flex items-center gap-2 my-auto">
+            <button 
+              onClick={() => onPageChange(1)} 
+              disabled={currentPage === 1}
+              className="disabled:opacity-50"
             >
-              «
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationPrevious 
-              href="#" 
-              onClick={(e) => { 
-                e.preventDefault(); 
-                if (currentPage > 1) handlePageChange(currentPage - 1); 
-              }}
-            />
-          </PaginationItem>
-          
-          {renderPageLinks()}
-          
-          <PaginationItem>
-            <PaginationNext 
-              href="#" 
-              onClick={(e) => { 
-                e.preventDefault(); 
-                if (currentPage < totalPages) handlePageChange(currentPage + 1); 
-              }}
-            />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink 
-              href="#" 
-              aria-label="Go to last page"
-              onClick={(e) => { e.preventDefault(); handlePageChange(totalPages); }}
+              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === 1 ? 'bg-gray-100' : ''}`}>
+                <ChevronsLeft className="h-4 w-4" />
+              </div>
+            </button>
+            
+            <button 
+              onClick={() => onPageChange(currentPage - 1)} 
+              disabled={currentPage === 1}
+              className="disabled:opacity-50"
             >
-              »
-            </PaginationLink>
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === 1 ? 'bg-gray-100' : ''}`}>
+                <ChevronLeft className="h-4 w-4" />
+              </div>
+            </button>
+          </div>
+          
+          {/* Page numbers */}
+          {getPageNumbers().map((page, index) => 
+            page === 'ellipsis' ? (
+              <span key={`ellipsis-${index}`} className="text-[rgba(99,115,129,1)] text-base font-normal leading-none text-center self-stretch my-auto">
+                ...
+              </span>
+            ) : (
+              <button 
+                key={`page-${page}`}
+                onClick={() => onPageChange(page as number)} 
+                className={`${
+                  currentPage === page 
+                    ? 'text-white' 
+                    : 'text-[rgba(99,115,129,1)]'
+                } text-base font-normal leading-none text-center self-stretch my-auto`}
+              >
+                {currentPage === page ? (
+                  <div className="bg-[rgba(38,101,240,1)] w-[25px] h-[25px] flex items-center justify-center rounded-md">
+                    {page}
+                  </div>
+                ) : (
+                  page
+                )}
+              </button>
+            )
+          )}
+          
+          {/* Next page and Last page buttons */}
+          <div className="self-stretch flex items-center gap-2 my-auto">
+            <button 
+              onClick={() => onPageChange(currentPage + 1)} 
+              disabled={currentPage === totalPages}
+              className="disabled:opacity-50"
+            >
+              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === totalPages ? 'bg-gray-100' : ''}`}>
+                <ChevronRight className="h-4 w-4" />
+              </div>
+            </button>
+            
+            <button 
+              onClick={() => onPageChange(totalPages)} 
+              disabled={currentPage === totalPages}
+              className="disabled:opacity-50"
+            >
+              <div className={`flex items-center justify-center w-[25px] h-[25px] ${currentPage === totalPages ? 'bg-gray-100' : ''} rounded-md`}>
+                <ChevronsRight className="h-4 w-4" />
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
       
-      <div className="relative">
+      {/* Items per page selector */}
+      <div className="min-w-60 min-h-12 text-base text-[#637381] font-normal w-[250px] rounded-md">
         <select 
-          className="appearance-none border rounded-md px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          className="items-center border border-[#DFE4EA] bg-white flex w-full gap-2.5 flex-1 h-full px-5 py-3 rounded-md border-solid"
           value={itemsPerPage}
-          onChange={handleItemsPerPageChange}
+          onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
         >
-          <option value="5">5 results per page</option>
           <option value="10">10 results per page</option>
-          <option value="20">20 results per page</option>
+          <option value="25">25 results per page</option>
           <option value="50">50 results per page</option>
           <option value="100">100 results per page</option>
         </select>
-        <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          <svg className="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
-        </div>
       </div>
     </div>
   );

@@ -113,4 +113,25 @@
   [data-sidebar="menu-button"][data-active="true"] {
     @apply bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0];
   }
+  
+  /* Table specific styles */
+  .companies-table-row {
+    @apply flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA];
+  }
+  
+  .companies-table-cell {
+    @apply overflow-hidden flex items-center border-r border-[#DFE4EA] px-4 min-h-[46px];
+  }
+  
+  .companies-pill-badge {
+    @apply px-3.5 py-1 rounded-[30px];
+  }
+  
+  .companies-pill-blue {
+    @apply bg-[rgba(219,229,254,1)] text-[#0145C7];
+  }
+  
+  .companies-pill-green {
+    @apply bg-[rgba(0,126,96,0.1)] text-[#007E60];
+  }
 }

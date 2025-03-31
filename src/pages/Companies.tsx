@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import CompaniesList from "@/components/companies/CompaniesList";
-import ContactsList from "@/components/contacts/ContactsList";
 
 const Companies = () => {
   const [activeSection, setActiveSection] = useState<string>("companies");
@@ -34,38 +33,17 @@ const Companies = () => {
     navigate(`${location.pathname}?${params.toString()}`);
   };
 
-  const renderContent = () => {
-    // Use the section from URL or fallback to activeSection state
-    const currentSection = section || activeSection;
-    
-    switch (currentSection) {
-      case "companies":
-        return (
-          <CompaniesList 
-            currentPage={currentPage}
-            itemsPerPage={itemsPerPage}
-            onPageChange={handlePageChange}
-            onItemsPerPageChange={handleItemsPerPageChange}
-          />
-        );
-      default:
-        return (
-          <CompaniesList 
-            currentPage={currentPage}
-            itemsPerPage={itemsPerPage}
-            onPageChange={handlePageChange}
-            onItemsPerPageChange={handleItemsPerPageChange}
-          />
-        );
-    }
-  };
-
   return (
     <SidebarProvider>
       <div className="flex w-full min-h-screen bg-background">
         <AppSidebar />
-        <main className="flex-1 bg-[#F6F6F7] overflow-auto">
-          {renderContent()}
+        <main className="flex-1 bg-[#FEFEFE] min-w-60 min-h-[900px] overflow-auto">
+          <CompaniesList 
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
         </main>
       </div>
     </SidebarProvider>
