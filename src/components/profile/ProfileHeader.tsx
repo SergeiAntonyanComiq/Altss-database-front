@@ -30,8 +30,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
           <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">{contact.name}</h1>
           <button className="bg-white flex items-center gap-2.5 text-base text-[rgba(0,126,96,1)] font-medium text-center justify-center px-6 py-[5px] rounded-[50px] max-md:px-5">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ca51bf083c87bb6765db009254de1b519ea4a3ec"
-              alt="Star"
+              src="/lovable-uploads/1d3b9836-90b0-4d10-a9c1-52e0a5eb102a.png"
+              alt="Altss Logo"
               className="aspect-[1] object-contain w-[18px] self-stretch shrink-0 my-auto"
             />
             <span className="self-stretch my-auto">Add to Favorites</span>
