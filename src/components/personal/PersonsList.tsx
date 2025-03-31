@@ -9,8 +9,21 @@ import PersonsPagination from "./PersonsPagination";
 const PersonsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [currentPage] = useState(2);
+  const [currentPage, setCurrentPage] = useState(2);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [persons] = useState<PersonType[]>(mockPersons);
+  
+  // Calculate total pages based on the number of persons
+  const totalPages = Math.ceil(persons.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (perPage: number) => {
+    setItemsPerPage(perPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 
@@ -50,7 +63,13 @@ const PersonsList = () => {
         toggleFavorite={toggleFavorite}
       />
       
-      <PersonsPagination currentPage={currentPage} />
+      <PersonsPagination 
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+      />
     </div>
   );
 };
