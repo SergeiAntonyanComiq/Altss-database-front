@@ -110,32 +110,32 @@ const AppSidebar = () => {
           </div>
         </SidebarHeader>
         
-        {/* Added mt-10 to create space of one menu item between logo and menu */}
         <SidebarContent className="px-4 mt-10">
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
-                {index === 2 && <SidebarSeparator className="my-2 bg-[#DFE4EA]" />}
+                {index === 2 && <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />}
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    data-active={isActive(item.path)}
+                  <button 
                     onClick={() => handleNavigation(item.path)}
-                    className={`flex items-center justify-between text-[#637381] hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
-                      isActive(item.path) ? "bg-blue-50 text-blue-600 font-medium" : "font-medium"
-                    }`}
+                    className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                      ${isActive(item.path) 
+                        ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
+                        : "text-[#637381] hover:bg-gray-100"
+                      }`}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2.5">
                       <img 
                         src={item.iconSrc} 
                         alt={item.title} 
-                        className="h-6 w-6 mr-3 object-contain"
+                        className="h-6 w-6 object-contain"
                       />
                       <span>{item.title}</span>
                     </div>
                     {item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                      <ChevronRight className="h-5 w-5 text-[#637381]" />
                     )}
-                  </SidebarMenuButton>
+                  </button>
                 </SidebarMenuItem>
               </React.Fragment>
             ))}

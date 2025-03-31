@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -110,6 +111,6 @@
   }
 
   [data-sidebar="menu-button"][data-active="true"] {
-    @apply bg-blue-50 text-blue-600 font-medium;
+    @apply bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0];
   }
 }
