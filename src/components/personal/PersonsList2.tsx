@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { PersonType } from "@/types/person";
-import { mockPersons } from "@/data/mockPersons";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
 import PersonsPagination from "./PersonsPagination";

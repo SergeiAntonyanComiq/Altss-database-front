@@ -25,22 +25,21 @@ export const usePersonsSearch = () => {
       // Define the API endpoint
       const apiUrl = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_0";
       
-      // Create request payload
-      const payload = {
-        name: params.name || "",
-        investor: params.investor || "",
-        firm_type: params.firm_type || ""
-      };
+      // Build query string from params
+      const queryParams = new URLSearchParams();
+      if (params.name) queryParams.append("name", params.name);
+      if (params.investor) queryParams.append("investor", params.investor);
+      if (params.firm_type) queryParams.append("firm_type", params.firm_type);
       
-      console.log("Sending request to:", apiUrl);
-      console.log("With payload:", payload);
+      const requestUrl = `${apiUrl}?${queryParams.toString()}`;
+      console.log("Sending GET request to:", requestUrl);
       
-      const response = await fetch(apiUrl, {
-        method: "POST",
+      const response = await fetch(requestUrl, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
-        body: JSON.stringify(payload),
       });
 
       console.log("Response status:", response.status);

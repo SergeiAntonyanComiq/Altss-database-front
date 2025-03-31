@@ -48,6 +48,18 @@ const PersonsSearchBar = ({
     }
   };
 
+  // Handle click on search icon
+  const handleSearchIconClick = () => {
+    if (onSearch) {
+      console.log("Search icon clicked with query:", searchQuery);
+      onSearch({ 
+        name: searchQuery,
+        investor: "",
+        firm_type: ""
+      });
+    }
+  };
+
   const toggleAdvancedSearch = () => {
     setShowAdvancedSearch(!showAdvancedSearch);
   };
@@ -67,15 +79,7 @@ const PersonsSearchBar = ({
           />
           <div 
             className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-            onClick={() => {
-              if (onSearch) {
-                onSearch({ 
-                  name: searchQuery,
-                  investor: "",
-                  firm_type: ""
-                });
-              }
-            }}
+            onClick={handleSearchIconClick}
           >
             <Search className="w-5 h-5 text-gray-400" />
           </div>
