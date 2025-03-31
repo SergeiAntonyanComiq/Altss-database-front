@@ -121,7 +121,7 @@ const AppSidebar = () => {
                     onClick={() => handleNavigation(item.path)}
                     className={`flex items-center justify-between text-[#637381] hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md transition-all duration-200 ${
                       isActive(item.path) 
-                        ? "bg-[#3758F9]/10 text-[#3758F9] font-medium" 
+                        ? "bg-[#3758F9] text-white font-medium" 
                         : "font-medium"
                     }`}
                   >
@@ -129,12 +129,12 @@ const AppSidebar = () => {
                       <img 
                         src={item.iconSrc} 
                         alt={item.title} 
-                        className={`h-6 w-6 mr-3 object-contain ${isActive(item.path) ? "filter-[#3758F9]" : ""}`}
+                        className={`h-6 w-6 mr-3 object-contain ${isActive(item.path) ? "filter brightness-0 invert" : ""}`}
                       />
                       <span>{item.title}</span>
                     </div>
                     {item.hasRightIcon && (
-                      <ChevronRight className={`h-5 w-5 text-[${isActive(item.path) ? "#3758F9" : "#637381"}] ${isActive(item.path) ? "" : "rotate-90"} transition-transform duration-200`} />
+                      <ChevronRight className={`h-5 w-5 ${isActive(item.path) ? "text-white" : "text-[#637381]"} ${isActive(item.path) ? "" : "rotate-90"} transition-transform duration-200`} />
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>

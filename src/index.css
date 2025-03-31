@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -110,7 +111,7 @@
   }
 
   [data-sidebar="menu-button"][data-active="true"] {
-    @apply bg-[#3758F9]/10 text-[#3758F9] font-medium;
+    @apply bg-[#3758F9] text-white font-medium;
   }
   
   /* Active menu item indicator */
