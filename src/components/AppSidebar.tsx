@@ -95,9 +95,9 @@ const AppSidebar = () => {
           <div className="flex justify-between items-center px-6">
             <div className="flex items-center">
               <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f01958332144f100eb157b487ff29d5719146b2a"
+                src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
                 alt="Altss Logo" 
-                className="h-10 w-10 object-contain rounded-md"
+                className="h-10 w-auto object-contain rounded-md"
               />
             </div>
             <SidebarTrigger className="text-gray-400" />
