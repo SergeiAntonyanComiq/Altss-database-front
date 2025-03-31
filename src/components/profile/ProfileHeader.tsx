@@ -38,17 +38,14 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
           </button>
         </div>
         <div className="flex gap-2.5">
-          <Button variant="outline" className="flex items-center gap-2 px-4 py-1 h-auto rounded-full">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 12V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M14 16H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M16 4V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 12V16H12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M4 20V16H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M4 8V4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Order Enrich
-          </Button>
+          <button className="bg-white flex items-center gap-2.5 text-base font-medium text-center justify-center px-6 py-[5px] rounded-[50px] max-md:px-5 border border-gray-200">
+            <img 
+              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6" 
+              alt="Order Enrich" 
+              className="aspect-[1] object-contain w-[18px] self-stretch shrink-0 my-auto"
+            />
+            <span className="self-stretch my-auto">Order Enrich</span>
+          </button>
           <Button variant="outline" className="px-4 py-1 h-auto rounded-full">
             Claim a mistake
           </Button>
