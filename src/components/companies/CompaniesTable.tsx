@@ -39,9 +39,9 @@ const CompaniesTable = ({
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* Table Header */}
-      <div className="bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap">
-        <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r">
-          <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
+      <div className="bg-gray-100 flex h-14 w-full overflow-hidden flex-wrap">
+        <div className="min-h-[46px] overflow-hidden w-14 border-[rgba(223,228,234,1)] border-r">
+          <div className="flex min-h-11 w-full items-center gap-2.5 justify-center py-3">
             <Checkbox
               id="selectAll"
               checked={allSelected}
@@ -52,33 +52,33 @@ const CompaniesTable = ({
           </div>
         </div>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none flex-[8_8_0%] border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Name</div>
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none flex-[10_10_0%] border-[rgba(223,228,234,1)] border-r shadow-[4px_-1px_6px_rgba(0,0,0,0.25)]">
+          <div className="flex items-center min-h-14 w-full gap-2.5 px-6">Company Name</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[300px] border-[rgba(223,228,234,1)] border-r">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Type</div>
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[350px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-14 w-full gap-2.5 px-6">Company Type</div>
+          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
+        </div>
+        
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[230px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-14 w-full gap-2.5 px-6">AUM, $mln.</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
         <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[200px] border-[rgba(223,228,234,1)] border-r">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">AUM, $mln.</div>
+          <div className="flex items-center min-h-14 w-full gap-2.5 px-6">Founded year</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[170px] border-[rgba(223,228,234,1)] border-r">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Founded year</div>
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[220px] border-[rgba(223,228,234,1)] border-r">
+          <div className="flex items-center min-h-14 w-full gap-2.5 px-6">Known Team</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
         
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-[180px] border-[rgba(223,228,234,1)] border-r">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Known Team</div>
-          <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
-        </div>
-        
-        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-11">
-          <div className="flex items-center min-h-11 w-full gap-2.5 px-4">+</div>
+        <div className="overflow-hidden text-sm text-gray-600 font-medium leading-none w-14">
+          <div className="flex items-center min-h-14 w-full gap-2.5 px-4">+</div>
           <div className="border min-h-px w-full border-[rgba(223,228,234,1)] border-solid"></div>
         </div>
       </div>
@@ -86,8 +86,8 @@ const CompaniesTable = ({
       {/* Table Rows */}
       <div className="divide-y divide-[#DFE4EA]">
         {companies.map((company, index) => (
-          <div key={company.id} className="flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA]">
-            <div className="min-h-[46px] overflow-hidden w-11 border-[rgba(223,228,234,1)] border-r flex items-center">
+          <div key={company.id} className="flex min-h-[60px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA]">
+            <div className="min-h-[60px] overflow-hidden w-14 border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
                 <Checkbox
                   id={`company-${company.id}`}
@@ -99,8 +99,8 @@ const CompaniesTable = ({
               </div>
             </div>
             
-            <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-[8_8_0%] shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+            <div className="shadow-[4px_-1px_6px_rgba(0,0,0,0.25)] overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight flex-[10_10_0%] shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-[60px] w-full items-center gap-2.5 px-6">
                 <div 
                   className="flex-1 flex items-center cursor-pointer truncate overflow-hidden"
                   onClick={() => handleViewCompany(company.id || '')}
@@ -118,30 +118,30 @@ const CompaniesTable = ({
               </div>
             </div>
             
-            <div className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight w-[300px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[280px] overflow-hidden">
+            <div className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight w-[350px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-[60px] w-full items-center gap-2.5 px-6">
+                <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[320px] overflow-hidden">
                   <span className="truncate block w-full text-sm">{company.firm_type || company.type || 'N/A'}</span>
                 </div>
               </div>
             </div>
             
-            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[200px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[230px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-[60px] w-full items-center gap-2.5 px-6">
                 {formatAum(company.aum)}
               </div>
             </div>
             
-            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[170px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+            <div className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight w-[200px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-[60px] w-full items-center gap-2.5 px-6">
                 {company.year_est ? `${company.year_est} y.` : 'N/A'}
               </div>
             </div>
             
-            <div className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight w-[180px] border-[rgba(223,228,234,1)] border-r flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+            <div className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight w-[220px] border-[rgba(223,228,234,1)] border-r flex items-center">
+              <div className="flex min-h-[60px] w-full items-center gap-2.5 px-6">
                 {company.total_staff ? (
-                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[160px] overflow-hidden">
+                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center max-w-[200px] overflow-hidden">
                     <span className="truncate block w-full text-sm">{company.total_staff}</span>
                   </div>
                 ) : (
@@ -150,8 +150,8 @@ const CompaniesTable = ({
               </div>
             </div>
             
-            <div className="overflow-hidden w-11 flex items-center">
-              <div className="flex min-h-11 w-full items-center gap-2.5"></div>
+            <div className="overflow-hidden w-14 flex items-center">
+              <div className="flex min-h-[60px] w-full items-center gap-2.5"></div>
             </div>
           </div>
         ))}
