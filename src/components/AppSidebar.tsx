@@ -15,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
+  SidebarSeparator,
   useSidebar
 } from "@/components/ui/sidebar";
 
@@ -105,23 +106,26 @@ const AppSidebar = () => {
         
         <SidebarContent className="px-4">
           <SidebarMenu>
-            {menuItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  data-active={isActive(item.path)}
-                  onClick={() => handleNavigation(item.path)}
-                  className={`flex items-center text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
-                    isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
-                  }`}
-                >
-                  <img 
-                    src={item.iconSrc} 
-                    alt={item.title} 
-                    className="h-5 w-5 mr-3 object-contain"
-                  />
-                  <span className="font-medium">{item.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+            {menuItems.map((item, index) => (
+              <React.Fragment key={item.title}>
+                {index === 2 && <SidebarSeparator className="my-2" />}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    data-active={isActive(item.path)}
+                    onClick={() => handleNavigation(item.path)}
+                    className={`flex items-center text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
+                      isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
+                    }`}
+                  >
+                    <img 
+                      src={item.iconSrc} 
+                      alt={item.title} 
+                      className="h-5 w-5 mr-3 object-contain"
+                    />
+                    <span className="font-medium">{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </React.Fragment>
             ))}
           </SidebarMenu>
         </SidebarContent>
