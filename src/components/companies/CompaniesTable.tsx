@@ -2,6 +2,7 @@
 import React from "react";
 import { Heart, Check } from "lucide-react";
 import { CompanyType } from "@/types/company";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CompaniesTableProps {
   companies: CompanyType[];
@@ -34,6 +35,8 @@ const CompaniesTable = ({
     );
   }
 
+  const allSelected = selectedCompanies.length === companies.length && companies.length > 0;
+
   return (
     <>
       {/* Table Header */}
@@ -41,13 +44,15 @@ const CompaniesTable = ({
         <div className="min-h-[464px] overflow-hidden w-11 border-[#DFE4EA] border-r">
           <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
             <div 
-              className="h-5 w-5 cursor-pointer rounded-md border border-gray-300"
+              className="cursor-pointer"
               onClick={toggleAllCompanies}
             >
-              {selectedCompanies.length === companies.length && companies.length > 0 && (
+              {allSelected ? (
                 <div className="bg-[#2665F0] border-[#3758F9] border flex min-h-5 w-5 flex-col items-center justify-center h-5 rounded-md">
                   <Check className="h-3 w-3 text-white" />
                 </div>
+              ) : (
+                <div className="h-5 w-5 rounded-md border border-gray-300"></div>
               )}
             </div>
           </div>
