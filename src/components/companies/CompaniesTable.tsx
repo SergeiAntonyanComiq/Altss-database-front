@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Heart, Check } from "lucide-react";
 import { CompanyType } from "@/types/company";
@@ -128,7 +127,7 @@ const CompaniesTable = ({
             
             <div className="overflow-hidden text-lg text-[rgba(1,69,199,1)] font-medium leading-none flex-1 shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-                <div className="bg-[rgba(219,229,254,1)] gap-2 px-3.5 py-[5px] rounded-[30px] flex items-center">
+                <div className="bg-[rgba(219,229,254,1)] gap-2 px-5 py-2 rounded-[30px] flex items-center">
                   {company.firm_type || company.type || 'N/A'}
                 </div>
               </div>
@@ -149,7 +148,7 @@ const CompaniesTable = ({
             <div className="overflow-hidden text-lg text-[rgba(0,126,96,1)] font-medium leading-none flex-1 shrink basis-[0%] border-[rgba(223,228,234,1)] border-r flex items-center">
               <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
                 {company.total_staff ? (
-                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3.5 py-[5px] rounded-[30px] flex items-center">
+                  <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-5 py-2 rounded-[30px] flex items-center">
                     {company.total_staff}
                   </div>
                 ) : (
