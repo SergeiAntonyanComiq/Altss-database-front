@@ -92,13 +92,19 @@ const AppSidebar = () => {
     <>
       <Sidebar className="border-r border-[#F1F0FB]">
         <SidebarHeader className="pt-6 pb-4">
-          <div className="flex items-center justify-between px-6">
+          <div className="flex items-center justify-between px-6 gap-10">
             <img 
               src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
               alt="Altss Logo" 
-              className="h-8 w-auto object-contain my-auto"
+              className="h-10 w-auto object-contain"
             />
-            <SidebarTrigger className="text-gray-400 my-auto" />
+            <SidebarTrigger className="text-gray-400">
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/3dd6e519617599141c45275a2bdfee0c6e4475a7"
+                alt="Menu"
+                className="w-6 h-6 object-contain"
+              />
+            </SidebarTrigger>
           </div>
         </SidebarHeader>
         
