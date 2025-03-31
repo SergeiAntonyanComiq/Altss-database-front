@@ -1,6 +1,7 @@
 
 export interface CompanyType {
   id?: string;
+  firm_id?: number | string; // Add firm_id property
   firm_name: string;
   city?: string;
   background?: string;
