@@ -75,7 +75,7 @@ const ProfilePage: React.FC = () => {
             ) : (
               <>
                 <ProfileHeader contact={contact} />
-                <div className="bg-white shadow rounded-lg p-4">
+                <div className="bg-white rounded-lg shadow overflow-hidden">
                   <ProfileTabs 
                     contact={contact} 
                     activeTab={activeTab} 

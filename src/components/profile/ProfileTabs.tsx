@@ -30,9 +30,10 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
     <Tabs 
       value={activeTab} 
       onValueChange={setActiveTab}
+      className="w-full"
     >
-      <div className="flex gap-6 border-b mb-6">
-        <TabsList className="bg-transparent p-0 h-auto">
+      <div className="border-b">
+        <TabsList className="bg-transparent p-0 h-auto px-6">
           <TabsTrigger 
             value="details" 
             className="py-3 px-0 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
@@ -54,20 +55,22 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
         </TabsList>
       </div>
 
-      <TabsContent value="details" className="mt-0">
-        <div className="space-y-10">
-          <ProfileAboutSection contact={contact} />
-          <ProfileContactsSection contact={contact} />
-        </div>
-      </TabsContent>
+      <div className="p-6">
+        <TabsContent value="details" className="mt-0 p-0">
+          <div className="space-y-10">
+            <ProfileAboutSection contact={contact} />
+            <ProfileContactsSection contact={contact} />
+          </div>
+        </TabsContent>
 
-      <TabsContent value="bio" className="mt-0">
-        <ProfileBioSection contact={contact} newsItems={newsItems} />
-      </TabsContent>
+        <TabsContent value="bio" className="mt-0 p-0">
+          <ProfileBioSection contact={contact} newsItems={newsItems} />
+        </TabsContent>
 
-      <TabsContent value="job" className="mt-0">
-        <ProfileJobSection contact={contact} />
-      </TabsContent>
+        <TabsContent value="job" className="mt-0 p-0">
+          <ProfileJobSection contact={contact} />
+        </TabsContent>
+      </div>
     </Tabs>
   );
 };

@@ -35,9 +35,9 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
 
   return (
     <section>
-      <h2 className="text-xl font-bold mb-2">Contacts</h2>
-      <hr className="mb-4" />
-      <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
+      <h2 className="text-xl font-bold mb-4">Contacts</h2>
+      <div className="border-t border-gray-200"></div>
+      <div className="pt-4 grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
         {contact.linkedin && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
@@ -74,7 +74,7 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
           <Mail className="h-4 w-4" />Work Emails
         </span>
         {contact.email ? (
-          <div>
+          <div className="flex items-center">
             <span className="mr-2">{showEmails.work ? contact.email : hiddenEmail}</span>
             <Button 
               variant="ghost" 
