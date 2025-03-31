@@ -107,11 +107,11 @@
   }
 
   [data-sidebar="menu-button"] {
-    @apply text-[#637381] hover:bg-gray-100 transition-all duration-200;
+    @apply text-gray-600 hover:bg-gray-100 transition-all duration-200;
   }
 
   [data-sidebar="menu-button"][data-active="true"] {
-    @apply bg-[#101828] text-white font-medium;
+    @apply bg-[#3758F9]/10 text-[#3758F9] font-medium;
   }
   
   /* Active menu item indicator */
@@ -121,7 +121,7 @@
     left: 0;
     top: 0;
     height: 100%;
-    width: 4px;
+    width: 3px;
     background-color: #3758F9;
     border-radius: 0 4px 4px 0;
   }
