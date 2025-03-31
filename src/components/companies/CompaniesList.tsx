@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -206,25 +207,29 @@ const CompaniesList = ({
         setSearchQuery={setSearchQuery}
       />
       
-      <CompaniesTable 
-        companies={companies}
-        selectedCompanies={selectedCompanies}
-        toggleCompanySelection={toggleCompanySelection}
-        toggleAllCompanies={toggleAllCompanies}
-        handleViewCompany={handleViewCompany}
-        toggleFavorite={toggleFavorite}
-        formatAum={formatAum}
-        isCompanySelected={isCompanySelected}
-        isLoading={isLoading}
-      />
+      <div className="w-full max-w-[1135px] mt-8">
+        <CompaniesTable 
+          companies={companies}
+          selectedCompanies={selectedCompanies}
+          toggleCompanySelection={toggleCompanySelection}
+          toggleAllCompanies={toggleAllCompanies}
+          handleViewCompany={handleViewCompany}
+          toggleFavorite={toggleFavorite}
+          formatAum={formatAum}
+          isCompanySelected={isCompanySelected}
+          isLoading={isLoading}
+        />
+      </div>
       
-      <PersonsPagination 
-        currentPage={currentPage}
-        onPageChange={onPageChange}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={onItemsPerPageChange}
-      />
+      <div className="flex w-full gap-5 justify-between flex-wrap mt-[122px] max-md:mt-10">
+        <PersonsPagination 
+          currentPage={currentPage}
+          onPageChange={onPageChange}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={onItemsPerPageChange}
+        />
+      </div>
     </div>
   );
 };

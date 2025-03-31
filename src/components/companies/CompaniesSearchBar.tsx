@@ -1,8 +1,6 @@
 
 import React from "react";
 import { Search, Filter, Save, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 interface CompaniesSearchBarProps {
   searchQuery: string;
@@ -27,29 +25,26 @@ const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarP
         </div>
       </div>
       
-      <Button 
-        variant="outline" 
+      <button 
         className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 whitespace-nowrap px-[15px] py-2.5 rounded-[50px]"
       >
         <Filter className="h-[18px] w-[18px]" />
         <span>Filters</span>
-      </Button>
+      </button>
       
-      <Button 
-        variant="outline" 
+      <button 
         className="justify-center items-center border border-[#DFE4EA] bg-gray-200 flex gap-2 text-[#889AA8] px-[15px] py-2.5 rounded-[50px]"
       >
         <Save className="h-[18px] w-[18px]" />
         <span>Save this Search</span>
-      </Button>
+      </button>
       
-      <Button 
-        variant="outline" 
+      <button 
         className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 px-[15px] py-2.5 rounded-[50px]"
       >
         <Heart className="h-[18px] w-[18px]" />
         <span>Add to Favorites</span>
-      </Button>
+      </button>
     </div>
   );
 };

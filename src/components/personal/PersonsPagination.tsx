@@ -70,7 +70,7 @@ const PersonsPagination = ({
   };
   
   return (
-    <div className="flex w-full gap-5 justify-between flex-wrap mt-8">
+    <>
       <div className="items-stretch bg-white flex min-w-60 min-h-[46px] flex-col justify-center px-[13px] py-[11px] rounded-[3px]">
         <div className="flex items-center gap-4 flex-wrap">
           {/* First page and Previous page buttons */}
@@ -106,18 +106,14 @@ const PersonsPagination = ({
               <button 
                 key={`page-${page}`}
                 onClick={() => onPageChange(page as number)} 
-                className={`${
-                  currentPage === page 
-                    ? 'text-white' 
-                    : 'text-[rgba(99,115,129,1)]'
-                } text-base font-normal leading-none text-center self-stretch my-auto`}
+                className="text-base font-normal leading-none text-center self-stretch my-auto"
               >
                 {currentPage === page ? (
-                  <div className="bg-[rgba(38,101,240,1)] w-[25px] h-[25px] flex items-center justify-center rounded-md">
+                  <div className="bg-[#2665F0] w-[25px] h-[25px] flex items-center justify-center rounded-md text-white">
                     {page}
                   </div>
                 ) : (
-                  page
+                  <div className="text-[rgba(99,115,129,1)]">{page}</div>
                 )}
               </button>
             )
@@ -151,7 +147,7 @@ const PersonsPagination = ({
       {/* Items per page selector */}
       <div className="min-w-60 min-h-12 text-base text-[#637381] font-normal w-[250px] rounded-md">
         <select 
-          className="items-center border border-[#DFE4EA] bg-white flex w-full gap-2.5 flex-1 h-full px-5 py-3 rounded-md border-solid"
+          className="items-center border border-[#DFE4EA] bg-white flex w-full gap-2.5 flex-1 h-full px-5 py-3 rounded-md"
           value={itemsPerPage}
           onChange={(e) => onItemsPerPageChange(parseInt(e.target.value))}
         >
@@ -161,7 +157,7 @@ const PersonsPagination = ({
           <option value="100">100 results per page</option>
         </select>
       </div>
-    </div>
+    </>
   );
 };
 

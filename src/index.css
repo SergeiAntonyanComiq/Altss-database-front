@@ -135,3 +135,24 @@
     @apply bg-[rgba(0,126,96,0.1)] text-[#007E60];
   }
 }
+
+/* Custom styles for the companies table */
+.company-table-header {
+  @apply bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap;
+}
+
+.company-table-row {
+  @apply flex min-h-[46px] w-full overflow-hidden flex-wrap mt-2;
+}
+
+.company-table-check-cell {
+  @apply min-h-[46px] overflow-hidden w-11 border-[#DFE4EA] border-r;
+}
+
+.company-table-cell {
+  @apply overflow-hidden text-lg font-medium leading-none border-[#DFE4EA] border-r;
+}
+
+.company-table-header-cell {
+  @apply overflow-hidden text-lg text-[#637381] font-medium leading-none border-[#DFE4EA] border-r;
+}
