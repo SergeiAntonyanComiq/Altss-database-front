@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -14,47 +13,59 @@ const PersonalCabinet3 = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
-  const section = searchParams.get('section') || "persons"; // Default to persons
+  const section = searchParams.get('section');
   
-  const [activeSection, setActiveSection] = useState<string>(section);
-  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
-  const itemsPerPage = perPageParam ? parseInt(perPageParam, 10) : 10;
-
-  // Update the activeSection when the URL parameter changes
-  useEffect(() => {
-    setActiveSection(section);
-  }, [section]);
+  const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
+  const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
+  const [activeSection, setActiveSection] = useState<string>(section || "persons");
 
   // Update URL when page or items per page changes
   const handlePageChange = (page: number) => {
+    setCurrentPage(page);
     const params = new URLSearchParams(location.search);
     params.set('page', page.toString());
     navigate(`${location.pathname}?${params.toString()}`);
   };
 
   const handleItemsPerPageChange = (perPage: number) => {
+    setItemsPerPage(perPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
     const params = new URLSearchParams(location.search);
     params.set('perPage', perPage.toString());
-    params.set('page', '1'); // Reset to first page when changing items per page
+    params.set('page', '1');
     navigate(`${location.pathname}?${params.toString()}`);
   };
 
-  // Handle section change
-  const handleSectionChange = (newSection: string) => {
-    const params = new URLSearchParams(location.search);
-    params.set('section', newSection);
-    params.set('page', '1'); // Reset to first page on section change
-    navigate(`${location.pathname}?${params.toString()}`);
-    setActiveSection(newSection);
-  };
+  // Keep URL and state in sync
+  useEffect(() => {
+    if (pageParam) {
+      setCurrentPage(parseInt(pageParam, 10));
+    }
+    if (perPageParam) {
+      setItemsPerPage(parseInt(perPageParam, 10));
+    }
+    if (section) {
+      setActiveSection(section);
+    }
+  }, [pageParam, perPageParam, section]);
 
   const renderContent = () => {
-    switch (activeSection) {
+    // Use the section from URL or fallback to activeSection state
+    const currentSection = section || activeSection;
+    
+    switch (currentSection) {
       case "contacts":
         return <ContactsList />;
       case "persons":
       default:
-        return <PersonsList2 />;
+        return (
+          <PersonsList2 
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        );
     }
   };
 
@@ -62,32 +73,7 @@ const PersonalCabinet3 = () => {
     <SidebarProvider>
       <div className="flex w-full min-h-screen bg-background">
         <AppSidebar />
-        <main className="flex-1 bg-[#F6F6F7] overflow-auto">
-          {/* Section tabs */}
-          <div className="border-b px-6 py-3 bg-white">
-            <div className="flex space-x-6">
-              <button
-                onClick={() => handleSectionChange("persons")}
-                className={`pb-2 text-sm font-medium ${
-                  activeSection === "persons" 
-                    ? "border-b-2 border-blue-500 text-blue-600" 
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-              >
-                Persons
-              </button>
-              <button
-                onClick={() => handleSectionChange("contacts")}
-                className={`pb-2 text-sm font-medium ${
-                  activeSection === "contacts" 
-                    ? "border-b-2 border-blue-500 text-blue-600" 
-                    : "text-gray-500 hover:text-gray-900"
-                }`}
-              >
-                Contacts
-              </button>
-            </div>
-          </div>
+        <main className="flex-1 bg-[#FEFEFE] min-w-0 min-h-[900px] overflow-auto">
           {renderContent()}
         </main>
       </div>

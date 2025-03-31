@@ -1,109 +1,45 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, RotateCcw } from "lucide-react";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Filter, Bookmark, Heart, Search } from "lucide-react";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  onSearch?: (params: { name: string; investor: string; firm_type: string }) => void;
-  isSearching?: boolean;
-  isInDialog?: boolean;
-  onReset?: () => void;
 }
 
-const PersonsSearchBar = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  onSearch,
-  isSearching = false,
-  isInDialog = false,
-  onReset
-}: PersonsSearchBarProps) => {
-  const form = useForm({
-    defaultValues: {
-      name: "",
-      investor: "",
-      firm_type: ""
-    }
-  });
-
-  const handleSubmit = form.handleSubmit((data) => {
-    console.log("Form submitted with data:", data);
-    if (onSearch) {
-      onSearch(data);
-    }
-  });
-
+const PersonsSearchBar = ({ searchQuery, setSearchQuery }: PersonsSearchBarProps) => {
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 gap-4">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Search by name" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="investor"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Search by investor" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="firm_type"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input placeholder="Search by firm type" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+    <div className="flex flex-wrap gap-4 mb-6">
+      <div className="relative grow">
+        <Input
+          type="text"
+          placeholder="Search person"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-3 pr-10"
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <Search className="w-5 h-5 text-gray-400" />
         </div>
-        
-        <div className="flex justify-end gap-2">
-          {onReset && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onReset}
-            >
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Reset Filters
-            </Button>
-          )}
-          <Button 
-            type="submit" 
-            disabled={isSearching}
-          >
-            {isSearching ? "Searching..." : (
-              <>
-                <Search className="mr-2 h-4 w-4" />
-                Search
-              </>
-            )}
-          </Button>
-        </div>
-      </form>
-    </Form>
+      </div>
+      
+      <Button variant="outline" className="flex items-center gap-2">
+        <Filter className="h-4 w-4" />
+        Filters
+      </Button>
+      
+      <Button variant="outline" className="flex items-center gap-2">
+        <Bookmark className="h-4 w-4" />
+        Save this Search
+      </Button>
+      
+      <Button variant="outline" className="flex items-center gap-2">
+        <Heart className="h-4 w-4" />
+        Add to Favorites
+      </Button>
+    </div>
   );
 };
 
