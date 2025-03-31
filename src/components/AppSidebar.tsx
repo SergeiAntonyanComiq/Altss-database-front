@@ -104,23 +104,23 @@ const AppSidebar = () => {
           </div>
         </SidebarHeader>
         
-        <SidebarContent className="px-1">
+        <SidebarContent className="px-4">
           <SidebarMenu>
             {menuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   data-active={isActive(item.path)}
                   onClick={() => handleNavigation(item.path)}
-                  className={`flex items-center text-gray-500 hover:bg-blue-50 hover:text-blue-600 text-[15px] px-6 ${
+                  className={`flex items-center text-gray-600 hover:bg-gray-100 hover:text-gray-800 text-[15px] py-3 px-4 rounded-md ${
                     isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
                   <img 
                     src={item.iconSrc} 
                     alt={item.title} 
-                    className="h-6 w-6 mr-3 object-contain"
+                    className="h-5 w-5 mr-3.5 object-contain"
                   />
-                  <span>{item.title}</span>
+                  <span className="font-medium">{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
