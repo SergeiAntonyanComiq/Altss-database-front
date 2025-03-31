@@ -37,7 +37,7 @@ const Companies = () => {
     <SidebarProvider>
       <div className="flex w-full min-h-screen bg-background">
         <AppSidebar />
-        <main className="flex-1 bg-[#FEFEFE] min-w-60 min-h-[900px] overflow-auto">
+        <main className="flex-1 bg-[#FEFEFE] min-w-0 min-h-[900px] overflow-auto">
           <CompaniesList 
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}

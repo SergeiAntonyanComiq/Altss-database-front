@@ -58,8 +58,8 @@ const CompaniesTable = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-      <div className="table-container">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden w-full">
+      <div className="table-container w-full">
         {/* Table Header */}
         <ResizablePanelGroup direction="horizontal" className="bg-gray-100 flex h-14 w-full">
           <ResizablePanel 
@@ -159,7 +159,7 @@ const CompaniesTable = ({
         </ResizablePanelGroup>
         
         {/* Table Rows - use the same column sizes as header */}
-        <div className="divide-y divide-[#DFE4EA]">
+        <div className="divide-y divide-[#DFE4EA] w-full">
           {companies.map((company, index) => (
             <div key={company.id} className="flex min-h-[50px] w-full border-b border-[#DFE4EA]">
               {/* Checkbox cell */}

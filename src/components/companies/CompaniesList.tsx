@@ -169,7 +169,7 @@ const CompaniesList = ({
 
   if (isLoading) {
     return (
-      <div className="bg-[#FEFEFE] w-full py-8 px-4">
+      <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
         <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
         <div className="flex gap-4 items-center mt-10">
           {/* Loading state for search bar */}
@@ -182,7 +182,7 @@ const CompaniesList = ({
 
   if (error) {
     return (
-      <div className="bg-[#FEFEFE] w-full py-8 px-4">
+      <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
         <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
         
         <div className="bg-white rounded-lg shadow-sm p-6 text-center mt-10">
@@ -199,7 +199,7 @@ const CompaniesList = ({
   }
 
   return (
-    <div className="bg-[#FEFEFE] w-full py-8 px-4">
+    <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
       <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Companies</h1>
       
       <CompaniesSearchBar 
@@ -207,7 +207,7 @@ const CompaniesList = ({
         setSearchQuery={setSearchQuery}
       />
       
-      <div className="w-full max-w-[1135px] mt-8">
+      <div className="w-full mt-8">
         <CompaniesTable 
           companies={companies}
           selectedCompanies={selectedCompanies}
