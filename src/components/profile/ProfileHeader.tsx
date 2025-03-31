@@ -23,9 +23,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ contact }) => {
 
       <div className="text-xs text-gray-600 mb-1">Last update: 4 weeks ago</div>
       
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 pb-0">
-          <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
+      <div className="bg-white rounded-lg rounded-b-none shadow-sm">
+        <div className="p-6">
+          <div className="flex justify-between items-center flex-wrap gap-4">
             <div className="flex items-center gap-4">
               <h1 className="text-2xl font-semibold">{contact.name}</h1>
               <button className="flex items-center gap-2 text-green-700 bg-white px-4 py-1 rounded-full border">
