@@ -72,15 +72,13 @@ const PersonsList2 = () => {
         />
       </div>
       
-      <div className="mt-4">
-        <PersonsPagination 
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />
-      </div>
+      <PersonsPagination 
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+      />
     </div>
   );
 };

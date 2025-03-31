@@ -1,12 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import ContactsList from "@/components/contacts/ContactsList";
+import PersonsList2 from "@/components/personal/PersonsList2";
 
 const PersonalCabinet3 = () => {
-  const [activeSection, setActiveSection] = useState<string>("contacts");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -14,34 +14,47 @@ const PersonalCabinet3 = () => {
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
-  const section = searchParams.get('section');
+  const sectionParam = searchParams.get('section');
   
-  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
-  const itemsPerPage = perPageParam ? parseInt(perPageParam, 10) : 10;
+  const [activeSection, setActiveSection] = useState<string>(sectionParam || "persons");
+  const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
+  const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
 
-  // Update URL when page or items per page changes
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(location.search);
-    params.set('page', page.toString());
+  // Update URL when page, items per page, or section changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    params.set('page', currentPage.toString());
+    params.set('perPage', itemsPerPage.toString());
+    params.set('section', activeSection);
     navigate(`${location.pathname}?${params.toString()}`);
+  }, [currentPage, itemsPerPage, activeSection, navigate, location.pathname]);
+
+  // Handle page change from child components
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
+  // Handle items per page change from child components
   const handleItemsPerPageChange = (perPage: number) => {
-    const params = new URLSearchParams(location.search);
-    params.set('perPage', perPage.toString());
-    params.set('page', '1'); // Reset to first page when changing items per page
-    navigate(`${location.pathname}?${params.toString()}`);
+    setItemsPerPage(perPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  // Handle section change
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section);
+    setCurrentPage(1); // Reset to first page when changing sections
   };
 
   const renderContent = () => {
-    // Use the section from URL or fallback to activeSection state
-    const currentSection = section || activeSection;
-    
-    switch (currentSection) {
+    switch (activeSection) {
       case "contacts":
         return <ContactsList />;
+      case "persons":
       default:
-        return <ContactsList />;
+        return (
+          <PersonsList2 />
+        );
     }
   };
 
