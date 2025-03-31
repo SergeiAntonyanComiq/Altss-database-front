@@ -67,18 +67,13 @@ const PersonsSearchBar = ({
     setSearchParams(emptyFilters);
   };
 
-  // Only update local filters when searchParams changes and they're different
+  // Initialize localFilters with searchParams only on mount or when searchParams changes externally
   useEffect(() => {
-    // Deep comparison to avoid unnecessary updates
-    const isDifferent = 
-      localFilters.name !== searchParams.name || 
-      localFilters.investor !== searchParams.investor || 
-      localFilters.firm_type !== searchParams.firm_type;
-      
-    if (isDifferent) {
-      setLocalFilters(searchParams);
-    }
-  }, [searchParams]);
+    // Only update local filters from props when component mounts
+    // or if searchParams are explicitly changed from parent component
+    // (not as a result of our own updates)
+    setLocalFilters(searchParams);
+  }, []); // Empty dependency array - only run on mount
 
   return (
     <div className="flex flex-wrap gap-4 mb-6">
