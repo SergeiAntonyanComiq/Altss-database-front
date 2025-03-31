@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { CompanyType } from "@/types/company";
 import { ContactType } from "@/types/contact";
@@ -8,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface CompanyTeamTabProps {
   company: CompanyType;
@@ -37,14 +37,12 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
         setIsLoading(true);
         console.log("Fetching team members for company firm_id:", company.firm_id);
         
-        const response = await fetch("https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/", {
-          method: "POST",
+        // Fix the URL to match the working endpoint format from the screenshot
+        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts?firm_id=${company.firm_id}`, {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firm_id: parseInt(String(company.firm_id))
-          })
+          }
         });
 
         if (!response.ok) {
@@ -53,7 +51,7 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
 
         const data = await response.json();
         console.log("Team members fetched:", data);
-        setTeamMembers(data);
+        setTeamMembers(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching team members:", err);
         setError("Failed to load team members. Please try again later.");
@@ -80,9 +78,10 @@ const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg">
-        <p>{error}</p>
-      </div>
+      <Alert variant="destructive" className="mb-6">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
