@@ -1,3 +1,4 @@
+
 import React from "react";
 import { LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -91,21 +92,13 @@ const AppSidebar = () => {
     <>
       <Sidebar className="border-r border-[#F1F0FB]">
         <SidebarHeader className="pt-6 pb-4">
-          <div className="flex items-center justify-between px-6 gap-10">
-            <div className="flex items-center">
-              <img 
-                src="/lovable-uploads/629c4540-1be8-4713-9934-61e626aae90a.png"
-                alt="Altss Logo" 
-                className="h-8 w-auto object-contain"
-              />
-            </div>
-            <SidebarTrigger className="text-gray-400 flex items-center justify-center">
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/3dd6e519617599141c45275a2bdfee0c6e4475a7"
-                alt="Menu"
-                className="w-6 h-6 object-contain"
-              />
-            </SidebarTrigger>
+          <div className="flex items-center justify-between px-6">
+            <img 
+              src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
+              alt="Altss Logo" 
+              className="h-8 w-auto object-contain my-auto"
+            />
+            <SidebarTrigger className="text-gray-400 my-auto" />
           </div>
         </SidebarHeader>
         
