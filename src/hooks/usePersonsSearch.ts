@@ -15,7 +15,7 @@ export const usePersonsSearch = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const searchPersons = async (params: SearchParams) => {
+  const searchPersons = async (params: SearchParams = {}) => {
     setIsLoading(true);
     setError(null);
     
@@ -72,5 +72,10 @@ export const usePersonsSearch = () => {
     }
   };
 
-  return { searchResults, isLoading, error, searchPersons };
+  const resetSearch = () => {
+    // Load all data without filters
+    searchPersons({});
+  };
+
+  return { searchResults, isLoading, error, searchPersons, resetSearch };
 };
