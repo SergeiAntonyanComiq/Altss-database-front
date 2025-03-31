@@ -134,8 +134,8 @@ const AppSidebar = () => {
                   }`}
                 >
                   {item.isCustomIcon ? 
-                    item.icon() : 
-                    React.createElement(item.icon, { className: "h-5 w-5 mr-3" })
+                    (item.icon as () => React.ReactNode)() : 
+                    React.createElement(item.icon as React.ComponentType<{ className?: string }>, { className: "h-5 w-5 mr-3" })
                   }
                   <span className={item.isCustomIcon ? "ml-3" : ""}>{item.title}</span>
                 </SidebarMenuButton>
