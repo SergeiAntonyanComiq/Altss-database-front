@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
-import { PersonType } from "@/types/person";
-import { mockPersons } from "@/data/mockPersons";
+import { useContactsData } from "@/hooks/useContactsData";
+import { ContactType } from "@/types/contact";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
 import { 
@@ -14,6 +14,7 @@ import {
   PaginationPrevious 
 } from "@/components/ui/pagination";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -22,6 +23,22 @@ interface PersonsList2Props {
   onItemsPerPageChange: (perPage: number) => void;
 }
 
+// Helper function to convert Contact to Person type
+const contactToPerson = (contact: ContactType) => {
+  return {
+    id: contact.id.toString(),
+    name: contact.name,
+    favorite: contact.favorite || false,
+    responsibilities: contact.asset_class ? contact.asset_class.split(',') : [],
+    linkedin: contact.linkedin || "",
+    location: `${contact.city}${contact.state ? `, ${contact.state}` : ""}${contact.country_territory ? `, ${contact.country_territory}` : ""}`,
+    companies: [contact.investor || ""],
+    currentPosition: contact.job_title || "",
+    shortBio: contact.role || "",
+    email: contact.email
+  };
+};
+
 const PersonsList2 = ({
   currentPage,
   itemsPerPage,
@@ -29,12 +46,22 @@ const PersonsList2 = ({
   onItemsPerPageChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [persons] = useState<PersonType[]>(mockPersons);
-  const [isLoading] = useState(false);
+  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   
-  // Calculate total pages based on the number of persons
-  const totalPages = Math.ceil(persons.length / itemsPerPage);
+  const {
+    contacts,
+    isLoading,
+    totalContacts
+  } = useContactsData({
+    initialPage: currentPage,
+    initialItemsPerPage: itemsPerPage
+  });
+
+  // Convert contacts to persons format for the table
+  const persons = contacts.map(contactToPerson);
+  
+  // Calculate total pages based on the number of contacts
+  const totalPages = Math.ceil(totalContacts / itemsPerPage);
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 
@@ -109,7 +136,7 @@ const PersonsList2 = ({
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
           <span className="text-sm text-muted-foreground">
-            Showing {persons.length} items
+            Showing {isLoading ? "..." : persons.length} items
           </span>
         </div>
       </div>
@@ -120,15 +147,25 @@ const PersonsList2 = ({
       />
       
       <div className="mt-4">
-        <PersonsTable2 
-          persons={persons}
-          selectedPersons={selectedPersons}
-          handleCheckboxChange={handleCheckboxChange}
-          handleSelectAll={handleSelectAll}
-          toggleFavorite={toggleFavorite}
-          isPersonSelected={isPersonSelected}
-          isLoading={isLoading}
-        />
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : (
+          <PersonsTable2 
+            persons={persons}
+            selectedPersons={selectedPersons}
+            handleCheckboxChange={handleCheckboxChange}
+            handleSelectAll={handleSelectAll}
+            toggleFavorite={toggleFavorite}
+            isPersonSelected={isPersonSelected}
+            isLoading={isLoading}
+          />
+        )}
       </div>
       
       <div className="flex justify-between items-center w-full mt-4">
@@ -201,7 +238,6 @@ const PersonsList2 = ({
             <option value="10">10 results per page</option>
             <option value="25">25 results per page</option>
             <option value="50">50 results per page</option>
-            <option value="100">100 results per page</option>
           </select>
         </div>
       </div>

@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import ContactsList from "@/components/contacts/ContactsList";
 import PersonsList2 from "@/components/personal/PersonsList2";
+import { Toaster } from "@/components/ui/toaster";
 
 const PersonalCabinet3 = () => {
   const location = useLocation();
@@ -77,6 +79,7 @@ const PersonalCabinet3 = () => {
           {renderContent()}
         </main>
       </div>
+      <Toaster />
     </SidebarProvider>
   );
 };
