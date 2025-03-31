@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Heart, Check } from "lucide-react";
 import { CompanyType } from "@/types/company";
@@ -43,18 +42,12 @@ const CompaniesTable = ({
       <div className="bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap">
         <div className="min-h-[464px] overflow-hidden w-11 border-[#DFE4EA] border-r">
           <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-            <div 
-              className="cursor-pointer"
+            <img 
+              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/4c9a3c7052d8f24afeb1a4d1e91f16560aecd56b?placeholderIfAbsent=true" 
+              alt="Select all" 
+              className="aspect-[1] object-contain w-5 self-stretch my-auto rounded-[0px_0px_0px_0px] cursor-pointer"
               onClick={toggleAllCompanies}
-            >
-              {allSelected ? (
-                <div className="bg-[#2665F0] border-[#3758F9] border flex min-h-5 w-5 flex-col items-center justify-center h-5 rounded-md">
-                  <Check className="h-3 w-3 text-white" />
-                </div>
-              ) : (
-                <div className="h-5 w-5 rounded-md border border-gray-300"></div>
-              )}
-            </div>
+            />
           </div>
         </div>
         
@@ -93,16 +86,21 @@ const CompaniesTable = ({
       {companies.map((company) => (
         <div key={company.id} className="flex min-h-[46px] w-full overflow-hidden flex-wrap mt-2">
           <div className="min-h-[46px] overflow-hidden w-11 border-[#DFE4EA] border-r">
-            <div 
-              className="flex min-h-11 w-full items-center gap-2.5 justify-center cursor-pointer"
-              onClick={() => toggleCompanySelection(company.id || '')}
-            >
+            <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
               {isCompanySelected(company.id) ? (
-                <div className="bg-[#2665F0] border-[#3758F9] border flex min-h-5 w-5 flex-col items-center justify-center h-5 rounded-md">
+                <div 
+                  className="bg-[#2665F0] border-[#3758F9] border flex min-h-5 w-5 flex-col items-center justify-center h-5 rounded-md cursor-pointer"
+                  onClick={() => toggleCompanySelection(company.id || '')}
+                >
                   <Check className="h-3 w-3 text-white" />
                 </div>
               ) : (
-                <div className="h-5 w-5 rounded-md border border-gray-300"></div>
+                <img 
+                  src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/4c9a3c7052d8f24afeb1a4d1e91f16560aecd56b?placeholderIfAbsent=true" 
+                  alt="Select" 
+                  className="aspect-[1] object-contain w-5 self-stretch my-auto rounded-[0px_0px_0px_0px] cursor-pointer"
+                  onClick={() => toggleCompanySelection(company.id || '')}
+                />
               )}
             </div>
           </div>
