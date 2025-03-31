@@ -34,6 +34,10 @@ const PersonsSearchBar = ({
   searchParams = { name: "", investor: "", firm_type: "" },
   setSearchParams = () => {}
 }: PersonsSearchBarProps) => {
+  // Local state to track filter values before submitting
+  const [localFilters, setLocalFilters] = useState<SearchParams>(searchParams);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
       e.preventDefault();
@@ -42,22 +46,31 @@ const PersonsSearchBar = ({
   };
 
   const handleFilterChange = (param: keyof SearchParams, value: string) => {
-    setSearchParams({
-      ...searchParams,
+    setLocalFilters(prev => ({
+      ...prev,
       [param]: value
-    });
+    }));
   };
 
   const handleApplyFilters = () => {
-    setSearchQuery(searchParams.name);
+    setSearchParams(localFilters);
+    setSearchQuery(localFilters.name);
+    setIsPopoverOpen(false);
     if (onSearch) {
       onSearch();
     }
   };
 
   const handleClearFilters = () => {
-    setSearchParams({ name: "", investor: "", firm_type: "" });
+    const emptyFilters = { name: "", investor: "", firm_type: "" };
+    setLocalFilters(emptyFilters);
+    setSearchParams(emptyFilters);
   };
+
+  // Sync local filters with searchParams when they change externally
+  React.useEffect(() => {
+    setLocalFilters(searchParams);
+  }, [searchParams]);
 
   return (
     <div className="flex flex-wrap gap-4 mb-6">
@@ -98,7 +111,7 @@ const PersonsSearchBar = ({
         Search
       </Button>
       
-      <Popover>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" className="flex items-center gap-2">
             <Filter className="h-4 w-4" />
@@ -116,7 +129,7 @@ const PersonsSearchBar = ({
               <Input
                 id="name"
                 placeholder="Contact name"
-                value={searchParams.name}
+                value={localFilters.name}
                 onChange={(e) => handleFilterChange('name', e.target.value)}
               />
             </div>
@@ -128,7 +141,7 @@ const PersonsSearchBar = ({
               <Input
                 id="investor"
                 placeholder="Investor name"
-                value={searchParams.investor}
+                value={localFilters.investor}
                 onChange={(e) => handleFilterChange('investor', e.target.value)}
               />
             </div>
@@ -140,7 +153,7 @@ const PersonsSearchBar = ({
               <Input
                 id="firm_type"
                 placeholder="Firm type"
-                value={searchParams.firm_type}
+                value={localFilters.firm_type}
                 onChange={(e) => handleFilterChange('firm_type', e.target.value)}
               />
             </div>
