@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Building2, Users, ShoppingBag, Heart, ChevronDown, PanelLeft, LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,32 +54,27 @@ const AppSidebar = () => {
     {
       title: "Companies",
       path: "/companies",
-      icon: Building2,
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
     },
     {
       title: "Persons",
       path: "/persons",
-      icon: Users,
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
     },
     {
       title: "My Orders",
       path: "/my-orders",
-      icon: ShoppingBag,
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
     },
     {
       title: "Favorites",
       path: "/favorites",
-      icon: Heart,
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/31a6ca2e49aa013c782f793e48805961b525cc26",
     },
     {
       title: "Saved Searches",
       path: "/saved-searches",
-      icon: () => (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      ),
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f69faa278a069ce4b2090e224b9110b1e63802ea",
     },
   ];
 
@@ -100,9 +95,9 @@ const AppSidebar = () => {
           <div className="flex justify-between items-center px-6">
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/f0e39660-fbf7-43b0-a89f-e3a346681785.png" 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f01958332144f100eb157b487ff29d5719146b2a"
                 alt="Altss Logo" 
-                className="h-10"
+                className="h-10 w-10 object-contain rounded-md"
               />
             </div>
             <SidebarTrigger className="text-gray-400" />
@@ -120,11 +115,12 @@ const AppSidebar = () => {
                     isActive(item.path) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
                   }`}
                 >
-                  {typeof item.icon === 'function' ? 
-                    item.icon() : 
-                    <item.icon className="h-5 w-5 mr-3" />
-                  }
-                  <span className={typeof item.icon === 'function' ? "ml-3" : ""}>{item.title}</span>
+                  <img 
+                    src={item.iconSrc} 
+                    alt={item.title} 
+                    className="h-6 w-6 mr-3 object-contain"
+                  />
+                  <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -138,11 +134,14 @@ const AppSidebar = () => {
               onClick={() => handleNavigation("/profile")}
             >
               <Avatar>
-                <AvatarImage src="/lovable-uploads/21ab7830-17e7-4b33-a70a-dfdbd7546c29.png" alt="User Profile" />
+                <AvatarImage 
+                  src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/635dde9f8ef84a19da3d5dd766f2e72d108bd70c" 
+                  alt="User Profile" 
+                />
                 <AvatarFallback>{getUserInitials()}</AvatarFallback>
               </Avatar>
               <span className="text-gray-700 text-sm truncate max-w-[120px]">
-                {user?.email || "User"}
+                {user?.email || "User Name"}
               </span>
             </div>
             
