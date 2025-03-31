@@ -14,4 +14,5 @@ export interface PersonType {
   jobHistory?: string;
   news?: string;
   lastUpdate?: string;
+  email?: string; // Adding email property
 }

@@ -173,9 +173,8 @@ const PersonsList2 = ({
           <PaginationContent>
             <PaginationItem>
               <PaginationLink
-                onClick={() => onPageChange(1)}
-                disabled={currentPage === 1}
-                className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                onClick={() => currentPage > 1 && onPageChange(1)}
+                className={`cursor-pointer ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <ChevronsLeft className="h-4 w-4" />
               </PaginationLink>
@@ -183,8 +182,7 @@ const PersonsList2 = ({
             <PaginationItem>
               <PaginationLink
                 onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`cursor-pointer ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <ChevronLeft className="h-4 w-4" />
               </PaginationLink>
@@ -211,17 +209,15 @@ const PersonsList2 = ({
             <PaginationItem>
               <PaginationLink
                 onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`cursor-pointer ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <ChevronRight className="h-4 w-4" />
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationLink
-                onClick={() => onPageChange(totalPages)}
-                disabled={currentPage === totalPages}
-                className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                onClick={() => currentPage < totalPages && onPageChange(totalPages)}
+                className={`cursor-pointer ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <ChevronsRight className="h-4 w-4" />
               </PaginationLink>
