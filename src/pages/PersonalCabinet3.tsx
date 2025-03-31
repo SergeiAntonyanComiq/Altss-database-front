@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
-import ContactsList from "@/components/contacts/ContactsList";
+import PersonsList2 from "@/components/personal/PersonsList2";
 
 const PersonalCabinet3 = () => {
   const [activeSection, setActiveSection] = useState<string>("contacts");
@@ -39,9 +39,9 @@ const PersonalCabinet3 = () => {
     
     switch (currentSection) {
       case "contacts":
-        return <ContactsList />;
+        return <PersonsList2 />;
       default:
-        return <ContactsList />;
+        return <PersonsList2 />;
     }
   };
 

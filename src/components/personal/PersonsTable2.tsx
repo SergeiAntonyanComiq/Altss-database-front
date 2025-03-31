@@ -56,10 +56,10 @@ const PersonsTable2 = ({
   toggleFavorite 
 }: PersonsTable2Props) => {
   return (
-    <div className="bg-white rounded-lg overflow-hidden">
+    <div className="w-full overflow-auto rounded-md border">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent border-b border-gray-200">
+          <TableRow className="hover:bg-transparent border-b border-gray-200 bg-gray-50">
             <TableHead className="w-12">
               <Checkbox
                 checked={selectedPersons.length === persons.length && persons.length > 0}
@@ -70,13 +70,10 @@ const PersonsTable2 = ({
             <TableHead>Full Name</TableHead>
             <TableHead>Bio / About</TableHead>
             <TableHead>Position</TableHead>
-            <TableHead>Job History</TableHead>
-            <TableHead>News</TableHead>
             <TableHead>Area of responsibility</TableHead>
             <TableHead>Contacts</TableHead>
             <TableHead>Resident Location</TableHead>
             <TableHead>Current Companies</TableHead>
-            <TableHead>Last Update</TableHead>
             <TableHead className="w-5">
               <Button variant="ghost" size="icon" className="h-5 w-5 ml-2 rounded-full bg-blue-50">
                 <Plus className="h-3 w-3 text-blue-600" />
@@ -140,16 +137,6 @@ const PersonsTable2 = ({
                 </span>
               </TableCell>
               <TableCell>
-                <span className="text-sm">
-                  {person.jobHistory || "-"}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm">
-                  {person.news || "-"}
-                </span>
-              </TableCell>
-              <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {person.responsibilities.map((resp, index) => (
                     <Badge key={index} variant="outline" className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs border-blue-100">
@@ -189,11 +176,6 @@ const PersonsTable2 = ({
                     </Badge>
                   ))}
                 </div>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm text-muted-foreground">
-                  {person.lastUpdate || "-"}
-                </span>
               </TableCell>
               <TableCell></TableCell>
             </TableRow>
