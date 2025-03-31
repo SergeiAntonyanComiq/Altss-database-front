@@ -1,54 +1,20 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { PersonType } from "@/types/person";
 import { mockPersons } from "@/data/mockPersons";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsTable2 from "./PersonsTable2";
 import PersonsPagination from "./PersonsPagination";
-import { usePersonsSearch } from "@/hooks/usePersonsSearch";
-import { ContactType } from "@/types/contact";
-import { useToast } from "@/components/ui/use-toast";
-
-// Helper function to convert ContactType to PersonType
-const mapContactToPerson = (contact: ContactType): PersonType => {
-  return {
-    id: contact.id.toString(),
-    name: contact.name,
-    favorite: contact.favorite || false,
-    responsibilities: contact.role ? contact.role.split(',') : [],
-    linkedin: contact.linkedin || "",
-    location: `${contact.city}${contact.state ? ', ' + contact.state : ''}, ${contact.country_territory}`,
-    companies: [contact.investor],
-    shortBio: contact.job_title || "",
-    currentPosition: contact.job_title || "",
-    lastUpdate: new Date().toLocaleDateString(),
-  };
-};
 
 const PersonsList2 = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(2);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [personsToDisplay, setPersonsToDisplay] = useState<PersonType[]>(mockPersons);
-  const { searchResults, isLoading, error, searchPersons, hasPerformedInitialSearch } = usePersonsSearch();
-  const { toast } = useToast();
+  const [persons] = useState<PersonType[]>(mockPersons);
   
-  // Effect to map search results to person format when results change
-  useEffect(() => {
-    if (hasPerformedInitialSearch) {
-      if (searchResults.length > 0) {
-        const mappedPersons = searchResults.map(mapContactToPerson);
-        setPersonsToDisplay(mappedPersons);
-      } else if (searchResults.length === 0 && !isLoading && !error) {
-        // If search returned empty results, show that
-        setPersonsToDisplay([]);
-      }
-    }
-  }, [searchResults, isLoading, error, hasPerformedInitialSearch]);
-
   // Calculate total pages based on the number of persons
-  const totalPages = Math.ceil(personsToDisplay.length / itemsPerPage);
+  const totalPages = Math.ceil(persons.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -68,10 +34,10 @@ const PersonsList2 = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedPersons.length === personsToDisplay.length) {
+    if (selectedPersons.length === persons.length) {
       setSelectedPersons([]);
     } else {
-      setSelectedPersons(personsToDisplay.map(person => person.id));
+      setSelectedPersons(persons.map(person => person.id));
     }
   };
 
@@ -80,24 +46,13 @@ const PersonsList2 = () => {
     console.log(`Toggle favorite for person with ID: ${id}`);
   };
 
-  // Handle search from the search bar
-  const handleSearch = (params: { name: string; investor: string; firm_type: string }) => {
-    searchPersons(params);
-  };
-
-  // Get current persons for this page
-  const getCurrentPagePersons = () => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return personsToDisplay.slice(startIndex, startIndex + itemsPerPage);
-  };
-
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
           <span className="text-sm text-muted-foreground">
-            {isLoading ? 'Loading...' : `Showing ${personsToDisplay.length} items`}
+            Showing {persons.length} items
           </span>
         </div>
       </div>
@@ -105,19 +60,11 @@ const PersonsList2 = () => {
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onSearch={handleSearch}
-        isSearching={isLoading}
       />
-      
-      {error && (
-        <div className="my-4 p-4 bg-red-100 text-red-800 rounded-md">
-          {error}
-        </div>
-      )}
       
       <div className="mt-4">
         <PersonsTable2 
-          persons={getCurrentPagePersons()}
+          persons={persons}
           selectedPersons={selectedPersons}
           handleCheckboxChange={handleCheckboxChange}
           handleSelectAll={handleSelectAll}
