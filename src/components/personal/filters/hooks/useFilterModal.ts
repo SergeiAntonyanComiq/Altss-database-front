@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchFirmTypes } from "@/services/firmTypesService";
-import { getSavedFilters, saveFilter, deleteSavedFilterLocal } from "@/services/savedSearchesService";
+import { getSavedFilters, saveFilter, deleteSavedFilter } from "@/services/savedFiltersService";
 
 export interface SavedFilterType {
   id: string;
@@ -23,13 +23,14 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
 
+  // Load firm types when the modal opens
   useEffect(() => {
     const loadFirmTypes = async () => {
       try {
         setLoading(true);
         setError(null);
         const types = await fetchFirmTypes();
-        setFirmTypes(types.sort());
+        setFirmTypes(types.sort()); // Sort alphabetically
         setLoading(false);
       } catch (err) {
         setError("Failed to load company types");
@@ -43,13 +44,14 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
     };
 
     loadFirmTypes();
+    // Load saved filters
     setSavedFilters(getSavedFilters());
   }, [toast]);
 
+  // Reset to first step and selected types when the component mounts
   useEffect(() => {
     setStep(1);
     setSelectedTypes(selectedFirmTypes);
-    console.log("useFilterModal: Updated selected types from props:", selectedFirmTypes);
   }, [selectedFirmTypes]);
 
   const goToNextStep = () => setStep(step + 1);
@@ -102,7 +104,7 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   };
 
   const handleDeleteFilter = (id: string, name: string) => {
-    deleteSavedFilterLocal(id);
+    deleteSavedFilter(id);
     setSavedFilters(prev => prev.filter(filter => filter.id !== id));
     
     toast({
@@ -112,7 +114,6 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   };
 
   const applyFilter = (filter: SavedFilterType) => {
-    console.log("Applying saved filter:", filter);
     setSelectedTypes(filter.firmTypes);
     
     toast({
