@@ -38,20 +38,25 @@ export const useContactsData = ({
         searchQuery
       });
       
-      // Fetch contacts without applying filters if firmTypes array is empty
-      const data = await fetchContacts(currentPage, itemsPerPage, firmTypes.length > 0 ? firmTypes : undefined);
+      // Always fetch contacts - only apply firmTypes filter if the array is not empty
+      const data = await fetchContacts(
+        currentPage, 
+        itemsPerPage, 
+        firmTypes && firmTypes.length > 0 ? firmTypes : undefined
+      );
+      
       console.log("Received contacts:", data.length);
       setContacts(data);
       
-      // Only fetch total count if we don't have it yet
-      if (totalContacts === null) {
-        const count = await fetchContactsCount();
-        setTotalContacts(count);
-      }
+      // Fetch total count on first load or when filters change
+      const count = await fetchContactsCount();
+      setTotalContacts(count);
       
     } catch (err) {
       console.error("Error loading contacts:", err);
       setError("Failed to load contacts. Please try again later.");
+      setContacts([]); // Set empty array on error
+      
       toast({
         title: "Error",
         description: "Failed to load contacts. Please try again later.",
@@ -60,10 +65,15 @@ export const useContactsData = ({
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, itemsPerPage, firmTypes, searchQuery, totalContacts, toast]);
+  }, [currentPage, itemsPerPage, firmTypes, searchQuery, toast]);
 
   // Effect to load contacts when parameters change
   useEffect(() => {
+    console.log("useContactsData effect triggered with:", { 
+      page: currentPage, 
+      limit: itemsPerPage, 
+      firmTypes: firmTypes?.length > 0 ? firmTypes : 'none'
+    });
     loadContacts();
   }, [loadContacts]);
 
