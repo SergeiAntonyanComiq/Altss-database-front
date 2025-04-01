@@ -7,7 +7,7 @@ import PersonsListContent from "./list/PersonsListContent";
 import PersonsListFooter from "./list/PersonsListFooter";
 import { usePersonsSelection } from "./hooks/usePersonsSelection";
 import PersonsSearchBar from "./PersonsSearchBar";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -62,8 +62,14 @@ const PersonsList2 = ({
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
-    firmTypes: selectedFirmTypes
+    firmTypes: selectedFirmTypes,
+    searchQuery: localSearchQuery
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log("PersonsList2 received firm types:", selectedFirmTypes);
+  }, [selectedFirmTypes]);
 
   // Convert contacts to persons format for the table
   const persons = contacts.map(contactToPerson);
@@ -103,6 +109,7 @@ const PersonsList2 = ({
   // Handle firm type filter changes
   const handleFilterChange = useCallback((firmTypes: string[]) => {
     if (onFilterChange) {
+      console.log("Applying filters in PersonsList2:", firmTypes);
       onFilterChange(firmTypes);
       
       // Reset to first page when applying filters
@@ -122,6 +129,7 @@ const PersonsList2 = ({
     }
   }, [onFilterChange, handlePageChange, selectedFirmTypes]);
 
+  const { toast } = useToast();
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
 
   return (

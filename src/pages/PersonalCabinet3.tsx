@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -25,6 +26,11 @@ const PersonalCabinet3 = () => {
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>(
     firmTypesParam ? firmTypesParam.split(',') : []
   );
+
+  // Log what firm types we're starting with
+  useEffect(() => {
+    console.log("PersonalCabinet3 initialized with firm types:", selectedFirmTypes);
+  }, []);
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
@@ -56,6 +62,7 @@ const PersonalCabinet3 = () => {
   }, [location.pathname, location.search, navigate]);
   
   const handleFilterChange = useCallback((firmTypes: string[]) => {
+    console.log("PersonalCabinet3 setting firm types:", firmTypes);
     setSelectedFirmTypes(firmTypes);
     const params = new URLSearchParams(location.search);
     if (firmTypes.length > 0) {
@@ -93,6 +100,7 @@ const PersonalCabinet3 = () => {
     
     const newFirmTypes = newFirmTypesParam ? newFirmTypesParam.split(',') : [];
     if (JSON.stringify(newFirmTypes) !== JSON.stringify(selectedFirmTypes)) {
+      console.log("URL params changed, updating firm types to:", newFirmTypes);
       setSelectedFirmTypes(newFirmTypes);
     }
   }, [location.search, currentPage, itemsPerPage, activeSection, searchQuery, selectedFirmTypes]);
