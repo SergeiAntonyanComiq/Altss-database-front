@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchFirmTypes } from "@/services/firmTypesService";
-import { getSavedFilters, saveFilter, deleteSavedFilter } from "@/services/savedSearchesService";
+import { getSavedFilters, saveFilter, deleteSavedFilterLocal } from "@/services/savedSearchesService";
 
 export interface SavedFilterType {
   id: string;
@@ -105,7 +105,7 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   };
 
   const handleDeleteFilter = (id: string, name: string) => {
-    deleteSavedFilter(id);
+    deleteSavedFilterLocal(id);
     setSavedFilters(prev => prev.filter(filter => filter.id !== id));
     
     toast({
