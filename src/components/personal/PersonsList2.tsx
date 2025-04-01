@@ -104,7 +104,7 @@ const PersonsList2 = ({
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-2">
           <span className="text-sm text-muted-foreground">
-            Showing {isLoading ? "..." : persons.length} items
+            Showing {isLoading ? "..." : persons.length} items of {totalContacts} total contacts
           </span>
         </div>
       </div>
