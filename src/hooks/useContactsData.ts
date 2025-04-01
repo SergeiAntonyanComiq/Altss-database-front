@@ -47,7 +47,7 @@ export function useContactsData({
           totalCount: result.totalCount
         });
         
-        setContacts(result.contacts);
+        setContacts(result.contacts as ContactType[]);
         setTotalContacts(result.totalCount);
       } catch (error) {
         console.error("Error fetching contacts:", error);

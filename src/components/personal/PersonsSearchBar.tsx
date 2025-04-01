@@ -1,17 +1,15 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, X, Filter, Tag } from "lucide-react";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
-import SaveSearchInput from "./filters/components/SaveSearchInput";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectedFirmTypes: string[];
   onFilterChange: (firmTypes: string[]) => void;
-  currentSearchQuery?: string;
 }
 
 const PersonsSearchBar: React.FC<PersonsSearchBarProps> = ({
@@ -19,9 +17,8 @@ const PersonsSearchBar: React.FC<PersonsSearchBarProps> = ({
   setSearchQuery,
   selectedFirmTypes,
   onFilterChange,
-  currentSearchQuery
 }) => {
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = React.useState(false);
 
   // Handle opening the filter modal
   const handleOpenFilterModal = () => {
@@ -99,15 +96,6 @@ const PersonsSearchBar: React.FC<PersonsSearchBarProps> = ({
             </div>
           )}
         </div>
-        
-        {(selectedFirmTypes.length > 0 || searchQuery.trim() !== '') && (
-          <div className="mt-4">
-            <SaveSearchInput 
-              selectedTypes={selectedFirmTypes} 
-              searchQuery={searchQuery}
-            />
-          </div>
-        )}
       </div>
 
       <PersonsFilterModal

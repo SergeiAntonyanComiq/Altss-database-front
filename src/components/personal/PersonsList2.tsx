@@ -8,9 +8,6 @@ import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsListHeader from "./list/PersonsListHeader";
 import PersonsListContent from "./list/PersonsListContent";
 import PersonsListFooter from "./list/PersonsListFooter";
-import SavedSearchDialog from "./filters/SavedSearchDialog";
-import { Button } from "@/components/ui/button";
-import { BookmarkIcon } from "lucide-react";
 import { toast } from "sonner";
 
 interface PersonsList2Props {
@@ -27,7 +24,6 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
   onItemsPerPageChange
 }) => {
   const { selectedFirmTypes, searchQuery, handleFilterChange, handleSearchChange } = usePersonsFilters();
-  const [showSavedSearches, setShowSavedSearches] = useState(false);
 
   // Log initial props for debugging
   useEffect(() => {
@@ -110,25 +106,13 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
       <div className="flex justify-between items-center">
         <h1 className="text-[#111928] text-2xl font-semibold leading-none">Persons</h1>
         
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowSavedSearches(true)}
-            className="flex items-center gap-1"
-          >
-            <BookmarkIcon size={16} />
-            Saved Searches
-          </Button>
-          
-          <PersonsListHeader 
-            searchQuery={searchQuery}
-            setSearchQuery={handleSearchChange}
-            totalContacts={totalContacts}
-            isLoading={isLoading}
-            hasActiveFilters={selectedFirmTypes.length > 0 || searchQuery.trim() !== ''}
-          />
-        </div>
+        <PersonsListHeader 
+          searchQuery={searchQuery}
+          setSearchQuery={handleSearchChange}
+          totalContacts={totalContacts}
+          isLoading={isLoading}
+          hasActiveFilters={selectedFirmTypes.length > 0 || searchQuery.trim() !== ''}
+        />
       </div>
       
       <PersonsSearchBar 
@@ -136,7 +120,6 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
         setSearchQuery={handleSearchChange}
         selectedFirmTypes={selectedFirmTypes}
         onFilterChange={handleFilterChange}
-        currentSearchQuery={searchQuery}
       />
       
       <PersonsListContent 
@@ -155,17 +138,6 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
         totalItems={totalContacts}
         onPageChange={handlePageChangeDebounced}
         onItemsPerPageChange={handleItemsPerPageChange}
-      />
-      
-      <SavedSearchDialog
-        isOpen={showSavedSearches}
-        onClose={() => setShowSavedSearches(false)}
-        onApply={(search) => {
-          handleFilterChange(search.filter_data.firmTypes);
-          handleSearchChange(search.filter_data.searchQuery || '');
-        }}
-        currentFirmTypes={selectedFirmTypes}
-        currentSearchQuery={searchQuery}
       />
     </div>
   );
