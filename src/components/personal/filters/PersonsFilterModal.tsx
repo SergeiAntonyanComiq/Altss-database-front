@@ -57,6 +57,11 @@ const PersonsFilterModal = ({
     onClose();
   };
 
+  const handleClearFilters = () => {
+    onApplyFilters([]);
+    onClose();
+  };
+
   const totalSteps = 2;
 
   return (
@@ -147,16 +152,24 @@ const PersonsFilterModal = ({
               }}
               onDeleteFilter={handleDeleteFilter}
               currentActiveFilter={selectedTypes}
+              onClearFilter={clearAllFilters}
             />
           </TabsContent>
         </Tabs>
         
         <DialogFooter className="flex justify-between">
           <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-          <Button onClick={handleApply} disabled={loading}>
-            Apply Filters
-            {selectedTypes.length > 0 && ` (${selectedTypes.length})`}
-          </Button>
+          <div className="flex gap-2">
+            {selectedTypes.length > 0 && (
+              <Button variant="outline" onClick={handleClearFilters}>
+                Clear Filters
+              </Button>
+            )}
+            <Button onClick={handleApply} disabled={loading}>
+              Apply Filters
+              {selectedTypes.length > 0 && ` (${selectedTypes.length})`}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

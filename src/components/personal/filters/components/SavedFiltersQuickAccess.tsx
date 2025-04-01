@@ -1,19 +1,20 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Tag, Star } from "lucide-react";
+import { Tag, Star, X } from "lucide-react";
 import { SavedFilterType } from "../hooks/useFilterModal";
 import { cn } from "@/lib/utils";
 
 interface SavedFiltersQuickAccessProps {
   savedFilters: SavedFilterType[];
   onApplyFilter: (filter: SavedFilterType) => void;
+  onClearFilter: () => void;
   currentActiveFilter: string[];
 }
 
 const SavedFiltersQuickAccess: React.FC<SavedFiltersQuickAccessProps> = ({ 
   savedFilters,
   onApplyFilter,
+  onClearFilter,
   currentActiveFilter
 }) => {
   // Only show if we have saved filters
@@ -30,6 +31,17 @@ const SavedFiltersQuickAccess: React.FC<SavedFiltersQuickAccessProps> = ({
   // Limit to showing maximum 3 saved filters
   const displayFilters = savedFilters.slice(0, 3);
 
+  // Handle filter button click - toggle behavior
+  const handleFilterClick = (filter: SavedFilterType) => {
+    // If this filter is already active, clear it
+    if (isFilterActive(filter)) {
+      onClearFilter();
+    } else {
+      // Otherwise apply the filter
+      onApplyFilter(filter);
+    }
+  };
+
   return (
     <div className="flex items-center space-x-2 mt-2">
       <span className="text-sm text-muted-foreground">
@@ -45,9 +57,9 @@ const SavedFiltersQuickAccess: React.FC<SavedFiltersQuickAccessProps> = ({
             "h-7 text-xs",
             isFilterActive(filter) && "bg-primary/90 text-primary-foreground"
           )}
-          onClick={() => onApplyFilter(filter)}
+          onClick={() => handleFilterClick(filter)}
         >
-          {isFilterActive(filter) && <Star size={12} className="mr-1" />}
+          {isFilterActive(filter) && <X size={12} className="mr-1" />}
           {filter.name}
         </Button>
       ))}

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import SavedFiltersQuickAccess from "./filters/components/SavedFiltersQuickAccess";
 import { getSavedFilters } from "@/services/savedFiltersService";
 import { SavedFilterType } from "./filters/hooks/useFilterModal";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -23,6 +24,7 @@ const PersonsSearchBar = ({
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
+  const { toast } = useToast();
 
   // Load saved filters on component mount
   useEffect(() => {
@@ -40,6 +42,16 @@ const PersonsSearchBar = ({
   const handleApplySavedFilter = (filter: SavedFilterType) => {
     if (onFilterChange) {
       onFilterChange(filter.firmTypes);
+    }
+  };
+
+  const handleClearFilters = () => {
+    if (onFilterChange) {
+      onFilterChange([]);
+      toast({
+        title: "Filters Cleared",
+        description: "Showing all contacts",
+      });
     }
   };
 
@@ -94,6 +106,7 @@ const PersonsSearchBar = ({
         <SavedFiltersQuickAccess
           savedFilters={savedFilters}
           onApplyFilter={handleApplySavedFilter}
+          onClearFilter={handleClearFilters}
           currentActiveFilter={selectedFirmTypes}
         />
       )}

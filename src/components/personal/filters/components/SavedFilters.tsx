@@ -2,7 +2,7 @@
 import React from "react";
 import { SavedFilterType } from "../hooks/useFilterModal";
 import { Button } from "@/components/ui/button";
-import { Check, Trash2, Tag } from "lucide-react";
+import { Check, Trash2, Tag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SavedFiltersProps {
@@ -10,13 +10,15 @@ interface SavedFiltersProps {
   onApplyFilter: (filter: SavedFilterType) => void;
   onDeleteFilter: (id: string, name: string) => void;
   currentActiveFilter: string[];
+  onClearFilter?: () => void;
 }
 
 const SavedFilters: React.FC<SavedFiltersProps> = ({ 
   savedFilters, 
   onApplyFilter, 
   onDeleteFilter,
-  currentActiveFilter
+  currentActiveFilter,
+  onClearFilter
 }) => {
   if (savedFilters.length === 0) {
     return (
@@ -31,6 +33,15 @@ const SavedFilters: React.FC<SavedFiltersProps> = ({
   const isFilterActive = (filter: SavedFilterType) => {
     if (currentActiveFilter.length !== filter.firmTypes.length) return false;
     return filter.firmTypes.every(type => currentActiveFilter.includes(type));
+  };
+
+  // Handle filter toggle - apply or clear
+  const handleFilterClick = (filter: SavedFilterType) => {
+    if (isFilterActive(filter) && onClearFilter) {
+      onClearFilter();
+    } else {
+      onApplyFilter(filter);
+    }
   };
 
   return (
@@ -55,12 +66,12 @@ const SavedFilters: React.FC<SavedFiltersProps> = ({
             <Button 
               variant={isFilterActive(filter) ? "default" : "outline"} 
               size="sm" 
-              onClick={() => onApplyFilter(filter)}
+              onClick={() => handleFilterClick(filter)}
               className="h-7"
             >
               {isFilterActive(filter) ? (
                 <>
-                  <Check size={14} className="mr-1" /> Applied
+                  <X size={14} className="mr-1" /> Clear
                 </>
               ) : (
                 "Apply"
