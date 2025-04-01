@@ -1,6 +1,7 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Search, Filter, Save, Heart } from "lucide-react";
+import FilterDialog from "@/components/filters/FilterDialog";
 
 interface CompaniesSearchBarProps {
   searchQuery: string;
@@ -8,6 +9,8 @@ interface CompaniesSearchBarProps {
 }
 
 const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarProps) => {
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+
   return (
     <div className="flex min-h-11 gap-4 text-base text-[rgba(99,115,129,1)] font-medium flex-wrap mt-10 w-full">
       <div className="min-w-60 min-h-11 text-gray-400 font-normal w-[363px]">
@@ -27,6 +30,7 @@ const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarP
       
       <button 
         className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 whitespace-nowrap px-[15px] py-2.5 rounded-[50px]"
+        onClick={() => setFilterDialogOpen(true)}
       >
         <Filter className="h-[18px] w-[18px]" />
         <span>Filters</span>
@@ -45,6 +49,11 @@ const CompaniesSearchBar = ({ searchQuery, setSearchQuery }: CompaniesSearchBarP
         <Heart className="h-[18px] w-[18px]" />
         <span>Add to Favorites</span>
       </button>
+
+      <FilterDialog 
+        open={filterDialogOpen} 
+        onOpenChange={setFilterDialogOpen} 
+      />
     </div>
   );
 };
