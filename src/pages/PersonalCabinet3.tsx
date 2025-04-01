@@ -28,13 +28,17 @@ const PersonalCabinet3 = () => {
   // Load filter if filter ID is provided in URL
   useEffect(() => {
     if (filterId) {
+      console.log("Loading filter with ID:", filterId);
       const filter = getSavedFilterById(filterId);
       if (filter) {
+        console.log("Found filter:", filter);
         setSelectedFirmTypes(filter.firmTypes);
         toast({
           title: "Filter Applied",
           description: `Applied "${filter.name}" filter`,
         });
+      } else {
+        console.log("Filter not found for ID:", filterId);
       }
     }
   }, [filterId, toast]);
@@ -60,7 +64,13 @@ const PersonalCabinet3 = () => {
   // Filter change handler
   const handleFilterChange = useCallback((firmTypes: string[]) => {
     setSelectedFirmTypes(firmTypes);
-  }, []);
+    // Clear filter param from URL if we're just changing filters directly
+    const params = new URLSearchParams(location.search);
+    if (params.has('filter')) {
+      params.delete('filter');
+      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    }
+  }, [location.pathname, location.search, navigate]);
 
   // Keep URL and state in sync - using proper dependency array
   useEffect(() => {
@@ -80,7 +90,7 @@ const PersonalCabinet3 = () => {
     if (newSection && newSection !== activeSection) {
       setActiveSection(newSection);
     }
-  }, [location.search]);
+  }, [location.search, currentPage, itemsPerPage, activeSection]);
 
   const renderContent = useCallback(() => {
     // Use the section from URL or fallback to activeSection state

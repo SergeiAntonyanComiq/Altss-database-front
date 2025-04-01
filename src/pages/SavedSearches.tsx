@@ -45,8 +45,8 @@ const SavedSearches = () => {
   
   // Apply a filter and navigate to persons page
   const handleApplyFilter = (filter: SavedFilter) => {
-    // Navigate to persons page with filter params
-    navigate(`/app/persons?filter=${encodeURIComponent(filter.id)}`);
+    // Navigate to persons page with filter params - fixed path from /app/persons to /persons
+    navigate(`/persons?filter=${encodeURIComponent(filter.id)}`);
     
     toast({
       title: "Filter Applied",
