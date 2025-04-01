@@ -15,16 +15,10 @@ const PersonalCabinet3 = () => {
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
   const section = searchParams.get('section');
-  const firmTypesParam = searchParams.get('firmTypes');
-  const searchQueryParam = searchParams.get('searchQuery');
   
   const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
   const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
   const [activeSection, setActiveSection] = useState<string>(section || "persons");
-  const [searchQuery, setSearchQuery] = useState(searchQueryParam || "");
-  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>(
-    firmTypesParam ? firmTypesParam.split(',') : []
-  );
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
@@ -43,28 +37,6 @@ const PersonalCabinet3 = () => {
     params.set('page', '1');
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   }, [location.pathname, location.search, navigate]);
-  
-  const handleSearchQueryChange = useCallback((query: string) => {
-    setSearchQuery(query);
-    const params = new URLSearchParams(location.search);
-    if (query) {
-      params.set('searchQuery', query);
-    } else {
-      params.delete('searchQuery');
-    }
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-  }, [location.pathname, location.search, navigate]);
-  
-  const handleFilterChange = useCallback((firmTypes: string[]) => {
-    setSelectedFirmTypes(firmTypes);
-    const params = new URLSearchParams(location.search);
-    if (firmTypes.length > 0) {
-      params.set('firmTypes', firmTypes.join(','));
-    } else {
-      params.delete('firmTypes');
-    }
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-  }, [location.pathname, location.search, navigate]);
 
   // Keep URL and state in sync - using proper dependency array
   useEffect(() => {
@@ -72,8 +44,6 @@ const PersonalCabinet3 = () => {
     const newPageParam = newSearchParams.get('page');
     const newPerPageParam = newSearchParams.get('perPage');
     const newSection = newSearchParams.get('section');
-    const newFirmTypesParam = newSearchParams.get('firmTypes');
-    const newSearchQueryParam = newSearchParams.get('searchQuery');
     
     if (newPageParam && parseInt(newPageParam, 10) !== currentPage) {
       setCurrentPage(parseInt(newPageParam, 10));
@@ -86,16 +56,7 @@ const PersonalCabinet3 = () => {
     if (newSection && newSection !== activeSection) {
       setActiveSection(newSection);
     }
-    
-    if (newSearchQueryParam !== searchQuery) {
-      setSearchQuery(newSearchQueryParam || "");
-    }
-    
-    const newFirmTypes = newFirmTypesParam ? newFirmTypesParam.split(',') : [];
-    if (JSON.stringify(newFirmTypes) !== JSON.stringify(selectedFirmTypes)) {
-      setSelectedFirmTypes(newFirmTypes);
-    }
-  }, [location.search, currentPage, itemsPerPage, activeSection, searchQuery, selectedFirmTypes]);
+  }, [location.search]);
 
   const renderContent = useCallback(() => {
     // Use the section from URL or fallback to activeSection state
@@ -112,25 +73,10 @@ const PersonalCabinet3 = () => {
             itemsPerPage={itemsPerPage}
             onPageChange={handlePageChange}
             onItemsPerPageChange={handleItemsPerPageChange}
-            searchQuery={searchQuery}
-            onSearchQueryChange={handleSearchQueryChange}
-            selectedFirmTypes={selectedFirmTypes}
-            onFilterChange={handleFilterChange}
           />
         );
     }
-  }, [
-    section, 
-    activeSection, 
-    currentPage, 
-    itemsPerPage, 
-    handlePageChange, 
-    handleItemsPerPageChange,
-    searchQuery,
-    handleSearchQueryChange,
-    selectedFirmTypes,
-    handleFilterChange
-  ]);
+  }, [section, activeSection, currentPage, itemsPerPage, handlePageChange, handleItemsPerPageChange]);
 
   return (
     <SidebarProvider>
