@@ -6,6 +6,8 @@ import PersonsListHeader from "./list/PersonsListHeader";
 import PersonsListContent from "./list/PersonsListContent";
 import PersonsListFooter from "./list/PersonsListFooter";
 import { usePersonsSelection } from "./hooks/usePersonsSelection";
+import PersonsSearchBar from "./PersonsSearchBar";
+import { toast } from "@/components/ui/use-toast";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -37,6 +39,7 @@ const PersonsList2 = ({
   onItemsPerPageChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
   
   const {
     contacts,
@@ -46,7 +49,8 @@ const PersonsList2 = ({
     setItemsPerPage: setContactsItemsPerPage
   } = useContactsData({
     initialPage: currentPage,
-    initialItemsPerPage: itemsPerPage
+    initialItemsPerPage: itemsPerPage,
+    firmTypes: selectedFirmTypes
   });
 
   // Convert contacts to persons format for the table
@@ -75,16 +79,43 @@ const PersonsList2 = ({
     // In a real application, this would be an API call to change the favorite status
     console.log(`Toggle favorite for person with ID: ${id}`);
   }, []);
+  
+  // Handle firm type filter changes
+  const handleFilterChange = useCallback((firmTypes: string[]) => {
+    setSelectedFirmTypes(firmTypes);
+    // Reset to first page when applying filters
+    handlePageChange(1);
+    
+    if (firmTypes.length > 0) {
+      toast({
+        title: "Filters Applied",
+        description: `Showing contacts filtered by ${firmTypes.join(', ')}`,
+      });
+    } else if (selectedFirmTypes.length > 0 && firmTypes.length === 0) {
+      toast({
+        title: "Filters Cleared",
+        description: "Showing all contacts",
+      });
+    }
+  }, [handlePageChange, selectedFirmTypes]);
 
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
 
   return (
     <div className="px-6 py-6">
+      <PersonsSearchBar 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedFirmTypes={selectedFirmTypes}
+        onFilterChange={handleFilterChange}
+      />
+      
       <PersonsListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         totalContacts={totalContacts}
         isLoading={isLoading}
+        hasActiveFilters={selectedFirmTypes.length > 0}
       />
       
       <PersonsListContent 

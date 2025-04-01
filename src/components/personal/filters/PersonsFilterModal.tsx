@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { fetchFirmTypes } from "@/services/firmTypesService";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -73,6 +73,10 @@ const PersonsFilterModal = ({
         : [...prev, type]
     );
   };
+  
+  const removeSelectedType = (type: string) => {
+    setSelectedTypes(prev => prev.filter(t => t !== type));
+  };
 
   const handleApply = () => {
     onApplyFilters(selectedTypes);
@@ -82,6 +86,10 @@ const PersonsFilterModal = ({
   const handleCancel = () => {
     setSelectedTypes(selectedFirmTypes); // Reset to previously selected
     onClose();
+  };
+  
+  const clearAllFilters = () => {
+    setSelectedTypes([]);
   };
 
   return (
@@ -128,17 +136,26 @@ const PersonsFilterModal = ({
         {/* Step 2: Company Type Filter */}
         {step === 2 && (
           <div className="py-4">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center justify-between mb-4">
               <Button 
                 variant="ghost" 
-                size="sm" 
-                className="mr-2"
+                size="sm"
                 onClick={() => setStep(1)}
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Back
               </Button>
               <h3 className="font-medium">Select company types</h3>
+              {selectedTypes.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllFilters}
+                  className="text-primary"
+                >
+                  Clear all
+                </Button>
+              )}
             </div>
             
             <div className="relative mb-4">
@@ -163,9 +180,9 @@ const PersonsFilterModal = ({
                       variant="ghost"
                       size="sm"
                       className="h-5 w-5 p-0 hover:bg-transparent"
-                      onClick={() => toggleFirmType(type)}
+                      onClick={() => removeSelectedType(type)}
                     >
-                      ×
+                      <X className="h-3 w-3" />
                     </Button>
                   </Badge>
                 ))}

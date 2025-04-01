@@ -1,12 +1,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ContactType } from "@/types/contact";
-import { fetchContactById, fetchContactsCount } from "@/services/contactsService";
+import { fetchContactById, fetchContactsCount, fetchContactsByFirmType } from "@/services/contactsService";
 import { toast } from "@/components/ui/use-toast";
 
 interface UseContactsDataProps {
   initialPage: number;
   initialItemsPerPage: number;
+  firmTypes?: string[];
 }
 
 interface UseContactsDataReturn {
@@ -22,7 +23,8 @@ interface UseContactsDataReturn {
 
 export const useContactsData = ({
   initialPage,
-  initialItemsPerPage
+  initialItemsPerPage,
+  firmTypes = []
 }: UseContactsDataProps): UseContactsDataReturn => {
   const [contacts, setContacts] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -92,34 +94,43 @@ export const useContactsData = ({
   useEffect(() => {
     let isMounted = true;
     
-    const fetchContacts = async () => {
+    const fetchContactsData = async () => {
       if (isMounted) {
         setIsLoading(true);
         setError(null);
       }
       
       try {
-        const startId = (currentPage - 1) * itemsPerPage + 1;
-        // Use totalContacts if available, otherwise limit to a reasonable number
-        const maxId = totalContacts || 50;
-        const endId = Math.min(startId + itemsPerPage - 1, maxId);
-        
-        console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}, total: ${totalContacts}`);
-        
-        const contactPromises: Promise<ContactType>[] = [];
-        
-        // Fetch contacts one by one
-        for (let id = startId; id <= endId; id++) {
-          contactPromises.push(fetchContactById(id));
+        let fetchedContacts: ContactType[] = [];
+
+        if (firmTypes.length > 0) {
+          // If firmTypes is provided, use the filtered endpoint
+          fetchedContacts = await fetchContactsByFirmType(firmTypes[0]);
+          console.log(`Fetched ${fetchedContacts.length} contacts filtered by firm type: ${firmTypes[0]}`);
+        } else {
+          // If no filters, use the standard pagination approach
+          const startId = (currentPage - 1) * itemsPerPage + 1;
+          // Use totalContacts if available, otherwise limit to a reasonable number
+          const maxId = totalContacts || 50;
+          const endId = Math.min(startId + itemsPerPage - 1, maxId);
+          
+          console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}, total: ${totalContacts}`);
+          
+          const contactPromises: Promise<ContactType>[] = [];
+          
+          // Fetch contacts one by one
+          for (let id = startId; id <= endId; id++) {
+            contactPromises.push(fetchContactById(id));
+          }
+          
+          // Wait for all requests to complete
+          fetchedContacts = await Promise.all(contactPromises);
+          console.log(`Fetched ${fetchedContacts.length} contacts`);
         }
-        
-        // Wait for all requests to complete
-        const fetchedContacts = await Promise.all(contactPromises);
         
         // Only update state if component is still mounted
         if (isMounted) {
           setContacts(fetchedContacts);
-          console.log(`Fetched ${fetchedContacts.length} contacts`);
         }
       } catch (err) {
         // Only update error state if component is still mounted
@@ -139,13 +150,13 @@ export const useContactsData = ({
       }
     };
     
-    fetchContacts();
+    fetchContactsData();
     
     // Cleanup function to prevent state updates after unmount
     return () => {
       isMounted = false;
     };
-  }, [currentPage, itemsPerPage, totalContacts]);
+  }, [currentPage, itemsPerPage, totalContacts, firmTypes]);
   
   // Effect to sync with prop changes (but not on every render)
   useEffect(() => {
