@@ -1,5 +1,6 @@
 
 import React from "react";
+import { UsersRound } from "lucide-react";
 
 interface PersonsListHeaderProps {
   searchQuery: string;
@@ -16,19 +17,23 @@ const PersonsListHeader: React.FC<PersonsListHeaderProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-between my-4">
-      <div className="text-lg font-semibold flex items-center gap-2">
+      <div className="text-lg font-semibold">
         {isLoading ? (
           <span>Loading persons...</span>
         ) : (
-          <>
-            <span>Person List</span>
-            <span className="text-gray-500">({totalContacts} persons)</span>
-            {hasActiveFilters && (
-              <span className="bg-primary/10 text-primary text-sm px-2 py-1 rounded-full">
-                Filtered
-              </span>
-            )}
-          </>
+          <span>Person List</span>
+        )}
+      </div>
+      
+      <div className="flex items-center gap-2 text-gray-600">
+        <UsersRound size={18} />
+        <span className="font-medium">
+          {isLoading ? "..." : totalContacts} persons
+        </span>
+        {hasActiveFilters && (
+          <span className="bg-primary/10 text-primary text-sm px-2 py-1 rounded-full ml-2">
+            Filtered
+          </span>
         )}
       </div>
     </div>
