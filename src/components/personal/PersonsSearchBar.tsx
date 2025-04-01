@@ -1,9 +1,8 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Filter, Bookmark, Heart, Search } from "lucide-react";
-import FilterDialog from "@/components/filters/FilterDialog";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -11,8 +10,6 @@ interface PersonsSearchBarProps {
 }
 
 const PersonsSearchBar = ({ searchQuery, setSearchQuery }: PersonsSearchBarProps) => {
-  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-
   return (
     <div className="flex flex-wrap gap-4 mb-6">
       <div className="relative grow">
@@ -28,11 +25,7 @@ const PersonsSearchBar = ({ searchQuery, setSearchQuery }: PersonsSearchBarProps
         </div>
       </div>
       
-      <Button 
-        variant="outline" 
-        className="flex items-center gap-2"
-        onClick={() => setFilterDialogOpen(true)}
-      >
+      <Button variant="outline" className="flex items-center gap-2">
         <Filter className="h-4 w-4" />
         Filters
       </Button>
@@ -46,11 +39,6 @@ const PersonsSearchBar = ({ searchQuery, setSearchQuery }: PersonsSearchBarProps
         <Heart className="h-4 w-4" />
         Add to Favorites
       </Button>
-
-      <FilterDialog 
-        open={filterDialogOpen} 
-        onOpenChange={setFilterDialogOpen} 
-      />
     </div>
   );
 };
