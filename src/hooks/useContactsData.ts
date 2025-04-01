@@ -90,7 +90,7 @@ export const useContactsData = ({
     setItemsPerPage(perPage);
   }, []);
 
-  // Fetch contacts whenever page or items per page changes
+  // Fetch contacts whenever page or items per page or firmTypes changes
   useEffect(() => {
     let isMounted = true;
     
@@ -103,9 +103,11 @@ export const useContactsData = ({
       try {
         let fetchedContacts: ContactType[] = [];
 
-        if (firmTypes.length > 0) {
-          // If firmTypes is provided, use the filtered endpoint with the first firm type
-          // In a real app, you might want to support multiple firm types at once
+        console.log("Firm types for filtering:", firmTypes);
+        
+        if (firmTypes && firmTypes.length > 0) {
+          // If firmTypes is provided, use the filtered endpoint with the firm types
+          console.log(`Fetching contacts with firm type filter: ${firmTypes[0]}`);
           const rawContacts = await fetchFilteredContacts({ firm_type: firmTypes[0] });
           fetchedContacts = rawContacts as ContactType[];
           console.log(`Fetched ${fetchedContacts.length} contacts filtered by firm type: ${firmTypes[0]}`);
@@ -135,6 +137,7 @@ export const useContactsData = ({
           setContacts(fetchedContacts);
         }
       } catch (err) {
+        console.error("Error fetching contacts:", err);
         // Only update error state if component is still mounted
         if (isMounted) {
           setError(err instanceof Error ? err : new Error('An unknown error occurred'));
