@@ -53,6 +53,7 @@ const PersonsList2 = ({
     setLocalSearchQuery(searchQuery);
   }, [searchQuery]);
   
+  // Pass the selectedFirmTypes to the useContactsData hook
   const {
     contacts,
     isLoading,
@@ -62,8 +63,11 @@ const PersonsList2 = ({
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
-    firmTypes: selectedFirmTypes
+    firmTypes: selectedFirmTypes,
+    searchQuery: localSearchQuery
   });
+
+  console.log("PersonsList2: Using filters:", { selectedFirmTypes, currentPage, itemsPerPage });
 
   // Convert contacts to persons format for the table
   const persons = contacts.map(contactToPerson);
@@ -78,11 +82,13 @@ const PersonsList2 = ({
 
   // Use callbacks for handlers to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
+    console.log("Page changed to:", page);
     onPageChange(page);
     setContactsCurrentPage(page);
   }, [onPageChange, setContactsCurrentPage]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
+    console.log("Items per page changed to:", perPage);
     onItemsPerPageChange(perPage);
     setContactsItemsPerPage(perPage);
   }, [onItemsPerPageChange, setContactsItemsPerPage]);
@@ -102,6 +108,7 @@ const PersonsList2 = ({
   
   // Handle firm type filter changes
   const handleFilterChange = useCallback((firmTypes: string[]) => {
+    console.log("Filter changed to:", firmTypes);
     if (onFilterChange) {
       onFilterChange(firmTypes);
       

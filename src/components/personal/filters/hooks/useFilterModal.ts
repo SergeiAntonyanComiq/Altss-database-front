@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchFirmTypes } from "@/services/firmTypesService";
-import { getSavedFilters, saveFilter, deleteSavedFilter } from "@/services/savedFiltersService";
+import { getSavedFilters, saveFilter, deleteSavedFilter } from "@/services/savedSearchesService";
 
 export interface SavedFilterType {
   id: string;
@@ -48,10 +48,11 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
     setSavedFilters(getSavedFilters());
   }, [toast]);
 
-  // Reset to first step and selected types when the component mounts
+  // Reset to first step and selected types when the component mounts or selectedFirmTypes change
   useEffect(() => {
     setStep(1);
     setSelectedTypes(selectedFirmTypes);
+    console.log("useFilterModal: Updated selected types from props:", selectedFirmTypes);
   }, [selectedFirmTypes]);
 
   const goToNextStep = () => setStep(step + 1);
@@ -114,6 +115,7 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   };
 
   const applyFilter = (filter: SavedFilterType) => {
+    console.log("Applying saved filter:", filter);
     setSelectedTypes(filter.firmTypes);
     
     toast({
