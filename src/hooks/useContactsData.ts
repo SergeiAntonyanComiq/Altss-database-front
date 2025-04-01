@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { ContactType } from "@/types/contact";
-import { fetchContactById } from "@/services/contactsService";
+import { fetchContactById, fetchContactsCount } from "@/services/contactsService";
 import { toast } from "@/components/ui/use-toast";
 
 interface UseContactsDataProps {
@@ -35,20 +35,14 @@ export const useContactsData = ({
   useEffect(() => {
     let isMounted = true;
     
-    const fetchTotalContacts = async () => {
+    const fetchTotalContactsData = async () => {
       try {
-        const response = await fetch('https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_count');
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch total contacts count: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
+        const count = await fetchContactsCount();
         
         // Only update state if component is still mounted
         if (isMounted) {
-          setTotalContacts(data.count);
-          console.log(`Total contacts count: ${data.count}`);
+          setTotalContacts(count);
+          console.log(`Total contacts count: ${count}`);
         }
       } catch (err) {
         console.error("Error fetching contacts count:", err);
@@ -64,7 +58,7 @@ export const useContactsData = ({
       }
     };
     
-    fetchTotalContacts();
+    fetchTotalContactsData();
     
     // Cleanup function to prevent state updates after unmount
     return () => {
@@ -88,7 +82,7 @@ export const useContactsData = ({
         const maxId = totalContacts || 50;
         const endId = Math.min(startId + itemsPerPage - 1, maxId);
         
-        console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}`);
+        console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}, total: ${totalContacts}`);
         
         const contactPromises: Promise<ContactType>[] = [];
         

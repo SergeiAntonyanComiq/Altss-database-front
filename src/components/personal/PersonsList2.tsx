@@ -64,6 +64,10 @@ const PersonsList2 = ({
   
   // Calculate total pages based on the number of contacts
   const totalPages = Math.ceil(totalContacts / itemsPerPage);
+  
+  console.log("Total contacts:", totalContacts);
+  console.log("Items per page:", itemsPerPage);
+  console.log("Calculated total pages:", totalPages);
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 

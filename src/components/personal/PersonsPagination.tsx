@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 interface PersonsPaginationProps {
@@ -23,8 +23,19 @@ const PersonsPagination = ({
   // Recalculate total pages based on current itemsPerPage and totalItems
   const calculatedTotalPages = Math.ceil(totalItems / itemsPerPage);
   
+  console.log("Pagination component - totalItems:", totalItems);
+  console.log("Pagination component - itemsPerPage:", itemsPerPage);
+  console.log("Pagination component - calculatedTotalPages:", calculatedTotalPages);
+  
   // Use the calculated total pages instead of the prop
   const effectiveTotalPages = calculatedTotalPages || 1;
+  
+  // If currentPage is greater than total pages, reset to page 1
+  useEffect(() => {
+    if (effectiveTotalPages > 0 && currentPage > effectiveTotalPages) {
+      onPageChange(1);
+    }
+  }, [effectiveTotalPages, currentPage, onPageChange]);
   
   const getPageNumbers = () => {
     const pages = [];
