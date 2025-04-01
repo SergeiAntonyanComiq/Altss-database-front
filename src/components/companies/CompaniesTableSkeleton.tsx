@@ -11,11 +11,11 @@ const CompaniesTableSkeleton = () => {
           <TableHeader>
             <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
               <TableHead className="w-12 align-middle"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
-              <TableHead className="font-medium text-[#343C6A] align-middle">Company Name</TableHead>
-              <TableHead className="font-medium text-[#343C6A] align-middle">Company Type</TableHead>
-              <TableHead className="font-medium text-[#343C6A] align-middle">AUM, $mln.</TableHead>
-              <TableHead className="font-medium text-[#343C6A] align-middle">Founded year</TableHead>
-              <TableHead className="font-medium text-[#343C6A] align-middle">Known Team</TableHead>
+              <TableHead className="font-medium text-sm text-[#343C6A] align-middle">Company Name</TableHead>
+              <TableHead className="font-medium text-sm text-[#343C6A] align-middle">Company Type</TableHead>
+              <TableHead className="font-medium text-sm text-[#343C6A] align-middle">AUM, $mln.</TableHead>
+              <TableHead className="font-medium text-sm text-[#343C6A] align-middle">Founded year</TableHead>
+              <TableHead className="font-medium text-sm text-[#343C6A] align-middle">Known Team</TableHead>
               <TableHead className="w-12 align-middle"><Skeleton className="h-4 w-4 mx-auto" /></TableHead>
             </TableRow>
           </TableHeader>

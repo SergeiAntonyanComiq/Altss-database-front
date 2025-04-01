@@ -120,11 +120,11 @@
   }
   
   .companies-table-cell {
-    @apply overflow-hidden flex items-center border-r border-[#DFE4EA] px-4 min-h-[46px];
+    @apply overflow-hidden flex items-center border-r border-[#DFE4EA] px-4 min-h-[46px] text-sm;
   }
   
   .companies-pill-badge {
-    @apply px-3.5 py-1 rounded-[30px];
+    @apply px-3.5 py-1 rounded-[30px] text-sm;
   }
   
   .companies-pill-blue {
@@ -150,9 +150,9 @@
 }
 
 .company-table-cell {
-  @apply overflow-hidden text-lg font-medium leading-none border-[#DFE4EA] border-r;
+  @apply overflow-hidden text-sm font-medium leading-none border-[#DFE4EA] border-r;
 }
 
 .company-table-header-cell {
-  @apply overflow-hidden text-lg text-[#637381] font-medium leading-none border-[#DFE4EA] border-r;
+  @apply overflow-hidden text-sm text-[#637381] font-medium leading-none border-[#DFE4EA] border-r;
 }

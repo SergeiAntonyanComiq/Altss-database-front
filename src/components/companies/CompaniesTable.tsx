@@ -4,6 +4,7 @@ import { CompanyType } from "@/types/company";
 import CompaniesTableHeader from "./table-parts/CompaniesTableHeader";
 import CompanyTableRow from "./table-parts/CompanyTableRow";
 import { useTableColumnSizes } from "./hooks/useTableColumnSizes";
+import EmptyState from "../personal/table/EmptyState";
 
 interface CompaniesTableProps {
   companies: CompanyType[];
@@ -31,11 +32,7 @@ const CompaniesTable = ({
   const { columnSizes, handleResize } = useTableColumnSizes();
 
   if (companies.length === 0 && !isLoading) {
-    return (
-      <div className="bg-white rounded-lg p-6 text-center">
-        <p className="text-gray-500">No companies found for the current page</p>
-      </div>
-    );
+    return <EmptyState />;
   }
 
   const allSelected = selectedCompanies.length === companies.length && companies.length > 0;
