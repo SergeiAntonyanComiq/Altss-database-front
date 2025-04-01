@@ -16,7 +16,7 @@ const PersonsListHeader: React.FC<PersonsListHeaderProps> = ({
   hasActiveFilters = false
 }) => {
   return (
-    <div className="flex items-center justify-end my-4">
+    <div className="flex items-center justify-end mb-4">
       <div className="flex items-center gap-2 text-gray-600">
         <UsersRound size={18} />
         <span className="font-medium">

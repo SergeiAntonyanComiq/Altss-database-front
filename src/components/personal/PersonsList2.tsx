@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, memo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
@@ -103,21 +102,23 @@ const PersonsList2 = ({
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
-      <h1 className="text-[#111928] text-2xl font-semibold leading-none">Persons</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-[#111928] text-2xl font-semibold leading-none">Persons</h1>
+        
+        <PersonsListHeader 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          totalContacts={totalContacts}
+          isLoading={isLoading}
+          hasActiveFilters={selectedFirmTypes.length > 0}
+        />
+      </div>
       
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedFirmTypes={selectedFirmTypes}
         onFilterChange={handleFilterChange}
-      />
-      
-      <PersonsListHeader 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        totalContacts={totalContacts}
-        isLoading={isLoading}
-        hasActiveFilters={selectedFirmTypes.length > 0}
       />
       
       <PersonsListContent 
