@@ -38,8 +38,9 @@ export const useContactsData = ({
         searchQuery
       });
       
-      // Fetch contacts with current page, limit, and filters
-      const data = await fetchContacts(currentPage, itemsPerPage, firmTypes);
+      // Fetch contacts without applying filters if firmTypes array is empty
+      const data = await fetchContacts(currentPage, itemsPerPage, firmTypes.length > 0 ? firmTypes : undefined);
+      console.log("Received contacts:", data.length);
       setContacts(data);
       
       // Only fetch total count if we don't have it yet
