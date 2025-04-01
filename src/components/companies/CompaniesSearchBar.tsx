@@ -79,10 +79,7 @@ const CompaniesSearchBar = ({
         isOpen={isFilterModalOpen}
         onClose={closeFilterModal}
         selectedFirmTypes={selectedFirmTypes}
-        onApplyFilters={(firmTypes) => {
-          onFilterChange(firmTypes);
-          closeFilterModal();
-        }}
+        onApplyFilters={onFilterChange}
       />
     </>
   );
