@@ -1,10 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Filter, Bookmark, Heart, Search } from "lucide-react";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
-import { Badge } from "@/components/ui/badge";
+import SavedFiltersQuickAccess from "./filters/components/SavedFiltersQuickAccess";
+import { getSavedFilters } from "@/services/savedFiltersService";
+import { SavedFilterType } from "./filters/hooks/useFilterModal";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -16,69 +18,76 @@ interface PersonsSearchBarProps {
 const PersonsSearchBar = ({ 
   searchQuery, 
   setSearchQuery,
-  selectedFirmTypes = [],
-  onFilterChange = () => {}
+  selectedFirmTypes = [], 
+  onFilterChange
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
 
-  const openFilterModal = () => {
-    setIsFilterModalOpen(true);
+  // Load saved filters on component mount
+  useEffect(() => {
+    setSavedFilters(getSavedFilters());
+  }, []);
+
+  const handleFilterChange = (firmTypes: string[]) => {
+    if (onFilterChange) {
+      onFilterChange(firmTypes);
+    }
+    // Refresh saved filters after changes
+    setSavedFilters(getSavedFilters());
   };
 
-  const closeFilterModal = () => {
-    setIsFilterModalOpen(false);
+  const handleApplySavedFilter = (filter: SavedFilterType) => {
+    if (onFilterChange) {
+      onFilterChange(filter.firmTypes);
+    }
   };
-
-  const hasActiveFilters = selectedFirmTypes.length > 0;
 
   return (
-    <>
-      <div className="flex flex-wrap gap-4 mb-6">
-        <div className="relative grow">
+    <div className="mt-6">
+      <div className="flex space-x-4">
+        <div className="relative w-full">
           <Input
-            type="text"
-            placeholder="Search person"
+            placeholder="Search persons..."
+            className="w-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-3 pr-10"
           />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <Search className="w-5 h-5 text-gray-400" />
-          </div>
         </div>
-        
         <Button 
-          variant={hasActiveFilters ? "default" : "outline"} 
-          className={`flex items-center gap-2 ${hasActiveFilters ? "bg-primary text-primary-foreground" : ""}`}
-          onClick={openFilterModal}
+          variant="outline" 
+          className="flex items-center gap-2"
+          onClick={() => setIsFilterModalOpen(true)}
         >
           <Filter className="h-4 w-4" />
-          Filters
-          {hasActiveFilters && (
-            <Badge variant="secondary" className="bg-white text-primary ml-1 h-5 px-1.5">
+          <span>Filters</span>
+          {selectedFirmTypes.length > 0 && (
+            <span className="bg-primary/15 text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs">
               {selectedFirmTypes.length}
-            </Badge>
+            </span>
           )}
-        </Button>
-        
-        <Button variant="outline" className="flex items-center gap-2">
-          <Bookmark className="h-4 w-4" />
-          Save this Search
-        </Button>
-        
-        <Button variant="outline" className="flex items-center gap-2">
-          <Heart className="h-4 w-4" />
-          Add to Favorites
         </Button>
       </div>
 
-      <PersonsFilterModal
-        isOpen={isFilterModalOpen}
-        onClose={closeFilterModal}
-        selectedFirmTypes={selectedFirmTypes}
-        onApplyFilters={onFilterChange}
-      />
-    </>
+      {/* Show saved filters quick access if we have filters and filter capability */}
+      {onFilterChange && (
+        <SavedFiltersQuickAccess
+          savedFilters={savedFilters}
+          onApplyFilter={handleApplySavedFilter}
+          currentActiveFilter={selectedFirmTypes}
+        />
+      )}
+
+      {/* Filter Modal */}
+      {onFilterChange && (
+        <PersonsFilterModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
+          selectedFirmTypes={selectedFirmTypes}
+          onApplyFilters={handleFilterChange}
+        />
+      )}
+    </div>
   );
 };
 

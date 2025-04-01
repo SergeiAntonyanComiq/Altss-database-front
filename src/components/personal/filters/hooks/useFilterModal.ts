@@ -2,6 +2,14 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchFirmTypes } from "@/services/firmTypesService";
+import { getSavedFilters, saveFilter, deleteSavedFilter } from "@/services/savedFiltersService";
+
+export interface SavedFilterType {
+  id: string;
+  name: string;
+  firmTypes: string[];
+  createdAt: number;
+}
 
 export const useFilterModal = (selectedFirmTypes: string[]) => {
   const [step, setStep] = useState(1);
@@ -10,6 +18,9 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>(selectedFirmTypes);
+  const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
+  const [showSaveFilterInput, setShowSaveFilterInput] = useState(false);
+  const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
 
   // Load firm types when the modal opens
@@ -33,6 +44,8 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
     };
 
     loadFirmTypes();
+    // Load saved filters
+    setSavedFilters(getSavedFilters());
   }, [toast]);
 
   // Reset to first step and selected types when the component mounts
@@ -60,6 +73,55 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
     setSelectedTypes([]);
   };
 
+  const handleSaveFilter = () => {
+    if (!filterName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please provide a name for your filter",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (selectedTypes.length === 0) {
+      toast({
+        title: "No Filters Selected",
+        description: "Please select at least one filter to save",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const newFilter = saveFilter(filterName.trim(), [...selectedTypes]);
+    setSavedFilters(prevFilters => [...prevFilters, newFilter]);
+    setFilterName("");
+    setShowSaveFilterInput(false);
+    
+    toast({
+      title: "Filter Saved",
+      description: `"${filterName}" has been saved to your filters`,
+    });
+  };
+
+  const handleDeleteFilter = (id: string, name: string) => {
+    deleteSavedFilter(id);
+    setSavedFilters(prev => prev.filter(filter => filter.id !== id));
+    
+    toast({
+      title: "Filter Deleted",
+      description: `"${name}" has been removed from your filters`,
+    });
+  };
+
+  const applyFilter = (filter: SavedFilterType) => {
+    setSelectedTypes(filter.firmTypes);
+    
+    toast({
+      title: "Filter Applied",
+      description: `Applied "${filter.name}" filter`,
+    });
+  };
+
   return {
     step,
     firmTypes,
@@ -67,11 +129,19 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
     error,
     searchTerm,
     selectedTypes,
+    savedFilters,
+    filterName,
+    showSaveFilterInput,
     goToNextStep,
     goToPrevStep,
     setSearchTerm,
     toggleFirmType,
     removeSelectedType,
-    clearAllFilters
+    clearAllFilters,
+    setFilterName,
+    setShowSaveFilterInput,
+    handleSaveFilter,
+    handleDeleteFilter,
+    applyFilter
   };
 };
