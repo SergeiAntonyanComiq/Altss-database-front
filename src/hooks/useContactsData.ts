@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ContactType } from "@/types/contact";
-import { fetchContactById, fetchContactsCount, fetchContactsByFirmType } from "@/services/contactsService";
+import { fetchContactById, fetchContactsCount, fetchFilteredContacts } from "@/services/contactsService";
 import { toast } from "@/components/ui/use-toast";
 
 interface UseContactsDataProps {
@@ -104,8 +104,9 @@ export const useContactsData = ({
         let fetchedContacts: ContactType[] = [];
 
         if (firmTypes.length > 0) {
-          // If firmTypes is provided, use the filtered endpoint
-          fetchedContacts = await fetchContactsByFirmType(firmTypes[0]);
+          // If firmTypes is provided, use the filtered endpoint with the first firm type
+          // In a real app, you might want to support multiple firm types at once
+          fetchedContacts = await fetchFilteredContacts({ firm_type: firmTypes[0] });
           console.log(`Fetched ${fetchedContacts.length} contacts filtered by firm type: ${firmTypes[0]}`);
         } else {
           // If no filters, use the standard pagination approach
