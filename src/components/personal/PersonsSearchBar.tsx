@@ -7,6 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import SavedFiltersQuickAccess from "./filters/components/SavedFiltersQuickAccess";
 import { getSavedFilters } from "@/services/savedFiltersService";
 import { SavedFilterType } from "./filters/hooks/useFilterModal";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { saveSearch } from "@/services/savedSearchesService";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -23,6 +29,10 @@ const PersonsSearchBar = ({
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
+  const [isSaveSearchOpen, setIsSaveSearchOpen] = useState(false);
+  const [searchName, setSearchName] = useState("");
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Load saved filters on component mount
   useEffect(() => {
@@ -43,7 +53,38 @@ const PersonsSearchBar = ({
     }
   };
 
+  const handleSaveSearch = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to save searches",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!searchName.trim()) {
+      toast({
+        title: "Search name required",
+        description: "Please enter a name for your saved search",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const result = await saveSearch(searchName, {
+      firmTypes: selectedFirmTypes,
+      searchQuery: searchQuery || undefined,
+    });
+
+    if (result) {
+      setIsSaveSearchOpen(false);
+      setSearchName("");
+    }
+  };
+
   const hasActiveFilters = selectedFirmTypes.length > 0;
+  const hasActiveSearch = searchQuery.trim().length > 0;
 
   return (
     <div className="flex min-h-11 gap-4 text-base text-[rgba(99,115,129,1)] font-medium flex-wrap mt-10 w-full">
@@ -77,6 +118,17 @@ const PersonsSearchBar = ({
       
       <button 
         className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[rgba(136,153,168,1)] px-[15px] py-2.5 rounded-[50px]"
+        onClick={() => {
+          if (user) {
+            setIsSaveSearchOpen(true);
+          } else {
+            toast({
+              title: "Authentication required",
+              description: "Please sign in to save searches",
+              variant: "destructive",
+            });
+          }
+        }}
       >
         <Save className="h-[18px] w-[18px]" />
         <span>Save this Search</span>
@@ -107,6 +159,49 @@ const PersonsSearchBar = ({
           onApplyFilters={handleFilterChange}
         />
       )}
+
+      {/* Save Search Dialog */}
+      <Dialog open={isSaveSearchOpen} onOpenChange={setIsSaveSearchOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Save Search</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Input 
+                id="searchName" 
+                placeholder="Enter search name"
+                className="col-span-4" 
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                autoFocus
+              />
+            </div>
+            {(hasActiveFilters || hasActiveSearch) && (
+              <div className="text-sm text-muted-foreground">
+                {hasActiveFilters && (
+                  <div>
+                    <span className="font-medium">Filters:</span> {selectedFirmTypes.join(', ')}
+                  </div>
+                )}
+                {hasActiveSearch && (
+                  <div>
+                    <span className="font-medium">Search:</span> "{searchQuery}"
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSaveSearchOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveSearch}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

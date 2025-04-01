@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo } from "react";
+
+import React, { useState, useCallback, memo, useEffect } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import PersonsListHeader from "./list/PersonsListHeader";
@@ -40,6 +41,35 @@ const PersonsList2 = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
   
+  // Check for saved search being applied from saved searches page
+  useEffect(() => {
+    const applySavedSearch = () => {
+      const savedSearchJson = localStorage.getItem('lastAppliedSearch');
+      if (savedSearchJson) {
+        try {
+          const savedSearch = JSON.parse(savedSearchJson);
+          setSelectedFirmTypes(savedSearch.firmTypes || []);
+          setSearchQuery(savedSearch.searchQuery || "");
+          
+          // Clear the saved search from localStorage
+          localStorage.removeItem('lastAppliedSearch');
+          
+          // Show toast notification
+          if (savedSearch.name) {
+            toast({
+              title: "Search applied",
+              description: `Applied "${savedSearch.name}"`,
+            });
+          }
+        } catch (err) {
+          console.error("Error parsing saved search:", err);
+        }
+      }
+    };
+    
+    applySavedSearch();
+  }, []);
+  
   const {
     contacts,
     isLoading,
@@ -49,7 +79,8 @@ const PersonsList2 = ({
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
-    firmTypes: selectedFirmTypes
+    firmTypes: selectedFirmTypes,
+    searchQuery
   });
 
   // Convert contacts to persons format for the table
