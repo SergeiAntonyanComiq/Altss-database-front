@@ -114,7 +114,6 @@ const ContactsList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [contactsPerPage, setContactsPerPage] = useState(10);
-  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
   const totalContacts = 119418; // Total contacts in database
 
   // Get list of contact IDs for current page
@@ -244,10 +243,6 @@ const ContactsList = () => {
     setCurrentPage(1); // Reset to first page when changing items per page
   };
 
-  const handleFilterChange = (firmTypes: string[]) => {
-    setSelectedFirmTypes(firmTypes);
-  };
-
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
@@ -280,8 +275,6 @@ const ContactsList = () => {
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        selectedFirmTypes={selectedFirmTypes}
-        onFilterChange={handleFilterChange}
       />
       
       <div className="mt-4">

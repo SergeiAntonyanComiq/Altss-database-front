@@ -5,7 +5,7 @@ import PersonsPagination from "../PersonsPagination";
 interface PersonsListFooterProps {
   currentPage: number;
   onPageChange: (page: number) => void;
-  totalPages?: number;  // Making totalPages optional
+  totalPages: number;
   totalItems: number;
   itemsPerPage: number;
   onItemsPerPageChange: (perPage: number) => void;
@@ -19,20 +19,12 @@ const PersonsListFooter: React.FC<PersonsListFooterProps> = ({
   itemsPerPage,
   onItemsPerPageChange
 }) => {
-  // Calculate totalPages if not provided
-  const calculatedTotalPages = totalPages || Math.ceil(totalItems / itemsPerPage);
-  
-  // Debug logging
-  console.log("Pagination component - totalItems:", totalItems);
-  console.log("Pagination component - itemsPerPage:", itemsPerPage);
-  console.log("Pagination component - calculatedTotalPages:", calculatedTotalPages);
-  
   return (
     <div className="flex justify-between items-center w-full mt-4">
       <PersonsPagination
         currentPage={currentPage}
         onPageChange={onPageChange}
-        totalPages={calculatedTotalPages}
+        totalPages={totalPages}
         totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={onItemsPerPageChange}

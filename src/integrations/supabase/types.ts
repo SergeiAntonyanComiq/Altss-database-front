@@ -33,30 +33,6 @@ export type Database = {
         }
         Relationships: []
       }
-      saved_searches: {
-        Row: {
-          created_at: string
-          filter_data: Json
-          id: string
-          name: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          filter_data?: Json
-          id?: string
-          name: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          filter_data?: Json
-          id?: string
-          name?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never

@@ -3,19 +3,13 @@ import { useState, useCallback } from 'react';
 
 export function usePersonsFilters() {
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   
   const handleFilterChange = useCallback((firmTypes: string[]) => {
     setSelectedFirmTypes(firmTypes);
   }, []);
   
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-  }, []);
-  
   const resetFilters = useCallback(() => {
     setSelectedFirmTypes([]);
-    setSearchQuery('');
   }, []);
   
   const filterPerson = useCallback((person: any) => {
@@ -33,11 +27,9 @@ export function usePersonsFilters() {
   
   return {
     selectedFirmTypes,
-    searchQuery,
     handleFilterChange,
-    handleSearchChange,
     resetFilters,
     filterPerson,
-    hasFilters: selectedFirmTypes.length > 0 || searchQuery.trim() !== ''
+    hasFilters: selectedFirmTypes.length > 0
   };
 }

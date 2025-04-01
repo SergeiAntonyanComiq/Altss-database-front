@@ -8,7 +8,6 @@ import PersonsPagination from "./PersonsPagination";
 
 const PersonsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
   const [selectedPersons, setSelectedPersons] = useState<string[]>(["1", "3", "6"]);
   const [currentPage, setCurrentPage] = useState(2);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -46,10 +45,6 @@ const PersonsList = () => {
     // In a real application, this would be an API call to change the favorite status
     console.log(`Toggle favorite for person with ID: ${id}`);
   };
-  
-  const handleFilterChange = (firmTypes: string[]) => {
-    setSelectedFirmTypes(firmTypes);
-  };
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
@@ -58,8 +53,6 @@ const PersonsList = () => {
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        selectedFirmTypes={selectedFirmTypes}
-        onFilterChange={handleFilterChange}
       />
       
       <div className="w-full mt-8">
@@ -79,7 +72,7 @@ const PersonsList = () => {
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={handleItemsPerPageChange}
-          totalItems={persons.length} 
+          totalItems={persons.length} // Add the totalItems prop
         />
       </div>
     </div>
