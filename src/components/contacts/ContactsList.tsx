@@ -304,6 +304,7 @@ const ContactsList = () => {
           totalPages={Math.ceil(totalContacts / contactsPerPage)}
           itemsPerPage={contactsPerPage}
           onItemsPerPageChange={handleContactsPerPageChange}
+          totalItems={totalContacts} // Add the totalItems prop
         />
       </div>
     </div>

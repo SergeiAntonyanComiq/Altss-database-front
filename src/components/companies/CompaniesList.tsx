@@ -228,6 +228,7 @@ const CompaniesList = ({
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={onItemsPerPageChange}
+          totalItems={TOTAL_COMPANIES} // Add the totalItems prop
         />
       </div>
     </div>

@@ -72,6 +72,7 @@ const PersonsList = () => {
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={handleItemsPerPageChange}
+          totalItems={persons.length} // Add the totalItems prop
         />
       </div>
     </div>
