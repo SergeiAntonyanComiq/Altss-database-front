@@ -2,7 +2,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { SavedFilterType } from "@/components/personal/filters/hooks/useFilterModal";
 import { useToast } from "@/components/ui/use-toast";
-import { Json } from "@/integrations/supabase/types";
 
 export interface SavedSearchType {
   id: string;
@@ -25,21 +24,12 @@ export const saveSearchToDatabase = async (
   }
 ): Promise<SavedSearchType | null> => {
   try {
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      console.error("No authenticated user found");
-      return null;
-    }
-    
     const { data, error } = await supabase
       .from("saved_searches")
       .insert([
         {
           name,
           filter_data: filterData,
-          user_id: user.id
         },
       ])
       .select()
@@ -50,13 +40,7 @@ export const saveSearchToDatabase = async (
       return null;
     }
     
-    // Cast the data to our expected type
-    return {
-      id: data.id,
-      name: data.name,
-      filter_data: data.filter_data as { firmTypes: string[], searchQuery?: string },
-      created_at: data.created_at
-    };
+    return data as SavedSearchType;
   } catch (err) {
     console.error("Exception saving search:", err);
     return null;
@@ -68,18 +52,9 @@ export const saveSearchToDatabase = async (
  */
 export const getSavedSearchesFromDatabase = async (): Promise<SavedSearchType[]> => {
   try {
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      console.error("No authenticated user found");
-      return [];
-    }
-    
     const { data, error } = await supabase
       .from("saved_searches")
       .select("*")
-      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     
     if (error) {
@@ -87,13 +62,7 @@ export const getSavedSearchesFromDatabase = async (): Promise<SavedSearchType[]>
       return [];
     }
     
-    // Cast the data to our expected type
-    return data.map(item => ({
-      id: item.id,
-      name: item.name,
-      filter_data: item.filter_data as { firmTypes: string[], searchQuery?: string },
-      created_at: item.created_at
-    }));
+    return data as SavedSearchType[];
   } catch (err) {
     console.error("Exception fetching saved searches:", err);
     return [];

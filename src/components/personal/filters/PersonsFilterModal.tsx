@@ -48,7 +48,6 @@ const PersonsFilterModal = ({
   } = useFilterModal(selectedFirmTypes);
 
   const handleApply = () => {
-    console.log("Applying filters in modal:", selectedTypes);
     onApplyFilters(selectedTypes);
     onClose();
   };
@@ -144,7 +143,6 @@ const PersonsFilterModal = ({
             <SavedFilters 
               savedFilters={savedFilters}
               onApplyFilter={(filter) => {
-                console.log("Applying saved filter:", filter);
                 applyFilter(filter);
               }}
               onDeleteFilter={handleDeleteFilter}
