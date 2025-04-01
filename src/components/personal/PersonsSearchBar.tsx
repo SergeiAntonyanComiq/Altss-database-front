@@ -5,8 +5,18 @@ import { Button } from "@/components/ui/button";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
 import { Badge } from "@/components/ui/badge";
 import SavedFiltersQuickAccess from "./filters/components/SavedFiltersQuickAccess";
-import { getSavedFilters } from "@/services/savedFiltersService";
+import { getSavedFilters, saveFilter, saveSearchToDatabase } from "@/services/savedSearchesService";
 import { SavedFilterType } from "./filters/hooks/useFilterModal";
+import { useToast } from "@/components/ui/use-toast";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -23,6 +33,10 @@ const PersonsSearchBar = ({
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [searchName, setSearchName] = useState("");
+  const { toast } = useToast();
+  const { user } = useAuth();
 
   // Load saved filters on component mount
   useEffect(() => {
@@ -40,6 +54,69 @@ const PersonsSearchBar = ({
   const handleApplySavedFilter = (filter: SavedFilterType) => {
     if (onFilterChange) {
       onFilterChange(filter.firmTypes);
+    }
+  };
+
+  const handleSaveSearch = async () => {
+    if (!searchName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a name for your search",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedFirmTypes.length === 0 && !searchQuery) {
+      toast({
+        title: "Error",
+        description: "Please select at least one filter or enter a search query",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // First save locally for backward compatibility
+      const newFilter = saveFilter(searchName, selectedFirmTypes);
+      
+      // Then save to database if user is logged in
+      if (user) {
+        const savedSearch = await saveSearchToDatabase(searchName, {
+          firmTypes: selectedFirmTypes,
+          searchQuery: searchQuery || undefined
+        });
+        
+        if (savedSearch) {
+          toast({
+            title: "Success",
+            description: `Search "${searchName}" has been saved`,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to save search to your account",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Success",
+          description: `Search "${searchName}" has been saved locally. Log in to save it to your account.`,
+        });
+      }
+      
+      setIsSaveDialogOpen(false);
+      setSearchName("");
+      setSavedFilters([...savedFilters, newFilter]);
+      
+    } catch (err) {
+      console.error("Error saving search:", err);
+      toast({
+        title: "Error",
+        description: "Failed to save search",
+        variant: "destructive",
+      });
     }
   };
 
@@ -77,6 +154,7 @@ const PersonsSearchBar = ({
       
       <button 
         className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[rgba(136,153,168,1)] px-[15px] py-2.5 rounded-[50px]"
+        onClick={() => setIsSaveDialogOpen(true)}
       >
         <Save className="h-[18px] w-[18px]" />
         <span>Save this Search</span>
@@ -107,6 +185,49 @@ const PersonsSearchBar = ({
           onApplyFilters={handleFilterChange}
         />
       )}
+      
+      {/* Save Search Dialog */}
+      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Save Search</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="name" className="text-right col-span-1">
+                Name
+              </label>
+              <Input
+                id="name"
+                placeholder="My search"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            {selectedFirmTypes.length > 0 && (
+              <div className="col-span-4 mt-2">
+                <div className="text-muted-foreground text-sm">
+                  Filters: {selectedFirmTypes.join(', ')}
+                </div>
+              </div>
+            )}
+            {searchQuery && (
+              <div className="col-span-4 mt-2">
+                <div className="text-muted-foreground text-sm">
+                  Search term: "{searchQuery}"
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveSearch}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
