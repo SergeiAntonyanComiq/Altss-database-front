@@ -16,15 +16,7 @@ const PersonsListHeader: React.FC<PersonsListHeaderProps> = ({
   hasActiveFilters = false
 }) => {
   return (
-    <div className="flex items-center justify-between my-4">
-      <div className="text-lg font-semibold">
-        {isLoading ? (
-          <span>Loading persons...</span>
-        ) : (
-          <span>Person List</span>
-        )}
-      </div>
-      
+    <div className="flex items-center justify-end my-4">
       <div className="flex items-center gap-2 text-gray-600">
         <UsersRound size={18} />
         <span className="font-medium">
