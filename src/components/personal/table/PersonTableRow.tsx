@@ -62,16 +62,16 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
         onClick={() => onProfileClick(person.id)}
       >
         <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-          <Avatar className="h-8 w-8 shrink-0">
-            <AvatarImage 
-              src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
-              alt={person.name} 
-            />
-            <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
-              {getInitials(person.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex items-center gap-1 ml-2">
+          <div className="flex items-center gap-1">
+            <Avatar className="h-8 w-8 shrink-0 mr-1">
+              <AvatarImage 
+                src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
+                alt={person.name} 
+              />
+              <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                {getInitials(person.name)}
+              </AvatarFallback>
+            </Avatar>
             <span className="text-sm font-medium text-gray-800 truncate hover:text-blue-600">
               {person.name}
             </span>
@@ -80,7 +80,7 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
                 e.stopPropagation(); // Prevent navigation when clicking the heart
                 toggleFavorite(person.id);
               }}
-              className="focus:outline-none ml-2"
+              className="focus:outline-none ml-1"
             >
               <Heart 
                 className={`h-4 w-4 cursor-pointer ${person.favorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
