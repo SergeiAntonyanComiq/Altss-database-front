@@ -102,7 +102,9 @@ const PersonsList2 = ({
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
 
   return (
-    <div className="px-6 py-6">
+    <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
+      <h1 className="text-[#111928] text-2xl font-semibold leading-none">Persons</h1>
+      
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
