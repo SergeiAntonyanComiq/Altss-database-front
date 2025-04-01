@@ -139,6 +139,7 @@ const PersonsList2 = ({
           currentPage={currentPage}
           onPageChange={onPageChange}
           totalPages={totalPages}
+          totalItems={totalContacts} // Pass totalItems to the pagination component
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={handleItemsPerPageChange}
         />

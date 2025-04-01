@@ -8,6 +8,7 @@ interface PersonsPaginationProps {
   totalPages: number;
   itemsPerPage: number;
   onItemsPerPageChange: (perPage: number) => void;
+  totalItems: number; // Added totalItems prop to recalculate pages
 }
 
 const PersonsPagination = ({
@@ -15,30 +16,37 @@ const PersonsPagination = ({
   onPageChange,
   totalPages,
   itemsPerPage,
-  onItemsPerPageChange
+  onItemsPerPageChange,
+  totalItems
 }: PersonsPaginationProps) => {
+  
+  // Recalculate total pages based on current itemsPerPage and totalItems
+  const calculatedTotalPages = Math.ceil(totalItems / itemsPerPage);
+  
+  // Use the calculated total pages instead of the prop
+  const effectiveTotalPages = calculatedTotalPages || 1;
   
   const getPageNumbers = () => {
     const pages = [];
     const maxPagesToShow = 5;
     
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
+    if (effectiveTotalPages <= maxPagesToShow) {
+      for (let i = 1; i <= effectiveTotalPages; i++) {
         pages.push(i);
       }
     } else {
       pages.push(1);
       
       let start = Math.max(2, currentPage - 1);
-      let end = Math.min(totalPages - 1, currentPage + 1);
+      let end = Math.min(effectiveTotalPages - 1, currentPage + 1);
       
       if (currentPage <= 3) {
         start = 2;
-        end = Math.min(4, totalPages - 1);
+        end = Math.min(4, effectiveTotalPages - 1);
       } 
-      else if (currentPage >= totalPages - 2) {
-        start = Math.max(2, totalPages - 3);
-        end = totalPages - 1;
+      else if (currentPage >= effectiveTotalPages - 2) {
+        start = Math.max(2, effectiveTotalPages - 3);
+        end = effectiveTotalPages - 1;
       }
       
       if (start > 2) {
@@ -49,11 +57,11 @@ const PersonsPagination = ({
         pages.push(i);
       }
       
-      if (end < totalPages - 1) {
+      if (end < effectiveTotalPages - 1) {
         pages.push('ellipsis');
       }
       
-      pages.push(totalPages);
+      pages.push(effectiveTotalPages);
     }
     
     return pages;
@@ -109,9 +117,9 @@ const PersonsPagination = ({
           
           <div className="self-stretch flex items-center gap-2 my-auto">
             <button 
-              onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)} 
-              disabled={currentPage === totalPages}
-              className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={() => currentPage < effectiveTotalPages && onPageChange(currentPage + 1)} 
+              disabled={currentPage === effectiveTotalPages}
+              className={`${currentPage === effectiveTotalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="flex items-center justify-center w-[25px] h-[25px]">
                 <ChevronRight className="h-4 w-4" />
@@ -119,9 +127,9 @@ const PersonsPagination = ({
             </button>
             
             <button 
-              onClick={() => onPageChange(totalPages)} 
-              disabled={currentPage === totalPages}
-              className={`${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              onClick={() => onPageChange(effectiveTotalPages)} 
+              disabled={currentPage === effectiveTotalPages}
+              className={`${currentPage === effectiveTotalPages ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             >
               <div className="flex items-center justify-center w-[25px] h-[25px]">
                 <ChevronsRight className="h-4 w-4" />
