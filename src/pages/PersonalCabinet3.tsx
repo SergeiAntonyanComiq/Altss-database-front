@@ -45,6 +45,7 @@ const PersonalCabinet3 = () => {
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
+    console.log(`PersonalCabinet3: Changing page to ${page}`);
     setCurrentPage(page);
     const params = new URLSearchParams(location.search);
     params.set('page', page.toString());
@@ -52,6 +53,7 @@ const PersonalCabinet3 = () => {
   }, [location.pathname, location.search, navigate]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
+    console.log(`PersonalCabinet3: Changing items per page to ${perPage}`);
     setItemsPerPage(perPage);
     // Reset to first page when changing items per page
     setCurrentPage(1); 
@@ -63,13 +65,18 @@ const PersonalCabinet3 = () => {
 
   // Filter change handler
   const handleFilterChange = useCallback((firmTypes: string[]) => {
+    console.log(`PersonalCabinet3: Applying filter change:`, firmTypes);
     setSelectedFirmTypes(firmTypes);
+    // Reset to first page when filter changes
+    setCurrentPage(1);
     // Clear filter param from URL if we're just changing filters directly
     const params = new URLSearchParams(location.search);
     if (params.has('filter')) {
       params.delete('filter');
-      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     }
+    // Always set page to 1 when filter changes
+    params.set('page', '1');
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   }, [location.pathname, location.search, navigate]);
 
   // Keep URL and state in sync - using proper dependency array
@@ -80,14 +87,17 @@ const PersonalCabinet3 = () => {
     const newSection = newSearchParams.get('section');
     
     if (newPageParam && parseInt(newPageParam, 10) !== currentPage) {
+      console.log(`URL page parameter changed to ${newPageParam}, updating state`);
       setCurrentPage(parseInt(newPageParam, 10));
     }
     
     if (newPerPageParam && parseInt(newPerPageParam, 10) !== itemsPerPage) {
+      console.log(`URL perPage parameter changed to ${newPerPageParam}, updating state`);
       setItemsPerPage(parseInt(newPerPageParam, 10));
     }
     
     if (newSection && newSection !== activeSection) {
+      console.log(`URL section parameter changed to ${newSection}, updating state`);
       setActiveSection(newSection);
     }
   }, [location.search, currentPage, itemsPerPage, activeSection]);

@@ -55,7 +55,8 @@ const PersonsList2 = ({
     isLoading,
     totalContacts,
     setCurrentPage: setContactsCurrentPage,
-    setItemsPerPage: setContactsItemsPerPage
+    setItemsPerPage: setContactsItemsPerPage,
+    resetToFirstPage
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
@@ -75,14 +76,18 @@ const PersonsList2 = ({
 
   // Use callbacks for handlers to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
+    console.log(`Changing page to: ${page}`);
     onPageChange(page);
     setContactsCurrentPage(page);
   }, [onPageChange, setContactsCurrentPage]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
+    console.log(`Changing items per page to: ${perPage}`);
     onItemsPerPageChange(perPage);
     setContactsItemsPerPage(perPage);
-  }, [onItemsPerPageChange, setContactsItemsPerPage]);
+    // Reset to first page when changing items per page
+    handlePageChange(1);
+  }, [onItemsPerPageChange, setContactsItemsPerPage, handlePageChange]);
 
   const toggleFavorite = useCallback((id: string) => {
     // In a real application, this would be an API call to change the favorite status
@@ -91,14 +96,21 @@ const PersonsList2 = ({
   
   // Handle firm type filter changes
   const handleFilterChange = useCallback((firmTypes: string[]) => {
+    console.log(`Applying filter with firm types:`, firmTypes);
     setLocalSelectedFirmTypes(firmTypes);
+    
     // Call parent handler if provided
     if (onFilterChange) {
       onFilterChange(firmTypes);
     }
     
     // Reset to first page when applying filters
-    handlePageChange(1);
+    if (currentPage !== 1) {
+      handlePageChange(1);
+    } else {
+      // If already on page 1, manually trigger the reset
+      resetToFirstPage();
+    }
     
     if (firmTypes.length > 0) {
       toast({
@@ -111,9 +123,16 @@ const PersonsList2 = ({
         description: "Showing all contacts",
       });
     }
-  }, [handlePageChange, localSelectedFirmTypes, onFilterChange]);
+  }, [handlePageChange, localSelectedFirmTypes, onFilterChange, currentPage, resetToFirstPage]);
 
+  // Calculate total pages based on totalContacts and itemsPerPage
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
+  
+  // Debug logs
+  console.log(`PersonsList2 render - Current page: ${currentPage}, Total pages: ${totalPages}`);
+  console.log(`PersonsList2 render - Items per page: ${itemsPerPage}, Total contacts: ${totalContacts}`);
+  console.log(`PersonsList2 render - Selected firm types:`, localSelectedFirmTypes);
+  console.log(`PersonsList2 render - Displaying ${persons.length} contacts`);
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
