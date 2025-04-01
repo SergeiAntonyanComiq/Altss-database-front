@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export interface ColumnSizes {
   checkbox: number;
@@ -11,24 +11,28 @@ export interface ColumnSizes {
   location: number;
 }
 
-export function useColumnSizes() {
+export interface UseColumnSizesOptions {
+  initialSizes?: Partial<ColumnSizes>;
+}
+
+export function useColumnSizes({ initialSizes = {} }: UseColumnSizesOptions = {}) {
   const [columnSizes, setColumnSizes] = useState<ColumnSizes>({
-    checkbox: 5,
-    fullName: 20,
-    shortBio: 25,
-    position: 15,
-    responsibilities: 15,
-    contacts: 10,
-    location: 10
+    checkbox: initialSizes.checkbox ?? 5,
+    fullName: initialSizes.fullName ?? 20,
+    shortBio: initialSizes.shortBio ?? 25,
+    position: initialSizes.position ?? 15,
+    responsibilities: initialSizes.responsibilities ?? 15,
+    contacts: initialSizes.contacts ?? 10,
+    location: initialSizes.location ?? 10
   });
 
   // Update column sizes when resizing
-  const handleResize = (columnId: string) => (size: number) => {
+  const handleResize = useCallback((columnId: keyof ColumnSizes) => (size: number) => {
     setColumnSizes(prev => ({
       ...prev,
       [columnId]: size
     }));
-  };
+  }, []);
 
   return { columnSizes, handleResize };
 }

@@ -2,10 +2,10 @@
 import React, { useState, useCallback, memo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
-import PersonsSearchBar from "./PersonsSearchBar";
-import PersonsTable2 from "./PersonsTable2";
-import PersonsPagination from "./PersonsPagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import PersonsListHeader from "./list/PersonsListHeader";
+import PersonsListContent from "./list/PersonsListContent";
+import PersonsListFooter from "./list/PersonsListFooter";
+import { usePersonsSelection } from "./hooks/usePersonsSelection";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -37,7 +37,6 @@ const PersonsList2 = ({
   onItemsPerPageChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPersons, setSelectedPersons] = useState<string[]>([]);
   
   const {
     contacts,
@@ -50,6 +49,17 @@ const PersonsList2 = ({
     initialItemsPerPage: itemsPerPage
   });
 
+  // Convert contacts to persons format for the table
+  const persons = contacts.map(contactToPerson);
+  
+  // Use the extracted selection logic
+  const { 
+    selectedPersons, 
+    handleCheckboxChange, 
+    handleSelectAll, 
+    isPersonSelected 
+  } = usePersonsSelection(persons);
+
   // Use callbacks for handlers to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
     onPageChange(page);
@@ -61,84 +71,40 @@ const PersonsList2 = ({
     setContactsItemsPerPage(perPage);
   }, [onItemsPerPageChange, setContactsItemsPerPage]);
 
-  const handleCheckboxChange = useCallback((personId: string) => {
-    setSelectedPersons(prev => 
-      prev.includes(personId) 
-        ? prev.filter(id => id !== personId) 
-        : [...prev, personId]
-    );
-  }, []);
-
-  const handleSelectAll = useCallback(() => {
-    const persons = contacts.map(contactToPerson);
-    
-    if (selectedPersons.length === persons.length) {
-      setSelectedPersons([]);
-    } else {
-      setSelectedPersons(persons.map(person => person.id));
-    }
-  }, [contacts, selectedPersons]);
-
   const toggleFavorite = useCallback((id: string) => {
     // In a real application, this would be an API call to change the favorite status
     console.log(`Toggle favorite for person with ID: ${id}`);
   }, []);
 
-  const isPersonSelected = useCallback((id: string | undefined) => {
-    return id ? selectedPersons.includes(id) : false;
-  }, [selectedPersons]);
-
-  // Convert contacts to persons format for the table
-  const persons = contacts.map(contactToPerson);
+  const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
 
   return (
     <div className="px-6 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Persons</h1>
-        <div className="flex gap-2">
-          <span className="text-sm text-muted-foreground">
-            Showing {isLoading ? "..." : persons.length} items of {totalContacts} total contacts
-          </span>
-        </div>
-      </div>
-      
-      <PersonsSearchBar 
+      <PersonsListHeader 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        totalContacts={totalContacts}
+        isLoading={isLoading}
       />
       
-      <div className="mt-4">
-        {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
-        ) : (
-          <PersonsTable2 
-            persons={persons}
-            selectedPersons={selectedPersons}
-            handleCheckboxChange={handleCheckboxChange}
-            handleSelectAll={handleSelectAll}
-            toggleFavorite={toggleFavorite}
-            isPersonSelected={isPersonSelected}
-            isLoading={isLoading}
-          />
-        )}
-      </div>
+      <PersonsListContent 
+        persons={persons}
+        selectedPersons={selectedPersons}
+        handleCheckboxChange={handleCheckboxChange}
+        handleSelectAll={handleSelectAll}
+        toggleFavorite={toggleFavorite}
+        isPersonSelected={isPersonSelected}
+        isLoading={isLoading}
+      />
       
-      <div className="flex justify-between items-center w-full mt-4">
-        <PersonsPagination
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          totalPages={Math.ceil(totalContacts / itemsPerPage) || 1}
-          totalItems={totalContacts || 0}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />
-      </div>
+      <PersonsListFooter 
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        totalPages={totalPages}
+        totalItems={totalContacts || 0}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
+      />
     </div>
   );
 };
