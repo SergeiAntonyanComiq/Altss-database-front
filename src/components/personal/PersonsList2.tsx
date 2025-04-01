@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, memo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import PersonsSearchBar from "./PersonsSearchBar";
@@ -50,53 +50,46 @@ const PersonsList2 = ({
     initialItemsPerPage: itemsPerPage
   });
 
-  // Synchronize itemsPerPage and currentPage changes with the hook's state
-  useEffect(() => {
-    setContactsItemsPerPage(itemsPerPage);
-  }, [itemsPerPage, setContactsItemsPerPage]);
+  // Use callbacks for handlers to prevent unnecessary re-renders
+  const handlePageChange = useCallback((page: number) => {
+    onPageChange(page);
+    setContactsCurrentPage(page);
+  }, [onPageChange, setContactsCurrentPage]);
 
-  useEffect(() => {
-    setContactsCurrentPage(currentPage);
-  }, [currentPage, setContactsCurrentPage]);
+  const handleItemsPerPageChange = useCallback((perPage: number) => {
+    onItemsPerPageChange(perPage);
+    setContactsItemsPerPage(perPage);
+  }, [onItemsPerPageChange, setContactsItemsPerPage]);
 
-  // Convert contacts to persons format for the table
-  const persons = contacts.map(contactToPerson);
-  
-  // Log the values used for pagination calculation
-  console.log("Total contacts:", totalContacts);
-  console.log("Items per page:", itemsPerPage);
-  console.log("Calculated total pages:", Math.ceil(totalContacts / itemsPerPage));
-
-  const handleCheckboxChange = (personId: string) => {
+  const handleCheckboxChange = useCallback((personId: string) => {
     setSelectedPersons(prev => 
       prev.includes(personId) 
         ? prev.filter(id => id !== personId) 
         : [...prev, personId]
     );
-  };
+  }, []);
 
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
+    const persons = contacts.map(contactToPerson);
+    
     if (selectedPersons.length === persons.length) {
       setSelectedPersons([]);
     } else {
       setSelectedPersons(persons.map(person => person.id));
     }
-  };
+  }, [contacts, selectedPersons]);
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = useCallback((id: string) => {
     // In a real application, this would be an API call to change the favorite status
     console.log(`Toggle favorite for person with ID: ${id}`);
-  };
+  }, []);
 
-  const isPersonSelected = (id: string | undefined) => {
+  const isPersonSelected = useCallback((id: string | undefined) => {
     return id ? selectedPersons.includes(id) : false;
-  };
-  
-  // Handle items per page change
-  const handleItemsPerPageChange = (perPage: number) => {
-    onItemsPerPageChange(perPage);
-    console.log(`Changed items per page to: ${perPage}`);
-  };
+  }, [selectedPersons]);
+
+  // Convert contacts to persons format for the table
+  const persons = contacts.map(contactToPerson);
 
   return (
     <div className="px-6 py-6">
@@ -139,9 +132,9 @@ const PersonsList2 = ({
       <div className="flex justify-between items-center w-full mt-4">
         <PersonsPagination
           currentPage={currentPage}
-          onPageChange={onPageChange}
+          onPageChange={handlePageChange}
           totalPages={Math.ceil(totalContacts / itemsPerPage) || 1}
-          totalItems={totalContacts || 0} // Ensure we pass a number
+          totalItems={totalContacts || 0}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={handleItemsPerPageChange}
         />
@@ -150,4 +143,4 @@ const PersonsList2 = ({
   );
 };
 
-export default PersonsList2;
+export default memo(PersonsList2);

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ContactType } from "@/types/contact";
 import { fetchContactById, fetchContactsCount } from "@/services/contactsService";
 import { toast } from "@/components/ui/use-toast";
@@ -29,14 +29,21 @@ export const useContactsData = ({
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
-  const [totalContacts, setTotalContacts] = useState<number>(0); // Initialize with 0
+  const [totalContacts, setTotalContacts] = useState<number>(0);
+  
+  // Use refs to track prop changes without causing re-renders
+  const initialPageRef = useRef(initialPage);
+  const initialItemsPerPageRef = useRef(initialItemsPerPage);
 
   // Fetch total contacts count from API once on component mount
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true);
     
     const fetchTotalContactsData = async () => {
+      if (isMounted) {
+        setIsLoading(true);
+      }
+      
       try {
         const count = await fetchContactsCount();
         
@@ -55,7 +62,6 @@ export const useContactsData = ({
             description: "Could not fetch total contacts count. Pagination may be inaccurate.",
             variant: "destructive",
           });
-          setTotalContacts(0); // Set to 0 on error
         }
       } finally {
         if (isMounted) {
@@ -70,6 +76,16 @@ export const useContactsData = ({
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  // Memoize the function to update currentPage
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  // Memoize the function to update itemsPerPage
+  const handleItemsPerPageChange = useCallback((perPage: number) => {
+    setItemsPerPage(perPage);
   }, []);
 
   // Fetch contacts whenever page or items per page changes
@@ -131,14 +147,29 @@ export const useContactsData = ({
     };
   }, [currentPage, itemsPerPage, totalContacts]);
   
+  // Effect to sync with prop changes (but not on every render)
+  useEffect(() => {
+    if (initialPageRef.current !== initialPage) {
+      initialPageRef.current = initialPage;
+      setCurrentPage(initialPage);
+    }
+  }, [initialPage]);
+  
+  useEffect(() => {
+    if (initialItemsPerPageRef.current !== initialItemsPerPage) {
+      initialItemsPerPageRef.current = initialItemsPerPage;
+      setItemsPerPage(initialItemsPerPage);
+    }
+  }, [initialItemsPerPage]);
+  
   return {
     contacts,
     isLoading,
     error,
     totalContacts,
     currentPage,
-    setCurrentPage,
+    setCurrentPage: handlePageChange,
     itemsPerPage,
-    setItemsPerPage
+    setItemsPerPage: handleItemsPerPageChange
   };
 };

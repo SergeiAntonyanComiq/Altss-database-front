@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
@@ -21,37 +20,45 @@ const PersonalCabinet3 = () => {
   const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
   const [activeSection, setActiveSection] = useState<string>(section || "persons");
 
-  // Update URL when page or items per page changes
-  const handlePageChange = (page: number) => {
+  // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
     const params = new URLSearchParams(location.search);
     params.set('page', page.toString());
-    navigate(`${location.pathname}?${params.toString()}`);
-  };
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  }, [location.pathname, location.search, navigate]);
 
-  const handleItemsPerPageChange = (perPage: number) => {
+  const handleItemsPerPageChange = useCallback((perPage: number) => {
     setItemsPerPage(perPage);
-    setCurrentPage(1); // Reset to first page when changing items per page
+    // Reset to first page when changing items per page
+    setCurrentPage(1); 
     const params = new URLSearchParams(location.search);
     params.set('perPage', perPage.toString());
     params.set('page', '1');
-    navigate(`${location.pathname}?${params.toString()}`);
-  };
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  }, [location.pathname, location.search, navigate]);
 
-  // Keep URL and state in sync
+  // Keep URL and state in sync - using proper dependency array
   useEffect(() => {
-    if (pageParam) {
-      setCurrentPage(parseInt(pageParam, 10));
+    const newSearchParams = new URLSearchParams(location.search);
+    const newPageParam = newSearchParams.get('page');
+    const newPerPageParam = newSearchParams.get('perPage');
+    const newSection = newSearchParams.get('section');
+    
+    if (newPageParam && parseInt(newPageParam, 10) !== currentPage) {
+      setCurrentPage(parseInt(newPageParam, 10));
     }
-    if (perPageParam) {
-      setItemsPerPage(parseInt(perPageParam, 10));
+    
+    if (newPerPageParam && parseInt(newPerPageParam, 10) !== itemsPerPage) {
+      setItemsPerPage(parseInt(newPerPageParam, 10));
     }
-    if (section) {
-      setActiveSection(section);
+    
+    if (newSection && newSection !== activeSection) {
+      setActiveSection(newSection);
     }
-  }, [pageParam, perPageParam, section]);
+  }, [location.search]);
 
-  const renderContent = () => {
+  const renderContent = useCallback(() => {
     // Use the section from URL or fallback to activeSection state
     const currentSection = section || activeSection;
     
@@ -69,7 +76,7 @@ const PersonalCabinet3 = () => {
           />
         );
     }
-  };
+  }, [section, activeSection, currentPage, itemsPerPage, handlePageChange, handleItemsPerPageChange]);
 
   return (
     <SidebarProvider>
