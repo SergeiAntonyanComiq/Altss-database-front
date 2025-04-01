@@ -47,6 +47,7 @@ const PersonsList2 = ({
   
   // Update local state when prop changes
   useEffect(() => {
+    console.log("Selected firm types updated from props:", selectedFirmTypes);
     setLocalSelectedFirmTypes(selectedFirmTypes);
   }, [selectedFirmTypes]);
   
@@ -63,8 +64,11 @@ const PersonsList2 = ({
     firmTypes: localSelectedFirmTypes
   });
 
+  console.log("PersonsList2 - Current contacts:", contacts);
+
   // Convert contacts to persons format for the table
   const persons = contacts.map(contactToPerson);
+  console.log("PersonsList2 - Converted persons:", persons);
   
   // Use the extracted selection logic
   const { 
