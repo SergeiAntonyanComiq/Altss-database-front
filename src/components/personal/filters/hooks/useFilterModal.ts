@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchFirmTypes } from "@/services/firmTypesService";
@@ -23,14 +22,13 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
   const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
 
-  // Load firm types when the modal opens
   useEffect(() => {
     const loadFirmTypes = async () => {
       try {
         setLoading(true);
         setError(null);
         const types = await fetchFirmTypes();
-        setFirmTypes(types.sort()); // Sort alphabetically
+        setFirmTypes(types.sort());
         setLoading(false);
       } catch (err) {
         setError("Failed to load company types");
@@ -44,11 +42,9 @@ export const useFilterModal = (selectedFirmTypes: string[]) => {
     };
 
     loadFirmTypes();
-    // Load saved filters
     setSavedFilters(getSavedFilters());
   }, [toast]);
 
-  // Reset to first step and selected types when the component mounts or selectedFirmTypes change
   useEffect(() => {
     setStep(1);
     setSelectedTypes(selectedFirmTypes);
