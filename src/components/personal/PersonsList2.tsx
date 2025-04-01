@@ -62,12 +62,10 @@ const PersonsList2 = ({
   // Convert contacts to persons format for the table
   const persons = contacts.map(contactToPerson);
   
-  // Calculate total pages based on the number of contacts
-  const totalPages = Math.ceil(totalContacts / itemsPerPage);
-  
+  // Log the values used for pagination calculation
   console.log("Total contacts:", totalContacts);
   console.log("Items per page:", itemsPerPage);
-  console.log("Calculated total pages:", totalPages);
+  console.log("Calculated total pages:", Math.ceil(totalContacts / itemsPerPage));
 
   const handleCheckboxChange = (personId: string) => {
     setSelectedPersons(prev => 
@@ -142,8 +140,8 @@ const PersonsList2 = ({
         <PersonsPagination
           currentPage={currentPage}
           onPageChange={onPageChange}
-          totalPages={totalPages}
-          totalItems={totalContacts} // Pass totalItems to the pagination component
+          totalPages={Math.ceil(totalContacts / itemsPerPage) || 1}
+          totalItems={totalContacts || 0} // Ensure we pass a number
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={handleItemsPerPageChange}
         />

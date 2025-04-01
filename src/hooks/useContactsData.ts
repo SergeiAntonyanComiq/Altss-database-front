@@ -29,11 +29,12 @@ export const useContactsData = ({
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
-  const [totalContacts, setTotalContacts] = useState<number>(0);
+  const [totalContacts, setTotalContacts] = useState<number>(0); // Initialize with 0
 
   // Fetch total contacts count from API once on component mount
   useEffect(() => {
     let isMounted = true;
+    setIsLoading(true);
     
     const fetchTotalContactsData = async () => {
       try {
@@ -41,7 +42,7 @@ export const useContactsData = ({
         
         // Only update state if component is still mounted
         if (isMounted) {
-          setTotalContacts(count);
+          setTotalContacts(count || 0); // Ensure we have a fallback value
           console.log(`Total contacts count: ${count}`);
         }
       } catch (err) {
@@ -54,6 +55,11 @@ export const useContactsData = ({
             description: "Could not fetch total contacts count. Pagination may be inaccurate.",
             variant: "destructive",
           });
+          setTotalContacts(0); // Set to 0 on error
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     };
