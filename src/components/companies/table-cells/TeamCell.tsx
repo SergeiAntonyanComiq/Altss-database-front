@@ -12,7 +12,7 @@ const TeamCell = ({ staffCount }: TeamCellProps) => (
         <span className="truncate block w-full text-sm">{staffCount}</span>
       </div>
     ) : (
-      <span className="flex items-center">N/A</span>
+      <span className="flex items-center text-sm">N/A</span>
     )}
   </div>
 );

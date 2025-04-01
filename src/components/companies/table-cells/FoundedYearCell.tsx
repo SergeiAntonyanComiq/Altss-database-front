@@ -7,7 +7,7 @@ interface FoundedYearCellProps {
 
 const FoundedYearCell = ({ year }: FoundedYearCellProps) => (
   <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-    {year ? `${year} y.` : 'N/A'}
+    <span className="text-sm">{year ? `${year} y.` : 'N/A'}</span>
   </div>
 );
 

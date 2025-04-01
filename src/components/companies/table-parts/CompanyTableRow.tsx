@@ -47,7 +47,7 @@ const CompanyTableRow = ({
       </div>
       
       {/* Company Name cell */}
-      <div style={{width: `${columnSizes.companyName}%`}} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+      <div style={{width: `${columnSizes.companyName}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
         <CompanyNameCell
           companyName={company.firm_name}
           isFavorite={company.isFavorite || false}
@@ -57,22 +57,22 @@ const CompanyTableRow = ({
       </div>
       
       {/* Company Type cell */}
-      <div style={{width: `${columnSizes.companyType}%`}} className="overflow-hidden text-base text-[rgba(1,69,199,1)] font-medium leading-tight">
+      <div style={{width: `${columnSizes.companyType}%`}} className="overflow-hidden text-sm text-blue-700 font-medium leading-tight">
         <CompanyTypeCell type={company.firm_type || company.type || 'N/A'} />
       </div>
       
       {/* AUM cell */}
-      <div style={{width: `${columnSizes.aum}%`}} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+      <div style={{width: `${columnSizes.aum}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
         <AumCell aumFormatted={formatAum(company.aum)} />
       </div>
       
       {/* Founded Year cell */}
-      <div style={{width: `${columnSizes.foundedYear}%`}} className="overflow-hidden text-base text-[rgba(31,42,55,1)] font-medium leading-tight">
+      <div style={{width: `${columnSizes.foundedYear}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
         <FoundedYearCell year={company.year_est} />
       </div>
       
       {/* Known Team cell */}
-      <div style={{width: `${columnSizes.knownTeam}%`}} className="overflow-hidden text-base text-[rgba(0,126,96,1)] font-medium leading-tight">
+      <div style={{width: `${columnSizes.knownTeam}%`}} className="overflow-hidden text-sm text-green-700 font-medium leading-tight">
         <TeamCell staffCount={company.total_staff} />
       </div>
       
