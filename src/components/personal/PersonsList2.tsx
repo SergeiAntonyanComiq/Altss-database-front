@@ -1,13 +1,16 @@
 
-import React, { useState, useCallback, memo, useEffect } from "react";
+import React, { useState, useCallback, memo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
+import { usePersonsSelection } from "./hooks/usePersonsSelection";
+import { usePersonsFilters } from "./hooks/usePersonsFilters";
+import PersonsSearchBar from "./PersonsSearchBar";
 import PersonsListHeader from "./list/PersonsListHeader";
 import PersonsListContent from "./list/PersonsListContent";
 import PersonsListFooter from "./list/PersonsListFooter";
-import { usePersonsSelection } from "./hooks/usePersonsSelection";
-import PersonsSearchBar from "./PersonsSearchBar";
-import { toast } from "@/components/ui/use-toast";
+import SavedSearchDialog from "./filters/SavedSearchDialog";
+import { Button } from "@/components/ui/button";
+import { BookmarkIcon } from "lucide-react";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -16,144 +19,105 @@ interface PersonsList2Props {
   onItemsPerPageChange: (perPage: number) => void;
 }
 
-// Helper function to convert Contact to Person type
-const contactToPerson = (contact: ContactType) => {
-  return {
-    id: contact.id.toString(),
-    name: contact.name,
-    favorite: contact.favorite || false,
-    responsibilities: contact.asset_class ? contact.asset_class.split(',') : [],
-    linkedin: contact.linkedin || "",
-    location: `${contact.city}${contact.state ? `, ${contact.state}` : ""}${contact.country_territory ? `, ${contact.country_territory}` : ""}`,
-    companies: [contact.investor || ""],
-    currentPosition: contact.job_title || "",
-    shortBio: contact.role || "",
-    email: contact.email
-  };
-};
-
-const PersonsList2 = ({
+const PersonsList2: React.FC<PersonsList2Props> = ({
   currentPage,
   itemsPerPage,
   onPageChange,
   onItemsPerPageChange
-}: PersonsList2Props) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
-  
-  // Check for saved search being applied from saved searches page
-  useEffect(() => {
-    const applySavedSearch = () => {
-      const savedSearchJson = localStorage.getItem('lastAppliedSearch');
-      if (savedSearchJson) {
-        try {
-          const savedSearch = JSON.parse(savedSearchJson);
-          setSelectedFirmTypes(savedSearch.firmTypes || []);
-          setSearchQuery(savedSearch.searchQuery || "");
-          
-          // Clear the saved search from localStorage
-          localStorage.removeItem('lastAppliedSearch');
-          
-          // Show toast notification
-          if (savedSearch.name) {
-            toast({
-              title: "Search applied",
-              description: `Applied "${savedSearch.name}"`,
-            });
-          }
-        } catch (err) {
-          console.error("Error parsing saved search:", err);
-        }
-      }
-    };
-    
-    applySavedSearch();
-  }, []);
-  
-  const {
-    contacts,
+}) => {
+  const { searchQuery, selectedFirmTypes, handleSearchChange, handleFilterChange } = usePersonsFilters();
+  const [showSavedSearches, setShowSavedSearches] = useState(false);
+
+  // Fetch contacts data with filtering and pagination
+  const { 
+    contacts, 
+    totalContacts, 
     isLoading,
-    totalContacts,
-    setCurrentPage: setContactsCurrentPage,
-    setItemsPerPage: setContactsItemsPerPage
+    setCurrentPage,
+    setItemsPerPage,
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
     firmTypes: selectedFirmTypes,
-    searchQuery
+    searchQuery: searchQuery,
   });
 
-  // Convert contacts to persons format for the table
-  const persons = contacts.map(contactToPerson);
-  
-  // Use the extracted selection logic
-  const { 
-    selectedPersons, 
-    handleCheckboxChange, 
-    handleSelectAll, 
-    isPersonSelected 
-  } = usePersonsSelection(persons);
+  // Setup for selecting and managing persons
+  const {
+    selectedPersons,
+    handleCheckboxChange,
+    handleSelectAll,
+    isPersonSelected,
+  } = usePersonsSelection(contacts as any);
 
-  // Use callbacks for handlers to prevent unnecessary re-renders
-  const handlePageChange = useCallback((page: number) => {
+  // Convert contacts to any for compatibility with existing components
+  const personsData: any[] = contacts.map(contact => ({
+    id: contact.id.toString(),
+    name: contact.name,
+    favorite: contact.favorite || false,
+    responsibilities: contact.asset_class?.split(',') || [],
+    linkedin: contact.linkedin,
+    location: `${contact.city}${contact.state ? `, ${contact.state}` : ''}, ${contact.country_territory}`,
+    companies: [contact.investor],
+    currentPosition: contact.job_title,
+    shortBio: `${contact.job_title} at ${contact.investor}`,
+    email: contact.email
+  }));
+
+  // Handle page change with debounce
+  const handlePageChangeDebounced = useCallback((page: number) => {
+    setCurrentPage(page);
     onPageChange(page);
-    setContactsCurrentPage(page);
-  }, [onPageChange, setContactsCurrentPage]);
+  }, [onPageChange, setCurrentPage]);
 
+  // Handle items per page change
   const handleItemsPerPageChange = useCallback((perPage: number) => {
+    setItemsPerPage(perPage);
     onItemsPerPageChange(perPage);
-    setContactsItemsPerPage(perPage);
-  }, [onItemsPerPageChange, setContactsItemsPerPage]);
+  }, [onItemsPerPageChange, setItemsPerPage]);
 
-  const toggleFavorite = useCallback((id: string) => {
-    // In a real application, this would be an API call to change the favorite status
+  // Toggle favorite status for a person
+  const toggleFavorite = (id: string) => {
     console.log(`Toggle favorite for person with ID: ${id}`);
-  }, []);
-  
-  // Handle firm type filter changes
-  const handleFilterChange = useCallback((firmTypes: string[]) => {
-    setSelectedFirmTypes(firmTypes);
-    // Reset to first page when applying filters
-    handlePageChange(1);
-    
-    if (firmTypes.length > 0) {
-      toast({
-        title: "Filters Applied",
-        description: `Showing contacts filtered by ${firmTypes.join(', ')}`,
-      });
-    } else if (selectedFirmTypes.length > 0 && firmTypes.length === 0) {
-      toast({
-        title: "Filters Cleared",
-        description: "Showing all contacts",
-      });
-    }
-  }, [handlePageChange, selectedFirmTypes]);
-
-  const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
+    // In real app this would call an API
+  };
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
       <div className="flex justify-between items-center">
         <h1 className="text-[#111928] text-2xl font-semibold leading-none">Persons</h1>
         
-        <PersonsListHeader 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          totalContacts={totalContacts}
-          isLoading={isLoading}
-          hasActiveFilters={selectedFirmTypes.length > 0}
-        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowSavedSearches(true)}
+            className="flex items-center gap-1"
+          >
+            <BookmarkIcon size={16} />
+            Saved Searches
+          </Button>
+          
+          <PersonsListHeader 
+            searchQuery={searchQuery}
+            setSearchQuery={handleSearchChange}
+            totalContacts={totalContacts}
+            isLoading={isLoading}
+            hasActiveFilters={selectedFirmTypes.length > 0}
+          />
+        </div>
       </div>
       
       <PersonsSearchBar 
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={handleSearchChange}
         selectedFirmTypes={selectedFirmTypes}
         onFilterChange={handleFilterChange}
+        currentSearchQuery={searchQuery}
       />
       
       <PersonsListContent 
-        persons={persons}
+        persons={personsData}
         selectedPersons={selectedPersons}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
@@ -162,13 +126,23 @@ const PersonsList2 = ({
         isLoading={isLoading}
       />
       
-      <PersonsListFooter 
+      <PersonsListFooter
         currentPage={currentPage}
-        onPageChange={handlePageChange}
-        totalPages={totalPages}
-        totalItems={totalContacts || 0}
         itemsPerPage={itemsPerPage}
+        totalItems={totalContacts}
+        onPageChange={handlePageChangeDebounced}
         onItemsPerPageChange={handleItemsPerPageChange}
+      />
+      
+      <SavedSearchDialog
+        isOpen={showSavedSearches}
+        onClose={() => setShowSavedSearches(false)}
+        onApply={(search) => {
+          handleFilterChange(search.filter_data.firmTypes);
+          handleSearchChange(search.filter_data.searchQuery || '');
+        }}
+        currentFirmTypes={selectedFirmTypes}
+        currentSearchQuery={searchQuery}
       />
     </div>
   );

@@ -1,208 +1,122 @@
 
-import React, { useState, useEffect } from "react";
-import { Search, Filter, Save, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import PersonsFilterModal from "./filters/PersonsFilterModal";
-import { Badge } from "@/components/ui/badge";
-import SavedFiltersQuickAccess from "./filters/components/SavedFiltersQuickAccess";
-import { getSavedFilters } from "@/services/savedFiltersService";
-import { SavedFilterType } from "./filters/hooks/useFilterModal";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { saveSearch } from "@/services/savedSearchesService";
-import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Search, X, Filter, Tag } from "lucide-react";
+import PersonsFilterModal from "./filters/PersonsFilterModal";
+import SaveSearchInput from "./filters/components/SaveSearchInput";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedFirmTypes?: string[];
-  onFilterChange?: (firmTypes: string[]) => void;
+  selectedFirmTypes: string[];
+  onFilterChange: (firmTypes: string[]) => void;
+  currentSearchQuery?: string;
 }
 
-const PersonsSearchBar = ({ 
-  searchQuery, 
+const PersonsSearchBar: React.FC<PersonsSearchBarProps> = ({
+  searchQuery,
   setSearchQuery,
-  selectedFirmTypes = [], 
-  onFilterChange
-}: PersonsSearchBarProps) => {
+  selectedFirmTypes,
+  onFilterChange,
+  currentSearchQuery
+}) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
-  const [isSaveSearchOpen, setIsSaveSearchOpen] = useState(false);
-  const [searchName, setSearchName] = useState("");
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
-  // Load saved filters on component mount
-  useEffect(() => {
-    setSavedFilters(getSavedFilters());
-  }, []);
-
-  const handleFilterChange = (firmTypes: string[]) => {
-    if (onFilterChange) {
-      onFilterChange(firmTypes);
-    }
-    // Refresh saved filters after changes
-    setSavedFilters(getSavedFilters());
+  // Handle opening the filter modal
+  const handleOpenFilterModal = () => {
+    setIsFilterModalOpen(true);
   };
 
-  const handleApplySavedFilter = (filter: SavedFilterType) => {
-    if (onFilterChange) {
-      onFilterChange(filter.firmTypes);
-    }
+  // Handle clearing the search query
+  const handleClearSearch = () => {
+    setSearchQuery("");
   };
-
-  const handleSaveSearch = async () => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to save searches",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!searchName.trim()) {
-      toast({
-        title: "Search name required",
-        description: "Please enter a name for your saved search",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const result = await saveSearch(searchName, {
-      firmTypes: selectedFirmTypes,
-      searchQuery: searchQuery || undefined,
-    });
-
-    if (result) {
-      setIsSaveSearchOpen(false);
-      setSearchName("");
-    }
-  };
-
-  const hasActiveFilters = selectedFirmTypes.length > 0;
-  const hasActiveSearch = searchQuery.trim().length > 0;
 
   return (
-    <div className="flex min-h-11 gap-4 text-base text-[rgba(99,115,129,1)] font-medium flex-wrap mt-10 w-full">
-      <div className="min-w-60 min-h-11 text-gray-400 font-normal w-[363px]">
-        <div className="w-full flex-1">
-          <div className="justify-between items-center border border-[#DFE4EA] bg-white flex w-full gap-[40px_100px] flex-1 h-full pl-5 pr-4 py-3 rounded-[50px]">
-            <input 
-              type="text"
-              placeholder="Search the person"
-              className="self-stretch my-auto bg-transparent outline-none flex-1"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Search className="h-4 w-4 text-gray-400" />
+    <>
+      <div className="my-6">
+        <div className="relative mb-4">
+          <Input
+            type="text"
+            className="w-full pl-10 pr-10 py-2 border rounded-[8px] focus:outline-blue-500 focus:ring-1"
+            placeholder="Search persons..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3">
+            <Search className="w-5 h-5 text-slate-400" />
           </div>
+          {searchQuery && (
+            <button
+              className="absolute inset-y-0 right-0 flex items-center pr-3"
+              onClick={handleClearSearch}
+            >
+              <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+            </button>
+          )}
         </div>
-      </div>
-      
-      <button 
-        className={`justify-center items-center border ${hasActiveFilters ? 'bg-primary text-white border-primary' : 'border-[#DFE4EA] bg-white'} flex gap-2 whitespace-nowrap px-[15px] py-2.5 rounded-[50px]`}
-        onClick={() => setIsFilterModalOpen(true)}
-      >
-        <Filter className="h-[18px] w-[18px]" />
-        <span>Filters</span>
-        {hasActiveFilters && (
-          <Badge variant="secondary" className="bg-white text-primary ml-1 h-5 px-1.5">
-            {selectedFirmTypes.length}
-          </Badge>
-        )}
-      </button>
-      
-      <button 
-        className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[rgba(136,153,168,1)] px-[15px] py-2.5 rounded-[50px]"
-        onClick={() => {
-          if (user) {
-            setIsSaveSearchOpen(true);
-          } else {
-            toast({
-              title: "Authentication required",
-              description: "Please sign in to save searches",
-              variant: "destructive",
-            });
-          }
-        }}
-      >
-        <Save className="h-[18px] w-[18px]" />
-        <span>Save this Search</span>
-      </button>
-      
-      <button 
-        className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 px-[15px] py-2.5 rounded-[50px]"
-      >
-        <Heart className="h-[18px] w-[18px]" />
-        <span>Add to Favorites</span>
-      </button>
-
-      {/* Show saved filters quick access if we have filters and filter capability */}
-      {onFilterChange && savedFilters.length > 0 && (
-        <SavedFiltersQuickAccess
-          savedFilters={savedFilters}
-          onApplyFilter={handleApplySavedFilter}
-          currentActiveFilter={selectedFirmTypes}
-        />
-      )}
-
-      {/* Filter Modal */}
-      {onFilterChange && (
-        <PersonsFilterModal
-          isOpen={isFilterModalOpen}
-          onClose={() => setIsFilterModalOpen(false)}
-          selectedFirmTypes={selectedFirmTypes}
-          onApplyFilters={handleFilterChange}
-        />
-      )}
-
-      {/* Save Search Dialog */}
-      <Dialog open={isSaveSearchOpen} onOpenChange={setIsSaveSearchOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Save Search</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Input 
-                id="searchName" 
-                placeholder="Enter search name"
-                className="col-span-4" 
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                autoFocus
-              />
-            </div>
-            {(hasActiveFilters || hasActiveSearch) && (
-              <div className="text-sm text-muted-foreground">
-                {hasActiveFilters && (
-                  <div>
-                    <span className="font-medium">Filters:</span> {selectedFirmTypes.join(', ')}
-                  </div>
-                )}
-                {hasActiveSearch && (
-                  <div>
-                    <span className="font-medium">Search:</span> "{searchQuery}"
-                  </div>
-                )}
-              </div>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant={selectedFirmTypes.length > 0 ? "secondary" : "outline"}
+            size="sm"
+            className="gap-2"
+            onClick={handleOpenFilterModal}
+          >
+            <Filter className="w-4 h-4" />
+            Filter by company type
+            {selectedFirmTypes.length > 0 && (
+              <span className="bg-blue-100 text-blue-800 text-xs font-medium rounded-full px-2 py-0.5">
+                {selectedFirmTypes.length}
+              </span>
             )}
+          </Button>
+          
+          {selectedFirmTypes.length > 0 && (
+            <div className="flex flex-wrap gap-1 items-center">
+              {selectedFirmTypes.map((type) => (
+                <div
+                  key={type}
+                  className="flex items-center bg-blue-50 text-blue-700 text-sm rounded-full px-2 py-1"
+                >
+                  <Tag className="w-3 h-3 mr-1" />
+                  <span className="mr-1">{type}</span>
+                  <button
+                    onClick={() => onFilterChange(selectedFirmTypes.filter(t => t !== type))}
+                    className="hover:text-blue-900"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => onFilterChange([])}
+                className="text-sm text-gray-600 hover:text-gray-800 ml-1"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {(selectedFirmTypes.length > 0 || searchQuery.trim() !== '') && (
+          <div className="mt-4">
+            <SaveSearchInput 
+              selectedTypes={selectedFirmTypes} 
+              searchQuery={searchQuery}
+            />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSaveSearchOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveSearch}>
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        )}
+      </div>
+
+      <PersonsFilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        selectedFirmTypes={selectedFirmTypes}
+        onApplyFilters={onFilterChange}
+      />
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 
 export interface SavedSearch {
@@ -58,7 +57,7 @@ export const saveSearch = async (
       description: `"${name}" has been saved to your searches`,
     });
 
-    return data;
+    return data as SavedSearch;
   } catch (err) {
     console.error('Unexpected error saving search:', err);
     toast({
@@ -92,7 +91,7 @@ export const getSavedSearches = async (): Promise<SavedSearch[]> => {
       return [];
     }
 
-    return data || [];
+    return data as SavedSearch[] || [];
   } catch (err) {
     console.error('Unexpected error fetching saved searches:', err);
     return [];
