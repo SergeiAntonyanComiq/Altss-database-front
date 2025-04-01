@@ -24,7 +24,9 @@ export const saveSearchToDatabase = async (
   }
 ): Promise<SavedSearchType | null> => {
   try {
-    const { data, error } = await supabase
+    // Cast the supabase client to any to bypass TypeScript limitations
+    // since the generated types don't include the saved_searches table yet
+    const { data, error } = await (supabase as any)
       .from("saved_searches")
       .insert([
         {
@@ -52,7 +54,8 @@ export const saveSearchToDatabase = async (
  */
 export const getSavedSearchesFromDatabase = async (): Promise<SavedSearchType[]> => {
   try {
-    const { data, error } = await supabase
+    // Cast the supabase client to any to bypass TypeScript limitations
+    const { data, error } = await (supabase as any)
       .from("saved_searches")
       .select("*")
       .order("created_at", { ascending: false });
@@ -74,7 +77,8 @@ export const getSavedSearchesFromDatabase = async (): Promise<SavedSearchType[]>
  */
 export const deleteSavedSearch = async (id: string): Promise<boolean> => {
   try {
-    const { error } = await supabase
+    // Cast the supabase client to any to bypass TypeScript limitations
+    const { error } = await (supabase as any)
       .from("saved_searches")
       .delete()
       .eq("id", id);
