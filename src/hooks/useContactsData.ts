@@ -20,9 +20,6 @@ interface UseContactsDataReturn {
   setItemsPerPage: (perPage: number) => void;
 }
 
-// We'll limit to a reasonable number to avoid excessive API calls
-const MAX_CONTACTS = 50;
-
 export const useContactsData = ({
   initialPage,
   initialItemsPerPage
@@ -32,10 +29,34 @@ export const useContactsData = ({
   const [error, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
+  const [totalContacts, setTotalContacts] = useState<number>(0);
 
-  // For demonstration, we're limiting the total to avoid excessive API calls
-  // In production, this would be from an API that returns the total count
-  const totalContacts = MAX_CONTACTS;
+  // Fetch total contacts count from API
+  useEffect(() => {
+    const fetchTotalContacts = async () => {
+      try {
+        const response = await fetch('https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_count');
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch total contacts count: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        setTotalContacts(data.count);
+        console.log(`Total contacts count: ${data.count}`);
+      } catch (err) {
+        console.error("Error fetching contacts count:", err);
+        // If we can't get the count, we'll show an error toast but not block the main functionality
+        toast({
+          title: "Warning",
+          description: "Could not fetch total contacts count. Pagination may be inaccurate.",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    fetchTotalContacts();
+  }, []);
 
   useEffect(() => {
     const fetchContacts = async () => {
@@ -44,7 +65,9 @@ export const useContactsData = ({
       
       try {
         const startId = (currentPage - 1) * itemsPerPage + 1;
-        const endId = Math.min(startId + itemsPerPage - 1, MAX_CONTACTS);
+        // Use totalContacts if available, otherwise limit to a reasonable number
+        const maxId = totalContacts || 50;
+        const endId = Math.min(startId + itemsPerPage - 1, maxId);
         
         console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}`);
         
@@ -72,7 +95,7 @@ export const useContactsData = ({
     };
     
     fetchContacts();
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, totalContacts]);
   
   return {
     contacts,
