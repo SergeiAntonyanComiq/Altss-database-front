@@ -70,3 +70,40 @@ export const deleteSavedFilter = (id: string): boolean => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedFilters));
   return true;
 };
+
+/**
+ * Creates default filters if they don't exist
+ */
+export const saveDefaultFilters = (): void => {
+  const filters = getSavedFilters();
+  
+  // Only add default filters if no filters exist
+  if (filters.length === 0) {
+    // Add Family Office - Single filter
+    const singleFamilyFilter: SavedFilter = {
+      id: "default-single-family",
+      name: "Family Office - Single",
+      firmTypes: ["Family Office - Single"],
+      createdAt: Date.now()
+    };
+    
+    // Add Family Office - Multi filter
+    const multiFamilyFilter: SavedFilter = {
+      id: "default-multi-family",
+      name: "Family Office - Multi",
+      firmTypes: ["Family Office - Multi"],
+      createdAt: Date.now() + 1 // +1 to ensure unique timestamps
+    };
+    
+    filters.push(singleFamilyFilter, multiFamilyFilter);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
+  }
+};
+
+/**
+ * Gets a saved filter by ID
+ */
+export const getSavedFilterById = (id: string): SavedFilter | null => {
+  const filters = getSavedFilters();
+  return filters.find(filter => filter.id === id) || null;
+};

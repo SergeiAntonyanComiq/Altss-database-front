@@ -5,20 +5,39 @@ import AppSidebar from "@/components/AppSidebar";
 import ContactsList from "@/components/contacts/ContactsList";
 import PersonsList2 from "@/components/personal/PersonsList2";
 import { Toaster } from "@/components/ui/toaster";
+import { getSavedFilterById } from "@/services/savedFiltersService";
+import { useToast } from "@/components/ui/use-toast";
 
 const PersonalCabinet3 = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Parse the current page and items per page from URL query parameters
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
   const section = searchParams.get('section');
+  const filterId = searchParams.get('filter');
   
   const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
   const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
   const [activeSection, setActiveSection] = useState<string>(section || "persons");
+  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
+
+  // Load filter if filter ID is provided in URL
+  useEffect(() => {
+    if (filterId) {
+      const filter = getSavedFilterById(filterId);
+      if (filter) {
+        setSelectedFirmTypes(filter.firmTypes);
+        toast({
+          title: "Filter Applied",
+          description: `Applied "${filter.name}" filter`,
+        });
+      }
+    }
+  }, [filterId, toast]);
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
@@ -37,6 +56,11 @@ const PersonalCabinet3 = () => {
     params.set('page', '1');
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   }, [location.pathname, location.search, navigate]);
+
+  // Filter change handler
+  const handleFilterChange = useCallback((firmTypes: string[]) => {
+    setSelectedFirmTypes(firmTypes);
+  }, []);
 
   // Keep URL and state in sync - using proper dependency array
   useEffect(() => {
@@ -73,10 +97,21 @@ const PersonalCabinet3 = () => {
             itemsPerPage={itemsPerPage}
             onPageChange={handlePageChange}
             onItemsPerPageChange={handleItemsPerPageChange}
+            selectedFirmTypes={selectedFirmTypes}
+            onFilterChange={handleFilterChange}
           />
         );
     }
-  }, [section, activeSection, currentPage, itemsPerPage, handlePageChange, handleItemsPerPageChange]);
+  }, [
+    section, 
+    activeSection, 
+    currentPage, 
+    itemsPerPage, 
+    handlePageChange, 
+    handleItemsPerPageChange,
+    selectedFirmTypes,
+    handleFilterChange
+  ]);
 
   return (
     <SidebarProvider>

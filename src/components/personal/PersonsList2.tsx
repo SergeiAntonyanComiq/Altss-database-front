@@ -1,4 +1,5 @@
-import React, { useState, useCallback, memo } from "react";
+
+import React, { useState, useCallback, memo, useEffect } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import PersonsListHeader from "./list/PersonsListHeader";
@@ -13,6 +14,8 @@ interface PersonsList2Props {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (perPage: number) => void;
+  selectedFirmTypes?: string[];
+  onFilterChange?: (firmTypes: string[]) => void;
 }
 
 // Helper function to convert Contact to Person type
@@ -35,10 +38,17 @@ const PersonsList2 = ({
   currentPage,
   itemsPerPage,
   onPageChange,
-  onItemsPerPageChange
+  onItemsPerPageChange,
+  selectedFirmTypes = [],
+  onFilterChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
+  const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
+  
+  // Update local state when prop changes
+  useEffect(() => {
+    setLocalSelectedFirmTypes(selectedFirmTypes);
+  }, [selectedFirmTypes]);
   
   const {
     contacts,
@@ -49,7 +59,7 @@ const PersonsList2 = ({
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
-    firmTypes: selectedFirmTypes
+    firmTypes: localSelectedFirmTypes
   });
 
   // Convert contacts to persons format for the table
@@ -81,7 +91,12 @@ const PersonsList2 = ({
   
   // Handle firm type filter changes
   const handleFilterChange = useCallback((firmTypes: string[]) => {
-    setSelectedFirmTypes(firmTypes);
+    setLocalSelectedFirmTypes(firmTypes);
+    // Call parent handler if provided
+    if (onFilterChange) {
+      onFilterChange(firmTypes);
+    }
+    
     // Reset to first page when applying filters
     handlePageChange(1);
     
@@ -90,13 +105,13 @@ const PersonsList2 = ({
         title: "Filters Applied",
         description: `Showing contacts filtered by ${firmTypes.join(', ')}`,
       });
-    } else if (selectedFirmTypes.length > 0 && firmTypes.length === 0) {
+    } else if (localSelectedFirmTypes.length > 0 && firmTypes.length === 0) {
       toast({
         title: "Filters Cleared",
         description: "Showing all contacts",
       });
     }
-  }, [handlePageChange, selectedFirmTypes]);
+  }, [handlePageChange, localSelectedFirmTypes, onFilterChange]);
 
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
 
@@ -110,14 +125,14 @@ const PersonsList2 = ({
           setSearchQuery={setSearchQuery}
           totalContacts={totalContacts}
           isLoading={isLoading}
-          hasActiveFilters={selectedFirmTypes.length > 0}
+          hasActiveFilters={localSelectedFirmTypes.length > 0}
         />
       </div>
       
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        selectedFirmTypes={selectedFirmTypes}
+        selectedFirmTypes={localSelectedFirmTypes}
         onFilterChange={handleFilterChange}
       />
       
