@@ -42,8 +42,8 @@ export const useContactsData = ({
         
         // Only update state if component is still mounted
         if (isMounted) {
-          setTotalContacts(count || 0); // Ensure we have a fallback value
-          console.log(`Total contacts count: ${count}`);
+          setTotalContacts(count);
+          console.log(`Total contacts count from API: ${count}`);
         }
       } catch (err) {
         console.error("Error fetching contacts count:", err);
