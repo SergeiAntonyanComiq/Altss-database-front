@@ -7,7 +7,7 @@ import PersonsListContent from "./list/PersonsListContent";
 import PersonsListFooter from "./list/PersonsListFooter";
 import { usePersonsSelection } from "./hooks/usePersonsSelection";
 import PersonsSearchBar from "./PersonsSearchBar";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -44,11 +44,9 @@ const PersonsList2 = ({
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
-  const { toast } = useToast();
   
   // Update local state when prop changes
   useEffect(() => {
-    console.log("Selected firm types updated:", selectedFirmTypes);
     setLocalSelectedFirmTypes(selectedFirmTypes);
   }, [selectedFirmTypes]);
   
@@ -77,18 +75,14 @@ const PersonsList2 = ({
 
   // Use callbacks for handlers to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
-    console.log("Page changed to:", page);
     onPageChange(page);
     setContactsCurrentPage(page);
   }, [onPageChange, setContactsCurrentPage]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
-    console.log("Items per page changed to:", perPage);
     onItemsPerPageChange(perPage);
     setContactsItemsPerPage(perPage);
-    // Reset to first page when changing items per page
-    handlePageChange(1);
-  }, [onItemsPerPageChange, setContactsItemsPerPage, handlePageChange]);
+  }, [onItemsPerPageChange, setContactsItemsPerPage]);
 
   const toggleFavorite = useCallback((id: string) => {
     // In a real application, this would be an API call to change the favorite status
@@ -97,7 +91,6 @@ const PersonsList2 = ({
   
   // Handle firm type filter changes
   const handleFilterChange = useCallback((firmTypes: string[]) => {
-    console.log("Applying filters:", firmTypes);
     setLocalSelectedFirmTypes(firmTypes);
     // Call parent handler if provided
     if (onFilterChange) {
@@ -118,20 +111,9 @@ const PersonsList2 = ({
         description: "Showing all contacts",
       });
     }
-  }, [handlePageChange, localSelectedFirmTypes, onFilterChange, toast]);
+  }, [handlePageChange, localSelectedFirmTypes, onFilterChange]);
 
-  // Calculate total pages based on filtered count
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
-  
-  // Log pagination information for debugging
-  useEffect(() => {
-    console.log("Pagination info:");
-    console.log("- Current page:", currentPage);
-    console.log("- Items per page:", itemsPerPage);
-    console.log("- Total contacts:", totalContacts);
-    console.log("- Total pages:", totalPages);
-    console.log("- Applied filters:", localSelectedFirmTypes);
-  }, [currentPage, itemsPerPage, totalContacts, totalPages, localSelectedFirmTypes]);
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">

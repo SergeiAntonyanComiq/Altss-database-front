@@ -37,11 +37,6 @@ const PersonalCabinet3 = () => {
           title: "Filter Applied",
           description: `Applied "${filter.name}" filter`,
         });
-        
-        // Make sure we reset to page 1 when applying a filter
-        if (currentPage !== 1) {
-          handlePageChange(1);
-        }
       } else {
         console.log("Filter not found for ID:", filterId);
       }
@@ -50,7 +45,6 @@ const PersonalCabinet3 = () => {
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
-    console.log("PersonalCabinet: Page changed to", page);
     setCurrentPage(page);
     const params = new URLSearchParams(location.search);
     params.set('page', page.toString());
@@ -58,7 +52,6 @@ const PersonalCabinet3 = () => {
   }, [location.pathname, location.search, navigate]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
-    console.log("PersonalCabinet: Items per page changed to", perPage);
     setItemsPerPage(perPage);
     // Reset to first page when changing items per page
     setCurrentPage(1); 
@@ -70,46 +63,31 @@ const PersonalCabinet3 = () => {
 
   // Filter change handler
   const handleFilterChange = useCallback((firmTypes: string[]) => {
-    console.log("PersonalCabinet: Filter changed to", firmTypes);
     setSelectedFirmTypes(firmTypes);
-    
-    // Reset to page 1 when applying filters
-    if (currentPage !== 1) {
-      setCurrentPage(1);
-    }
-    
     // Clear filter param from URL if we're just changing filters directly
     const params = new URLSearchParams(location.search);
     if (params.has('filter')) {
       params.delete('filter');
+      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     }
-    
-    // Make sure page is set to 1
-    params.set('page', '1');
-    
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-  }, [location.pathname, location.search, navigate, currentPage]);
+  }, [location.pathname, location.search, navigate]);
 
   // Keep URL and state in sync - using proper dependency array
   useEffect(() => {
-    console.log("Syncing URL with state");
     const newSearchParams = new URLSearchParams(location.search);
     const newPageParam = newSearchParams.get('page');
     const newPerPageParam = newSearchParams.get('perPage');
     const newSection = newSearchParams.get('section');
     
     if (newPageParam && parseInt(newPageParam, 10) !== currentPage) {
-      console.log(`Updating currentPage from URL: ${newPageParam}`);
       setCurrentPage(parseInt(newPageParam, 10));
     }
     
     if (newPerPageParam && parseInt(newPerPageParam, 10) !== itemsPerPage) {
-      console.log(`Updating itemsPerPage from URL: ${newPerPageParam}`);
       setItemsPerPage(parseInt(newPerPageParam, 10));
     }
     
     if (newSection && newSection !== activeSection) {
-      console.log(`Updating activeSection from URL: ${newSection}`);
       setActiveSection(newSection);
     }
   }, [location.search, currentPage, itemsPerPage, activeSection]);
@@ -117,11 +95,6 @@ const PersonalCabinet3 = () => {
   const renderContent = useCallback(() => {
     // Use the section from URL or fallback to activeSection state
     const currentSection = section || activeSection;
-    
-    console.log("Rendering content for section:", currentSection);
-    console.log("Current page:", currentPage);
-    console.log("Items per page:", itemsPerPage);
-    console.log("Selected firm types:", selectedFirmTypes);
     
     switch (currentSection) {
       case "contacts":
