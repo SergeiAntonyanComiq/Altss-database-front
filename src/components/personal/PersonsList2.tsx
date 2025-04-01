@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, memo } from "react";
+import React, { useState, useCallback, memo, useEffect } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import { usePersonsSelection } from "./hooks/usePersonsSelection";
@@ -11,6 +11,7 @@ import PersonsListFooter from "./list/PersonsListFooter";
 import SavedSearchDialog from "./filters/SavedSearchDialog";
 import { Button } from "@/components/ui/button";
 import { BookmarkIcon } from "lucide-react";
+import { toast } from "sonner";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -25,8 +26,18 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
   onPageChange,
   onItemsPerPageChange
 }) => {
-  const { searchQuery, selectedFirmTypes, handleSearchChange, handleFilterChange } = usePersonsFilters();
+  const { selectedFirmTypes, searchQuery, handleFilterChange, handleSearchChange } = usePersonsFilters();
   const [showSavedSearches, setShowSavedSearches] = useState(false);
+
+  // Log initial props for debugging
+  useEffect(() => {
+    console.log("PersonsList2 initialized with:", {
+      currentPage,
+      itemsPerPage,
+      selectedFirmTypes,
+      searchQuery
+    });
+  }, []);
 
   // Fetch contacts data with filtering and pagination
   const { 
@@ -42,6 +53,15 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
     searchQuery: searchQuery,
   });
 
+  // Debug logging when contacts change
+  useEffect(() => {
+    console.log("Contacts data updated:", {
+      count: contacts.length,
+      totalContacts,
+      isLoading
+    });
+  }, [contacts, totalContacts, isLoading]);
+
   // Setup for selecting and managing persons
   const {
     selectedPersons,
@@ -51,7 +71,7 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
   } = usePersonsSelection(contacts as any);
 
   // Convert contacts to any for compatibility with existing components
-  const personsData: any[] = contacts.map(contact => ({
+  const personsData = contacts.map(contact => ({
     id: contact.id.toString(),
     name: contact.name,
     favorite: contact.favorite || false,
@@ -66,12 +86,14 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
 
   // Handle page change with debounce
   const handlePageChangeDebounced = useCallback((page: number) => {
+    console.log("Page changed to:", page);
     setCurrentPage(page);
     onPageChange(page);
   }, [onPageChange, setCurrentPage]);
 
   // Handle items per page change
   const handleItemsPerPageChange = useCallback((perPage: number) => {
+    console.log("Items per page changed to:", perPage);
     setItemsPerPage(perPage);
     onItemsPerPageChange(perPage);
   }, [onItemsPerPageChange, setItemsPerPage]);
@@ -79,6 +101,7 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
   // Toggle favorite status for a person
   const toggleFavorite = (id: string) => {
     console.log(`Toggle favorite for person with ID: ${id}`);
+    toast.success(`Favorite status toggled for contact ${id}`);
     // In real app this would call an API
   };
 
@@ -103,7 +126,7 @@ const PersonsList2: React.FC<PersonsList2Props> = ({
             setSearchQuery={handleSearchChange}
             totalContacts={totalContacts}
             isLoading={isLoading}
-            hasActiveFilters={selectedFirmTypes.length > 0}
+            hasActiveFilters={selectedFirmTypes.length > 0 || searchQuery.trim() !== ''}
           />
         </div>
       </div>

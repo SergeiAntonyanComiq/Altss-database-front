@@ -26,12 +26,27 @@ export function useContactsData({
     const getContacts = async () => {
       setIsLoading(true);
       try {
+        // Debug logging
+        console.log("Fetching contacts with params:", {
+          page: currentPage,
+          perPage: itemsPerPage,
+          firmTypes,
+          searchQuery
+        });
+        
         const result = await fetchContacts(
           currentPage, 
           itemsPerPage, 
           firmTypes,
           searchQuery
         );
+        
+        // Debug logging
+        console.log("Fetched contacts result:", {
+          contactsCount: result.contacts.length,
+          totalCount: result.totalCount
+        });
+        
         setContacts(result.contacts);
         setTotalContacts(result.totalCount);
       } catch (error) {
