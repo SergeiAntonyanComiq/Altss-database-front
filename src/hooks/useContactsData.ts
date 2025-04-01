@@ -31,8 +31,10 @@ export const useContactsData = ({
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
   const [totalContacts, setTotalContacts] = useState<number>(0);
 
-  // Fetch total contacts count from API
+  // Fetch total contacts count from API once on component mount
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchTotalContacts = async () => {
       try {
         const response = await fetch('https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts_count');
@@ -42,26 +44,43 @@ export const useContactsData = ({
         }
         
         const data = await response.json();
-        setTotalContacts(data.count);
-        console.log(`Total contacts count: ${data.count}`);
+        
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setTotalContacts(data.count);
+          console.log(`Total contacts count: ${data.count}`);
+        }
       } catch (err) {
         console.error("Error fetching contacts count:", err);
-        // If we can't get the count, we'll show an error toast but not block the main functionality
-        toast({
-          title: "Warning",
-          description: "Could not fetch total contacts count. Pagination may be inaccurate.",
-          variant: "destructive",
-        });
+        
+        // Only show toast and update state if component is still mounted
+        if (isMounted) {
+          toast({
+            title: "Warning",
+            description: "Could not fetch total contacts count. Pagination may be inaccurate.",
+            variant: "destructive",
+          });
+        }
       }
     };
     
     fetchTotalContacts();
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Fetch contacts whenever page or items per page changes
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchContacts = async () => {
-      setIsLoading(true);
-      setError(null);
+      if (isMounted) {
+        setIsLoading(true);
+        setError(null);
+      }
       
       try {
         const startId = (currentPage - 1) * itemsPerPage + 1;
@@ -80,21 +99,36 @@ export const useContactsData = ({
         
         // Wait for all requests to complete
         const fetchedContacts = await Promise.all(contactPromises);
-        setContacts(fetchedContacts);
-        console.log(`Fetched ${fetchedContacts.length} contacts`);
+        
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setContacts(fetchedContacts);
+          console.log(`Fetched ${fetchedContacts.length} contacts`);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-        toast({
-          title: "Error",
-          description: "Failed to fetch contacts. Please try again later.",
-          variant: "destructive",
-        });
+        // Only update error state if component is still mounted
+        if (isMounted) {
+          setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+          toast({
+            title: "Error",
+            description: "Failed to fetch contacts. Please try again later.",
+            variant: "destructive",
+          });
+        }
       } finally {
-        setIsLoading(false);
+        // Only update loading state if component is still mounted
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
     
     fetchContacts();
+    
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      isMounted = false;
+    };
   }, [currentPage, itemsPerPage, totalContacts]);
   
   return {
