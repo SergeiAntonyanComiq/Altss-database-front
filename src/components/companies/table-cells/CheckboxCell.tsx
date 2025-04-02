@@ -12,7 +12,11 @@ const CheckboxCell = ({ isSelected, onToggle, ariaLabel = "Select row" }: Checkb
   <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
     <Checkbox
       checked={isSelected}
-      onCheckedChange={onToggle}
+      onCheckedChange={() => {
+        // Create a synthetic event to match the expected type
+        const syntheticEvent = { stopPropagation: () => {} } as React.MouseEvent;
+        onToggle(syntheticEvent);
+      }}
       aria-label={ariaLabel}
       className="h-5 w-5 rounded-md"
     />
