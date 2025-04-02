@@ -21,7 +21,10 @@ export function useTeamMembers(firmId?: number | string) {
         setIsLoading(true);
         console.log("Fetching team members for company firm_id:", firmId);
         
-        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts?firm_id=${firmId}`, {
+        // Convert firmId to string to ensure consistent handling
+        const stringFirmId = String(firmId);
+        
+        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts?firm_id=${stringFirmId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

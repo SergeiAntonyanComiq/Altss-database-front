@@ -51,8 +51,9 @@ const CompanyTableRow = ({
         <CompanyNameCell
           companyName={company.firm_name}
           isFavorite={company.isFavorite || false}
-          onCompanyClick={() => onViewCompany()}
+          onCompanyClick={onViewCompany}
           onFavoriteClick={onToggleFavorite}
+          firm_id={company.firm_id ? String(company.firm_id) : undefined}
         />
       </div>
       
