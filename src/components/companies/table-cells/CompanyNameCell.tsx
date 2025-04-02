@@ -7,10 +7,9 @@ interface CompanyNameCellProps {
   isFavorite: boolean;
   onCompanyClick: () => void;
   onFavoriteClick: (e: React.MouseEvent) => void;
-  firm_id?: string;
 }
 
-const CompanyNameCell = ({ companyName, isFavorite, onCompanyClick, onFavoriteClick, firm_id }: CompanyNameCellProps) => (
+const CompanyNameCell = ({ companyName, isFavorite, onCompanyClick, onFavoriteClick }: CompanyNameCellProps) => (
   <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
     <div 
       className="flex-1 cursor-pointer truncate text-sm"

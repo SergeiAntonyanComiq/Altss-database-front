@@ -11,9 +11,7 @@ interface CompanyTeamTabProps {
 }
 
 const CompanyTeamTab: React.FC<CompanyTeamTabProps> = ({ company }) => {
-  // Use firm_id first (if available), otherwise fall back to id
-  const companyIdentifier = company.firm_id !== undefined ? company.firm_id : company.id;
-  const { primaryContact, otherMembers, isLoading, error } = useTeamMembers(companyIdentifier);
+  const { primaryContact, otherMembers, isLoading, error } = useTeamMembers(company.firm_id);
 
   if (isLoading) {
     return <TeamLoadingSkeleton />;

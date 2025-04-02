@@ -11,7 +11,7 @@ interface CompaniesTableProps {
   selectedCompanies: string[];
   toggleCompanySelection: (id: string) => void;
   toggleAllCompanies: () => void;
-  handleViewCompany: (id: string, firm_id?: string | number) => void;
+  handleViewCompany: (id: string) => void;
   toggleFavorite: (id: string, event: React.MouseEvent) => void;
   formatAum: (aumValue: number | string | undefined | null) => string;
   isCompanySelected: (id: string | undefined) => boolean;
@@ -56,7 +56,7 @@ const CompaniesTable = ({
               company={company}
               isSelected={isCompanySelected(company.id)}
               onToggleSelection={() => toggleCompanySelection(company.id || '')}
-              onViewCompany={() => handleViewCompany(company.id || '', company.firm_id)}
+              onViewCompany={() => handleViewCompany(company.id || '')}
               onToggleFavorite={(e) => toggleFavorite(company.id || '', e)}
               columnSizes={columnSizes}
               formatAum={formatAum}
