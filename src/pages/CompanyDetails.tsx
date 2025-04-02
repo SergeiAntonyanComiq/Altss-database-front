@@ -80,7 +80,7 @@ const CompanyDetails: React.FC = () => {
       const companyData: CompanyType = {
         ...data,
         id: String(data.id || ''),
-        firm_id: data.id || companyId,  // Preserve the firm_id
+        firm_id: data.firm_id || data.id || companyId,  // Ensure firm_id is preserved
         firm_name: data.firm_name?.trim() || 'N/A',
         name: data.firm_name?.trim() || 'N/A',
         type: data.firm_type || '',

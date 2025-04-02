@@ -1,12 +1,12 @@
 
 import React from "react";
 import { CompanyType } from "@/types/company";
+import AumCell from "../table-cells/AumCell";
+import TeamCell from "../table-cells/TeamCell";
 import CheckboxCell from "../table-cells/CheckboxCell";
 import CompanyNameCell from "../table-cells/CompanyNameCell";
 import CompanyTypeCell from "../table-cells/CompanyTypeCell";
-import AumCell from "../table-cells/AumCell";
 import FoundedYearCell from "../table-cells/FoundedYearCell";
-import TeamCell from "../table-cells/TeamCell";
 
 interface CompanyTableRowProps {
   company: CompanyType;
@@ -14,15 +14,7 @@ interface CompanyTableRowProps {
   onToggleSelection: () => void;
   onViewCompany: () => void;
   onToggleFavorite: (e: React.MouseEvent) => void;
-  columnSizes: {
-    checkbox: number;
-    companyName: number;
-    companyType: number;
-    aum: number;
-    foundedYear: number;
-    knownTeam: number;
-    actions: number;
-  };
+  columnSizes: Record<string, number>;
   formatAum: (aumValue: number | string | undefined | null) => string;
 }
 
@@ -36,49 +28,56 @@ const CompanyTableRow = ({
   formatAum
 }: CompanyTableRowProps) => {
   return (
-    <div className="flex min-h-[50px] w-full border-b border-[#DFE4EA]">
-      {/* Checkbox cell */}
-      <div style={{width: `${columnSizes.checkbox}%`}} className="flex items-center justify-center min-w-[40px]">
+    <div
+      onClick={onViewCompany}
+      className="table-row flex items-center hover:bg-[rgba(60,106,173,0.05)] cursor-pointer duration-200"
+    >
+      <div className="min-w-12" style={{ width: columnSizes.checkbox }}>
         <CheckboxCell
-          isSelected={isSelected}
-          onChange={onToggleSelection}
-          ariaLabel={`Select ${company.firm_name}`}
+          selected={isSelected}
+          onToggle={(e) => {
+            e.stopPropagation();
+            onToggleSelection();
+          }}
         />
       </div>
       
-      {/* Company Name cell */}
-      <div style={{width: `${columnSizes.companyName}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
-        <CompanyNameCell
-          companyName={company.firm_name}
+      <div style={{ width: columnSizes.name }}>
+        <CompanyNameCell 
+          name={company.firm_name} 
+          onClick={onViewCompany}
+          onToggleFavorite={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(e);
+          }}
           isFavorite={company.isFavorite || false}
-          onCompanyClick={() => onViewCompany()}
-          onFavoriteClick={onToggleFavorite}
+          // Make sure to pass firm_id
+          firm_id={company.firm_id}
         />
       </div>
       
-      {/* Company Type cell */}
-      <div style={{width: `${columnSizes.companyType}%`}} className="overflow-hidden text-sm text-blue-700 font-medium leading-tight">
-        <CompanyTypeCell type={company.firm_type || company.type || 'N/A'} />
+      <div style={{ width: columnSizes.type }}>
+        <CompanyTypeCell type={company.type} />
       </div>
       
-      {/* AUM cell */}
-      <div style={{width: `${columnSizes.aum}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
-        <AumCell aumFormatted={formatAum(company.aum)} />
+      <div style={{ width: columnSizes.location }}>
+        <div className="flex min-h-11 items-center px-4">
+          <span className="text-[#111928] text-sm overflow-hidden text-ellipsis line-clamp-1">
+            {company.location || 'N/A'}
+          </span>
+        </div>
       </div>
       
-      {/* Founded Year cell */}
-      <div style={{width: `${columnSizes.foundedYear}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
-        <FoundedYearCell year={company.year_est} />
+      <div style={{ width: columnSizes.team }}>
+        <TeamCell staffCount={company.employees} />
       </div>
       
-      {/* Known Team cell */}
-      <div style={{width: `${columnSizes.knownTeam}%`}} className="overflow-hidden text-sm text-green-700 font-medium leading-tight">
-        <TeamCell staffCount={company.total_staff} />
+      <div style={{ width: columnSizes.aum }}>
+        <AumCell aumValue={company.aum} formatAum={formatAum} />
       </div>
       
-      {/* Actions cell */}
-      <div style={{width: `${columnSizes.actions}%`}} className="overflow-hidden min-w-[40px] flex items-center justify-center">
-        <div className="flex min-h-11 w-full items-center gap-2.5 justify-center"></div>
+      <div style={{ width: columnSizes.founded }}>
+        <FoundedYearCell foundedYear={company.foundedYear} />
       </div>
     </div>
   );

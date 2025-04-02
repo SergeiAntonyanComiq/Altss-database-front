@@ -148,13 +148,14 @@ export function useCompaniesData(currentPage: number, itemsPerPage: number) {
 
   // Helper function to normalize company data across both endpoints
   const normalizeCompanyData = (company: any): CompanyType => {
-    // Make sure to preserve firm_id for accurate company profile navigation
-    const firmId = company.id || company.firm_id || '';
+    // For enriched endpoint, use firm_id if available
+    // For regular endpoint, use id as the firm_id
+    const firmId = company.firm_id || company.id;
     
     return {
       ...company,
-      id: String(firmId), // Use for UI operations
-      firm_id: firmId,    // Preserve the original ID for API calls
+      id: String(company.id || ''), // Keep original ID for UI operations
+      firm_id: firmId,    // Explicitly set firm_id for API calls and navigation
       firm_name: company.firm_name || 'N/A',
       name: company.firm_name || 'N/A',
       type: company.firm_type || 'N/A',

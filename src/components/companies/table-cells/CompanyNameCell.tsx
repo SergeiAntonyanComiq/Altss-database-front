@@ -1,31 +1,41 @@
 
 import React from "react";
-import { Heart } from "lucide-react";
+import { Star, StarOff } from "lucide-react";
 
 interface CompanyNameCellProps {
-  companyName: string;
+  name: string;
+  onClick: () => void;
+  onToggleFavorite: (e: React.MouseEvent) => void;
   isFavorite: boolean;
-  onCompanyClick: () => void;
-  onFavoriteClick: (e: React.MouseEvent) => void;
+  firm_id?: string | number;
 }
 
-const CompanyNameCell = ({ companyName, isFavorite, onCompanyClick, onFavoriteClick }: CompanyNameCellProps) => (
-  <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-    <div 
-      className="flex-1 cursor-pointer truncate text-sm"
-      onClick={onCompanyClick}
+const CompanyNameCell = ({
+  name,
+  onClick,
+  onToggleFavorite,
+  isFavorite,
+}: CompanyNameCellProps) => {
+  return (
+    <div
+      className="flex min-h-11 w-full items-center gap-2.5 px-4"
+      onClick={onClick}
     >
-      {companyName}
+      <button
+        onClick={onToggleFavorite}
+        className="flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full"
+      >
+        {isFavorite ? (
+          <Star className="h-[18px] w-[18px] fill-[#FFC319] text-[#FFC319]" />
+        ) : (
+          <StarOff className="h-[18px] w-[18px] text-[#D1D5DB]" />
+        )}
+      </button>
+      <span className="overflow-hidden text-ellipsis line-clamp-1 font-medium text-[#111928]">
+        {name}
+      </span>
     </div>
-    <button
-      onClick={onFavoriteClick}
-      className="ml-2 flex items-center justify-center flex-shrink-0"
-    >
-      <Heart 
-        className={`h-5 w-5 cursor-pointer ${isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
-      />
-    </button>
-  </div>
-);
+  );
+};
 
 export default CompanyNameCell;
