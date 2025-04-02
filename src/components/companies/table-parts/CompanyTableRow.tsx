@@ -34,12 +34,11 @@ const CompanyTableRow = ({
     >
       <div className="min-w-12" style={{ width: columnSizes.checkbox }}>
         <CheckboxCell
-          isSelected={isSelected}
+          selected={isSelected}
           onToggle={(e) => {
             e.stopPropagation();
             onToggleSelection();
           }}
-          ariaLabel={`Select ${company.firm_name}`}
         />
       </div>
       
@@ -52,7 +51,8 @@ const CompanyTableRow = ({
             onToggleFavorite(e);
           }}
           isFavorite={company.isFavorite || false}
-          firm_id={company.firm_id ? String(company.firm_id) : undefined}
+          // Make sure to pass firm_id
+          firm_id={company.firm_id}
         />
       </div>
       
@@ -73,10 +73,7 @@ const CompanyTableRow = ({
       </div>
       
       <div style={{ width: columnSizes.aum }}>
-        <AumCell 
-          aumValue={company.aum}
-          formatAum={formatAum}
-        />
+        <AumCell aumValue={company.aum} formatAum={formatAum} />
       </div>
       
       <div style={{ width: columnSizes.founded }}>

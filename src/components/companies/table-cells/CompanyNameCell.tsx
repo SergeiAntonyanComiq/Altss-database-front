@@ -7,7 +7,7 @@ interface CompanyNameCellProps {
   onClick: () => void;
   onToggleFavorite: (e: React.MouseEvent) => void;
   isFavorite: boolean;
-  firm_id?: string;
+  firm_id?: string | number;
 }
 
 const CompanyNameCell = ({
@@ -15,7 +15,6 @@ const CompanyNameCell = ({
   onClick,
   onToggleFavorite,
   isFavorite,
-  firm_id,
 }: CompanyNameCellProps) => {
   return (
     <div
@@ -40,4 +39,3 @@ const CompanyNameCell = ({
 };
 
 export default CompanyNameCell;
-export type { CompanyNameCellProps };

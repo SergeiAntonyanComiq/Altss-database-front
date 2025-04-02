@@ -2,15 +2,13 @@
 import React from "react";
 
 interface AumCellProps {
-  aumValue: number | string | undefined | null;
-  formatAum: (aumValue: number | string | undefined | null) => string;
+  aumFormatted: string;
 }
 
-const AumCell = ({ aumValue, formatAum }: AumCellProps) => (
+const AumCell = ({ aumFormatted }: AumCellProps) => (
   <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-    <span className="text-sm">{formatAum(aumValue)}</span>
+    <span className="text-sm">{aumFormatted}</span>
   </div>
 );
 
 export default AumCell;
-export type { AumCellProps };
