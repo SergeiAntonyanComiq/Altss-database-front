@@ -8,6 +8,7 @@ import PersonsListFooter from "./list/PersonsListFooter";
 import { usePersonsSelection } from "./hooks/usePersonsSelection";
 import PersonsSearchBar from "./PersonsSearchBar";
 import { toast } from "@/components/ui/use-toast";
+import { searchContactsByName } from "@/services/contactsService";
 
 interface PersonsList2Props {
   currentPage: number;
@@ -44,6 +45,9 @@ const PersonsList2 = ({
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
+  const [searchResults, setSearchResults] = useState<ContactType[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
   
   // Update local state when prop changes
   useEffect(() => {
@@ -62,8 +66,43 @@ const PersonsList2 = ({
     firmTypes: localSelectedFirmTypes
   });
 
+  // Get contacts to display - either search results or regular contacts
+  const displayedContacts = isSearchActive ? searchResults : contacts;
+  
   // Convert contacts to persons format for the table
-  const persons = contacts.map(contactToPerson);
+  const persons = displayedContacts.map(contactToPerson);
+  
+  // Handle search
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query) {
+      setIsSearchActive(false);
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await searchContactsByName(query);
+      setSearchResults(results);
+      setIsSearchActive(true);
+      
+      toast({
+        title: results.length > 0 ? "Search Results" : "No Results",
+        description: results.length > 0 ? 
+          `Found ${results.length} results for "${query}"` : 
+          `No results found for "${query}"`,
+      });
+    } catch (error) {
+      console.error('Search error:', error);
+      toast({
+        title: "Search Error",
+        description: "Failed to perform search. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  }, [toast]);
   
   // Use the extracted selection logic
   const { 
@@ -75,14 +114,20 @@ const PersonsList2 = ({
 
   // Use callbacks for handlers to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
-    onPageChange(page);
-    setContactsCurrentPage(page);
-  }, [onPageChange, setContactsCurrentPage]);
+    // Only change page if not in search mode
+    if (!isSearchActive) {
+      onPageChange(page);
+      setContactsCurrentPage(page);
+    }
+  }, [onPageChange, setContactsCurrentPage, isSearchActive]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
-    onItemsPerPageChange(perPage);
-    setContactsItemsPerPage(perPage);
-  }, [onItemsPerPageChange, setContactsItemsPerPage]);
+    // Only change page size if not in search mode
+    if (!isSearchActive) {
+      onItemsPerPageChange(perPage);
+      setContactsItemsPerPage(perPage);
+    }
+  }, [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive]);
 
   const toggleFavorite = useCallback((id: string) => {
     // In a real application, this would be an API call to change the favorite status
@@ -91,6 +136,12 @@ const PersonsList2 = ({
   
   // Handle firm type filter changes
   const handleFilterChange = useCallback((firmTypes: string[]) => {
+    // Clear search when applying filters
+    if (isSearchActive) {
+      setIsSearchActive(false);
+      setSearchQuery('');
+    }
+    
     setLocalSelectedFirmTypes(firmTypes);
     // Call parent handler if provided
     if (onFilterChange) {
@@ -111,9 +162,10 @@ const PersonsList2 = ({
         description: "Showing all contacts",
       });
     }
-  }, [handlePageChange, localSelectedFirmTypes, onFilterChange]);
+  }, [handlePageChange, localSelectedFirmTypes, onFilterChange, toast, isSearchActive]);
 
   const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
+  const effectiveTotal = isSearchActive ? searchResults.length : totalContacts;
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
@@ -123,9 +175,9 @@ const PersonsList2 = ({
         <PersonsListHeader 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          totalContacts={totalContacts}
-          isLoading={isLoading}
-          hasActiveFilters={localSelectedFirmTypes.length > 0}
+          totalContacts={effectiveTotal}
+          isLoading={isLoading || isSearching}
+          hasActiveFilters={localSelectedFirmTypes.length > 0 || isSearchActive}
         />
       </div>
       
@@ -134,6 +186,7 @@ const PersonsList2 = ({
         setSearchQuery={setSearchQuery}
         selectedFirmTypes={localSelectedFirmTypes}
         onFilterChange={handleFilterChange}
+        onSearch={handleSearch}
       />
       
       <PersonsListContent 
@@ -143,16 +196,17 @@ const PersonsList2 = ({
         handleSelectAll={handleSelectAll}
         toggleFavorite={toggleFavorite}
         isPersonSelected={isPersonSelected}
-        isLoading={isLoading}
+        isLoading={isLoading || isSearching}
       />
       
       <PersonsListFooter 
         currentPage={currentPage}
         onPageChange={handlePageChange}
-        totalPages={totalPages}
-        totalItems={totalContacts || 0}
-        itemsPerPage={itemsPerPage}
+        totalPages={isSearchActive ? 1 : totalPages}
+        totalItems={effectiveTotal}
+        itemsPerPage={isSearchActive ? searchResults.length : itemsPerPage}
         onItemsPerPageChange={handleItemsPerPageChange}
+        disablePagination={isSearchActive}
       />
     </div>
   );

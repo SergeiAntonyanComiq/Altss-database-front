@@ -6,28 +6,31 @@ interface PersonsListFooterProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   totalPages: number;
-  totalItems: number;
   itemsPerPage: number;
   onItemsPerPageChange: (perPage: number) => void;
+  totalItems: number;
+  disablePagination?: boolean;
 }
 
 const PersonsListFooter: React.FC<PersonsListFooterProps> = ({
   currentPage,
   onPageChange,
   totalPages,
-  totalItems,
   itemsPerPage,
-  onItemsPerPageChange
+  onItemsPerPageChange,
+  totalItems,
+  disablePagination = false
 }) => {
   return (
-    <div className="flex justify-between items-center w-full mt-4">
-      <PersonsPagination
+    <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-8">
+      <PersonsPagination 
         currentPage={currentPage}
         onPageChange={onPageChange}
         totalPages={totalPages}
-        totalItems={totalItems}
         itemsPerPage={itemsPerPage}
         onItemsPerPageChange={onItemsPerPageChange}
+        totalItems={totalItems}
+        disabled={disablePagination}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, KeyboardEvent } from "react";
 import { Search, Filter, Save, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
@@ -14,13 +14,15 @@ interface PersonsSearchBarProps {
   setSearchQuery: (query: string) => void;
   selectedFirmTypes?: string[];
   onFilterChange?: (firmTypes: string[]) => void;
+  onSearch?: (query: string) => void;
 }
 
 const PersonsSearchBar = ({ 
   searchQuery, 
   setSearchQuery,
   selectedFirmTypes = [], 
-  onFilterChange
+  onFilterChange,
+  onSearch
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
@@ -55,6 +57,23 @@ const PersonsSearchBar = ({
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onSearch) {
+      e.preventDefault();
+      onSearch(searchQuery);
+    }
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setSearchQuery(newValue);
+    
+    // If search input is cleared, reset the search results
+    if (newValue === '' && onSearch) {
+      onSearch('');
+    }
+  };
+
   const hasActiveFilters = selectedFirmTypes.length > 0;
 
   return (
@@ -67,9 +86,15 @@ const PersonsSearchBar = ({
               placeholder="Search the person"
               className="self-stretch my-auto bg-transparent outline-none flex-1"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchInputChange}
+              onKeyDown={handleKeyDown}
             />
-            <Search className="h-4 w-4 text-gray-400" />
+            <button 
+              onClick={() => onSearch && onSearch(searchQuery)}
+              className="cursor-pointer"
+            >
+              <Search className="h-4 w-4 text-gray-400" />
+            </button>
           </div>
         </div>
       </div>
