@@ -1,3 +1,4 @@
+
 import React from "react";
 import { LogOut, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -149,7 +150,7 @@ const AppSidebar = () => {
             >
               <Avatar>
                 <AvatarImage 
-                  src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/635dde9f8ef84a19da3d5dd766f2e72d108bd70c" 
+                  src="/lovable-uploads/f2ffbc77-be76-493c-8814-ac0ecdaa34e5.png" 
                   alt="User Profile"
                   className="rounded-full" 
                 />
