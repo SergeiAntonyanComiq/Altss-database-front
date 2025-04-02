@@ -42,7 +42,23 @@ const CompanyDetails: React.FC = () => {
 
   const fetchCompanyDetails = async (companyId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/fund_managers/${companyId}`);
+      // For IDs 1-60, try to fetch from enriched endpoint first
+      const numericId = parseInt(companyId);
+      let response;
+      
+      if (!isNaN(numericId) && numericId >= 1 && numericId <= 60) {
+        // Try enriched endpoint first for IDs 1-60
+        response = await fetch(`${API_BASE_URL}/enrich_final/${companyId}`);
+        
+        // If not found in enriched, fall back to regular endpoint
+        if (response.status === 404) {
+          console.log(`Company ${companyId} not found in enriched endpoint, trying regular endpoint`);
+          response = await fetch(`${API_BASE_URL}/fund_managers/${companyId}`);
+        }
+      } else {
+        // For IDs > 60, use the regular endpoint directly
+        response = await fetch(`${API_BASE_URL}/fund_managers/${companyId}`);
+      }
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -58,11 +74,13 @@ const CompanyDetails: React.FC = () => {
       }
       
       const data = await response.json();
+      console.log("Fetched company data:", data);
       
       // Format the data to fit our CompanyType, only using actual data
       const companyData: CompanyType = {
         ...data,
         id: String(data.id || ''),
+        firm_id: data.id || companyId,  // Preserve the firm_id
         firm_name: data.firm_name?.trim() || 'N/A',
         name: data.firm_name?.trim() || 'N/A',
         type: data.firm_type || '',

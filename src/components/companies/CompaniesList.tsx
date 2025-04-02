@@ -42,8 +42,10 @@ const CompaniesList = ({
 
   const navigate = useNavigate();
 
-  const handleViewCompany = (id: string) => {
-    navigate(`/company/${id}`);
+  const handleViewCompany = (id: string, firm_id?: string | number) => {
+    // Use firm_id if available, otherwise fall back to id
+    const companyId = firm_id || id;
+    navigate(`/company/${companyId}`);
   };
 
   const handleToggleFavorite = (id: string, event: React.MouseEvent) => {
