@@ -102,7 +102,7 @@ const CompaniesList = ({
         />
       </div>
       
-      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-[122px] max-md:mt-10">
+      <div className="flex w-full gap-[40px_100px] justify-start flex-wrap mt-6">
         <PersonsPagination 
           currentPage={currentPage}
           onPageChange={onPageChange}
