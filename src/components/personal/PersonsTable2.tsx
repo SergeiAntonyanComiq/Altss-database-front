@@ -1,11 +1,9 @@
-
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { PersonType } from "@/types/person";
 import { useNavigate } from "react-router-dom";
-import PersonTableHeader from "./table/PersonTableHeader";
+import PersonTableHeader, { Column } from "./table/PersonTableHeader";
 import PersonTableRow from "./table/PersonTableRow";
 import EmptyState from "./table/EmptyState";
-import { useColumnSizes } from "./table/useColumnSizes";
 
 interface PersonsTable2Props {
   persons: PersonType[];
@@ -27,11 +25,22 @@ const PersonsTable2 = ({
   isLoading
 }: PersonsTable2Props) => {
   const navigate = useNavigate();
-  const { columnSizes, handleResize } = useColumnSizes();
+  const [columns, setColumns] = useState<Column[]>([
+    { id: 'name', width: 280, minWidth: 280 },
+    { id: 'bio', width: 300, minWidth: 300 },
+    { id: 'position', width: 170, minWidth: 170 },
+    { id: 'responsibilities', width: 250, minWidth: 250 },
+    { id: 'contacts', width: 150, minWidth: 150 },
+    { id: 'location', width: 170, minWidth: 170 },
+  ]);
 
   const handleProfileClick = useCallback((personId: string) => {
     navigate(`/profile/${personId}`);
   }, [navigate]);
+
+  const handleColumnResize = useCallback((newColumns: Column[]) => {
+    setColumns(newColumns);
+  }, []);
 
   if (persons.length === 0 && !isLoading) {
     return <EmptyState />;
@@ -41,26 +50,24 @@ const PersonsTable2 = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden w-full">
-      <div className="table-container w-full">
-        {/* Table Header */}
+      <div className="w-full border border-[rgba(223,228,234,1)]">
         <PersonTableHeader 
           allSelected={allSelected} 
-          handleSelectAll={handleSelectAll} 
-          columnSizes={columnSizes}
-          onResize={handleResize}
+          handleSelectAll={handleSelectAll}
+          columns={columns}
+          onColumnResize={handleColumnResize}
         />
         
-        {/* Table Rows */}
-        <div className="divide-y divide-[#DFE4EA] w-full">
+        <div className="w-full">
           {persons.map((person) => (
             <PersonTableRow 
               key={person.id} 
               person={person} 
-              columnSizes={columnSizes}
               isSelected={isPersonSelected(person.id)}
               onCheckboxChange={() => handleCheckboxChange(person.id)}
               toggleFavorite={toggleFavorite}
               onProfileClick={handleProfileClick}
+              columns={columns}
             />
           ))}
         </div>
