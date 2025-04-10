@@ -1,113 +1,136 @@
-import { OrderType } from "@/types/order";
+import { OrderType } from "../types/order";
 
 export const mockOrders: OrderType[] = [
   {
     id: "1",
-    profileName: "Jonny Smitty",
-    isFavorite: false,
+    name: "John Smith",
+    email: "john.smith@example.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=1",
+    favorite: true,
     type: "Person",
     status: "Ready",
-    orderDate: "06.03.2025",
-    description: "A generated description stating"
+    date: "01.03.2024",
+    description: "Investment strategy analysis"
   },
   {
     id: "2",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: true,
-    type: "Incubator",
+    name: "Tech Ventures Inc",
+    email: "contact@techventures.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=2",
+    favorite: false,
+    type: "Venture Studio",
     status: "In progress",
-    orderDate: "06.03.2025",
-    description: "Consectetur adipiscing elit"
+    date: "02.03.2024",
+    description: "Startup portfolio review"
   },
   {
     id: "3",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: true,
-    type: "Venture Studio",
-    status: "Error",
-    orderDate: "06.03.2025",
-    description: "Contact with your manager."
+    name: "Sarah Johnson",
+    email: "sarah.j@example.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=3",
+    favorite: true,
+    type: "Person",
+    status: "Ready",
+    date: "03.03.2024",
+    description: "Investment opportunity assessment"
   },
   {
     id: "4",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: false,
-    type: "Startup",
-    status: "Ready",
-    orderDate: "06.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
+    name: "Global Investments LLC",
+    email: "info@globalinv.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=4",
+    favorite: false,
+    type: "VC",
+    status: "Error",
+    date: "04.03.2024",
+    description: "Fund performance analysis"
   },
   {
     id: "5",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: false,
-    type: "VC",
-    status: "Ready",
-    orderDate: "06.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
+    name: "Innovation Labs",
+    email: "labs@innovation.co",
+    avatarUrl: "https://i.pravatar.cc/150?img=5",
+    favorite: true,
+    type: "Incubator",
+    status: "In progress",
+    date: "05.03.2024",
+    description: "Startup incubation program"
   },
   {
     id: "6",
-    profileName: "Lourence III Jr.",
-    isFavorite: false,
-    type: "Person",
+    name: "Family Capital Group",
+    email: "office@familycapital.org",
+    avatarUrl: "https://i.pravatar.cc/150?img=6",
+    favorite: false,
+    type: "Family Office",
     status: "Ready",
-    orderDate: "06.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
+    date: "06.03.2024",
+    description: "Wealth management strategy"
   },
   {
     id: "7",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: false,
-    type: "Family Office",
+    name: "TechStart Solutions",
+    email: "info@techstart.io",
+    avatarUrl: "https://i.pravatar.cc/150?img=7",
+    favorite: true,
+    type: "Startup",
     status: "Ready",
-    orderDate: "06.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
+    date: "07.03.2024",
+    description: "Product development roadmap"
   },
   {
     id: "8",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: false,
-    type: "Family Office",
-    status: "Ready",
-    orderDate: "06.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
+    name: "Growth Partners",
+    email: "partners@growth.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=8",
+    favorite: false,
+    type: "VC",
+    status: "In progress",
+    date: "08.03.2024",
+    description: "Investment portfolio expansion"
   },
   {
     id: "9",
-    profileName: "Lorem Ipsum inc",
-    isFavorite: false,
-    type: "Family Office",
+    name: "Future Fund",
+    email: "contact@futurefund.net",
+    avatarUrl: "https://i.pravatar.cc/150?img=9",
+    favorite: true,
+    type: "VC",
     status: "Ready",
-    orderDate: "06.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
+    date: "09.03.2024",
+    description: "Market analysis report"
   },
-  // Add more mock data if needed to test pagination
   {
     id: "10",
-    profileName: "Another Company",
-    isFavorite: false,
+    name: "Another Company",
+    email: "info@anothercompany.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=10",
+    favorite: false,
     type: "Startup",
     status: "Ready",
-    orderDate: "07.03.2025",
-    description: "Lorem ipsum dolor sit amet"
+    date: "10.03.2024",
+    description: "Business development plan"
   },
   {
     id: "11",
-    profileName: "Yet Another Person",
-    isFavorite: true,
+    name: "Yet Another Person",
+    email: "person@example.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=11",
+    favorite: true,
     type: "Person",
     status: "In progress",
-    orderDate: "07.03.2025",
-    description: "Consectetur adipiscing elit"
+    date: "11.03.2024",
+    description: "Investment strategy review"
   },
   {
     id: "12",
-    profileName: "Investor Group",
-    isFavorite: false,
+    name: "Investor Group",
+    email: "group@investors.com",
+    avatarUrl: "https://i.pravatar.cc/150?img=12",
+    favorite: false,
     type: "VC",
-    status: "Ready",
-    orderDate: "08.03.2025",
-    description: "Sed do eiusmod tempor incididunt"
-  },
+    status: "Error",
+    date: "12.03.2024",
+    description: "Portfolio optimization"
+  }
 ]; 

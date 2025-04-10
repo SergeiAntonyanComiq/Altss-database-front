@@ -1,7 +1,7 @@
-
 import React, { useState, useCallback, memo, useEffect } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
+import { PersonType } from "@/types/person";
 import PersonsListHeader from "./list/PersonsListHeader";
 import PersonsListContent from "./list/PersonsListContent";
 import PersonsListFooter from "./list/PersonsListFooter";
@@ -10,30 +10,65 @@ import PersonsSearchBar from "./PersonsSearchBar";
 import { toast } from "@/components/ui/use-toast";
 import { searchContactsByName } from "@/services/contactsService";
 
+const contactToPerson = (contact: ContactType): PersonType | null => {
+  // Проверяем наличие обязательных полей
+  if (!contact || !contact.contact_id || !contact.firm_id) {
+    console.warn('Missing required fields in contact:', contact);
+    return null;
+  }
+
+  try {
+    const person: PersonType = {
+      id: String(contact.contact_id), // Используем contact_id вместо id
+      name: [contact.title, contact.name]
+        .filter(Boolean)
+        .join(' ')
+        .trim() || "Unnamed Contact",
+      favorite: Boolean(contact.favorite),
+      responsibilities: contact.asset_class ? 
+        contact.asset_class.split(',').map(s => s.trim()).filter(Boolean) : 
+        [],
+      linkedin: contact.linkedin || "",
+      location: [
+        contact.city,
+        contact.state,
+        contact.country_territory
+      ].filter(Boolean).join(", "),
+      companies: [contact.investor].filter(Boolean),
+      currentPosition: contact.job_title || "",
+      shortBio: contact.role || "",
+      email: contact.email || "",
+      phone: contact.tel || undefined,
+      // Optional fields
+      linkedinHandle: undefined,
+      profileImage: undefined,
+      jobHistory: undefined,
+      news: undefined,
+      lastUpdate: undefined
+    };
+
+    return person;
+  } catch (error) {
+    console.error('Error converting contact to person:', error, contact);
+    return null;
+  }
+};
+
 interface PersonsList2Props {
   currentPage: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (perPage: number) => void;
   selectedFirmTypes?: string[];
-  onFilterChange?: (firmTypes: string[]) => void;
+  onFilterChange?: (filters: {
+    firmTypes: string[];
+    companyName: string;
+    position: string;
+    location: string;
+    responsibilities: string;
+    bio: string;
+  }) => void;
 }
-
-// Helper function to convert Contact to Person type
-const contactToPerson = (contact: ContactType) => {
-  return {
-    id: contact.id.toString(),
-    name: contact.name,
-    favorite: contact.favorite || false,
-    responsibilities: contact.asset_class ? contact.asset_class.split(',') : [],
-    linkedin: contact.linkedin || "",
-    location: `${contact.city}${contact.state ? `, ${contact.state}` : ""}${contact.country_territory ? `, ${contact.country_territory}` : ""}`,
-    companies: [contact.investor || ""],
-    currentPosition: contact.job_title || "",
-    shortBio: contact.role || "",
-    email: contact.email
-  };
-};
 
 const PersonsList2 = ({
   currentPage,
@@ -45,11 +80,16 @@ const PersonsList2 = ({
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
+  const [companyNameFilter, setCompanyNameFilter] = useState("");
+  const [positionFilter, setPositionFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [responsibilitiesFilter, setResponsibilitiesFilter] = useState("");
+  const [bioFilter, setBioFilter] = useState("");
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const [totalContacts, setTotalContacts] = useState(0);
   
-  // Update local state when prop changes
   useEffect(() => {
     setLocalSelectedFirmTypes(selectedFirmTypes);
   }, [selectedFirmTypes]);
@@ -57,39 +97,81 @@ const PersonsList2 = ({
   const {
     contacts,
     isLoading,
-    totalContacts,
+    totalContacts: originalTotalContacts,
     setCurrentPage: setContactsCurrentPage,
     setItemsPerPage: setContactsItemsPerPage
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
-    firmTypes: localSelectedFirmTypes
+    firmTypes: localSelectedFirmTypes,
+    companyName: companyNameFilter,
+    position: positionFilter,
+    location: locationFilter,
+    responsibilities: responsibilitiesFilter,
+    bio: bioFilter
   });
 
-  // Get contacts to display - either search results or regular contacts
   const displayedContacts = isSearchActive ? searchResults : contacts;
+  console.log('Displayed contacts:', displayedContacts); // Debug log
   
-  // Convert contacts to persons format for the table
-  const persons = displayedContacts.map(contactToPerson);
+  const persons: PersonType[] = displayedContacts
+    .filter((contact): contact is ContactType => Boolean(contact))
+    .map(contact => {
+      const person = contactToPerson(contact);
+      return person;
+    })
+    .filter((person): person is PersonType => Boolean(person));
+
+  console.log('Final persons array:', persons); // Debug log
   
-  // Handle search
+  useEffect(() => {
+    // Reset search state when filters change
+    if (localSelectedFirmTypes.length > 0 || 
+        companyNameFilter || 
+        positionFilter || 
+        locationFilter || 
+        responsibilitiesFilter || 
+        bioFilter) {
+      // If we have filters active, we want to show filtered results, not search
+      if (isSearchActive) {
+        setIsSearchActive(false);
+        setSearchQuery("");
+      }
+    }
+  }, [localSelectedFirmTypes, companyNameFilter, positionFilter, locationFilter, responsibilitiesFilter, bioFilter]);
+
   const handleSearch = useCallback(async (query: string) => {
     if (!query) {
       setIsSearchActive(false);
       setSearchResults([]);
+      setTotalContacts(0);
       return;
     }
 
+    // Clear any active filters when searching
+    setLocalSelectedFirmTypes([]);
+    setCompanyNameFilter("");
+    setPositionFilter("");
+    setLocationFilter("");
+    setResponsibilitiesFilter("");
+    setBioFilter("");
+
     setIsSearching(true);
     try {
-      const results = await searchContactsByName(query);
-      setSearchResults(results);
+      const { data, total } = await searchContactsByName(
+        query,
+        currentPage,
+        itemsPerPage
+      );
+      
+      setSearchResults(data);
+      setTotalContacts(total);
       setIsSearchActive(true);
       
       toast({
-        title: results.length > 0 ? "Search Results" : "No Results",
-        description: results.length > 0 ? 
-          `Found ${results.length} results for "${query}"` : 
+        title: data.length > 0 ? "Search Results" : "No Results",
+        description: data.length > 0 ? 
+          `Found ${total} results for "${query}"` : 
           `No results found for "${query}"`,
       });
     } catch (error) {
@@ -99,12 +181,13 @@ const PersonsList2 = ({
         description: "Failed to perform search. Please try again.",
         variant: "destructive",
       });
+      setSearchResults([]);
+      setTotalContacts(0);
     } finally {
       setIsSearching(false);
     }
-  }, [toast]);
+  }, [currentPage, itemsPerPage, toast]);
   
-  // Use the extracted selection logic
   const { 
     selectedPersons, 
     handleCheckboxChange, 
@@ -112,17 +195,16 @@ const PersonsList2 = ({
     isPersonSelected 
   } = usePersonsSelection(persons);
 
-  // Use callbacks for handlers to prevent unnecessary re-renders
   const handlePageChange = useCallback((page: number) => {
-    // Only change page if not in search mode
-    if (!isSearchActive) {
-      onPageChange(page);
-      setContactsCurrentPage(page);
+    onPageChange(page);
+    setContactsCurrentPage(page);
+    
+    if (isSearchActive && searchQuery) {
+      handleSearch(searchQuery);
     }
-  }, [onPageChange, setContactsCurrentPage, isSearchActive]);
+  }, [onPageChange, setContactsCurrentPage, isSearchActive, searchQuery, handleSearch]);
 
   const handleItemsPerPageChange = useCallback((perPage: number) => {
-    // Only change page size if not in search mode
     if (!isSearchActive) {
       onItemsPerPageChange(perPage);
       setContactsItemsPerPage(perPage);
@@ -130,42 +212,45 @@ const PersonsList2 = ({
   }, [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive]);
 
   const toggleFavorite = useCallback((id: string) => {
-    // In a real application, this would be an API call to change the favorite status
     console.log(`Toggle favorite for person with ID: ${id}`);
   }, []);
   
-  // Handle firm type filter changes
-  const handleFilterChange = useCallback((firmTypes: string[]) => {
-    // Clear search when applying filters
-    if (isSearchActive) {
-      setIsSearchActive(false);
-      setSearchQuery('');
-    }
+  const handleFilterChange = (filters: {
+    firmTypes: string[];
+    companyName: string;
+    position: string;
+    location: string;
+    responsibilities: string;
+    bio: string;
+  }) => {
+    setLocalSelectedFirmTypes(filters.firmTypes);
+    setCompanyNameFilter(filters.companyName);
+    setPositionFilter(filters.position);
+    setLocationFilter(filters.location);
+    setResponsibilitiesFilter(filters.responsibilities);
+    setBioFilter(filters.bio);
     
-    setLocalSelectedFirmTypes(firmTypes);
-    // Call parent handler if provided
-    if (onFilterChange) {
-      onFilterChange(firmTypes);
-    }
-    
-    // Reset to first page when applying filters
+    // When applying filters, reset to page 1
     handlePageChange(1);
     
-    if (firmTypes.length > 0) {
-      toast({
-        title: "Filters Applied",
-        description: `Showing contacts filtered by ${firmTypes.join(', ')}`,
-      });
-    } else if (localSelectedFirmTypes.length > 0 && firmTypes.length === 0) {
-      toast({
-        title: "Filters Cleared",
-        description: "Showing all contacts",
-      });
+    // Let parent component know about filter change
+    if (onFilterChange) {
+      onFilterChange(filters);
     }
-  }, [handlePageChange, localSelectedFirmTypes, onFilterChange, toast, isSearchActive]);
+  };
 
-  const totalPages = Math.ceil(totalContacts / itemsPerPage) || 1;
-  const effectiveTotal = isSearchActive ? searchResults.length : totalContacts;
+  const effectiveTotal = isSearchActive ? totalContacts : originalTotalContacts;
+  const totalPages = Math.max(Math.ceil(effectiveTotal / itemsPerPage) || 1, 1);
+  
+  const hasActiveFilters = Boolean(
+    localSelectedFirmTypes.length > 0 || 
+    companyNameFilter || 
+    positionFilter || 
+    locationFilter || 
+    responsibilitiesFilter || 
+    bioFilter || 
+    isSearchActive
+  );
 
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
@@ -177,7 +262,7 @@ const PersonsList2 = ({
           setSearchQuery={setSearchQuery}
           totalContacts={effectiveTotal}
           isLoading={isLoading || isSearching}
-          hasActiveFilters={localSelectedFirmTypes.length > 0 || isSearchActive}
+          hasActiveFilters={hasActiveFilters}
         />
       </div>
       
@@ -185,6 +270,11 @@ const PersonsList2 = ({
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedFirmTypes={localSelectedFirmTypes}
+        companyNameFilter={companyNameFilter}
+        positionFilter={positionFilter}
+        locationFilter={locationFilter}
+        responsibilitiesFilter={responsibilitiesFilter}
+        bioFilter={bioFilter}
         onFilterChange={handleFilterChange}
         onSearch={handleSearch}
       />
@@ -202,11 +292,11 @@ const PersonsList2 = ({
       <PersonsListFooter 
         currentPage={currentPage}
         onPageChange={handlePageChange}
-        totalPages={isSearchActive ? 1 : totalPages}
+        totalPages={totalPages}
         totalItems={effectiveTotal}
-        itemsPerPage={isSearchActive ? searchResults.length : itemsPerPage}
+        itemsPerPage={itemsPerPage}
         onItemsPerPageChange={handleItemsPerPageChange}
-        disablePagination={isSearchActive}
+        disablePagination={false}
       />
     </div>
   );

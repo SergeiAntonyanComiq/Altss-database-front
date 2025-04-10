@@ -90,10 +90,6 @@ const PersonsPagination = ({
     }
   };
 
-  if (totalPages <= 1 && itemsPerPage >= totalItems) {
-      return null; 
-  }
-
   return (
     <div className="flex items-center justify-between w-full mt-6">
       <div className="items-stretch bg-white flex min-w-60 min-h-[46px] flex-col justify-center px-[13px] py-[11px] rounded-[3px] shadow-sm">

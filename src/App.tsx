@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import CompanyDetails from "./pages/CompanyDetails";
 import MyOrders from "./pages/MyOrders";
 import Favorites from "./pages/Favorites";
 import SavedSearches from "./pages/SavedSearches";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +75,11 @@ const App = () => (
             <Route path="/saved-searches" element={
               <ProtectedRoute>
                 <SavedSearches />
+              </ProtectedRoute>
+            } />
+            <Route path="/userprofile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } />
           </Routes>

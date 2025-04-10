@@ -1,127 +1,107 @@
+import React, { useState, useRef, useCallback } from "react";
+import { TableCheckbox } from "@/components/ui/table-checkbox";
 
-import React from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { GripVertical } from "lucide-react";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+export interface Column {
+  id: string;
+  width: number;
+  minWidth: number;
+}
 
 interface CompaniesTableHeaderProps {
   allSelected: boolean;
   toggleAllCompanies: () => void;
-  columnSizes: {
-    checkbox: number;
-    companyName: number;
-    companyType: number;
-    aum: number;
-    foundedYear: number;
-    knownTeam: number;
-    actions: number;
-  };
-  handleResize: (columnId: string) => (size: number) => void;
+  columns: Column[];
+  onColumnResize: (columns: Column[]) => void;
 }
 
-const CompaniesTableHeader = ({
-  allSelected,
-  toggleAllCompanies,
-  columnSizes,
-  handleResize
-}: CompaniesTableHeaderProps) => {
+const CompaniesTableHeader: React.FC<CompaniesTableHeaderProps> = ({ 
+  allSelected, 
+  toggleAllCompanies, 
+  columns,
+  onColumnResize
+}) => {
+  const [resizing, setResizing] = useState<string | null>(null);
+  const initialX = useRef<number>(0);
+  const initialWidth = useRef<number>(0);
+
+  const startResizing = useCallback((e: React.MouseEvent, columnId: string) => {
+    e.preventDefault();
+    setResizing(columnId);
+    initialX.current = e.clientX;
+    const column = columns.find(col => col.id === columnId);
+    if (column) {
+      initialWidth.current = column.width;
+    }
+  }, [columns]);
+
+  const stopResizing = useCallback(() => {
+    setResizing(null);
+  }, []);
+
+  const resize = useCallback((e: React.MouseEvent) => {
+    if (resizing) {
+      const diff = e.clientX - initialX.current;
+      const newColumns = columns.map(column => {
+        if (column.id === resizing) {
+          const newWidth = Math.max(column.minWidth, initialWidth.current + diff);
+          return { ...column, width: newWidth };
+        }
+        return column;
+      });
+      onColumnResize(newColumns);
+    }
+  }, [resizing, columns, onColumnResize]);
+
+  React.useEffect(() => {
+    if (resizing) {
+      document.addEventListener('mousemove', resize as any);
+      document.addEventListener('mouseup', stopResizing);
+      return () => {
+        document.removeEventListener('mousemove', resize as any);
+        document.removeEventListener('mouseup', stopResizing);
+      };
+    }
+  }, [resizing, resize, stopResizing]);
+
+  // Calculate total minimum width
+  const totalMinWidth = columns.reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+
   return (
-    <ResizablePanelGroup direction="horizontal" className="bg-gray-100 flex h-14 w-full">
-      <ResizablePanel 
-        defaultSize={columnSizes.checkbox} 
-        minSize={3} 
-        onResize={handleResize('checkbox')}
-        className="flex items-center justify-center min-w-[40px]"
+    <div 
+      className="bg-gray-100 flex h-12 w-full select-none rounded-t-lg"
+      style={{ minWidth: `${totalMinWidth}px` }}
+      onMouseMove={resize}
+    >
+      <div 
+        className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center rounded-tl-lg"
       >
-        <div className="flex min-h-11 w-full items-center gap-2.5 justify-center">
-          <Checkbox
-            id="selectAll"
+        <TableCheckbox
+            id="selectAllCompanies"
             checked={allSelected}
             onCheckedChange={toggleAllCompanies}
             aria-label="Select all companies"
-            className="h-5 w-5 rounded-md"
+        />
+      </div>
+      
+      {columns.map((column, index) => (
+        <div 
+          key={column.id}
+          className={`relative ${index === columns.length - 1 ? '' : 'border-r border-[rgba(223,228,234,1)]'} px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center ${index === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
+          style={{ width: column.width, minWidth: column.minWidth }}
+        >
+          {column.id === 'name' && "Company Name"}
+          {column.id === 'type' && "Company Type"}
+          {column.id === 'aum' && "AUM, $mln."}
+          {column.id === 'founded' && "Founded year"}
+          {column.id === 'team' && "Known Team"}
+          
+          <div
+            className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400 active:bg-blue-600"
+            onMouseDown={(e) => startResizing(e, column.id)}
           />
         </div>
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
-        <GripVertical className="h-4 w-4" />
-      </ResizableHandle>
-      
-      <ResizablePanel 
-        defaultSize={columnSizes.companyName} 
-        minSize={15} 
-        onResize={handleResize('companyName')}
-        className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
-      >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Name</div>
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
-        <GripVertical className="h-4 w-4" />
-      </ResizableHandle>
-      
-      <ResizablePanel 
-        defaultSize={columnSizes.companyType} 
-        minSize={10} 
-        onResize={handleResize('companyType')}
-        className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
-      >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Company Type</div>
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
-        <GripVertical className="h-4 w-4" />
-      </ResizableHandle>
-      
-      <ResizablePanel 
-        defaultSize={columnSizes.aum} 
-        minSize={10} 
-        onResize={handleResize('aum')}
-        className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
-      >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4">AUM, $mln.</div>
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
-        <GripVertical className="h-4 w-4" />
-      </ResizableHandle>
-      
-      <ResizablePanel 
-        defaultSize={columnSizes.foundedYear} 
-        minSize={8} 
-        onResize={handleResize('foundedYear')}
-        className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
-      >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Founded year</div>
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
-        <GripVertical className="h-4 w-4" />
-      </ResizableHandle>
-      
-      <ResizablePanel 
-        defaultSize={columnSizes.knownTeam} 
-        minSize={8} 
-        onResize={handleResize('knownTeam')}
-        className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
-      >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4">Known Team</div>
-      </ResizablePanel>
-      
-      <ResizableHandle withHandle className="transition-colors hover:bg-gray-300">
-        <GripVertical className="h-4 w-4" />
-      </ResizableHandle>
-      
-      <ResizablePanel 
-        defaultSize={columnSizes.actions} 
-        minSize={3} 
-        onResize={handleResize('actions')}
-        className="overflow-hidden text-sm text-gray-600 font-medium leading-none min-w-[40px]"
-      >
-        <div className="flex items-center min-h-11 w-full gap-2.5 justify-center">+</div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+      ))}
+    </div>
   );
 };
 

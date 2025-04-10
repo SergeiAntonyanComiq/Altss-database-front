@@ -2,10 +2,12 @@ export type OrderStatus = "Ready" | "In progress" | "Error";
 
 export interface OrderType {
   id: string;
-  profileName: string;
-  isFavorite: boolean;
+  name: string;
+  email?: string;
+  avatarUrl?: string;
+  favorite: boolean;
   type: string; // e.g., Person, Incubator, Venture Studio, Startup, VC, Family Office
   status: OrderStatus;
-  orderDate: string; // Assuming string format like 'DD.MM.YYYY'
+  date: string; // Assuming string format like 'DD.MM.YYYY'
   description: string;
 } 

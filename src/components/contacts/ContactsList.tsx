@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from "react";
 import { ContactType } from "@/types/contact";
-import { useQuery } from "@tanstack/react-query";
+import { useContactsData } from "@/hooks/useContactsData";
 import ContactsTable from "./ContactsTable";
 import PersonsSearchBar from "../personal/PersonsSearchBar";
 import PersonsPagination from "../personal/PersonsPagination";
@@ -108,93 +107,21 @@ const fetchContactIds = async (): Promise<number[]> => {
 const ContactsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedContacts, setSelectedContacts] = useState<number[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [contactIds, setContactIds] = useState<number[]>([]);
-  const [contacts, setContacts] = useState<ContactType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const [contactsPerPage, setContactsPerPage] = useState(10);
-  const totalContacts = 119418; // Total contacts in database
 
-  // Get list of contact IDs for current page
-  useEffect(() => {
-    const getContactIds = async () => {
-      try {
-        // For demo, we'll generate sequential IDs based on pagination
-        const startId = (currentPage - 1) * contactsPerPage + 1;
-        const endId = Math.min(startId + contactsPerPage - 1, totalContacts);
-        const pageIds = Array.from(
-          { length: endId - startId + 1 },
-          (_, i) => startId + i
-        );
-        setContactIds(pageIds);
-      } catch (err) {
-        console.error("Failed to fetch contact IDs:", err);
-        setError(err instanceof Error ? err : new Error("Unknown error"));
-        // Use mock data if fetching IDs fails
-        setContactIds(mockContacts.map(contact => contact.id));
-      }
-    };
-    
-    getContactIds();
-  }, [currentPage, contactsPerPage]);
-
-  // Fetch contacts for current page
-  useEffect(() => {
-    const fetchCurrentPageContacts = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        if (contactIds.length === 0) {
-          // If no contact IDs, use mock data
-          setContacts(mockContacts);
-          setIsLoading(false);
-          return;
-        }
-        
-        // Fetch each contact
-        const contactPromises = contactIds.map(id => fetchContact(id));
-        const fetchedContacts = await Promise.all(
-          contactPromises.map(promise => 
-            promise.catch(err => {
-              console.error("Error fetching a contact:", err);
-              return null; // Return null for failed contacts
-            })
-          )
-        );
-        
-        // Filter out null values (failed fetches) and add to state
-        const validContacts = fetchedContacts.filter(contact => contact !== null) as ContactType[];
-        
-        if (validContacts.length === 0) {
-          // If all fetches failed, use mock data
-          setContacts(mockContacts);
-          toast({
-            title: "Warning",
-            description: "Using demo data as we couldn't load contacts from the server.",
-            variant: "default",
-          });
-        } else {
-          setContacts(validContacts);
-        }
-      } catch (err) {
-        console.error("Error in contact fetching process:", err);
-        setError(err instanceof Error ? err : new Error("Unknown error"));
-        setContacts(mockContacts); // Fallback to mock data
-        
-        toast({
-          title: "Error",
-          description: "Failed to load contacts. Using demo data instead.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchCurrentPageContacts();
-  }, [contactIds]);
+  const {
+    contacts,
+    isLoading,
+    error,
+    totalContacts,
+    currentPage,
+    setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage
+  } = useContactsData({
+    initialPage: 1,
+    initialItemsPerPage: contactsPerPage
+  });
 
   useEffect(() => {
     if (error) {
@@ -224,13 +151,13 @@ const ContactsList = () => {
 
   const toggleFavorite = (id: number) => {
     // In a real application, this would be an API call to change the favorite status
-    setContacts(prev => 
-      prev.map(contact => 
-        contact.id === id 
-          ? { ...contact, favorite: !contact.favorite } 
-          : contact
-      )
+    // For now, we'll just update the local state
+    const updatedContacts = contacts.map(contact => 
+      contact.id === id 
+        ? { ...contact, favorite: !contact.favorite } 
+        : contact
     );
+    // Note: In a real app, you would update this through the useContactsData hook
     console.log(`Toggle favorite for contact with ID: ${id}`);
   };
 
@@ -240,71 +167,62 @@ const ContactsList = () => {
 
   const handleContactsPerPageChange = (value: number) => {
     setContactsPerPage(value);
+    setItemsPerPage(value);
     setCurrentPage(1); // Reset to first page when changing items per page
   };
+
+  if (error) {
+    return (
+      <div className="container py-6">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600">Error loading contacts</h2>
+          <p className="text-gray-600 mt-2">Please try refreshing the page</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Persons</h1>
         <div className="flex gap-4 items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Show:</span>
-            <Select
-              value={contactsPerPage.toString()}
-              onValueChange={(value) => handleContactsPerPageChange(parseInt(value, 10))}
-            >
-              <SelectTrigger className="w-[80px] h-8">
-                <SelectValue placeholder="10" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <span className="text-sm text-muted-foreground">
-            {isLoading ? "Loading..." : `Showing ${contacts.length} of ${totalContacts} items`}
-          </span>
+          <PersonsSearchBar
+            value={searchQuery}
+            onChange={(value) => setSearchQuery(value)}
+            placeholder="Search persons..."
+          />
+          <Select
+            value={String(contactsPerPage)}
+            onValueChange={(value) => handleContactsPerPageChange(Number(value))}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select items per page" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10 per page</SelectItem>
+              <SelectItem value="20">20 per page</SelectItem>
+              <SelectItem value="50">50 per page</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
-      
-      <PersonsSearchBar 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+
+      <ContactsTable
+        contacts={contacts}
+        isLoading={isLoading}
+        selectedContacts={selectedContacts}
+        onCheckboxChange={handleCheckboxChange}
+        onSelectAll={handleSelectAll}
+        onToggleFavorite={toggleFavorite}
       />
-      
+
       <div className="mt-4">
-        {isLoading ? (
-          <div className="flex justify-center p-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-700"></div>
-          </div>
-        ) : contacts.length > 0 ? (
-          <ContactsTable 
-            contacts={contacts}
-            selectedContacts={selectedContacts}
-            handleCheckboxChange={handleCheckboxChange}
-            handleSelectAll={handleSelectAll}
-            toggleFavorite={toggleFavorite}
-          />
-        ) : (
-          <div className="text-center p-12 text-muted-foreground">
-            No persons found
-          </div>
-        )}
-      </div>
-      
-      <div className="mt-4">
-        <PersonsPagination 
-          currentPage={currentPage} 
-          onPageChange={handlePageChange}
-          totalPages={Math.ceil(totalContacts / contactsPerPage)}
+        <PersonsPagination
+          currentPage={currentPage}
+          totalItems={totalContacts}
           itemsPerPage={contactsPerPage}
-          onItemsPerPageChange={handleContactsPerPageChange}
-          totalItems={totalContacts} // Add the totalItems prop
+          onPageChange={handlePageChange}
         />
       </div>
     </div>

@@ -41,15 +41,18 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
   onProfileClick,
   columns
 }) => {
+  // Calculate total minimum width
+  const totalMinWidth = columns.reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+  
   return (
-    <div className="flex w-full border-b border-[rgba(223,228,234,1)]">
+    <div className="flex w-full border-b border-[rgba(223,228,234,1)]" style={{ minWidth: `${totalMinWidth}px` }}>
       <div className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center py-3">
         <TableCheckbox
-          id={`person-${person.id}`}
-          checked={isSelected}
-          onCheckedChange={onCheckboxChange}
-          aria-label={`Select ${person.name}`}
-        />
+            id={`person-${person.id}`}
+            checked={isSelected}
+            onCheckedChange={onCheckboxChange}
+            aria-label={`Select ${person.name}`}
+          />
       </div>
       
       <div 
@@ -58,97 +61,120 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
         onClick={() => onProfileClick(person.id)}
       >
         <Avatar className="h-8 w-8 shrink-0">
-          <AvatarImage 
-            src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
-            alt={person.name} 
-          />
-          <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
-            {getInitials(person.name)}
-          </AvatarFallback>
-        </Avatar>
+              <AvatarImage 
+                src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
+                alt={person.name} 
+              />
+              <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                {getInitials(person.name)}
+              </AvatarFallback>
+            </Avatar>
         <div className="flex items-center gap-1 ml-1 flex-1 min-w-0">
           <span className="text-sm font-medium text-gray-800 truncate">
-            {person.name}
-          </span>
-          <button 
-            onClick={(e) => {
+              {person.name}
+            </span>
+            <button 
+              onClick={(e) => {
               e.stopPropagation();
-              toggleFavorite(person.id);
-            }}
+                toggleFavorite(person.id);
+              }}
             className="focus:outline-none ml-auto text-gray-400 hover:text-purple-500"
-          >
-            <Heart 
+            >
+              <Heart 
               className={`h-4 w-4 ${person.favorite ? 'text-purple-500 fill-purple-500' : ''}`} 
-            />
-          </button>
+              />
+            </button>
+          </div>
         </div>
-      </div>
       
       <div 
         className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
         style={{ width: columns[1].width, minWidth: columns[1].minWidth }}
       >
-        <p className="text-sm text-gray-600 line-clamp-2">
-          {person.shortBio || "-"}
-        </p>
+        <span className="text-sm text-gray-600">
+          {person.companies && person.companies.length > 0 ? person.companies[0] : "-"}
+        </span>
       </div>
       
       <div 
         className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
         style={{ width: columns[2].width, minWidth: columns[2].minWidth }}
       >
-        {person.currentPosition ? (
-           <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1 rounded-[30px] flex items-center overflow-hidden text-[rgba(1,69,199,1)] text-sm">
-            <span className="truncate block w-full">{person.currentPosition}</span>
-          </div>
-        ) : (
-          <span className="text-gray-500 text-sm">-</span>
-        )}
+        <p className="text-sm text-gray-600 line-clamp-2">
+            {person.shortBio || "-"}
+          </p>
       </div>
       
       <div 
-        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
+        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center overflow-hidden"
         style={{ width: columns[3].width, minWidth: columns[3].minWidth }}
       >
-        <div className="flex flex-wrap gap-1">
-          {person.responsibilities?.map((resp, index) => (
-            <Badge key={index} variant="outline" className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs border-blue-100">
-              {resp}
-            </Badge>
-          )) || <span className="text-gray-500 text-sm">-</span>}
-        </div>
+          {person.currentPosition ? (
+           <div className="bg-[rgba(219,229,254,1)] gap-2 px-3 py-1 rounded-[30px] flex items-center text-[rgba(1,69,199,1)] text-sm max-w-full" title={person.currentPosition}>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis">{person.currentPosition}</span>
+            </div>
+          ) : (
+          <span className="text-gray-500 text-sm">-</span>
+          )}
       </div>
       
       <div 
         className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
         style={{ width: columns[4].width, minWidth: columns[4].minWidth }}
       >
-        <div className="flex items-center gap-2">
-          <a href={`mailto:${person.email || `${person.name.toLowerCase().replace(' ', '.')}@example.com`}`} className="text-gray-600 hover:text-blue-600">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
-          </a>
-          <a href={ensureProtocol(person.linkedin)} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect width="4" height="12" x="2" y="9" /><circle cx="4" cy="4" r="2" /></svg>
-          </a>
-           {person.phone && (
-             <a href={`tel:${person.phone}`} className="text-gray-600 hover:text-blue-600">
-               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-             </a>
-           )}
+          <div className="flex flex-wrap gap-1">
+            {person.responsibilities?.map((resp, index) => (
+              <Badge key={index} variant="outline" className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs border-blue-100">
+                {resp}
+              </Badge>
+          )) || <span className="text-gray-500 text-sm">-</span>}
         </div>
       </div>
       
       <div 
-        className="px-4 py-3 flex items-center"
-        style={{ width: columns[5].width, minWidth: columns[5].minWidth }}
+        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center gap-2"
+        style={{ width: `${columns[5].width}px`, minWidth: `${columns[5].minWidth}px` }}
       >
-         {person.location ? (
-           <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1 rounded-[30px] flex items-center overflow-hidden text-[rgba(0,126,96,1)] text-sm">
-             <span className="truncate block w-full">{person.location}</span>
-           </div>
-         ) : (
+        {person.email && (
+          <a href={`mailto:${person.email}`} target="_blank" rel="noopener noreferrer">
+            <img 
+              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
+              alt="Email" 
+              className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+            />
+          </a>
+        )}
+        {person.linkedin && (
+          <a href={ensureProtocol(person.linkedin)} target="_blank" rel="noopener noreferrer">
+            <img 
+              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/beb16618d740a2aa8ec04b177ad0bb8cbdc7b395" 
+              alt="LinkedIn" 
+              className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+            />
+          </a>
+        )}
+        {person.phone && (
+          <a href={`tel:${person.phone}`} target="_blank" rel="noopener noreferrer">
+            <img 
+              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b" 
+              alt="Phone" 
+              className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+            />
+          </a>
+        )}
+      </div>
+      
+      <div 
+        className="px-4 py-3 flex items-center"
+        style={{ width: columns[6].width, minWidth: columns[6].minWidth }}
+      >
+          {person.location ? (
+           <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1 rounded-[30px] flex items-center text-[rgba(0,126,96,1)] text-sm">
+             <span className="whitespace-nowrap">{person.location}</span>
+            </div>
+          ) : (
            <span className="text-gray-500 text-sm">-</span>
-         )}
+          )}
       </div>
     </div>
   );

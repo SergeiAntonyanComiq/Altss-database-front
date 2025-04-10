@@ -1,12 +1,12 @@
-
 import React from "react";
 import { CompanyType } from "@/types/company";
-import CheckboxCell from "../table-cells/CheckboxCell";
+import { TableCheckbox } from "@/components/ui/table-checkbox";
 import CompanyNameCell from "../table-cells/CompanyNameCell";
 import CompanyTypeCell from "../table-cells/CompanyTypeCell";
 import AumCell from "../table-cells/AumCell";
 import FoundedYearCell from "../table-cells/FoundedYearCell";
 import TeamCell from "../table-cells/TeamCell";
+import { Column } from "./CompaniesTableHeader";
 
 interface CompanyTableRowProps {
   company: CompanyType;
@@ -14,71 +14,72 @@ interface CompanyTableRowProps {
   onToggleSelection: () => void;
   onViewCompany: () => void;
   onToggleFavorite: (e: React.MouseEvent) => void;
-  columnSizes: {
-    checkbox: number;
-    companyName: number;
-    companyType: number;
-    aum: number;
-    foundedYear: number;
-    knownTeam: number;
-    actions: number;
-  };
+  columns: Column[];
   formatAum: (aumValue: number | string | undefined | null) => string;
 }
 
-const CompanyTableRow = ({
+const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
   company,
   isSelected,
   onToggleSelection,
   onViewCompany,
   onToggleFavorite,
-  columnSizes,
+  columns,
   formatAum
 }: CompanyTableRowProps) => {
+  // Calculate total minimum width
+  const totalMinWidth = columns.reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+  
   return (
-    <div className="flex min-h-[50px] w-full border-b border-[#DFE4EA]">
-      {/* Checkbox cell */}
-      <div style={{width: `${columnSizes.checkbox}%`}} className="flex items-center justify-center min-w-[40px]">
-        <CheckboxCell
-          isSelected={isSelected}
-          onChange={onToggleSelection}
-          ariaLabel={`Select ${company.firm_name}`}
+    <div className="flex w-full border-b border-[rgba(223,228,234,1)]" style={{ minWidth: `${totalMinWidth}px` }}>
+      <div className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center py-3">
+        <TableCheckbox
+          id={`company-${company.id}`}
+          checked={isSelected}
+          onCheckedChange={onToggleSelection}
+          aria-label={`Select ${company.firm_name}`}
         />
       </div>
       
-      {/* Company Name cell */}
-      <div style={{width: `${columnSizes.companyName}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
+      <div 
+        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center gap-2.5 cursor-pointer"
+        style={{ width: columns[0].width, minWidth: columns[0].minWidth }}
+        onClick={onViewCompany}
+      >
         <CompanyNameCell
           companyName={company.firm_name}
           isFavorite={company.isFavorite || false}
-          onCompanyClick={() => onViewCompany()}
+          onCompanyClick={() => {}}
           onFavoriteClick={onToggleFavorite}
         />
       </div>
       
-      {/* Company Type cell */}
-      <div style={{width: `${columnSizes.companyType}%`}} className="overflow-hidden text-sm text-blue-700 font-medium leading-tight">
+      <div 
+        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
+        style={{ width: columns[1].width, minWidth: columns[1].minWidth }}
+      >
         <CompanyTypeCell type={company.firm_type || company.type || 'N/A'} />
       </div>
       
-      {/* AUM cell */}
-      <div style={{width: `${columnSizes.aum}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
+      <div 
+        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
+        style={{ width: columns[2].width, minWidth: columns[2].minWidth }}
+      >
         <AumCell aumFormatted={formatAum(company.aum)} />
       </div>
       
-      {/* Founded Year cell */}
-      <div style={{width: `${columnSizes.foundedYear}%`}} className="overflow-hidden text-sm text-gray-800 font-medium leading-tight">
+      <div 
+        className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center"
+        style={{ width: columns[3].width, minWidth: columns[3].minWidth }}
+      >
         <FoundedYearCell year={company.year_est} />
       </div>
       
-      {/* Known Team cell */}
-      <div style={{width: `${columnSizes.knownTeam}%`}} className="overflow-hidden text-sm text-green-700 font-medium leading-tight">
+      <div 
+        className="px-4 py-3 flex items-center"
+        style={{ width: columns[4].width, minWidth: columns[4].minWidth }}
+      >
         <TeamCell staffCount={company.total_staff} />
-      </div>
-      
-      {/* Actions cell */}
-      <div style={{width: `${columnSizes.actions}%`}} className="overflow-hidden min-w-[40px] flex items-center justify-center">
-        <div className="flex min-h-11 w-full items-center gap-2.5 justify-center"></div>
       </div>
     </div>
   );

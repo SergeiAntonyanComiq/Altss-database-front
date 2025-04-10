@@ -1,4 +1,3 @@
-
 // Sample news items for the Bio tab
 export const newsItems = [
   {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ContactType } from "@/types/contact";
 import { fetchContactById, fetchContactsCount, fetchFilteredContacts } from "@/services/contactsService";
@@ -8,6 +7,11 @@ interface UseContactsDataProps {
   initialPage: number;
   initialItemsPerPage: number;
   firmTypes?: string[];
+  companyName?: string;
+  position?: string;
+  location?: string;
+  responsibilities?: string;
+  bio?: string;
 }
 
 interface UseContactsDataReturn {
@@ -24,7 +28,12 @@ interface UseContactsDataReturn {
 export const useContactsData = ({
   initialPage,
   initialItemsPerPage,
-  firmTypes = []
+  firmTypes = [],
+  companyName = "",
+  position = "",
+  location = "",
+  responsibilities = "",
+  bio = ""
 }: UseContactsDataProps): UseContactsDataReturn => {
   const [contacts, setContacts] = useState<ContactType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -90,7 +99,7 @@ export const useContactsData = ({
     setItemsPerPage(perPage);
   }, []);
 
-  // Fetch contacts whenever page or items per page changes
+  // Fetch contacts whenever page, items per page, or filters change
   useEffect(() => {
     let isMounted = true;
     
@@ -101,42 +110,59 @@ export const useContactsData = ({
       }
       
       try {
-        let fetchedContacts: ContactType[] = [];
-
+        // Prepare filters object with pagination
+        const filters: Record<string, string | number> = {
+          limit: itemsPerPage,
+          offset: (currentPage - 1) * itemsPerPage,
+          sortBy: "name"
+        };
+        
+        // Add any active filters
         if (firmTypes.length > 0) {
-          // If firmTypes is provided, use the filtered endpoint with the first firm type
-          // In a real app, you might want to support multiple firm types at once
-          fetchedContacts = await fetchFilteredContacts({ firm_type: firmTypes[0] });
-          console.log(`Fetched ${fetchedContacts.length} contacts filtered by firm type: ${firmTypes[0]}`);
-        } else {
-          // If no filters, use the standard pagination approach
-          const startId = (currentPage - 1) * itemsPerPage + 1;
-          // Use totalContacts if available, otherwise limit to a reasonable number
-          const maxId = totalContacts || 50;
-          const endId = Math.min(startId + itemsPerPage - 1, maxId);
-          
-          console.log(`Fetching contacts from ID ${startId} to ${endId}, page ${currentPage}, items per page: ${itemsPerPage}, total: ${totalContacts}`);
-          
-          const contactPromises: Promise<ContactType>[] = [];
-          
-          // Fetch contacts one by one
-          for (let id = startId; id <= endId; id++) {
-            contactPromises.push(fetchContactById(id));
-          }
-          
-          // Wait for all requests to complete
-          fetchedContacts = await Promise.all(contactPromises);
-          console.log(`Fetched ${fetchedContacts.length} contacts`);
+          filters.firm_type = firmTypes.join(',');
         }
         
-        // Only update state if component is still mounted
-        if (isMounted) {
-          setContacts(fetchedContacts);
+        if (companyName) {
+          filters.investor = companyName;
         }
-      } catch (err) {
-        // Only update error state if component is still mounted
+
+        if (position) {
+          filters.job_title = position;
+        }
+
+        if (location) {
+          // Use city/country fields for location
+          if (location.includes(",")) {
+            const [city, country] = location.split(",").map(s => s.trim());
+            filters.city = city;
+            filters.country_territory = country;
+          } else {
+            // Try both fields
+            filters.location = location;
+          }
+        }
+
+        if (responsibilities) {
+          filters.asset_class = responsibilities;
+        }
+
+        if (bio) {
+          filters.role = bio;
+        }
+        
+        // Fetch contacts with filters applied
+        const response = await fetchFilteredContacts(filters);
+        console.log(`Fetched ${response.data.length} contacts for page ${currentPage}, itemsPerPage: ${itemsPerPage}, total: ${response.total}`);
+        
+        if (isMounted) {
+          setContacts(response.data);
+          setTotalContacts(response.total); // Update total contacts from response
+        }
+      } catch (err) { 
+        console.error("Error fetching contacts:", err);
         if (isMounted) {
           setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+          setContacts([]); // Clear contacts on error
           toast({
             title: "Error",
             description: "Failed to fetch contacts. Please try again later.",
@@ -144,7 +170,6 @@ export const useContactsData = ({
           });
         }
       } finally {
-        // Only update loading state if component is still mounted
         if (isMounted) {
           setIsLoading(false);
         }
@@ -157,7 +182,7 @@ export const useContactsData = ({
     return () => {
       isMounted = false;
     };
-  }, [currentPage, itemsPerPage, totalContacts, firmTypes]);
+  }, [currentPage, itemsPerPage, firmTypes, companyName, position, location, responsibilities, bio]);
   
   // Effect to sync with prop changes (but not on every render)
   useEffect(() => {

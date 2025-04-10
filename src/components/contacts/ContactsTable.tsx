@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,10 +10,11 @@ import { Link } from "react-router-dom";
 
 interface ContactsTableProps {
   contacts: ContactType[];
+  isLoading: boolean;
   selectedContacts: number[];
-  handleCheckboxChange: (contactId: number) => void;
-  handleSelectAll: () => void;
-  toggleFavorite: (id: number) => void;
+  onCheckboxChange: (contactId: number) => void;
+  onSelectAll: () => void;
+  onToggleFavorite: (id: number) => void;
 }
 
 const getAvatarFallback = (name: string) => {
@@ -45,11 +45,94 @@ const formatLinkedInUrl = (url: string) => {
 
 const ContactsTable = ({ 
   contacts, 
+  isLoading,
   selectedContacts, 
-  handleCheckboxChange, 
-  handleSelectAll, 
-  toggleFavorite 
+  onCheckboxChange, 
+  onSelectAll, 
+  onToggleFavorite 
 }: ContactsTableProps) => {
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-b border-gray-200">
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedContacts.length === contacts.length && contacts.length > 0}
+                  onCheckedChange={onSelectAll}
+                  className="h-4 w-4"
+                />
+              </TableHead>
+              <TableHead>Full Name</TableHead>
+              <TableHead>Company</TableHead>
+              <TableHead>Job Title</TableHead>
+              <TableHead>Asset Class</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Contact Info</TableHead>
+              <TableHead className="w-5">
+                <Button variant="ghost" size="icon" className="h-5 w-5 ml-2 rounded-full bg-blue-50">
+                  <Plus className="h-3 w-3 text-blue-600" />
+                  <span className="sr-only">Add column</span>
+                </Button>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={8} className="h-[400px]">
+                <div className="flex justify-center items-center h-full">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
+  if (!contacts || contacts.length === 0) {
+    return (
+      <div className="bg-white rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-b border-gray-200">
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedContacts.length === contacts.length && contacts.length > 0}
+                  onCheckedChange={onSelectAll}
+                  className="h-4 w-4"
+                />
+              </TableHead>
+              <TableHead>Full Name</TableHead>
+              <TableHead>Company</TableHead>
+              <TableHead>Job Title</TableHead>
+              <TableHead>Asset Class</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Contact Info</TableHead>
+              <TableHead className="w-5">
+                <Button variant="ghost" size="icon" className="h-5 w-5 ml-2 rounded-full bg-blue-50">
+                  <Plus className="h-3 w-3 text-blue-600" />
+                  <span className="sr-only">Add column</span>
+                </Button>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={8} className="h-[400px]">
+                <div className="flex justify-center items-center h-full text-gray-500">
+                  No contacts found
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       <Table>
@@ -58,7 +141,7 @@ const ContactsTable = ({
             <TableHead className="w-12">
               <Checkbox
                 checked={selectedContacts.length === contacts.length && contacts.length > 0}
-                onCheckedChange={handleSelectAll}
+                onCheckedChange={onSelectAll}
                 className="h-4 w-4"
               />
             </TableHead>
@@ -86,7 +169,7 @@ const ContactsTable = ({
               <TableCell>
                 <Checkbox
                   checked={selectedContacts.includes(contact.id)}
-                  onCheckedChange={() => handleCheckboxChange(contact.id)}
+                  onCheckedChange={() => onCheckboxChange(contact.id)}
                   className="h-4 w-4"
                 />
               </TableCell>
@@ -110,7 +193,7 @@ const ContactsTable = ({
                         {contact.title} {contact.name}
                       </Link>
                       <button 
-                        onClick={() => toggleFavorite(contact.id)}
+                        onClick={() => onToggleFavorite(contact.id)}
                         className="focus:outline-none"
                       >
                         <Heart 

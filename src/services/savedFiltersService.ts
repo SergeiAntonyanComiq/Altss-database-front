@@ -1,8 +1,8 @@
-
 interface SavedFilter {
   id: string;
   name: string;
   firmTypes: string[];
+  companyName?: string;
   createdAt: number;
 }
 
@@ -19,13 +19,14 @@ export const getSavedFilters = (): SavedFilter[] => {
 /**
  * Saves a new filter to localStorage
  */
-export const saveFilter = (name: string, firmTypes: string[]): SavedFilter => {
+export const saveFilter = (name: string, firmTypes: string[], companyName?: string): SavedFilter => {
   const filters = getSavedFilters();
   
   const newFilter: SavedFilter = {
     id: Date.now().toString(),
     name,
     firmTypes,
+    companyName,
     createdAt: Date.now()
   };
   

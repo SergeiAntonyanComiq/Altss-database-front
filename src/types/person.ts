@@ -1,4 +1,3 @@
-
 export interface PersonType {
   id: string;
   name: string;
@@ -15,4 +14,5 @@ export interface PersonType {
   news?: string;
   lastUpdate?: string;
   email?: string; // Adding email property
+  phone?: string; // Adding phone property
 }

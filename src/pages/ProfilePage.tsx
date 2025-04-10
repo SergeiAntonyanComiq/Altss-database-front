@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
@@ -11,6 +10,7 @@ import ProfileTabs from "@/components/profile/ProfileTabs";
 import ProfileSkeleton from "@/components/profile/ProfileSkeleton";
 import ProfileNotFound from "@/components/profile/ProfileNotFound";
 import { newsItems } from "@/components/profile/newsItems";
+import { fetchContactById } from "@/services/contactsService";
 
 const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("details");
@@ -30,35 +30,34 @@ const ProfilePage: React.FC = () => {
         description: "No contact ID provided",
         variant: "destructive",
       });
-      navigate("/cabinet3");
+      navigate("/persons");
       return;
     }
     
-    setIsLoading(true);
-    
-    // Fetch contact data from API
-    fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${id}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
+    const loadContact = async () => {
+      setIsLoading(true);
+      try {
+        const contactData = await fetchContactById(id);
+        console.log("Contact data fetched:", contactData);
+        
+        if (!contactData) {
+          throw new Error("Contact not found");
         }
-        return response.json();
-      })
-      .then(data => {
-        console.log("Contact data fetched:", data);
-        setContact(data);
-      })
-      .catch(error => {
+        
+        setContact(contactData);
+      } catch (error) {
         console.error("Error fetching contact:", error);
         toast({
           title: "Error",
           description: "Failed to load contact data",
           variant: "destructive",
         });
-      })
-      .finally(() => {
+      } finally {
         setIsLoading(false);
-      });
+      }
+    };
+
+    loadContact();
   }, [id, navigate, toast]);
 
   return (

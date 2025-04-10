@@ -1,11 +1,17 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { LogOut, ChevronRight } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +25,7 @@ import {
   SidebarSeparator,
   useSidebar
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -26,6 +33,43 @@ const AppSidebar = () => {
   const { user, signOut } = useAuth();
   const { state } = useSidebar();
   const { toast } = useToast();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>("");
+
+  // Fetch user profile including avatar when component mounts
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, avatar_url')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) {
+          console.error('Error fetching user profile:', error);
+          return;
+        }
+        
+        if (data) {
+          setAvatarUrl(data.avatar_url || null);
+          
+          // Set user name for display
+          const firstName = data.first_name || '';
+          const lastName = data.last_name || '';
+          if (firstName || lastName) {
+            setUserName(`${firstName} ${lastName}`.trim());
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [user]);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -85,6 +129,15 @@ const AppSidebar = () => {
   ];
 
   const getUserInitials = () => {
+    if (userName) {
+      const nameParts = userName.split(' ');
+      if (nameParts.length >= 2) {
+        return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+      } else if (nameParts.length === 1) {
+        return nameParts[0].substring(0, 2).toUpperCase();
+      }
+    }
+    
     if (!user) return "UN";
     
     const email = user.email || "";
@@ -144,31 +197,35 @@ const AppSidebar = () => {
         
         <SidebarFooter className="mt-auto p-6 border-t border-[#DFE4EA]">
           <div className="flex flex-col gap-4">
-            <div 
-              className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors"
-              onClick={() => handleNavigation("/profile")}
-            >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors">
               <Avatar>
                 <AvatarImage 
-                  src="/lovable-uploads/f2ffbc77-be76-493c-8814-ac0ecdaa34e5.png" 
+                      src={avatarUrl || ""} 
                   alt="User Profile"
-                  className="rounded-full" 
+                      className="rounded-full object-cover" 
                 />
-                <AvatarFallback className="bg-gray-200 text-gray-700">{getUserInitials()}</AvatarFallback>
+                    <AvatarFallback>{getUserInitials()}</AvatarFallback>
               </Avatar>
               <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">
-                {user?.email || "User Name"}
+                    {userName || user?.email || "User Name"}
               </span>
             </div>
-            
-            <Button 
-              variant="outline" 
-              className="flex items-center justify-start text-[#637381] hover:bg-gray-100 hover:text-gray-700 text-[15px] px-4 h-10 w-full border-gray-200"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-5 w-5 mr-3" />
-              <span>Log Out</span>
-            </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[200px] rounded-md bg-[rgba(0,39,115,1)] text-white p-0 border-none">
+                <DropdownMenuItem onClick={handleLogout} className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer">
+                  Sign-out
+                </DropdownMenuItem>
+                <div className="border-t border-[rgba(225,232,255,1)] w-full my-[5px]" />
+                <DropdownMenuItem onClick={() => window.open('mailto:support@altss.com')} className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer">
+                  Contact Support
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleNavigation("/userprofile")} className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer">
+                  Open My Profile
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </SidebarFooter>
       </Sidebar>

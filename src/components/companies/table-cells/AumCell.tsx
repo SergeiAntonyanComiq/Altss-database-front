@@ -1,4 +1,3 @@
-
 import React from "react";
 
 interface AumCellProps {
@@ -6,8 +5,8 @@ interface AumCellProps {
 }
 
 const AumCell = ({ aumFormatted }: AumCellProps) => (
-  <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-    <span className="text-sm">{aumFormatted}</span>
+  <div className="flex min-h-11 w-full items-center gap-2.5">
+    <span className="text-sm text-gray-600">{aumFormatted}</span>
   </div>
 );
 

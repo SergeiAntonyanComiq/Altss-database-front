@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Heart } from "lucide-react";
 
@@ -10,19 +9,16 @@ interface CompanyNameCellProps {
 }
 
 const CompanyNameCell = ({ companyName, isFavorite, onCompanyClick, onFavoriteClick }: CompanyNameCellProps) => (
-  <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
-    <div 
-      className="flex-1 cursor-pointer truncate text-sm"
-      onClick={onCompanyClick}
-    >
+  <div className="flex items-center gap-1 ml-1 flex-1 min-w-0">
+    <span className="text-sm font-medium text-gray-800 truncate">
       {companyName}
-    </div>
-    <button
+    </span>
+    <button 
       onClick={onFavoriteClick}
-      className="ml-2 flex items-center justify-center flex-shrink-0"
+      className="focus:outline-none ml-auto text-gray-400 hover:text-purple-500"
     >
       <Heart 
-        className={`h-5 w-5 cursor-pointer ${isFavorite ? 'text-purple-500 fill-purple-500' : 'text-gray-300'}`} 
+        className={`h-4 w-4 ${isFavorite ? 'text-purple-500 fill-purple-500' : ''}`} 
       />
     </button>
   </div>

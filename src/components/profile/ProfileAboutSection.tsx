@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ContactType } from "@/types/contact";
 

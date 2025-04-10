@@ -44,7 +44,7 @@ const OrdersTableHeader: React.FC<OrdersTableHeaderProps> = ({
             checked={allSelected}
             onCheckedChange={handleSelectAll}
             aria-label="Select all orders"
-            className="h-5 w-5 rounded-md border-[#C4CDD5]"
+            className="h-5 w-5 rounded-md border-gray-300"
           />
         </div>
       </ResizablePanel>
@@ -59,9 +59,9 @@ const OrdersTableHeader: React.FC<OrdersTableHeaderProps> = ({
         onResize={onResize('profileName')}
         className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
       >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer" onClick={() => handleSortClick('profileName')}>
-          Profile name
-          <ArrowUpDown className="ml-2 h-4 w-4 text-[#C4CDD5]" />
+        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer hover:text-gray-900" onClick={() => handleSortClick('profileName')}>
+          <span className="font-semibold">Profile name</span>
+          <ArrowUpDown className="ml-2 h-4 w-4 text-gray-400" />
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle className="bg-[#DFE4EA] hover:bg-gray-300 transition-colors">
@@ -75,9 +75,9 @@ const OrdersTableHeader: React.FC<OrdersTableHeaderProps> = ({
         onResize={onResize('type')}
         className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
       >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer" onClick={() => handleSortClick('type')}>
-          Type
-          <ArrowUpDown className="ml-2 h-4 w-4 text-[#C4CDD5]" />
+        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer hover:text-gray-900" onClick={() => handleSortClick('type')}>
+          <span className="font-semibold">Type</span>
+          <ArrowUpDown className="ml-2 h-4 w-4 text-gray-400" />
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle className="bg-[#DFE4EA] hover:bg-gray-300 transition-colors">
@@ -91,9 +91,9 @@ const OrdersTableHeader: React.FC<OrdersTableHeaderProps> = ({
         onResize={onResize('status')}
         className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
       >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer" onClick={() => handleSortClick('status')}>
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4 text-[#C4CDD5]" />
+        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer hover:text-gray-900" onClick={() => handleSortClick('status')}>
+          <span className="font-semibold">Status</span>
+          <ArrowUpDown className="ml-2 h-4 w-4 text-gray-400" />
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle className="bg-[#DFE4EA] hover:bg-gray-300 transition-colors">
@@ -107,9 +107,9 @@ const OrdersTableHeader: React.FC<OrdersTableHeaderProps> = ({
         onResize={onResize('orderDate')}
         className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
       >
-        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer" onClick={() => handleSortClick('orderDate')}>
-          Order Data
-          <ArrowUpDown className="ml-2 h-4 w-4 text-[#C4CDD5]" />
+        <div className="flex items-center min-h-11 w-full gap-2.5 px-4 cursor-pointer hover:text-gray-900" onClick={() => handleSortClick('orderDate')}>
+          <span className="font-semibold">Order Data</span>
+          <ArrowUpDown className="ml-2 h-4 w-4 text-gray-400" />
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle className="bg-[#DFE4EA] hover:bg-gray-300 transition-colors">
@@ -124,8 +124,7 @@ const OrdersTableHeader: React.FC<OrdersTableHeaderProps> = ({
         className="overflow-hidden text-sm text-gray-600 font-medium leading-none"
       >
         <div className="flex items-center min-h-11 w-full gap-2.5 px-4">
-          Description of Request
-          {/* No sort icon for description based on mockup */}
+          <span className="font-semibold">Description of Request</span>
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

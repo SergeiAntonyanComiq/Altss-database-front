@@ -1,4 +1,3 @@
-
 import React from "react";
 
 interface TeamCellProps {
@@ -6,13 +5,13 @@ interface TeamCellProps {
 }
 
 const TeamCell = ({ staffCount }: TeamCellProps) => (
-  <div className="flex min-h-11 w-full items-center gap-2.5 px-4">
+  <div className="flex min-h-11 w-full items-center gap-2.5">
     {staffCount ? (
-      <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1.5 rounded-[30px] flex items-center overflow-hidden">
-        <span className="truncate block w-full text-sm">{staffCount}</span>
+      <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1 rounded-[30px] flex items-center overflow-hidden text-[rgba(0,126,96,1)] text-sm">
+        <span className="truncate block w-full">{staffCount}</span>
       </div>
     ) : (
-      <span className="flex items-center text-sm">N/A</span>
+      <span className="text-gray-500 text-sm">N/A</span>
     )}
   </div>
 );

@@ -16,7 +16,7 @@ interface PersonTableHeaderProps {
 
 const PersonTableHeader: React.FC<PersonTableHeaderProps> = ({ 
   allSelected, 
-  handleSelectAll,
+  handleSelectAll, 
   columns,
   onColumnResize
 }) => {
@@ -63,34 +63,39 @@ const PersonTableHeader: React.FC<PersonTableHeaderProps> = ({
     }
   }, [resizing, resize, stopResizing]);
 
+  // Calculate total minimum width
+  const totalMinWidth = columns.reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+
   return (
     <div 
-      className="bg-gray-100 flex h-12 w-full select-none"
+      className="bg-gray-100 flex h-12 w-full select-none rounded-t-lg"
+      style={{ minWidth: `${totalMinWidth}px` }}
       onMouseMove={resize}
     >
       <div 
-        className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center"
+        className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center rounded-tl-lg"
       >
         <TableCheckbox
-          id="selectAll"
-          checked={allSelected}
-          onCheckedChange={handleSelectAll}
-          aria-label="Select all persons"
+            id="selectAll"
+            checked={allSelected}
+            onCheckedChange={handleSelectAll}
+            aria-label="Select all persons"
         />
       </div>
       
       {columns.map((column, index) => (
         <div 
           key={column.id}
-          className="relative border-r border-[rgba(223,228,234,1)] px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center"
+          className={`relative ${index === columns.length - 1 ? '' : 'border-r border-[rgba(223,228,234,1)]'} px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center ${index === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
           style={{ width: column.width, minWidth: column.minWidth }}
         >
           {index === 0 && "Full Name"}
-          {index === 1 && "Bio / About"}
-          {index === 2 && "Position"}
-          {index === 3 && "Areas of Responsibility"}
-          {index === 4 && "Contacts"}
-          {index === 5 && "Location"}
+          {index === 1 && "Company"}
+          {index === 2 && "Bio / About"}
+          {index === 3 && "Position"}
+          {index === 4 && "Areas of Responsibility"}
+          {index === 5 && "Contacts"}
+          {index === 6 && "Location"}
           
           <div
             className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400 active:bg-blue-600"
