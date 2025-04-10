@@ -1,87 +1,61 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CompanyType } from "@/types/company";
-
-const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
-
-// Define the range of company IDs we'll use for pagination
-const MIN_COMPANY_ID = 1;
-const MAX_COMPANY_ID = 32646;
-const TOTAL_COMPANIES = MAX_COMPANY_ID - MIN_COMPANY_ID + 1;
+import { 
+  fetchFilteredFundManagers, 
+  fetchFundManagersCount 
+} from "@/services/fundManagersService";
 
 export function useCompaniesData(currentPage: number, itemsPerPage: number) {
   const [companies, setCompanies] = useState<CompanyType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchCompanies();
+    fetchCompaniesData();
   }, [currentPage, itemsPerPage]);
 
-  const fetchCompanies = async () => {
+  // Fetch total count once on component mount
+  useEffect(() => {
+    fetchTotalCount();
+  }, []);
+
+  const fetchTotalCount = async () => {
+    try {
+      const total = await fetchFundManagersCount();
+      setTotalItems(total);
+      setTotalPages(Math.ceil(total / itemsPerPage));
+    } catch (err) {
+      console.error("Error fetching total companies count:", err);
+      toast({
+        title: "Error",
+        description: "Could not fetch total companies count. Pagination may be inaccurate.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchCompaniesData = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Calculate the start and end IDs for the current page
-      const startId = MIN_COMPANY_ID + (currentPage - 1) * itemsPerPage;
-      let endId = startId + itemsPerPage - 1;
-      if (endId > MAX_COMPANY_ID) endId = MAX_COMPANY_ID;
+      const offset = (currentPage - 1) * itemsPerPage;
       
-      // Create an array of IDs for the current page
-      const pageIds = Array.from({ length: endId - startId + 1 }, (_, i) => startId + i);
+      const response = await fetchFilteredFundManagers({
+        limit: itemsPerPage,
+        offset: offset,
+        sortBy: "firm_name"
+      });
       
-      // Fetch companies for these IDs
-      const companyPromises = pageIds.map(id => 
-        fetch(`${API_BASE_URL}/fund_managers/${id}`)
-          .then(response => {
-            if (!response.ok) {
-              if (response.status === 404) {
-                // Not found is expected for some IDs, return null
-                return null;
-              }
-              throw new Error(`Failed to fetch company with ID ${id}`);
-            }
-            return response.json();
-          })
-          .catch(err => {
-            console.warn(`Error fetching company ${id}:`, err);
-            return null; // Skip failed requests
-          })
-      );
+      console.log(`Fetched ${response.data.length} companies for page ${currentPage}`);
       
-      const results = await Promise.all(companyPromises);
-      
-      // Filter out null results (404s)
-      const fetchedCompanies = results
-        .filter(company => company !== null)
-        .map((company) => {
-          return {
-            ...company,
-            // Make sure we have all required fields for the CompanyType
-            id: String(company.id || ''),
-            firm_name: company.firm_name || 'N/A',
-            name: company.firm_name || 'N/A',
-            type: company.firm_type || 'N/A',
-            location: `${company.city || 'N/A'}, ${company.state_county || 'N/A'}`,
-            employees: company.total_staff ? parseInt(company.total_staff) : 'N/A',
-            revenue: `$${Math.floor(Math.random() * 70) + 5}M`, // Mock data as not in API
-            status: Math.random() > 0.2 ? 'Active' : 'Inactive', // Mock data as not in API
-            aum: company.total_assets_under_management_usd_mn || 
-                 company.pe_portfolio_company_maximum_value_usd_mn || 
-                 (Math.random() * 3000) + 100,
-            foundedYear: company.year_est ? `${company.year_est}` : 'N/A',
-            isFavorite: false // Default to not favorite
-          };
-        });
-
-      // Calculate total pages based on total companies count
-      setTotalPages(Math.ceil(TOTAL_COMPANIES / itemsPerPage));
-      
-      setCompanies(fetchedCompanies);
+      setCompanies(response.data);
+      setTotalItems(response.total);
+      setTotalPages(Math.ceil(response.total / itemsPerPage));
     } catch (err) {
       console.error("Error fetching companies:", err);
       setError("Failed to load companies. Please try again later.");
@@ -100,6 +74,6 @@ export function useCompaniesData(currentPage: number, itemsPerPage: number) {
     isLoading, 
     error, 
     totalPages,
-    TOTAL_COMPANIES
+    totalItems
   };
 }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
@@ -9,8 +8,7 @@ import CompanyProfileSkeleton from "@/components/company/CompanyProfileSkeleton"
 import CompanyNotFound from "@/components/company/CompanyNotFound";
 import CompanyProfileTabs from "@/components/company/CompanyProfileTabs";
 import CompanyProfileHeader from "@/components/company/CompanyProfileHeader";
-
-const API_BASE_URL = "https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu";
+import { fetchFundManagerById } from "@/services/fundManagersService";
 
 const CompanyDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,61 +32,42 @@ const CompanyDetails: React.FC = () => {
       return;
     }
     
-    setIsLoading(true);
-    setError(null);
-    
-    fetchCompanyDetails(id);
-  }, [id, navigate, toast]);
-
-  const fetchCompanyDetails = async (companyId: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/fund_managers/${companyId}`);
+    const fetchCompanyData = async () => {
+      setIsLoading(true);
+      setError(null);
       
-      if (!response.ok) {
-        if (response.status === 404) {
+      try {
+        const fetchedCompany = await fetchFundManagerById(id);
+        
+        if (fetchedCompany) {
+          console.log("Fetched company details:", fetchedCompany);
+          setCompany({
+            ...fetchedCompany,
+            last_updated: fetchedCompany.last_updated || "Recently updated"
+          });
+        } else {
           toast({
             title: "Company not found",
-            description: "The requested company does not exist",
+            description: `We couldn't find details for the company with ID: ${id}`,
             variant: "destructive",
           });
           navigate("/companies");
-          return;
         }
-        throw new Error(`Failed to fetch company details: ${response.statusText}`);
+      } catch (error) {
+        console.error("Error fetching company details:", error);
+        setError("Failed to load company details. Please try again later.");
+        toast({
+          title: "Error",
+          description: "Failed to load company details. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
-      
-      const data = await response.json();
-      
-      // Format the data to fit our CompanyType, only using actual data
-      const companyData: CompanyType = {
-        ...data,
-        id: String(data.id || ''),
-        firm_name: data.firm_name?.trim() || 'N/A',
-        name: data.firm_name?.trim() || 'N/A',
-        type: data.firm_type || '',
-        location: data.city && data.state_county ? `${data.city}, ${data.state_county}` : (data.city || data.state_county || ''),
-        employees: data.total_staff || '',
-        employees_count: data.total_staff || '',
-        aum: data.total_assets_under_management_usd_mn || undefined,
-        foundedYear: data.year_est || '',
-        founded_year: data.year_est || '',
-        isFavorite: false, // Default value
-        last_updated: "4 weeks ago" // Mock data as not in API
-      };
-      
-      setCompany(companyData);
-    } catch (err) {
-      console.error("Error fetching company details:", err);
-      setError("Failed to load company details. Please try again later.");
-      toast({
-        title: "Error",
-        description: "Failed to load company details. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+    
+    fetchCompanyData();
+  }, [id, navigate, toast]);
 
   return (
     <SidebarProvider>
@@ -104,7 +83,7 @@ const CompanyDetails: React.FC = () => {
               <div className="bg-white shadow rounded-lg overflow-hidden">
                 <CompanyProfileHeader 
                   company={{
-                    name: company.firm_name,
+                    name: company.name || company.firm_name || "",
                     last_updated: company.last_updated
                   }} 
                 />

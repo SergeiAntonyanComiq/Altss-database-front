@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -9,27 +8,7 @@ import CompanyProfileTabs from "@/components/company/CompanyProfileTabs";
 import CompanyProfileSkeleton from "@/components/company/CompanyProfileSkeleton";
 import CompanyNotFound from "@/components/company/CompanyNotFound";
 import { CompanyType } from "@/types/company";
-
-const mockCompanyData: CompanyType = {
-  id: "1",
-  firm_name: "ACME Long Name Super Long Inc.",
-  name: "ACME Long Name Super Long Inc.",
-  industry: "Technology",
-  location: "San Francisco, USA",
-  founded_year: 2005,
-  description: "A leading technology company specializing in innovative solutions.",
-  website: "https://www.acme.com",
-  employees_count: "1000-5000",
-  revenue: "$100M-$500M",
-  ceo: "John Smitty",
-  headquarters: "San Francisco, California",
-  registration_id: "ID Number",
-  last_updated: "4 weeks ago",
-  social: {
-    linkedin: "linkedin.com/lorem-ipsum-2025",
-    twitter: "x.com/lorem-ipsum-2025"
-  }
-};
+import { fetchFundManagerById } from "@/services/fundManagersService";
 
 const CompanyProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("details");
@@ -52,14 +31,34 @@ const CompanyProfile: React.FC = () => {
       return;
     }
     
-    setIsLoading(true);
+    const fetchCompanyData = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedCompany = await fetchFundManagerById(id);
+        
+        if (fetchedCompany) {
+          console.log("Fetched company:", fetchedCompany);
+          setCompany(fetchedCompany);
+        } else {
+          toast({
+            title: "Company not found",
+            description: `We couldn't find details for the company with ID: ${id}`,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching company:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load company details. Please try again later.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Simulate API fetch - replace with actual API call in production
-    setTimeout(() => {
-      setCompany(mockCompanyData);
-      setIsLoading(false);
-    }, 1000);
-    
+    fetchCompanyData();
   }, [id, navigate, toast]);
 
   return (
@@ -76,7 +75,7 @@ const CompanyProfile: React.FC = () => {
               <CompanyProfileHeader 
                 company={{
                   name: company.name || company.firm_name || "",
-                  last_updated: company.last_updated
+                  last_updated: company.last_updated || "N/A"
                 }} 
               />
               <CompanyProfileTabs 

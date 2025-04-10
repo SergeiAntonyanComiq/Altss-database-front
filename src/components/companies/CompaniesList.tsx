@@ -28,7 +28,7 @@ const CompaniesList = ({
     isLoading, 
     error, 
     totalPages,
-    TOTAL_COMPANIES
+    totalItems
   } = useCompaniesData(currentPage, itemsPerPage);
   
   const {
@@ -102,14 +102,14 @@ const CompaniesList = ({
         />
       </div>
       
-      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-[122px] max-md:mt-10">
+      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
         <PersonsPagination 
           currentPage={currentPage}
           onPageChange={onPageChange}
           totalPages={totalPages}
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={onItemsPerPageChange}
-          totalItems={TOTAL_COMPANIES}
+          totalItems={totalItems}
         />
       </div>
     </div>
