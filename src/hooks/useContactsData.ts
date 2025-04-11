@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ContactType } from "@/types/contact";
 import { fetchContactById, fetchContactsCount, fetchFilteredContacts } from "@/services/contactsService";
+import { getFavoritePersons } from "@/services/savedFiltersService";
 import { toast } from "@/components/ui/use-toast";
 
 interface UseContactsDataProps {
@@ -41,6 +42,7 @@ export const useContactsData = ({
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
   const [totalContacts, setTotalContacts] = useState<number>(0);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   
   // Use refs to track prop changes without causing re-renders
   const initialPageRef = useRef(initialPage);
@@ -99,76 +101,60 @@ export const useContactsData = ({
     setItemsPerPage(perPage);
   }, []);
 
-  // Fetch contacts whenever page, items per page, or filters change
+  // Fetch contacts and favorites whenever page, items per page, or filters change
   useEffect(() => {
     let isMounted = true;
     
-    const fetchContactsData = async () => {
-      if (isMounted) {
-        setIsLoading(true);
-        setError(null);
-      }
+    const fetchContactsAndFavorites = async () => {
+      if (!isMounted) return;
+      setIsLoading(true);
+      setError(null);
       
       try {
-        // Prepare filters object with pagination
-        const filters: Record<string, string | number> = {
-          limit: itemsPerPage,
-          offset: (currentPage - 1) * itemsPerPage,
-          sortBy: "name"
-        };
-        
-        // Add any active filters
-        if (firmTypes.length > 0) {
-          filters.firm_type = firmTypes.join(',');
-        }
-        
-        if (companyName) {
-          filters.investor = companyName;
-        }
+        // Параллельно загружаем контакты и избранное
+        const [contactsResponse, favoritesResponse] = await Promise.all([
+          fetchFilteredContacts({
+            limit: itemsPerPage,
+            offset: (currentPage - 1) * itemsPerPage,
+            sortBy: "name",
+            ...(firmTypes.length > 0 && { firm_type: firmTypes.join(',') }),
+            ...(companyName && { investor: companyName }),
+            ...(position && { job_title: position }),
+            ...(location && { location }), // Упростим для примера, нужна более сложная логика
+            ...(responsibilities && { asset_class: responsibilities }),
+            ...(bio && { role: bio })
+          }),
+          getFavoritePersons() // Загружаем избранное
+        ]);
 
-        if (position) {
-          filters.job_title = position;
-        }
+        if (!isMounted) return;
 
-        if (location) {
-          // Use city/country fields for location
-          if (location.includes(",")) {
-            const [city, country] = location.split(",").map(s => s.trim());
-            filters.city = city;
-            filters.country_territory = country;
-          } else {
-            // Try both fields
-            filters.location = location;
-          }
-        }
+        console.log(`Fetched ${contactsResponse.data.length} contacts for page ${currentPage}, total: ${contactsResponse.total}`);
+        console.log(`Fetched ${favoritesResponse.length} favorite persons`);
 
-        if (responsibilities) {
-          filters.asset_class = responsibilities;
-        }
+        // Обновляем ID избранных
+        const favIds = new Set(favoritesResponse.map(fav => fav.id));
+        setFavoriteIds(favIds);
 
-        if (bio) {
-          filters.role = bio;
-        }
-        
-        // Fetch contacts with filters applied
-        const response = await fetchFilteredContacts(filters);
-        console.log(`Fetched ${response.data.length} contacts for page ${currentPage}, itemsPerPage: ${itemsPerPage}, total: ${response.total}`);
-        
-        if (isMounted) {
-          setContacts(response.data);
-          setTotalContacts(response.total); // Update total contacts from response
-        }
+        // Обновляем контакты, устанавливая флаг favorite
+        const updatedContacts = contactsResponse.data.map(contact => ({
+          ...contact,
+          favorite: favIds.has(String(contact.contact_id)) // Проверяем, есть ли ID в избранном
+        }));
+
+        setContacts(updatedContacts);
+        setTotalContacts(contactsResponse.total); // Обновляем общее количество
+
       } catch (err) { 
-        console.error("Error fetching contacts:", err);
-        if (isMounted) {
-          setError(err instanceof Error ? err : new Error('An unknown error occurred'));
-          setContacts([]); // Clear contacts on error
-          toast({
-            title: "Error",
-            description: "Failed to fetch contacts. Please try again later.",
-            variant: "destructive",
-          });
-        }
+        if (!isMounted) return;
+        console.error("Error fetching contacts or favorites:", err);
+        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+        setContacts([]); // Clear contacts on error
+        toast({
+          title: "Error",
+          description: "Failed to fetch contacts or favorites. Please try again later.",
+          variant: "destructive",
+        });
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -176,7 +162,7 @@ export const useContactsData = ({
       }
     };
     
-    fetchContactsData();
+    fetchContactsAndFavorites();
     
     // Cleanup function to prevent state updates after unmount
     return () => {

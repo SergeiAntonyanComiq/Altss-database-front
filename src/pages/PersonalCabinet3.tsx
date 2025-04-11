@@ -23,24 +23,55 @@ const PersonalCabinet3 = () => {
   const [currentPage, setCurrentPage] = useState(pageParam ? parseInt(pageParam, 10) : 1);
   const [itemsPerPage, setItemsPerPage] = useState(perPageParam ? parseInt(perPageParam, 10) : 10);
   const [activeSection, setActiveSection] = useState<string>(section || "persons");
+  
+  // Состояния для всех параметров фильтра
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
+  const [companyNameFilter, setCompanyNameFilter] = useState("");
+  const [positionFilter, setPositionFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [responsibilitiesFilter, setResponsibilitiesFilter] = useState("");
+  const [bioFilter, setBioFilter] = useState("");
 
   // Load filter if filter ID is provided in URL
   useEffect(() => {
-    if (filterId) {
-      console.log("Loading filter with ID:", filterId);
-      const filter = getSavedFilterById(filterId);
-      if (filter) {
-        console.log("Found filter:", filter);
-        setSelectedFirmTypes(filter.firmTypes);
-        toast({
-          title: "Filter Applied",
-          description: `Applied "${filter.name}" filter`,
-        });
-      } else {
-        console.log("Filter not found for ID:", filterId);
+    const loadFilter = async () => {
+      if (filterId) {
+        console.log("Loading filter with ID:", filterId);
+        try {
+          const filter = await getSavedFilterById(filterId);
+          if (filter) {
+            console.log("Found filter:", filter);
+            setSelectedFirmTypes(filter.firmTypes || []);
+            setCompanyNameFilter(filter.companyName || "");
+            setPositionFilter(filter.position || "");
+            setLocationFilter(filter.location || "");
+            setResponsibilitiesFilter(filter.responsibilities || "");
+            setBioFilter(filter.bio || "");
+            
+            toast({
+              title: "Filter Applied",
+              description: `Applied "${filter.name}" filter`,
+            });
+          } else {
+            console.log("Filter not found for ID:", filterId);
+            toast({
+              title: "Filter Not Found",
+              description: "The requested filter could not be found",
+              variant: "destructive",
+            });
+          }
+        } catch (error) {
+          console.error("Error loading filter:", error);
+          toast({
+            title: "Error Loading Filter",
+            description: "There was an error loading the filter",
+            variant: "destructive",
+          });
+        }
       }
-    }
+    };
+    
+    loadFilter();
   }, [filterId, toast]);
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
@@ -62,8 +93,22 @@ const PersonalCabinet3 = () => {
   }, [location.pathname, location.search, navigate]);
 
   // Filter change handler
-  const handleFilterChange = useCallback((firmTypes: string[]) => {
-    setSelectedFirmTypes(firmTypes);
+  const handleFilterChange = useCallback((filters: {
+    firmTypes: string[];
+    companyName: string;
+    position: string;
+    location: string;
+    responsibilities: string;
+    bio: string;
+  }) => {
+    // Обновляем все параметры фильтра
+    setSelectedFirmTypes(filters.firmTypes);
+    setCompanyNameFilter(filters.companyName);
+    setPositionFilter(filters.position);
+    setLocationFilter(filters.location);
+    setResponsibilitiesFilter(filters.responsibilities);
+    setBioFilter(filters.bio);
+    
     // Clear filter param from URL if we're just changing filters directly
     const params = new URLSearchParams(location.search);
     if (params.has('filter')) {
@@ -109,6 +154,11 @@ const PersonalCabinet3 = () => {
             onItemsPerPageChange={handleItemsPerPageChange}
             selectedFirmTypes={selectedFirmTypes}
             onFilterChange={handleFilterChange}
+            companyNameFilter={companyNameFilter}
+            positionFilter={positionFilter}
+            locationFilter={locationFilter}
+            responsibilitiesFilter={responsibilitiesFilter}
+            bioFilter={bioFilter}
           />
         );
     }
@@ -120,7 +170,12 @@ const PersonalCabinet3 = () => {
     handlePageChange, 
     handleItemsPerPageChange,
     selectedFirmTypes,
-    handleFilterChange
+    handleFilterChange,
+    companyNameFilter,
+    positionFilter,
+    locationFilter,
+    responsibilitiesFilter,
+    bioFilter
   ]);
 
   return (

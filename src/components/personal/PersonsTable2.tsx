@@ -78,7 +78,7 @@ const PersonsTable2 = ({
   return (
     <div className="bg-white rounded-lg shadow-sm w-full">
       <div className="w-full border border-[rgba(223,228,234,1)] rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto thin-scrollbar">
           <PersonTableHeader 
             allSelected={allSelected} 
             handleSelectAll={handleSelectAll}

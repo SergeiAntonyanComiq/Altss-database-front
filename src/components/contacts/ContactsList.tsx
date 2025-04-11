@@ -153,9 +153,9 @@ const ContactsList = () => {
     // In a real application, this would be an API call to change the favorite status
     // For now, we'll just update the local state
     const updatedContacts = contacts.map(contact => 
-      contact.id === id 
-        ? { ...contact, favorite: !contact.favorite } 
-        : contact
+        contact.id === id 
+          ? { ...contact, favorite: !contact.favorite } 
+          : contact
     );
     // Note: In a real app, you would update this through the useContactsData hook
     console.log(`Toggle favorite for contact with ID: ${id}`);
@@ -192,22 +192,22 @@ const ContactsList = () => {
             onChange={(value) => setSearchQuery(value)}
             placeholder="Search persons..."
           />
-          <Select
+            <Select
             value={String(contactsPerPage)}
             onValueChange={(value) => handleContactsPerPageChange(Number(value))}
-          >
+            >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select items per page" />
-            </SelectTrigger>
-            <SelectContent>
+              </SelectTrigger>
+              <SelectContent>
               <SelectItem value="10">10 per page</SelectItem>
               <SelectItem value="20">20 per page</SelectItem>
               <SelectItem value="50">50 per page</SelectItem>
-            </SelectContent>
-          </Select>
+              </SelectContent>
+            </Select>
         </div>
       </div>
-
+      
       <ContactsTable
         contacts={contacts}
         isLoading={isLoading}
@@ -216,10 +216,10 @@ const ContactsList = () => {
         onSelectAll={handleSelectAll}
         onToggleFavorite={toggleFavorite}
       />
-
+      
       <div className="mt-4">
-        <PersonsPagination
-          currentPage={currentPage}
+        <PersonsPagination 
+          currentPage={currentPage} 
           totalItems={totalContacts}
           itemsPerPage={contactsPerPage}
           onPageChange={handlePageChange}

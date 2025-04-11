@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { fetchFirmTypes } from "@/services/firmTypesService";
-import { getSavedFilters, saveFilter, deleteSavedFilter } from "@/services/savedFiltersService";
+import { getSavedFilters, saveFilter, deleteSavedFilter, SavedSearchType } from "@/services/savedFiltersService";
 
 export interface SavedFilterType {
   id: string;
@@ -19,7 +19,9 @@ export function useFilterModal(initialSelectedTypes: string[] = []) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(initialSelectedTypes);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(
+    Array.isArray(initialSelectedTypes) ? initialSelectedTypes : []
+  );
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
   const [filterName, setFilterName] = useState("");
   const [showSaveFilterInput, setShowSaveFilterInput] = useState(false);
@@ -35,10 +37,17 @@ export function useFilterModal(initialSelectedTypes: string[] = []) {
 
   useEffect(() => {
     // Load saved filters from localStorage
-    const filters = localStorage.getItem('savedFilters');
-    if (filters) {
-      setSavedFilters(JSON.parse(filters));
-    }
+    const loadSavedFilters = async () => {
+      try {
+        const filters = await getSavedFilters();
+        setSavedFilters(filters);
+      } catch (error) {
+        console.error("Error loading saved filters:", error);
+        setSavedFilters([]);
+      }
+    };
+    
+    loadSavedFilters();
     
     // Load firm types (mock data for now)
     setFirmTypes([
@@ -53,6 +62,12 @@ export function useFilterModal(initialSelectedTypes: string[] = []) {
       'Real Estate'
     ]);
   }, []);
+
+  useEffect(() => {
+    if (initialSelectedTypes !== undefined) {
+      setSelectedTypes(Array.isArray(initialSelectedTypes) ? initialSelectedTypes : []);
+    }
+  }, [initialSelectedTypes]);
 
   const toggleFirmType = (type: string) => {
     setSelectedTypes(prev => 
@@ -76,46 +91,79 @@ export function useFilterModal(initialSelectedTypes: string[] = []) {
     setSearchTerm("");
   };
 
-  const handleSaveFilter = () => {
+  const handleSaveFilter = async () => {
     if (!filterName) return;
 
-    const newFilter: SavedFilterType = {
-      id: Date.now().toString(),
-      name: filterName,
-      firmTypes: selectedTypes,
-      companyName: companyNameFilter,
-      position: positionFilter,
-      location: locationFilter,
-      responsibilities: responsibilitiesFilter,
-      bio: bioFilter
-    };
+    try {
+      const newFilter = await saveFilter(
+        filterName,
+        selectedTypes,
+        companyNameFilter,
+        positionFilter,
+        locationFilter,
+        responsibilitiesFilter,
+        bioFilter
+      );
 
-    const updatedFilters = [...savedFilters, newFilter];
-    setSavedFilters(updatedFilters);
-    localStorage.setItem('savedFilters', JSON.stringify(updatedFilters));
-    
-    setFilterName('');
-    setShowSaveFilterInput(false);
+      // Reload saved filters to ensure we have the latest from the server
+      const filters = await getSavedFilters();
+      setSavedFilters(filters);
+      
+      setFilterName('');
+      setShowSaveFilterInput(false);
 
-    toast({
-      title: "Filter Saved",
-      description: `"${newFilter.name}" has been saved.`,
-    });
+      // Trigger update for sidebar
+      const event = new CustomEvent('savedFiltersUpdated');
+      window.dispatchEvent(event);
+
+      toast({
+        title: "Filter Saved",
+        description: `"${newFilter.name}" has been saved.`,
+      });
+    } catch (error) {
+      console.error("Error saving filter:", error);
+      toast({
+        title: "Error Saving Filter",
+        description: "Failed to save filter. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleDeleteFilter = (filterId: string) => {
-    const updatedFilters = savedFilters.filter(filter => filter.id !== filterId);
-    setSavedFilters(updatedFilters);
-    localStorage.setItem('savedFilters', JSON.stringify(updatedFilters));
-
-    toast({
-      title: "Filter Deleted",
-      description: `"${filterName}" has been removed from your filters`,
-    });
+  const handleDeleteFilter = async (filterId: string) => {
+    try {
+      const success = await deleteSavedFilter(filterId);
+      
+      if (success) {
+        // Reload saved filters to ensure we have the latest from the server
+        const filters = await getSavedFilters();
+        setSavedFilters(filters);
+        
+        // Trigger update for sidebar
+        const event = new CustomEvent('savedFiltersUpdated');
+        window.dispatchEvent(event);
+        
+        toast({
+          title: "Filter Deleted",
+          description: "Filter has been removed from your saved filters",
+        });
+      } else {
+        throw new Error("Failed to delete filter");
+      }
+    } catch (error) {
+      console.error("Error deleting filter:", error);
+      toast({
+        title: "Error Deleting Filter",
+        description: "Failed to delete filter. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const applyFilter = (filter: SavedFilterType) => {
-    setSelectedTypes(filter.firmTypes);
+    if (!filter) return;
+    
+    setSelectedTypes(Array.isArray(filter.firmTypes) ? filter.firmTypes : []);
     setCompanyNameFilter(filter.companyName || "");
     setPositionFilter(filter.position || "");
     setLocationFilter(filter.location || "");

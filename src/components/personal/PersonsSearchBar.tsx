@@ -3,10 +3,17 @@ import { Search, Filter, Save, Heart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
 import { Badge } from "@/components/ui/badge";
-import SavedFiltersQuickAccess from "./filters/components/SavedFiltersQuickAccess";
-import { getSavedFilters } from "@/services/savedFiltersService";
+import { getSavedFilters, saveFilter, addPersonToFavorites, isPersonInFavorites } from "@/services/savedFiltersService";
 import { SavedFilterType } from "./filters/hooks/useFilterModal";
 import { useToast } from "@/components/ui/use-toast";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface PersonsSearchBarProps {
   searchQuery: string;
@@ -26,6 +33,8 @@ interface PersonsSearchBarProps {
     bio: string;
   }) => void;
   onSearch?: (query: string) => void;
+  selectedPersons?: string[];
+  persons?: Array<{id: string, name: string, currentPosition?: string, companies?: string[]}>;
 }
 
 const PersonsSearchBar = ({ 
@@ -38,14 +47,29 @@ const PersonsSearchBar = ({
   responsibilitiesFilter,
   bioFilter,
   onFilterChange,
-  onSearch
+  onSearch,
+  selectedPersons = [],
+  persons = []
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
-    setSavedFilters(getSavedFilters());
+    // Асинхронная загрузка сохраненных фильтров
+    const loadFilters = async () => {
+      try {
+        const filters = await getSavedFilters();
+        setSavedFilters(filters);
+      } catch (error) {
+        console.error("Error loading saved filters:", error);
+        setSavedFilters([]);
+      }
+    };
+    
+    loadFilters();
   }, [isFilterModalOpen]); // Обновляем при закрытии/открытии модалки, если фильтры могли измениться
 
   // Применяем сохраненный фильтр
@@ -101,6 +125,104 @@ const PersonsSearchBar = ({
     setSearchQuery('');
     if (onSearch) {
       onSearch('');
+    }
+  };
+
+  const handleSaveSearchClick = () => {
+    setFilterName("");
+    setIsSaveDialogOpen(true);
+  };
+
+  const handleSaveFilter = async () => {
+    if (!filterName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a name for your filter",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await saveFilter(
+        filterName.trim(),
+        selectedFirmTypes,
+        companyNameFilter,
+        positionFilter,
+        locationFilter,
+        responsibilitiesFilter,
+        bioFilter
+      );
+
+      setIsSaveDialogOpen(false);
+      toast({
+        title: "Filter Saved",
+        description: `Filter "${filterName}" has been saved successfully`,
+      });
+    } catch (error) {
+      console.error("Error saving filter:", error);
+      toast({
+        title: "Error",
+        description: "There was an error saving your filter",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleAddToFavorites = async () => {
+    // Check if any persons are selected
+    if (selectedPersons.length === 0) {
+      toast({
+        title: "No persons selected",
+        description: "Please select at least one person to add to favorites",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      // Get the selected persons' details
+      const selectedPersonsDetails = persons.filter(person => 
+        selectedPersons.includes(person.id)
+      );
+      
+      let addedCount = 0;
+      // Use Promise.all to handle multiple async operations concurrently
+      await Promise.all(selectedPersonsDetails.map(async (person) => {
+        const isFavorite = await isPersonInFavorites(person.id);
+        if (!isFavorite) {
+          await addPersonToFavorites(
+            person.id,
+            person.name,
+            person.currentPosition || "",
+            person.companies?.[0] || ""
+          );
+          addedCount++;
+        }
+      }));
+      
+      // Show success message
+      if (addedCount > 0) {
+        toast({
+          title: "Added to favorites",
+          description: `${addedCount} ${addedCount === 1 ? "person has" : "persons have"} been added to your favorites`,
+        });
+        // Trigger update for sidebar
+        const event = new CustomEvent('favoritesUpdated');
+        window.dispatchEvent(event);
+      } else {
+        toast({
+          title: "Already in favorites",
+          description: "The selected persons are already in your favorites",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem adding to your favorites",
+        variant: "destructive"
+      });
     }
   };
 
@@ -163,31 +285,28 @@ const PersonsSearchBar = ({
         )}
       </button>
       
-      {/* Save Search Button (Placeholder) */}
-      {/* <button 
-        className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[rgba(136,153,168,1)] px-[15px] py-2.5 rounded-[50px] hover:bg-gray-50 transition-colors"
+      {/* Save Search Button */}
+      <button 
+        className="justify-center items-center border border-[#DFE4EA] bg-white hover:bg-gray-50 flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors"
+        onClick={handleSaveSearchClick}
       >
         <Save className="h-[18px] w-[18px]" />
         <span>Save this Search</span>
-      </button> */}
+      </button>
       
-      {/* Add to Favorites Button (Placeholder) */}
-      {/* <button 
-        className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 px-[15px] py-2.5 rounded-[50px] hover:bg-gray-50 transition-colors"
+      {/* Add to Favorites Button */}
+      <button 
+        className="justify-center items-center border border-[#DFE4EA] bg-white hover:bg-gray-50 flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors"
+        onClick={handleAddToFavorites}
       >
         <Heart className="h-[18px] w-[18px]" />
         <span>Add to Favorites</span>
-      </button> */}
-
-      {/* Saved Filters Quick Access */}
-      {onFilterChange && savedFilters.length > 0 && (
-        <SavedFiltersQuickAccess
-          savedFilters={savedFilters}
-          onApplyFilter={handleApplySavedFilter}
-          onClearFilter={handleClearFilters}
-          currentActiveFilter={selectedFirmTypes}
-        />
-      )}
+        {selectedPersons.length > 0 && (
+          <Badge variant="secondary" className="bg-primary text-white ml-1 h-5 px-1.5">
+            {selectedPersons.length}
+          </Badge>
+        )}
+      </button>
 
       {/* Filter Modal */}
       <PersonsFilterModal
@@ -196,6 +315,34 @@ const PersonsSearchBar = ({
         selectedFirmTypes={selectedFirmTypes}
         onApplyFilters={onFilterChange}
       />
+
+      {/* Save Filter Dialog */}
+      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Search Filter</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Enter a name for this search filter to save it for future use.
+            </p>
+            <Input
+              placeholder="Filter name"
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveFilter}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

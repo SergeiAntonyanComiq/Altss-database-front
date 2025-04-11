@@ -1,0 +1,158 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 50% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(100deg, rgba(10, 37, 64, 0.02) 0%, rgba(30, 64, 175, 0.05) 100%);
+    backdrop-filter: blur(80px);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply bg-altss-deep-blue text-white hover:bg-altss-blue/90 transition-all duration-300 rounded-lg px-6 py-3 font-medium;
+  }
+
+  .heading-xl {
+    @apply text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight;
+  }
+
+  .heading-lg {
+    @apply text-3xl md:text-4xl font-display font-bold tracking-tight;
+  }
+
+  .heading-md {
+    @apply text-2xl md:text-3xl font-display font-semibold;
+  }
+
+  .sub-heading {
+    @apply text-sm font-medium uppercase tracking-wider text-altss-slate/80;
+  }
+
+  .blurred-shape {
+    @apply absolute rounded-full blur-[100px] opacity-20 z-0;
+  }
+
+  /* Sidebar specific styles */
+  :root {
+    --sidebar: 224 71% 4%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-border: 215 27.9% 16.9%;
+    --sidebar-accent: 217.2,32.6%,17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-ring: 216 34% 17%;
+  }
+
+  [data-sidebar="sidebar"] {
+    @apply bg-white border-r border-gray-200;
+  }
+
+  [data-sidebar="menu-button"] {
+    @apply text-gray-600 hover:bg-gray-100;
+  }
+
+  [data-sidebar="menu-button"][data-active="true"] {
+    @apply bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0];
+  }
+  
+  /* Table specific styles */
+  .companies-table-row {
+    @apply flex min-h-[46px] w-full overflow-hidden flex-wrap border-b border-[#DFE4EA];
+  }
+  
+  .companies-table-cell {
+    @apply overflow-hidden flex items-center border-r border-[#DFE4EA] px-4 min-h-[46px] text-sm;
+  }
+  
+  .companies-pill-badge {
+    @apply px-3.5 py-1 rounded-[30px] text-sm;
+  }
+  
+  .companies-pill-blue {
+    @apply bg-[rgba(219,229,254,1)] text-[#0145C7];
+  }
+  
+  .companies-pill-green {
+    @apply bg-[rgba(0,126,96,0.1)] text-[#007E60];
+  }
+}
+
+/* Custom styles for the companies table */
+.company-table-header {
+  @apply bg-gray-100 flex h-12 w-full overflow-hidden flex-wrap;
+}
+
+.company-table-row {
+  @apply flex min-h-[46px] w-full overflow-hidden flex-wrap mt-2;
+}
+
+.company-table-check-cell {
+  @apply min-h-[46px] overflow-hidden w-11 border-[#DFE4EA] border-r;
+}
+
+.company-table-cell {
+  @apply overflow-hidden text-sm font-medium leading-none border-[#DFE4EA] border-r;
+}
+
+.company-table-header-cell {
+  @apply overflow-hidden text-sm text-[#637381] font-medium leading-none border-[#DFE4EA] border-r;
+}

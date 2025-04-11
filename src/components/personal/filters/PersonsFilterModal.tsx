@@ -96,7 +96,7 @@ const PersonsFilterModal = ({
 
   const handleApply = () => {
     onApplyFilters({
-      firmTypes: selectedTypes,
+      firmTypes: Array.isArray(selectedTypes) ? selectedTypes : [],
       companyName: companyNameFilter,
       position: positionFilter,
       location: locationFilter,
@@ -123,7 +123,7 @@ const PersonsFilterModal = ({
     onClose();
   };
 
-  const hasActiveFilters = selectedTypes.length > 0 || 
+  const hasActiveFilters = (Array.isArray(selectedTypes) && selectedTypes.length > 0) || 
     companyNameFilter || 
     positionFilter || 
     locationFilter || 
@@ -131,7 +131,7 @@ const PersonsFilterModal = ({
     bioFilter;
 
   const activeFiltersCount = [
-    selectedTypes.length > 0,
+    Array.isArray(selectedTypes) && selectedTypes.length > 0,
     companyNameFilter,
     positionFilter,
     locationFilter,
@@ -191,12 +191,12 @@ const PersonsFilterModal = ({
                     placeholder="Search in responsibilities..."
                   />
                   <FilterInput
-                    id="companyName"
+                      id="companyName"
                     label="Filter by Company Name"
                     value={companyNameFilter}
                     onChange={setCompanyNameFilter}
-                    placeholder="Enter company name..."
-                  />
+                      placeholder="Enter company name..."
+                    />
                 </div>
 
                 {/* Firm Types Filter (Simplified) */}
@@ -240,7 +240,7 @@ const PersonsFilterModal = ({
                             <div key={type} className="flex items-center space-x-2">
                               <Checkbox 
                                 id={`type-${type}`}
-                                checked={selectedTypes.includes(type)}
+                                checked={Array.isArray(selectedTypes) && selectedTypes.includes(type)}
                                 onCheckedChange={() => toggleFirmType(type)}
                               />
                               <label 
@@ -259,7 +259,7 @@ const PersonsFilterModal = ({
                     </ScrollArea>
                   )}
                   
-                  {selectedTypes.length > 0 && (
+                  {Array.isArray(selectedTypes) && selectedTypes.length > 0 && (
                      <Button 
                        variant="link" 
                        size="sm" 

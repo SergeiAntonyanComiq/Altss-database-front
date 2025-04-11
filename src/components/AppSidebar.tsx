@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LogOut, ChevronRight } from "lucide-react";
+import { LogOut, ChevronRight, ChevronDown, Heart, Search } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,6 +26,12 @@ import {
   useSidebar
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { 
+  Collapsible, 
+  CollapsibleContent, 
+  CollapsibleTrigger 
+} from "@/components/ui/collapsible";
+import { getFavoritePersons, getSavedFilters } from "@/services/savedFiltersService";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -35,6 +41,48 @@ const AppSidebar = () => {
   const { toast } = useToast();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>("");
+  const [favorites, setFavorites] = useState([]);
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
+
+  // Load favorites and saved searches
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const favs = await getFavoritePersons();
+        setFavorites(favs || []);
+      } catch (error) {
+        console.error("Error loading favorites:", error);
+        setFavorites([]); // Reset on error
+      }
+      
+      try {
+        const searches = await getSavedFilters();
+        setSavedSearches(searches || []);
+      } catch (error) {
+        console.error("Error loading saved searches:", error);
+        setSavedSearches([]); // Reset on error
+      }
+    };
+
+    loadData();
+
+    // Add event listener for updates
+    const handleUpdate = () => {
+      console.log("Favorites or Saved Searches updated, reloading data...");
+      loadData();
+    };
+
+    window.addEventListener('favoritesUpdated', handleUpdate);
+    window.addEventListener('savedFiltersUpdated', handleUpdate);
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('favoritesUpdated', handleUpdate);
+      window.removeEventListener('savedFiltersUpdated', handleUpdate);
+    };
+  }, [location.pathname]); // Re-run on navigation
 
   // Fetch user profile including avatar when component mounts
   useEffect(() => {
@@ -113,19 +161,7 @@ const AppSidebar = () => {
       path: "/my-orders",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
       hasRightIcon: false
-    },
-    {
-      title: "Favorites",
-      path: "/favorites",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/31a6ca2e49aa013c782f793e48805961b525cc26",
-      hasRightIcon: true
-    },
-    {
-      title: "Saved Searches",
-      path: "/saved-searches",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f69faa278a069ce4b2090e224b9110b1e63802ea",
-      hasRightIcon: true
-    },
+    }
   ];
 
   const getUserInitials = () => {
@@ -145,6 +181,16 @@ const AppSidebar = () => {
       return email.substring(0, 2).toUpperCase();
     }
     return "UN";
+  };
+
+  const handleNavigateToFavorite = (id) => {
+    navigate(`/profile/${id}`);
+    setFavoritesOpen(false);
+  };
+
+  const handleApplySavedSearch = (filter) => {
+    navigate(`/persons?filter=${filter.id}`);
+    setSavedSearchesOpen(false);
   };
 
   return (
@@ -192,6 +238,101 @@ const AppSidebar = () => {
                 </SidebarMenuItem>
               </React.Fragment>
             ))}
+
+            {/* Favorites Dropdown */}
+            <SidebarMenuItem>
+              <Collapsible open={favoritesOpen} onOpenChange={setFavoritesOpen} className="w-full">
+                <CollapsibleTrigger className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                  ${isActive("/favorites") 
+                    ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
+                    : "text-[#637381] hover:bg-gray-100"
+                  }`}>
+                  <div className="flex items-center gap-2.5">
+                    <Heart className="h-6 w-6" />
+                    <span>Favorites</span>
+                  </div>
+                  {favoritesOpen ? 
+                    <ChevronDown className="h-5 w-5 text-[#637381]" /> : 
+                    <ChevronRight className="h-5 w-5 text-[#637381]" />
+                  }
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-6 mt-1 space-y-1">
+                  {favorites.length > 0 ? (
+                    favorites.map(favorite => (
+                      <div 
+                        key={favorite.id}
+                        onClick={() => handleNavigateToFavorite(favorite.id)}
+                        className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                      >
+                        <span className="truncate">{favorite.name}</span>
+                        {favorite.position && (
+                          <span className="text-xs text-gray-400 truncate">
+                            {favorite.position}
+                          </span>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-2 px-3 text-sm text-gray-400">
+                      No favorites yet
+                    </div>
+                  )}
+                  <div 
+                    className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-blue-500 font-medium"
+                    onClick={() => handleNavigation('/favorites')}
+                  >
+                    View all favorites
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarMenuItem>
+
+            {/* Saved Searches Dropdown */}
+            <SidebarMenuItem>
+              <Collapsible open={savedSearchesOpen} onOpenChange={setSavedSearchesOpen} className="w-full">
+                <CollapsibleTrigger className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                  ${isActive("/saved-searches") 
+                    ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
+                    : "text-[#637381] hover:bg-gray-100"
+                  }`}>
+                  <div className="flex items-center gap-2.5">
+                    <img 
+                      src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f69faa278a069ce4b2090e224b9110b1e63802ea" 
+                      alt="Saved Searches" 
+                      className="h-6 w-6 object-contain"
+                    />
+                    <span>Saved Searches</span>
+                  </div>
+                  {savedSearchesOpen ? 
+                    <ChevronDown className="h-5 w-5 text-[#637381]" /> : 
+                    <ChevronRight className="h-5 w-5 text-[#637381]" />
+                  }
+                </CollapsibleTrigger>
+                <CollapsibleContent className="ml-6 mt-1 space-y-1">
+                  {savedSearches.length > 0 ? (
+                    savedSearches.map(filter => (
+                      <div 
+                        key={filter.id}
+                        onClick={() => handleApplySavedSearch(filter)}
+                        className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                      >
+                        <span className="truncate">{filter.name}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-2 px-3 text-sm text-gray-400">
+                      No saved searches yet
+                    </div>
+                  )}
+                  <div 
+                    className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-blue-500 font-medium"
+                    onClick={() => handleNavigation('/saved-searches')}
+                  >
+                    View all saved searches
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
         

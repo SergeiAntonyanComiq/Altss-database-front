@@ -4,6 +4,7 @@ import OrdersTableHeader from "./table/OrdersTableHeader"; // Placeholder
 import OrdersTableRow from "./table/OrdersTableRow"; // Placeholder
 // import EmptyState from "./table/EmptyState"; // Placeholder for empty state
 import { useOrderColumnSizes } from "./table/useOrderColumnSizes"; // Use named import
+import { ResizablePanelGroup } from "@/components/ui/resizable"; // Импортируем PanelGroup
 
 interface OrdersTableProps {
   orders: OrderType[];
@@ -34,30 +35,37 @@ const OrdersTable = ({
 
   return (
     <div className="bg-white rounded-md overflow-hidden border border-gray-200 shadow-sm w-full mt-5">
-      <div className="table-container w-full">
+      {/* Оборачиваем таблицу в ResizablePanelGroup */}
+      <ResizablePanelGroup 
+        direction="horizontal" 
+        className="table-container w-full min-w-max" // Добавляем min-width
+        // autoSaveId="orders-table-layout" // Опционально для сохранения раскладки
+      >
         {/* Table Header */}
-        <OrdersTableHeader 
+        {/* Header теперь не нужен внутри группы, так как строки сами панели */}
+        {/* <OrdersTableHeader 
           allSelected={allCurrentPageItemsSelected} 
           handleSelectAll={handleSelectAll} 
           columnSizes={columnSizes}
           onResize={handleResize}
-        />
+        /> */}
         
-        {/* Table Rows */}
+        {/* Table Rows - теперь строки являются панелями */}
         <div className="w-full">
           {orders.map((order) => (
             <OrdersTableRow 
               key={order.id} 
               order={order} 
-              columnSizes={columnSizes}
-              isSelected={isOrderSelected(order.id)}
-              onCheckboxChange={() => handleCheckboxChange(order.id)}
+              // columnSizes больше не нужен, так как размер определяется Panel
+              // columnSizes={columnSizes} 
+              // isSelected={isOrderSelected(order.id)} // Перенести логику выбора, если она нужна
+              // onCheckboxChange={() => handleCheckboxChange(order.id)} // Перенести логику выбора
               toggleFavorite={toggleFavorite}
               // Add any other necessary props like onClick handlers
             />
           ))}
         </div>
-      </div>
+      </ResizablePanelGroup> 
     </div>
   );
 };

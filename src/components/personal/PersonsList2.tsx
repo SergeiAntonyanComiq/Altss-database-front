@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo, useEffect } from "react";
+import React, { useState, useCallback, memo, useEffect, useMemo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import { PersonType } from "@/types/person";
@@ -9,6 +9,14 @@ import { usePersonsSelection } from "./hooks/usePersonsSelection";
 import PersonsSearchBar from "./PersonsSearchBar";
 import { toast } from "@/components/ui/use-toast";
 import { searchContactsByName } from "@/services/contactsService";
+import PersonTableSkeleton from "./PersonTableSkeleton";
+import PersonsPagination from "./PersonsPagination";
+import PersonsTable2 from "./PersonsTable2";
+import {
+  isPersonInFavorites,
+  addPersonToFavorites,
+  removePersonFromFavorites,
+} from "@/services/savedFiltersService";
 
 const contactToPerson = (contact: ContactType): PersonType | null => {
   // Проверяем наличие обязательных полей
@@ -20,10 +28,7 @@ const contactToPerson = (contact: ContactType): PersonType | null => {
   try {
     const person: PersonType = {
       id: String(contact.contact_id), // Используем contact_id вместо id
-      name: [contact.title, contact.name]
-        .filter(Boolean)
-        .join(' ')
-        .trim() || "Unnamed Contact",
+      name: contact.name?.trim() || "Unnamed Contact",
       favorite: Boolean(contact.favorite),
       responsibilities: contact.asset_class ? 
         contact.asset_class.split(',').map(s => s.trim()).filter(Boolean) : 
@@ -39,7 +44,6 @@ const contactToPerson = (contact: ContactType): PersonType | null => {
       shortBio: contact.role || "",
       email: contact.email || "",
       phone: contact.tel || undefined,
-      // Optional fields
       linkedinHandle: undefined,
       profileImage: undefined,
       jobHistory: undefined,
@@ -60,6 +64,11 @@ interface PersonsList2Props {
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (perPage: number) => void;
   selectedFirmTypes?: string[];
+  companyNameFilter?: string;
+  positionFilter?: string;
+  locationFilter?: string;
+  responsibilitiesFilter?: string;
+  bioFilter?: string;
   onFilterChange?: (filters: {
     firmTypes: string[];
     companyName: string;
@@ -76,23 +85,24 @@ const PersonsList2 = ({
   onPageChange,
   onItemsPerPageChange,
   selectedFirmTypes = [],
+  companyNameFilter = "",
+  positionFilter = "",
+  locationFilter = "",
+  responsibilitiesFilter = "",
+  bioFilter = "",
   onFilterChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
-  const [companyNameFilter, setCompanyNameFilter] = useState("");
-  const [positionFilter, setPositionFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [responsibilitiesFilter, setResponsibilitiesFilter] = useState("");
-  const [bioFilter, setBioFilter] = useState("");
+  const [localCompanyNameFilter, setCompanyNameFilter] = useState(companyNameFilter);
+  const [localPositionFilter, setPositionFilter] = useState(positionFilter);
+  const [localLocationFilter, setLocationFilter] = useState(locationFilter);
+  const [localResponsibilitiesFilter, setResponsibilitiesFilter] = useState(responsibilitiesFilter);
+  const [localBioFilter, setBioFilter] = useState(bioFilter);
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [totalContacts, setTotalContacts] = useState(0);
-  
-  useEffect(() => {
-    setLocalSelectedFirmTypes(selectedFirmTypes);
-  }, [selectedFirmTypes]);
   
   const {
     contacts,
@@ -104,42 +114,49 @@ const PersonsList2 = ({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
     firmTypes: localSelectedFirmTypes,
-    companyName: companyNameFilter,
-    position: positionFilter,
-    location: locationFilter,
-    responsibilities: responsibilitiesFilter,
-    bio: bioFilter
+    companyName: localCompanyNameFilter,
+    position: localPositionFilter,
+    location: localLocationFilter,
+    responsibilities: localResponsibilitiesFilter,
+    bio: localBioFilter
   });
 
   const displayedContacts = isSearchActive ? searchResults : contacts;
   console.log('Displayed contacts:', displayedContacts); // Debug log
   
-  const persons: PersonType[] = displayedContacts
-    .filter((contact): contact is ContactType => Boolean(contact))
-    .map(contact => {
-      const person = contactToPerson(contact);
-      return person;
-    })
-    .filter((person): person is PersonType => Boolean(person));
+  const personsFromHook: PersonType[] = useMemo(() => {
+    console.log("Recalculating personsFromHook..."); // Для отладки
+    return displayedContacts
+      .filter((contact): contact is ContactType => Boolean(contact))
+      .map(contact => contactToPerson(contact))
+      .filter((person): person is PersonType => Boolean(person));
+  }, [displayedContacts]); // Зависимость от displayedContacts
 
-  console.log('Final persons array:', persons); // Debug log
+  const [localPersons, setLocalPersons] = useState<PersonType[]>([]); 
+  
+  useEffect(() => {
+    console.log("Syncing localPersons with personsFromHook..."); // Для отладки
+    setLocalPersons(personsFromHook);
+  }, [personsFromHook]); 
+
+  console.log('Final localPersons array:', localPersons); // Debug log
   
   useEffect(() => {
     // Reset search state when filters change
     if (localSelectedFirmTypes.length > 0 || 
-        companyNameFilter || 
-        positionFilter || 
-        locationFilter || 
-        responsibilitiesFilter || 
-        bioFilter) {
+        localCompanyNameFilter || 
+        localPositionFilter || 
+        localLocationFilter || 
+        localResponsibilitiesFilter || 
+        localBioFilter) {
       // If we have filters active, we want to show filtered results, not search
       if (isSearchActive) {
         setIsSearchActive(false);
         setSearchQuery("");
       }
     }
-  }, [localSelectedFirmTypes, companyNameFilter, positionFilter, locationFilter, responsibilitiesFilter, bioFilter]);
-
+  }, [localSelectedFirmTypes, localCompanyNameFilter, localPositionFilter, localLocationFilter, localResponsibilitiesFilter, localBioFilter]);
+  
   const handleSearch = useCallback(async (query: string) => {
     if (!query) {
       setIsSearchActive(false);
@@ -193,11 +210,11 @@ const PersonsList2 = ({
     handleCheckboxChange, 
     handleSelectAll, 
     isPersonSelected 
-  } = usePersonsSelection(persons);
+  } = usePersonsSelection(localPersons);
 
   const handlePageChange = useCallback((page: number) => {
-    onPageChange(page);
-    setContactsCurrentPage(page);
+      onPageChange(page);
+      setContactsCurrentPage(page);
     
     if (isSearchActive && searchQuery) {
       handleSearch(searchQuery);
@@ -211,11 +228,56 @@ const PersonsList2 = ({
     }
   }, [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive]);
 
-  const toggleFavorite = useCallback((id: string) => {
-    console.log(`Toggle favorite for person with ID: ${id}`);
-  }, []);
+  const toggleFavorite = useCallback(async (id: string) => {
+    // Используем localPersons для поиска и обновления
+    const originalPersons = [...localPersons]; 
+    const personIndex = localPersons.findIndex(p => p.id === id);
+    if (personIndex === -1) return; 
+
+    const person = localPersons[personIndex];
+    const isCurrentlyFavorite = person.favorite;
+
+    // Оптимистичное обновление UI с использованием setLocalPersons
+    const updatedPersons = localPersons.map((p, index) => 
+      index === personIndex ? { ...p, favorite: !isCurrentlyFavorite } : p
+    );
+    setLocalPersons(updatedPersons);
+
+    try {
+      if (isCurrentlyFavorite) {
+        await removePersonFromFavorites(id);
+        toast({ 
+          title: "Removed from favorites",
+          description: `${person.name} has been removed from your favorites`,
+         });
+      } else {
+        await addPersonToFavorites(
+          id,
+          person.name,
+          person.currentPosition,
+          person.companies?.[0] || ""
+        );
+        toast({ 
+          title: "Added to favorites",
+          description: `${person.name} has been added to your favorites`,
+         });
+      }
+      // Если успешно, отправляем событие для обновления сайдбара
+      const event = new CustomEvent('favoritesUpdated');
+      window.dispatchEvent(event);
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast({ 
+        title: "Error",
+        description: "There was a problem updating your favorites",
+        variant: "destructive",
+       });
+      // Откат UI в случае ошибки с использованием setLocalPersons
+      setLocalPersons(originalPersons); 
+    }
+  }, [localPersons, toast]); // Зависимость от localPersons
   
-  const handleFilterChange = (filters: {
+  const handleFilterChange = useCallback((filters: {
     firmTypes: string[];
     companyName: string;
     position: string;
@@ -237,68 +299,72 @@ const PersonsList2 = ({
     if (onFilterChange) {
       onFilterChange(filters);
     }
-  };
+  }, [onFilterChange, handlePageChange]);
 
   const effectiveTotal = isSearchActive ? totalContacts : originalTotalContacts;
   const totalPages = Math.max(Math.ceil(effectiveTotal / itemsPerPage) || 1, 1);
   
   const hasActiveFilters = Boolean(
     localSelectedFirmTypes.length > 0 || 
-    companyNameFilter || 
-    positionFilter || 
-    locationFilter || 
-    responsibilitiesFilter || 
-    bioFilter || 
+    localCompanyNameFilter || 
+    localPositionFilter || 
+    localLocationFilter || 
+    localResponsibilitiesFilter || 
+    localBioFilter || 
     isSearchActive
   );
 
   return (
-    <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-[#111928] text-2xl font-semibold leading-none">Persons</h1>
-        
-        <PersonsListHeader 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          totalContacts={effectiveTotal}
-          isLoading={isLoading || isSearching}
-          hasActiveFilters={hasActiveFilters}
-        />
+    <>
+      {isLoading ? (
+        <div className="w-full py-8 px-4 md:px-6 lg:px-8">
+          <div className="flex gap-4 items-center mt-10">
+            <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
+          </div>
+          <PersonTableSkeleton />
       </div>
-      
+      ) : (
+        <div className="w-full py-8 px-4 md:px-6 lg:px-8">
       <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedFirmTypes={localSelectedFirmTypes}
-        companyNameFilter={companyNameFilter}
-        positionFilter={positionFilter}
-        locationFilter={locationFilter}
-        responsibilitiesFilter={responsibilitiesFilter}
-        bioFilter={bioFilter}
+        companyNameFilter={localCompanyNameFilter}
+            positionFilter={localPositionFilter}
+            locationFilter={localLocationFilter}
+            responsibilitiesFilter={localResponsibilitiesFilter}
+            bioFilter={localBioFilter}
         onFilterChange={handleFilterChange}
         onSearch={handleSearch}
+            selectedPersons={selectedPersons}
+            persons={localPersons}
       />
       
-      <PersonsListContent 
-        persons={persons}
+          <div className="mt-6"></div>
+          
+          <PersonsTable2 
+        persons={localPersons}
+            isLoading={isLoading || isSearching}
         selectedPersons={selectedPersons}
         handleCheckboxChange={handleCheckboxChange}
         handleSelectAll={handleSelectAll}
+            isPersonSelected={isPersonSelected}
         toggleFavorite={toggleFavorite}
-        isPersonSelected={isPersonSelected}
-        isLoading={isLoading || isSearching}
       />
       
-      <PersonsListFooter 
+          <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
+            <PersonsPagination 
         currentPage={currentPage}
         onPageChange={handlePageChange}
-        totalPages={totalPages}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              onItemsPerPageChange={handleItemsPerPageChange}
         totalItems={effectiveTotal}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={handleItemsPerPageChange}
-        disablePagination={false}
       />
     </div>
+        </div>
+      )}
+    </>
   );
 };
 
