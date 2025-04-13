@@ -169,9 +169,11 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
         style={{ width: columns[6].width, minWidth: columns[6].minWidth }}
       >
           {person.location ? (
-           <div className="bg-[rgba(0,126,96,0.1)] gap-2 px-3 py-1 rounded-[30px] flex items-center text-[rgba(0,126,96,1)] text-sm">
-             <span className="whitespace-nowrap">{person.location}</span>
-            </div>
+           <div className="flex items-center gap-1 px-2">
+             <div className="bg-[rgba(0,126,96,0.1)] rounded-[4px] py-1 px-2">
+               <span className="whitespace-nowrap text-[#006C50]">{person.location}</span>
+             </div>
+           </div>
           ) : (
            <span className="text-gray-500 text-sm">-</span>
           )}

@@ -1,0 +1,5 @@
+[33md5beabad[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Clean up old project files and update company components
+[33m28ef96da[m Fix issues and update features
+[33m3ba169a9[m feat: Apply all local changes including persons table, icons, and other UI updates
+[33mdd68bec6[m Fix: Set app_location directly to dist for Azure SWA deployment
+[33m24e4d6ba[m Fix: Manually build app in workflow and skip Oryx build
