@@ -57,50 +57,40 @@ const CompaniesList = ({
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
-        <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
-        <div className="flex gap-4 items-center mt-10">
-          {/* Loading state for search bar */}
-          <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
-        </div>
-        <CompaniesTableSkeleton />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
-        <h1 className="text-[#111928] text-2xl font-semibold leading-none">Companies</h1>
-        <CompaniesError errorMessage={error} />
-      </div>
-    );
-  }
-
   return (
     <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
       <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Companies</h1>
       
-      <CompaniesSearchBar 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
-      
-      <div className="w-full mt-8">
-        <CompaniesTable 
-          companies={companies}
-          selectedCompanies={selectedCompanies}
-          toggleCompanySelection={toggleCompanySelection}
-          toggleAllCompanies={() => toggleAllCompanies(companies)}
-          handleViewCompany={handleViewCompany}
-          toggleFavorite={handleToggleFavorite}
-          formatAum={formatAum}
-          isCompanySelected={isCompanySelected}
-          isLoading={isLoading}
+      {isLoading ? (
+        <div className="flex gap-4 items-center mt-10">
+          <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
+        </div>
+      ) : (
+        <CompaniesSearchBar 
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
         />
-      </div>
+      )}
+      
+      {isLoading ? (
+        <CompaniesTableSkeleton />
+      ) : error ? (
+        <CompaniesError errorMessage={error} />
+      ) : (
+        <div className="w-full mt-8">
+          <CompaniesTable 
+            companies={companies}
+            selectedCompanies={selectedCompanies}
+            toggleCompanySelection={toggleCompanySelection}
+            toggleAllCompanies={() => toggleAllCompanies(companies)}
+            handleViewCompany={handleViewCompany}
+            toggleFavorite={handleToggleFavorite}
+            formatAum={formatAum}
+            isCompanySelected={isCompanySelected}
+            isLoading={isLoading}
+          />
+        </div>
+      )}
       
       <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
         <PersonsPagination 
