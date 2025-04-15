@@ -325,7 +325,9 @@ const PersonsList2 = ({
       </div>
       ) : (
         <div className="w-full py-8 px-4 md:px-6 lg:px-8">
-      <PersonsSearchBar 
+          <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Persons</h1>
+          
+          <PersonsSearchBar 
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         selectedFirmTypes={localSelectedFirmTypes}
