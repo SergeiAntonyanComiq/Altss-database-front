@@ -1,69 +1,168 @@
-# Welcome to your Lovable project
+# Altss - Company and Person Data Management Platform
 
-## Project info
+A comprehensive platform for managing company and person data, focusing on efficient data organization, intuitive user experience, and reliable data management.
 
-**URL**: https://lovable.dev/projects/4152ad70-3593-4a7e-a07e-4fca24493162
+## 🌟 Features
 
-## How can I edit this code?
+### Implemented
+- ✅ Company data management with advanced filtering and search
+- ✅ Person data management with customizable views
+- ✅ Advanced filtering system with saved searches
+- ✅ Customizable column management with persistence
+- ✅ Favorites system for quick access
+- ✅ User preferences persistence
+- ✅ Real-time data updates
+- ✅ Type-safe implementation
 
-There are several ways of editing your application.
+### In Progress
+- 🔄 Column order persistence enhancements
+- 🔄 Advanced filtering options
+- 🔄 Performance optimizations
+- 🔄 Component architecture refinements
 
-**Use Lovable**
+### Planned
+- 📋 Bulk actions for efficient data management
+- 📋 Export functionality
+- 📋 Custom views
+- 📋 Advanced analytics
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4152ad70-3593-4a7e-a07e-4fca24493162) and start prompting.
+## 🛠 Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+### Frontend
+- React 18 with TypeScript
+- Vite for build tooling
+- TailwindCSS for styling
+- Shadcn/ui component library
+- Lucide for icons
+- Custom hooks architecture
 
-**Use your preferred IDE**
+### Backend
+- Supabase platform
+- PostgreSQL database
+- Row Level Security (RLS)
+- Real-time capabilities
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### State Management
+- React hooks for local state
+- Context API for global state
+- LocalStorage for persistence
+- Type-safe interfaces
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Getting Started
 
-Follow these steps:
+### Prerequisites
+- Node.js 18+
+- pnpm package manager
+- Supabase account and project
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1. Clone the repository
+\`\`\`bash
+git clone https://github.com/avasiliev1/altss.com.git
+cd altss.com
+\`\`\`
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. Install dependencies
+\`\`\`bash
+pnpm install
+\`\`\`
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+3. Set up environment variables
+\`\`\`bash
+cp .env.example .env
+# Edit .env with your Supabase credentials
+\`\`\`
 
-**Edit a file directly in GitHub**
+4. Start the development server
+\`\`\`bash
+pnpm dev
+\`\`\`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 💻 Development
 
-**Use GitHub Codespaces**
+### Scripts
+- \`pnpm dev\`: Start development server
+- \`pnpm build\`: Build for production
+- \`pnpm build:dev\`: Build for development
+- \`pnpm preview\`: Preview production build
+- \`pnpm lint\`: Run ESLint
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Component Development Guidelines
+- Use TypeScript for all new components
+- Follow existing naming conventions
+- Implement proper prop types
+- Add JSDoc comments for complex logic
+- Use Tailwind utility classes
+- Follow existing color scheme
+- Maintain consistent spacing
+- Use design system components
 
-## What technologies are used for this project?
+### State Management Patterns
+- Lift state when shared between components
+- Use local state when possible
+- Implement persistence where needed
+- Handle all edge cases
 
-This project is built with .
+### Code Structure
+\`\`\`typescript
+// Container component pattern
+const CompaniesList: React.FC<Props> = () => {
+  // State management
+  // Data fetching
+  // Event handlers
+  return <CompaniesTable {...props} />;
+};
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+// Custom hook pattern
+const useColumnModal = (initialColumns: Column[]) => {
+  // State and handlers
+  return {
+    columns,
+    visibleColumns,
+    toggleColumn,
+    resetColumns,
+    applyColumnChanges,
+  };
+};
+\`\`\`
 
-## How can I deploy this project?
+## 🧪 Testing
 
-Simply open [Lovable](https://lovable.dev/projects/4152ad70-3593-4a7e-a07e-4fca24493162) and click on Share -> Publish.
+### Current Coverage
+- Unit tests for hooks
+- Edge case testing
+- External dependency mocking
+- React Testing Library implementation
 
-## I want to use a custom domain - is that possible?
+### Planned Improvements
+- E2E testing implementation
+- Error boundary testing
+- Performance monitoring
+- Bundle size optimization
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## 📚 Documentation
+
+### Available
+- Component API documentation
+- State management patterns
+- User workflows
+- Setup instructions
+
+### In Progress
+- Performance guidelines
+- Testing strategies
+- Deployment procedures
+- Maintenance guides
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
