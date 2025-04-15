@@ -1,21 +1,48 @@
-
 import React, { useState } from "react";
-import { Search, Filter, Save, Heart } from "lucide-react";
+import { Search, Filter, Save, Heart, Settings } from "lucide-react";
 import PersonsFilterModal from "../personal/filters/PersonsFilterModal";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface CompaniesSearchBarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectedFirmTypes?: string[];
-  onFilterChange?: (firmTypes: string[]) => void;
+  onFilterChange?: (filters: {
+    firmTypes: string[];
+    companyName: string;
+    position: string;
+    location: string;
+    responsibilities: string;
+    bio: string;
+  }) => void;
+  selectedCompanies: string[];
+  companies: CompanyType[];
+  toggleFavorite: (id: string, event: React.MouseEvent) => void;
+  onColumnsClick: () => void;
 }
+
+import { CompanyType } from "@/types/company";
 
 const CompaniesSearchBar = ({ 
   searchQuery, 
   setSearchQuery,
   selectedFirmTypes = [],
-  onFilterChange = () => {}
+  onFilterChange = () => {
+    // Default empty filter object
+    return {
+      firmTypes: [],
+      companyName: "",
+      position: "",
+      location: "",
+      responsibilities: "",
+      bio: ""
+    };
+  },
+  selectedCompanies,
+  companies,
+  toggleFavorite,
+  onColumnsClick
 }: CompaniesSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
@@ -68,10 +95,30 @@ const CompaniesSearchBar = ({
         </button>
         
         <button 
-          className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 px-[15px] py-2.5 rounded-[50px]"
+          className={`justify-center items-center border border-[#DFE4EA] ${selectedCompanies.length > 0 ? 'bg-primary text-white' : 'bg-white'} flex gap-2 px-[15px] py-2.5 rounded-[50px]`}
+          onClick={(e) => {
+            // Add all selected companies to favorites
+            selectedCompanies.forEach(id => {
+              toggleFavorite(id, e);
+            });
+          }}
+          disabled={selectedCompanies.length === 0}
         >
           <Heart className="h-[18px] w-[18px]" />
           <span>Add to Favorites</span>
+          {selectedCompanies.length > 0 && (
+            <Badge variant="secondary" className="bg-white text-primary ml-1 h-5 px-1.5">
+              {selectedCompanies.length}
+            </Badge>
+          )}
+        </button>
+
+        <button 
+          className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]"
+          onClick={onColumnsClick}
+        >
+          <Settings className="h-[18px] w-[18px]" />
+          <span>Columns</span>
         </button>
       </div>
       

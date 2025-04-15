@@ -97,11 +97,11 @@ const PersonsFilterModal = ({
   const handleApply = () => {
     onApplyFilters({
       firmTypes: Array.isArray(selectedTypes) ? selectedTypes : [],
-      companyName: companyNameFilter,
-      position: positionFilter,
-      location: locationFilter,
-      responsibilities: responsibilitiesFilter,
-      bio: bioFilter
+      companyName: companyNameFilter.trim(),
+      position: positionFilter.trim(),
+      location: locationFilter.trim(),
+      responsibilities: responsibilitiesFilter.trim(),
+      bio: bioFilter.trim()
     });
     onClose();
   };

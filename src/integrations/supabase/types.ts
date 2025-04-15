@@ -33,6 +33,132 @@ export type Database = {
         }
         Relationships: []
       }
+ favorite_companies: {
+        Row: {
+          id: string
+          user_id: string
+          company_id: string
+          name: string
+          type: string | null
+          aum: string | null
+          added_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          company_id: string
+          name: string
+          type?: string | null
+          aum?: string | null
+          added_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          company_id?: string
+          name?: string
+          type?: string | null
+          aum?: string | null
+          added_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_companies_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      favorite_persons: {
+        Row: {
+          id: string
+          user_id: string
+          contact_id: string
+          name: string
+          position: string | null
+          company: string | null
+          added_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          contact_id: string
+          name: string
+          position?: string | null
+          company?: string | null
+          added_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          contact_id?: string
+          name?: string
+          position?: string | null
+          company?: string | null
+          added_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_persons_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      saved_filters: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          firm_types: string[] | null
+          company_name: string | null
+          position: string | null
+          location: string | null
+          responsibilities: string | null
+          bio: string | null
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          firm_types?: string[] | null
+          company_name?: string | null
+          position?: string | null
+          location?: string | null
+          responsibilities?: string | null
+          bio?: string | null
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          firm_types?: string[] | null
+          company_name?: string | null
+          position?: string | null
+          location?: string | null
+          responsibilities?: string | null
+          bio?: string | null
+          created_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       saved_searches: {
         Row: {
           created_at: string

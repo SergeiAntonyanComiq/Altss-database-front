@@ -1,8 +1,20 @@
 import React, { useState, useRef, useCallback } from "react";
 import { TableCheckbox } from "@/components/ui/table-checkbox";
 
+const defaultWidths: Record<string, number> = {
+  name: 280,
+  type: 200,
+  background: 300,
+  location: 300,
+  website: 200,
+  contact: 250,
+  aum: 170,
+  founded: 150,
+  team: 150,
+};
+
 export interface Column {
-  id: string;
+  id: 'name' | 'type' | 'aum' | 'founded' | 'team' | 'background' | 'location' | 'website' | 'contact';
   width: number;
   minWidth: number;
 }
@@ -63,8 +75,28 @@ const CompaniesTableHeader: React.FC<CompaniesTableHeaderProps> = ({
     }
   }, [resizing, resize, stopResizing]);
 
-  // Calculate total minimum width
-  const totalMinWidth = columns.reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+  // Calculate total minimum width and ensure we have valid columns
+  const totalMinWidth = (columns || []).reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+
+  // If no columns provided, don't render anything
+  if (!columns || columns.length === 0) {
+    return null;
+  }
+
+  const getColumnTitle = (id: string) => {
+    switch (id) {
+      case 'name': return 'Name';
+      case 'type': return 'Type';
+      case 'aum': return 'AUM';
+      case 'founded': return 'Founded';
+      case 'team': return 'Team';
+      case 'background': return 'Background';
+      case 'location': return 'Location';
+      case 'website': return 'Website';
+      case 'contact': return 'Contact';
+      default: return '';
+    }
+  };
 
   return (
     <div 
@@ -89,11 +121,7 @@ const CompaniesTableHeader: React.FC<CompaniesTableHeaderProps> = ({
           className={`relative ${index === columns.length - 1 ? '' : 'border-r border-[rgba(223,228,234,1)]'} px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center ${index === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
           style={{ width: column.width, minWidth: column.minWidth }}
         >
-          {column.id === 'name' && "Company Name"}
-          {column.id === 'type' && "Company Type"}
-          {column.id === 'aum' && "AUM, $mln."}
-          {column.id === 'founded' && "Founded year"}
-          {column.id === 'team' && "Known Team"}
+          {getColumnTitle(column.id)}
           
           <div
             className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400 active:bg-blue-600"

@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { CompanyType } from "@/types/company";
 import CompaniesTableHeader, { Column } from "./table-parts/CompaniesTableHeader";
 import CompanyTableRow from "./table-parts/CompanyTableRow";
 import EmptyState from "../personal/table/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
+import CompaniesColumnModal from "./CompaniesColumnModal";
 
 interface CompaniesTableProps {
   companies: CompanyType[];
@@ -15,6 +16,11 @@ interface CompaniesTableProps {
   formatAum: (aumValue: number | string | undefined | null) => string;
   isCompanySelected: (id: string | undefined) => boolean;
   isLoading: boolean;
+  columns: Column[];
+  onColumnResize: (columns: Column[]) => void;
+  onColumnsChange: (columns: Column[]) => void;
+  isColumnModalOpen?: boolean;
+  onColumnModalClose?: () => void;
 }
 
 const CompaniesTable: React.FC<CompaniesTableProps> = ({
@@ -26,30 +32,23 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
   toggleFavorite,
   formatAum,
   isCompanySelected,
-  isLoading
+  isLoading,
+  columns,
+  onColumnResize,
+  onColumnsChange,
+  isColumnModalOpen = false,
+  onColumnModalClose = () => {}
 }: CompaniesTableProps) => {
-  const [columns, setColumns] = useState<Column[]>([
-    { id: 'name', width: 280, minWidth: 280 },
-    { id: 'type', width: 300, minWidth: 300 },
-    { id: 'aum', width: 170, minWidth: 170 },
-    { id: 'founded', width: 250, minWidth: 250 },
-    { id: 'team', width: 170, minWidth: 150 },
-  ]);
-
-  const handleColumnResize = useCallback((newColumns: Column[]) => {
-    setColumns(newColumns);
-  }, []);
-
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg shadow-sm w-full">
         <div className="w-full border border-[rgba(223,228,234,1)] rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto thin-scrollbar">
             <CompaniesTableHeader
               allSelected={false} 
               toggleAllCompanies={() => {}}
               columns={columns}
-              onColumnResize={handleColumnResize}
+              onColumnResize={onColumnResize}
             />
             <div className="space-y-1 p-4">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -71,12 +70,12 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm w-full">
       <div className="w-full border border-[rgba(223,228,234,1)] rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto thin-scrollbar">
           <CompaniesTableHeader
             allSelected={allSelected}
             toggleAllCompanies={toggleAllCompanies}
             columns={columns}
-            onColumnResize={handleColumnResize}
+            onColumnResize={onColumnResize}
           />
           
           <div className="w-full">
@@ -95,6 +94,12 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
           </div>
         </div>
       </div>
+      <CompaniesColumnModal
+        isOpen={isColumnModalOpen}
+        onClose={onColumnModalClose}
+        columns={columns}
+        onApplyColumns={onColumnsChange}
+      />
     </div>
   );
 };

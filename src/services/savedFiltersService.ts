@@ -24,9 +24,18 @@ export interface FavoritePersonType {
   addedAt: number;
 }
 
+export interface FavoriteCompanyType {
+  id: string;
+  name: string;
+  type?: string;
+  aum?: string;
+  addedAt: number;
+}
+
 // Fallback to localStorage for offline or error cases
 const STORAGE_KEY = 'saved_filters';
-const FAVORITES_KEY = 'favorites_persons';
+const FAVORITES_PERSONS_KEY = 'favorites_persons';
+const FAVORITES_COMPANIES_KEY = 'favorites_companies';
 
 // Helper function to get current user ID
 const getUserId = async (): Promise<string | null> => {
@@ -361,7 +370,7 @@ export const getFavoritePersons = async (): Promise<FavoritePersonType[]> => {
     console.error("Error fetching favorites from Supabase:", error);
     
     // Fallback to localStorage
-    const favoritesJson = localStorage.getItem(FAVORITES_KEY);
+    const favoritesJson = localStorage.getItem(FAVORITES_PERSONS_KEY);
     return favoritesJson ? JSON.parse(favoritesJson) : [];
   }
 };
@@ -435,7 +444,7 @@ export const addPersonToFavorites = async (
     // Also update localStorage as backup
     const favorites = await getFavoritePersons();
     favorites.push(createdFavorite);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    localStorage.setItem(FAVORITES_PERSONS_KEY, JSON.stringify(favorites));
 
     return createdFavorite;
   } catch (error) {
@@ -458,7 +467,7 @@ export const addPersonToFavorites = async (
     };
     
     favorites.push(newFavorite);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    localStorage.setItem(FAVORITES_PERSONS_KEY, JSON.stringify(favorites));
     
     return newFavorite;
   }
@@ -485,7 +494,7 @@ export const removePersonFromFavorites = async (id: string): Promise<boolean> =>
     // Update localStorage backup
     const favorites = await getFavoritePersons();
     const updatedFavorites = favorites.filter(fav => fav.id !== id);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+    localStorage.setItem(FAVORITES_PERSONS_KEY, JSON.stringify(updatedFavorites));
 
     return true;
   } catch (error) {
@@ -499,7 +508,7 @@ export const removePersonFromFavorites = async (id: string): Promise<boolean> =>
       return false;
     }
     
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+    localStorage.setItem(FAVORITES_PERSONS_KEY, JSON.stringify(updatedFavorites));
     return true;
   }
 };
@@ -532,6 +541,205 @@ export const isPersonInFavorites = async (id: string): Promise<boolean> => {
   }
 };
 
+/**
+ * Gets all favorite companies from Supabase
+ */
+export const getFavoriteCompanies = async (): Promise<FavoriteCompanyType[]> => {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    const { data, error } = await supabase
+      .from('favorite_companies')
+      .select('*')
+      .eq('user_id', userId)
+      .order('added_at', { ascending: false });
+
+    if (error) throw error;
+
+    return data.map(favorite => ({
+      id: favorite.company_id,
+      name: favorite.name,
+      type: favorite.type,
+      aum: favorite.aum,
+      addedAt: new Date(favorite.added_at).getTime()
+    }));
+  } catch (error) {
+    console.error("Error fetching company favorites from Supabase:", error);
+    
+    // Fallback to localStorage
+    const favoritesJson = localStorage.getItem(FAVORITES_COMPANIES_KEY);
+    return favoritesJson ? JSON.parse(favoritesJson) : [];
+  }
+};
+
+/**
+ * Adds a company to favorites in Supabase
+ */
+export const addCompanyToFavorites = async (
+  id: string,
+  name: string,
+  type?: string,
+  aum?: string
+): Promise<FavoriteCompanyType> => {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    // Check if already in favorites
+    const { data: existingDataArray, error: checkError } = await supabase
+      .from('favorite_companies')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('company_id', id)
+      .limit(1);
+
+    if (checkError) {
+      throw checkError;
+    }
+
+    if (existingDataArray && existingDataArray.length > 0) {
+      const existingData = existingDataArray[0];
+      console.log("Company already in favorites:", id);
+      return {
+        id,
+        name: existingData.name,
+        type: existingData.type,
+        aum: existingData.aum,
+        addedAt: new Date(existingData.added_at).getTime()
+      };
+    }
+
+    // Not in favorites, add it
+    console.log("Adding company to favorites:", id);
+    const newFavorite = {
+      user_id: userId,
+      company_id: id,
+      name,
+      type,
+      aum,
+      added_at: new Date().toISOString()
+    };
+
+    const { error: insertError } = await supabase
+      .from('favorite_companies')
+      .insert(newFavorite);
+
+    if (insertError) throw insertError;
+
+    // Return the created favorite
+    const createdFavorite: FavoriteCompanyType = {
+      id,
+      name,
+      type,
+      aum,
+      addedAt: Date.now()
+    };
+
+    // Also update localStorage as backup
+    const favorites = await getFavoriteCompanies();
+    favorites.push(createdFavorite);
+    localStorage.setItem(FAVORITES_COMPANIES_KEY, JSON.stringify(favorites));
+
+    return createdFavorite;
+  } catch (error) {
+    console.error("Error adding company favorite to Supabase:", error);
+    
+    // Fallback to localStorage-only operation
+    const favorites = await getFavoriteCompanies();
+    
+    // Check if company is already in favorites in localStorage
+    if (favorites.some(fav => fav.id === id)) {
+      return favorites.find(fav => fav.id === id)!;
+    }
+    
+    const newFavorite: FavoriteCompanyType = {
+      id,
+      name,
+      type,
+      aum,
+      addedAt: Date.now()
+    };
+    
+    favorites.push(newFavorite);
+    localStorage.setItem(FAVORITES_COMPANIES_KEY, JSON.stringify(favorites));
+    
+    return newFavorite;
+  }
+};
+
+/**
+ * Removes a company from favorites in Supabase
+ */
+export const removeCompanyFromFavorites = async (id: string): Promise<boolean> => {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    const { error } = await supabase
+      .from('favorite_companies')
+      .delete()
+      .eq('user_id', userId)
+      .eq('company_id', id);
+
+    if (error) throw error;
+
+    // Update localStorage backup
+    const favorites = await getFavoriteCompanies();
+    const updatedFavorites = favorites.filter(fav => fav.id !== id);
+    localStorage.setItem(FAVORITES_COMPANIES_KEY, JSON.stringify(updatedFavorites));
+
+    return true;
+  } catch (error) {
+    console.error("Error removing company favorite from Supabase:", error);
+    
+    // Fallback to localStorage-only operation
+    const favorites = await getFavoriteCompanies();
+    const updatedFavorites = favorites.filter(fav => fav.id !== id);
+    
+    if (updatedFavorites.length === favorites.length) {
+      return false;
+    }
+    
+    localStorage.setItem(FAVORITES_COMPANIES_KEY, JSON.stringify(updatedFavorites));
+    return true;
+  }
+};
+
+/**
+ * Checks if a company is in favorites by querying Supabase
+ */
+export const isCompanyInFavorites = async (id: string): Promise<boolean> => {
+  try {
+    const userId = await getUserId();
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    const { data, error } = await supabase
+      .from('favorite_companies')
+      .select('company_id')
+      .eq('user_id', userId)
+      .eq('company_id', id);
+
+    if (error) throw error;
+
+    return data.length > 0;
+  } catch (error) {
+    console.error("Error checking company favorites in Supabase:", error);
+    
+    // Fallback to localStorage
+    const favorites = await getFavoriteCompanies();
+    return favorites.some(fav => fav.id === id);
+  }
+};
+
 // Sync localStorage with Supabase on startup
 export const syncWithSupabase = async (): Promise<void> => {
   try {
@@ -558,7 +766,7 @@ export const syncWithSupabase = async (): Promise<void> => {
     }
     
     // Sync favorites
-    const localFavorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+    const localFavorites = JSON.parse(localStorage.getItem(FAVORITES_PERSONS_KEY) || '[]');
     const remoteFavorites = await getFavoritePersons();
     
     // Merge favorites that exist locally but not in Supabase
@@ -575,4 +783,20 @@ export const syncWithSupabase = async (): Promise<void> => {
   } catch (error) {
     console.error("Error syncing with Supabase:", error);
   }
+    
+    // Sync company favorites
+    const localCompanyFavorites = JSON.parse(localStorage.getItem(FAVORITES_COMPANIES_KEY) || '[]');
+    const remoteCompanyFavorites = await getFavoriteCompanies();
+    
+    // Merge company favorites that exist locally but not in Supabase
+    for (const localFav of localCompanyFavorites) {
+      if (!remoteCompanyFavorites.some(rf => rf.id === localFav.id)) {
+        await addCompanyToFavorites(
+          localFav.id,
+          localFav.name,
+          localFav.type,
+          localFav.aum
+        );
+      }
+    }
 };

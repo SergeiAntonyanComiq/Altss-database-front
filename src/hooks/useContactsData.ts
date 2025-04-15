@@ -111,21 +111,15 @@ export const useContactsData = ({
       setError(null);
       
       try {
-        // Параллельно загружаем контакты и избранное
-        const [contactsResponse, favoritesResponse] = await Promise.all([
-          fetchFilteredContacts({
-            limit: itemsPerPage,
-            offset: (currentPage - 1) * itemsPerPage,
-            sortBy: "name",
-            ...(firmTypes.length > 0 && { firm_type: firmTypes.join(',') }),
-            ...(companyName && { investor: companyName }),
-            ...(position && { job_title: position }),
-            ...(location && { location }), // Упростим для примера, нужна более сложная логика
-            ...(responsibilities && { asset_class: responsibilities }),
-            ...(bio && { role: bio })
-          }),
-          getFavoritePersons() // Загружаем избранное
-        ]);
+        const contactsResponse = await fetchFilteredContacts({
+          limit: itemsPerPage,
+          offset: (currentPage - 1) * itemsPerPage,
+          sortBy: "name",
+          ...(firmTypes.length > 0 && { firm_type: firmTypes.join(',') }),
+          ...(companyName && { investor: companyName }),
+          ...(position && { job_title: position })
+        });
+        const favoritesResponse = await getFavoritePersons();
 
         if (!isMounted) return;
 
@@ -137,13 +131,21 @@ export const useContactsData = ({
         setFavoriteIds(favIds);
 
         // Обновляем контакты, устанавливая флаг favorite
-        const updatedContacts = contactsResponse.data.map(contact => ({
+        let updatedContacts = contactsResponse.data.map(contact => ({
           ...contact,
-          favorite: favIds.has(String(contact.contact_id)) // Проверяем, есть ли ID в избранном
+          favorite: favIds.has(String(contact.contact_id))
         }));
+        
+        if (location) {
+          const locationRegex = new RegExp(location, 'i');
+          updatedContacts = updatedContacts.filter(contact => {
+            const fullLocation = [contact.city, contact.state, contact.country_territory].filter(Boolean).join(", ");
+            return locationRegex.test(fullLocation);
+          });
+        }
 
         setContacts(updatedContacts);
-        setTotalContacts(contactsResponse.total); // Обновляем общее количество
+        setTotalContacts(contactsResponse.total);
 
       } catch (err) { 
         if (!isMounted) return;
@@ -168,7 +170,7 @@ export const useContactsData = ({
     return () => {
       isMounted = false;
     };
-  }, [currentPage, itemsPerPage, firmTypes, companyName, position, location, responsibilities, bio]);
+  }, [currentPage, itemsPerPage, firmTypes, companyName, position, location, responsibilities, bio, toast]);
   
   // Effect to sync with prop changes (but not on every render)
   useEffect(() => {
@@ -176,14 +178,14 @@ export const useContactsData = ({
       initialPageRef.current = initialPage;
       setCurrentPage(initialPage);
     }
-  }, [initialPage]);
+  }, [initialPage, setCurrentPage]);
   
   useEffect(() => {
     if (initialItemsPerPageRef.current !== initialItemsPerPage) {
       initialItemsPerPageRef.current = initialItemsPerPage;
       setItemsPerPage(initialItemsPerPage);
     }
-  }, [initialItemsPerPage]);
+  }, [initialItemsPerPage, setItemsPerPage]);
   
   return {
     contacts,

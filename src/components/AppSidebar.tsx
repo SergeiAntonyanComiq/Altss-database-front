@@ -31,7 +31,7 @@ import {
   CollapsibleContent, 
   CollapsibleTrigger 
 } from "@/components/ui/collapsible";
-import { getFavoritePersons, getSavedFilters } from "@/services/savedFiltersService";
+import { getFavoritePersons, getSavedFilters, getFavoriteCompanies } from "@/services/savedFiltersService";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -41,7 +41,8 @@ const AppSidebar = () => {
   const { toast } = useToast();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>("");
-  const [favorites, setFavorites] = useState([]);
+  const [favoritePersons, setFavoritePersons] = useState([]);
+  const [favoriteCompanies, setFavoriteCompanies] = useState([]);
   const [savedSearches, setSavedSearches] = useState([]);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
@@ -50,11 +51,19 @@ const AppSidebar = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const favs = await getFavoritePersons();
-        setFavorites(favs || []);
+        const favPersons = await getFavoritePersons();
+        setFavoritePersons(favPersons || []);
       } catch (error) {
-        console.error("Error loading favorites:", error);
-        setFavorites([]); // Reset on error
+        console.error("Error loading favorite persons:", error);
+        setFavoritePersons([]); // Reset on error
+      }
+
+      try {
+        const favCompanies = await getFavoriteCompanies();
+        setFavoriteCompanies(favCompanies || []);
+      } catch (error) {
+        console.error("Error loading favorite companies:", error);
+        setFavoriteCompanies([]); // Reset on error
       }
       
       try {
@@ -183,8 +192,12 @@ const AppSidebar = () => {
     return "UN";
   };
 
-  const handleNavigateToFavorite = (id) => {
-    navigate(`/profile/${id}`);
+  const handleNavigateToFavorite = (item, type: 'person' | 'company') => {
+    if (type === 'company') {
+      navigate(`/company/${item.id}`);
+    } else {
+      navigate(`/profile/${item.id}`);
+    }
     setFavoritesOpen(false);
   };
 
@@ -257,21 +270,54 @@ const AppSidebar = () => {
                   }
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                  {favorites.length > 0 ? (
-                    favorites.map(favorite => (
-                      <div 
-                        key={favorite.id}
-                        onClick={() => handleNavigateToFavorite(favorite.id)}
-                        className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
-                      >
-                        <span className="truncate">{favorite.name}</span>
-                        {favorite.position && (
-                          <span className="text-xs text-gray-400 truncate">
-                            {favorite.position}
-                          </span>
-                        )}
-                      </div>
-                    ))
+                  {favoritePersons.length > 0 || favoriteCompanies.length > 0 ? (
+                    <>
+                      {/* Companies Section */}
+                      {favoriteCompanies.length > 0 && (
+                        <>
+                          <div className="px-3 py-1 text-xs font-medium text-gray-500">
+                            Companies
+                          </div>
+                          {favoriteCompanies.map(favorite => (
+                            <div 
+                              key={favorite.id}
+                              onClick={() => handleNavigateToFavorite(favorite, 'company')}
+                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                            >
+                              <span className="truncate">{favorite.name}</span>
+                              {favorite.type && (
+                                <span className="text-xs text-gray-400 truncate">
+                                  {favorite.type}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </>
+                      )}
+
+                      {/* Persons Section */}
+                      {favoritePersons.length > 0 && (
+                        <>
+                          <div className="px-3 py-1 text-xs font-medium text-gray-500">
+                            Persons
+                          </div>
+                          {favoritePersons.map(favorite => (
+                            <div 
+                              key={favorite.id}
+                              onClick={() => handleNavigateToFavorite(favorite, 'person')}
+                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                            >
+                              <span className="truncate">{favorite.name}</span>
+                              {favorite.position && (
+                                <span className="text-xs text-gray-400 truncate">
+                                  {favorite.position}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </>
+                      )}
+                    </>
                   ) : (
                     <div className="py-2 px-3 text-sm text-gray-400">
                       No favorites yet

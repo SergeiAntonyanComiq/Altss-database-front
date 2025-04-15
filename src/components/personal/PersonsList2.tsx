@@ -48,7 +48,12 @@ const contactToPerson = (contact: ContactType): PersonType | null => {
       profileImage: undefined,
       jobHistory: undefined,
       news: undefined,
-      lastUpdate: undefined
+      lastUpdate: undefined,
+      location: [
+        contact.city,
+        contact.state,
+        contact.country_territory
+      ].filter(Boolean).join(", ")
     };
 
     return person;
@@ -351,7 +356,11 @@ const PersonsList2 = ({
             isPersonSelected={isPersonSelected}
         toggleFavorite={toggleFavorite}
       />
-      
+      {localPersons.length === 0 && !isLoading && (
+        <div className="text-center mt-4">
+          <p className="text-gray-500">No contacts found with the applied filters.</p>
+        </div>
+      )}
           <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
             <PersonsPagination 
         currentPage={currentPage}

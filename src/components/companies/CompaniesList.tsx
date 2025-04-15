@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import PersonsPagination from "@/components/personal/PersonsPagination";
 import CompaniesSearchBar from "./CompaniesSearchBar";
 import CompaniesTable from "./CompaniesTable";
+import { Column } from "./table-parts/CompaniesTableHeader";
 import CompaniesTableSkeleton from "./CompaniesTableSkeleton";
 import CompaniesError from "./CompaniesError";
 import { useCompaniesData } from "@/hooks/useCompaniesData";
 import { useCompanySelection } from "./useCompanySelection";
 import { formatAum } from "./companyUtils";
+import { usePersistedColumns } from "./hooks/usePersistedColumns";
 
 interface CompaniesListProps {
   currentPage: number;
@@ -16,6 +18,18 @@ interface CompaniesListProps {
   onItemsPerPageChange: (perPage: number) => void;
 }
 
+const defaultColumns: Column[] = [
+  { id: 'name', width: 280, minWidth: 280 },
+  { id: 'type', width: 200, minWidth: 200 },
+  { id: 'background', width: 300, minWidth: 300 },
+  { id: 'location', width: 300, minWidth: 300 },
+  { id: 'website', width: 200, minWidth: 200 },
+  { id: 'contact', width: 250, minWidth: 250 },
+  { id: 'aum', width: 170, minWidth: 170 },
+  { id: 'founded', width: 150, minWidth: 150 },
+  { id: 'team', width: 150, minWidth: 150 },
+];
+
 const CompaniesList = ({ 
   currentPage,
   itemsPerPage,
@@ -23,6 +37,21 @@ const CompaniesList = ({
   onItemsPerPageChange
 }: CompaniesListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
+  const { columns, updateColumns, resetColumns } = usePersistedColumns();
+  const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
+  
+  const handleFilterChange = (filters: {
+    firmTypes: string[];
+    companyName: string;
+    position: string;
+    location: string;
+    responsibilities: string;
+    bio: string;
+  }) => {
+    setSelectedFirmTypes(filters.firmTypes);
+  };
+
   const { 
     companies, 
     isLoading, 
@@ -46,15 +75,24 @@ const CompaniesList = ({
   };
 
   const handleToggleFavorite = (id: string, event: React.MouseEvent) => {
-    // Using the toggleFavorite from useCompanySelection
     toggleFavorite(id, event, companies, () => {
-      // We need to modify the state from the hook instead
-      companies.forEach(company => {
-        if (company.id === id) {
-          company.isFavorite = !company.isFavorite;
-        }
-      });
+      const updatedCompanies = companies.map(company => 
+        company.id === id ? { ...company, isFavorite: !company.isFavorite } : company
+      );
+      // Update the companies array immutably
+      if (updatedCompanies.some(c => c.id === id)) {
+        // Only update if the company was found
+        companies.splice(0, companies.length, ...updatedCompanies);
+      }
     });
+  };
+
+  const handleColumnResize = (newColumns: Column[]) => {
+    updateColumns(newColumns);
+  };
+
+  const handleColumnsChange = (newColumns: Column[]) => {
+    updateColumns(newColumns);
   };
 
   return (
@@ -69,6 +107,12 @@ const CompaniesList = ({
         <CompaniesSearchBar 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          selectedFirmTypes={selectedFirmTypes}
+          onFilterChange={handleFilterChange}
+          selectedCompanies={selectedCompanies}
+          companies={companies}
+          toggleFavorite={handleToggleFavorite}
+          onColumnsClick={() => setIsColumnModalOpen(true)}
         />
       )}
       
@@ -88,6 +132,11 @@ const CompaniesList = ({
             formatAum={formatAum}
             isCompanySelected={isCompanySelected}
             isLoading={isLoading}
+            columns={columns}
+            onColumnResize={handleColumnResize}
+            onColumnsChange={handleColumnsChange}
+            isColumnModalOpen={isColumnModalOpen}
+            onColumnModalClose={() => setIsColumnModalOpen(false)}
           />
         </div>
       )}
