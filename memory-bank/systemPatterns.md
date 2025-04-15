@@ -106,6 +106,18 @@ graph TD
 
 ## Recent Patterns Added
 
+### Type-Based Content Organization
+- Consistent grouping by content type (Companies/Persons)
+- Unified navigation patterns based on type
+- Shared styling between similar sections
+- Clear visual hierarchy for grouped content
+
+### Saved Searches Management
+- Type-based filtering and display
+- Consistent navigation patterns
+- Integration with sidebar navigation
+- Shared styling with favorites system
+
 ### Column Management
 - State lifted to list component
 - Persistence through localStorage
@@ -123,6 +135,7 @@ graph TD
 - Fallback mechanisms
 - Sync with server when available
 - Clear update patterns
+- Type-aware navigation and filtering
 
 ## Best Practices
 
@@ -130,6 +143,7 @@ graph TD
    - Single source of truth
    - Clear update patterns
    - Type-safe state
+   - Content type awareness
 
 2. **Component Design**
    - Clear responsibilities
@@ -140,6 +154,8 @@ graph TD
    - Consistent interactions
    - Predictable behavior
    - Persistent preferences
+   - Type-based content organization
+   - Unified navigation patterns
 
 4. **Performance**
    - Optimized renders

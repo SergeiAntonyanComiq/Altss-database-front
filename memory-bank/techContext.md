@@ -120,6 +120,28 @@ const useColumnModal = (initialColumns: Column[]) => {
 
 ## Recent Technical Updates
 
+### Saved Searches Implementation
+```typescript
+// Type definitions
+interface SavedFilter {
+  id: string;
+  name: string;
+  type: 'company' | 'person';
+  firmTypes: string[];
+  // ... other filter properties
+}
+
+// Type-based navigation
+const handleApplySavedSearch = (filter: SavedFilter) => {
+  const path = filter.type === 'company' ? '/companies' : '/persons';
+  navigate(`${path}?filter=${filter.id}`);
+};
+
+// Type-based grouping
+const personSearches = savedSearches.filter(search => search.type === 'person');
+const companySearches = savedSearches.filter(search => search.type === 'company');
+```
+
 ### Column Management
 - Moved column button to search bar
 - Improved column state persistence
@@ -137,6 +159,8 @@ const useColumnModal = (initialColumns: Column[]) => {
 - Added persistence layer
 - Improved type definitions
 - Enhanced error handling
+- Added type-aware navigation
+- Implemented content type grouping
 
 ## Development Guidelines
 
@@ -163,6 +187,8 @@ const useColumnModal = (initialColumns: Column[]) => {
 - Test edge cases
 - Mock external dependencies
 - Use React Testing Library
+- Test type-based navigation
+- Verify content grouping
 
 ## Technical Debt
 

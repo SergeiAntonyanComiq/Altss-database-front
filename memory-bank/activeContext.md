@@ -41,12 +41,15 @@
 - Consistent button styling and placement
 - Persistent user preferences
 - Clear component responsibilities
+- Type-based grouping for lists (Companies/Persons)
+- Consistent navigation patterns based on content type
 
 ## Next Steps
 - Continue monitoring for any UI/UX issues
 - Consider adding column order persistence
 - Look for opportunities to improve table performance
 - Consider adding column width persistence
+- Consider adding search filters to saved searches display
 
 ## Known Issues
 - None currently identified
@@ -55,3 +58,5 @@
 - Importance of consistent button placement
 - Benefits of lifting state management
 - Value of persistent user preferences
+- Effectiveness of type-based content organization
+- Benefits of consistent navigation patterns

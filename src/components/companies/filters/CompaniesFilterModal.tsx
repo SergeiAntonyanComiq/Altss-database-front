@@ -5,24 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookmarkPlus, Search, X } from "lucide-react";
-import SavedFiltersGroup from "../../filters/SavedFiltersGroup";
-import { useFilterModal } from "./hooks/useFilterModal";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Scrollbar } from "@radix-ui/react-scroll-area";
+import SavedFiltersGroup from "../../filters/SavedFiltersGroup";
+import { useFilterModal } from "../../personal/filters/hooks/useFilterModal";
 
-interface PersonsFilterModalProps {
+interface CompaniesFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedFirmTypes: string[];
   onApplyFilters: (filters: {
     firmTypes: string[];
-    companyName: string;
-    position: string;
-    location: string;
-    responsibilities: string;
-    bio: string;
+    firmName: string;
+    city: string;
+    country: string;
+    region: string;
+    background: string;
+    yearEst: string;
+    totalStaff: string;
+    peMainFirmStrategy: string;
+    peGeographicExposure: string;
   }) => void;
 }
 
@@ -58,12 +62,12 @@ const FilterInput = ({ id, label, value, onChange, placeholder }: {
   </div>
 );
 
-const PersonsFilterModal = ({
+const CompaniesFilterModal = ({
   isOpen,
   onClose,
   selectedFirmTypes,
   onApplyFilters,
-}: PersonsFilterModalProps) => {
+}: CompaniesFilterModalProps) => {
   const {
     firmTypes,
     loading,
@@ -73,35 +77,39 @@ const PersonsFilterModal = ({
     savedFilters,
     filterName,
     showSaveFilterInput,
-    companyNameFilter,
-    positionFilter,
-    locationFilter,
-    responsibilitiesFilter,
-    bioFilter,
     setSearchTerm,
     toggleFirmType,
-    removeSelectedType,
     clearAllFilters,
     setFilterName,
     setShowSaveFilterInput,
     handleSaveFilter,
     handleDeleteFilter,
     applyFilter,
-    setCompanyNameFilter,
-    setPositionFilter,
-    setLocationFilter,
-    setResponsibilitiesFilter,
-    setBioFilter
   } = useFilterModal(selectedFirmTypes);
+
+  // Company-specific filter states
+  const [firmNameFilter, setFirmNameFilter] = React.useState("");
+  const [cityFilter, setCityFilter] = React.useState("");
+  const [countryFilter, setCountryFilter] = React.useState("");
+  const [regionFilter, setRegionFilter] = React.useState("");
+  const [backgroundFilter, setBackgroundFilter] = React.useState("");
+  const [yearEstFilter, setYearEstFilter] = React.useState("");
+  const [totalStaffFilter, setTotalStaffFilter] = React.useState("");
+  const [peMainFirmStrategyFilter, setPeMainFirmStrategyFilter] = React.useState("");
+  const [peGeographicExposureFilter, setPeGeographicExposureFilter] = React.useState("");
 
   const handleApply = () => {
     onApplyFilters({
       firmTypes: Array.isArray(selectedTypes) ? selectedTypes : [],
-      companyName: companyNameFilter.trim(),
-      position: positionFilter.trim(),
-      location: locationFilter.trim(),
-      responsibilities: responsibilitiesFilter.trim(),
-      bio: bioFilter.trim()
+      firmName: firmNameFilter.trim(),
+      city: cityFilter.trim(),
+      country: countryFilter.trim(),
+      region: regionFilter.trim(),
+      background: backgroundFilter.trim(),
+      yearEst: yearEstFilter.trim(),
+      totalStaff: totalStaffFilter.trim(),
+      peMainFirmStrategy: peMainFirmStrategyFilter.trim(),
+      peGeographicExposure: peGeographicExposureFilter.trim()
     });
     onClose();
   };
@@ -112,31 +120,52 @@ const PersonsFilterModal = ({
 
   const handleClearFilters = () => {
     clearAllFilters();
+    setFirmNameFilter("");
+    setCityFilter("");
+    setCountryFilter("");
+    setRegionFilter("");
+    setBackgroundFilter("");
+    setYearEstFilter("");
+    setTotalStaffFilter("");
+    setPeMainFirmStrategyFilter("");
+    setPeGeographicExposureFilter("");
     onApplyFilters({
       firmTypes: [],
-      companyName: "",
-      position: "",
-      location: "",
-      responsibilities: "",
-      bio: ""
+      firmName: "",
+      city: "",
+      country: "",
+      region: "",
+      background: "",
+      yearEst: "",
+      totalStaff: "",
+      peMainFirmStrategy: "",
+      peGeographicExposure: ""
     });
     onClose();
   };
 
   const hasActiveFilters = (Array.isArray(selectedTypes) && selectedTypes.length > 0) || 
-    companyNameFilter || 
-    positionFilter || 
-    locationFilter || 
-    responsibilitiesFilter || 
-    bioFilter;
+    firmNameFilter || 
+    cityFilter || 
+    countryFilter || 
+    regionFilter || 
+    backgroundFilter || 
+    yearEstFilter || 
+    totalStaffFilter || 
+    peMainFirmStrategyFilter || 
+    peGeographicExposureFilter;
 
   const activeFiltersCount = [
     Array.isArray(selectedTypes) && selectedTypes.length > 0,
-    companyNameFilter,
-    positionFilter,
-    locationFilter,
-    responsibilitiesFilter,
-    bioFilter
+    firmNameFilter,
+    cityFilter,
+    countryFilter,
+    regionFilter,
+    backgroundFilter,
+    yearEstFilter,
+    totalStaffFilter,
+    peMainFirmStrategyFilter,
+    peGeographicExposureFilter
   ].filter(Boolean).length;
 
   // Filter firm types based on search term
@@ -148,7 +177,7 @@ const PersonsFilterModal = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Filter Persons</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">Filter Companies</DialogTitle>
         </DialogHeader>
         
         <Tabs defaultValue="create" className="flex-1 overflow-hidden flex flex-col">
@@ -163,43 +192,71 @@ const PersonsFilterModal = ({
                 {/* Input Fields Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <FilterInput
-                    id="bio"
-                    label="Filter by Bio/About"
-                    value={bioFilter}
-                    onChange={setBioFilter}
-                    placeholder="Search in bio..."
-                  />
-                  <FilterInput
-                    id="position"
-                    label="Filter by Position"
-                    value={positionFilter}
-                    onChange={setPositionFilter}
-                    placeholder="Search by position..."
-                  />
-                  <FilterInput
-                    id="location"
-                    label="Filter by Location"
-                    value={locationFilter}
-                    onChange={setLocationFilter}
-                    placeholder="Search by location..."
-                  />
-                  <FilterInput
-                    id="responsibilities"
-                    label="Filter by Responsibilities"
-                    value={responsibilitiesFilter}
-                    onChange={setResponsibilitiesFilter}
-                    placeholder="Search in responsibilities..."
-                  />
-                  <FilterInput
-                      id="companyName"
+                    id="firmName"
                     label="Filter by Company Name"
-                    value={companyNameFilter}
-                    onChange={setCompanyNameFilter}
-                      placeholder="Enter company name..."
-                    />
+                    value={firmNameFilter}
+                    onChange={setFirmNameFilter}
+                    placeholder="Search by company name..."
+                  />
+                  <FilterInput
+                    id="city"
+                    label="Filter by City"
+                    value={cityFilter}
+                    onChange={setCityFilter}
+                    placeholder="Search by city..."
+                  />
+                  <FilterInput
+                    id="country"
+                    label="Filter by Country"
+                    value={countryFilter}
+                    onChange={setCountryFilter}
+                    placeholder="Search by country..."
+                  />
+                  <FilterInput
+                    id="region"
+                    label="Filter by Region"
+                    value={regionFilter}
+                    onChange={setRegionFilter}
+                    placeholder="Search by region..."
+                  />
+                  <FilterInput
+                    id="background"
+                    label="Filter by Background"
+                    value={backgroundFilter}
+                    onChange={setBackgroundFilter}
+                    placeholder="Search in background..."
+                  />
+                  <FilterInput
+                    id="yearEst"
+                    label="Filter by Year Established"
+                    value={yearEstFilter}
+                    onChange={setYearEstFilter}
+                    placeholder="Enter year..."
+                  />
+                  <FilterInput
+                    id="totalStaff"
+                    label="Filter by Total Staff"
+                    value={totalStaffFilter}
+                    onChange={setTotalStaffFilter}
+                    placeholder="Enter staff count..."
+                  />
+                  <FilterInput
+                    id="peMainFirmStrategy"
+                    label="Filter by Main Strategy"
+                    value={peMainFirmStrategyFilter}
+                    onChange={setPeMainFirmStrategyFilter}
+                    placeholder="Search by strategy..."
+                  />
+                  <FilterInput
+                    id="peGeographicExposure"
+                    label="Filter by Geographic Exposure"
+                    value={peGeographicExposureFilter}
+                    onChange={setPeGeographicExposureFilter}
+                    placeholder="Search by geographic exposure..."
+                  />
                 </div>
 
-                {/* Firm Types Filter (Simplified) */}
+                {/* Firm Types Filter */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-medium">Filter by Company Type</h3>
@@ -218,7 +275,7 @@ const PersonsFilterModal = ({
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 pr-10"
                     />
-                     <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     {searchTerm && (
                       <button
                         onClick={() => setSearchTerm("")}
@@ -260,14 +317,14 @@ const PersonsFilterModal = ({
                   )}
                   
                   {Array.isArray(selectedTypes) && selectedTypes.length > 0 && (
-                     <Button 
-                       variant="link" 
-                       size="sm" 
-                       onClick={clearAllFilters} 
-                       className="text-red-500 p-0 h-auto"
-                     >
-                       Clear selected types
-                     </Button>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      onClick={clearAllFilters} 
+                      className="text-red-500 p-0 h-auto"
+                    >
+                      Clear selected types
+                    </Button>
                   )}
                 </div>
 
@@ -350,4 +407,4 @@ const PersonsFilterModal = ({
   );
 };
 
-export default PersonsFilterModal;
+export default CompaniesFilterModal;

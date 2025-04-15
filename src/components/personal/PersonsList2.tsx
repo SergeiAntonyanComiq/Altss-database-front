@@ -48,12 +48,7 @@ const contactToPerson = (contact: ContactType): PersonType | null => {
       profileImage: undefined,
       jobHistory: undefined,
       news: undefined,
-      lastUpdate: undefined,
-      location: [
-        contact.city,
-        contact.state,
-        contact.country_territory
-      ].filter(Boolean).join(", ")
+      lastUpdate: undefined
     };
 
     return person;

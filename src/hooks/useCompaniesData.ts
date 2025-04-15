@@ -7,7 +7,25 @@ import {
 } from "@/services/fundManagersService";
 import { getFavoriteCompanies } from "@/services/savedFiltersService";
 
-export function useCompaniesData(currentPage: number, itemsPerPage: number) {
+interface CompanyFilters {
+  firmTypes: string[];
+  firmName: string;
+  city: string;
+  country: string;
+  region: string;
+  background: string;
+  yearEst: string;
+  totalStaff: string;
+  peMainFirmStrategy: string;
+  peGeographicExposure: string;
+}
+
+export function useCompaniesData(
+  currentPage: number, 
+  itemsPerPage: number, 
+  searchQuery?: string,
+  filters?: CompanyFilters
+) {
   const [companies, setCompanies] = useState<CompanyType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +43,17 @@ export function useCompaniesData(currentPage: number, itemsPerPage: number) {
       const response = await fetchFilteredFundManagers({
         limit: itemsPerPage,
         offset: offset,
-        sortBy: "firm_name"
+        sortBy: "firm_name",
+        firm_name: searchQuery || filters?.firmName || "",
+        city: filters?.city || "",
+        country: filters?.country || "",
+        region: filters?.region || "",
+        background: filters?.background || "",
+        year_est: filters?.yearEst || "",
+        total_staff: filters?.totalStaff || "",
+        pe_main_firm_strategy: filters?.peMainFirmStrategy || "",
+        pe_geographic_exposure: filters?.peGeographicExposure || "",
+        firm_type: filters?.firmTypes?.join(",") || ""
       });
       
       console.log(`Fetched ${response.data.length} companies for page ${currentPage}`);
@@ -54,7 +82,7 @@ export function useCompaniesData(currentPage: number, itemsPerPage: number) {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, itemsPerPage, toast]);
+  }, [currentPage, itemsPerPage, toast, searchQuery, filters]);
 
   useEffect(() => {
     fetchCompaniesData();

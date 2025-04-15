@@ -37,20 +37,51 @@ const CompaniesList = ({
   onItemsPerPageChange
 }: CompaniesListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
   const { columns, updateColumns, resetColumns } = usePersistedColumns();
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
   
   const handleFilterChange = (filters: {
     firmTypes: string[];
-    companyName: string;
-    position: string;
-    location: string;
-    responsibilities: string;
-    bio: string;
+    firmName: string;
+    city: string;
+    country: string;
+    region: string;
+    background: string;
+    yearEst: string;
+    totalStaff: string;
+    peMainFirmStrategy: string;
+    peGeographicExposure: string;
   }) => {
     setSelectedFirmTypes(filters.firmTypes);
+    // Pass filters to useCompaniesData
+    setActiveFilters(filters);
   };
+
+  const [activeFilters, setActiveFilters] = useState<{
+    firmTypes: string[];
+    firmName: string;
+    city: string;
+    country: string;
+    region: string;
+    background: string;
+    yearEst: string;
+    totalStaff: string;
+    peMainFirmStrategy: string;
+    peGeographicExposure: string;
+  }>({
+    firmTypes: [],
+    firmName: "",
+    city: "",
+    country: "",
+    region: "",
+    background: "",
+    yearEst: "",
+    totalStaff: "",
+    peMainFirmStrategy: "",
+    peGeographicExposure: ""
+  });
 
   const { 
     companies, 
@@ -58,7 +89,7 @@ const CompaniesList = ({
     error, 
     totalPages,
     totalItems
-  } = useCompaniesData(currentPage, itemsPerPage);
+  } = useCompaniesData(currentPage, itemsPerPage, activeSearchQuery, activeFilters);
   
   const {
     selectedCompanies,
@@ -107,7 +138,9 @@ const CompaniesList = ({
         <CompaniesSearchBar 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          onSearch={(query) => setActiveSearchQuery(query)}
           selectedFirmTypes={selectedFirmTypes}
+          activeFilters={activeFilters}
           onFilterChange={handleFilterChange}
           selectedCompanies={selectedCompanies}
           companies={companies}

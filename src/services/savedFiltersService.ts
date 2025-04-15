@@ -1,8 +1,24 @@
 import { supabase } from "@/integrations/supabase/client";
 
+interface DbSavedFilter {
+  id: string;
+  user_id: string;
+  name: string;
+  type: 'company' | 'person';
+  firm_types: string[];
+  company_name: string;
+  position: string;
+  location: string;
+  responsibilities: string;
+  bio: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface SavedFilter {
   id: string;
   name: string;
+  type: 'company' | 'person';
   firmTypes: string[];
   companyName?: string;
   position?: string;
@@ -61,9 +77,10 @@ export const getSavedFilters = async (): Promise<SavedFilter[]> => {
 
     if (error) throw error;
 
-    return data.map(filter => ({
+    return data.map((filter: DbSavedFilter) => ({
       id: filter.id,
       name: filter.name,
+      type: filter.type || 'person', // Default to person for backward compatibility
       firmTypes: filter.firm_types || [],
       companyName: filter.company_name,
       position: filter.position,
@@ -86,6 +103,7 @@ export const getSavedFilters = async (): Promise<SavedFilter[]> => {
  */
 export const saveFilter = async (
   name: string, 
+  type: 'company' | 'person',
   firmTypes: string[], 
   companyName?: string,
   position?: string,
@@ -101,15 +119,21 @@ export const saveFilter = async (
 
     const newFilter = {
       name,
+      type,
       firm_types: Array.isArray(firmTypes) ? firmTypes : [],
-      company_name: companyName,
-      position,
-      location,
-      responsibilities,
-      bio,
+      company_name: companyName || null,
+      position: position || null,
+      location: location || null,
+      responsibilities: responsibilities || null,
+      bio: bio || null,
       user_id: userId,
       created_at: new Date().toISOString()
     };
+
+    // Ensure type is either 'company' or 'person'
+    if (type !== 'company' && type !== 'person') {
+      throw new Error('Invalid filter type. Must be either "company" or "person".');
+    }
 
     const { data, error } = await supabase
       .from('saved_filters')
@@ -123,6 +147,7 @@ export const saveFilter = async (
     const createdFilter: SavedFilter = {
       id: data.id,
       name,
+      type,
       firmTypes,
       companyName,
       position,
@@ -146,12 +171,13 @@ export const saveFilter = async (
   const newFilter: SavedFilter = {
     id: Date.now().toString(),
     name,
+    type,
     firmTypes,
     companyName,
-      position,
-      location,
-      responsibilities,
-      bio,
+    position,
+    location,
+    responsibilities,
+    bio,
     createdAt: Date.now()
   };
   
@@ -167,7 +193,8 @@ export const saveFilter = async (
  */
 export const updateSavedFilter = async (
   id: string, 
-  name: string, 
+  name: string,
+  type: 'company' | 'person',
   firmTypes: string[],
   companyName?: string,
   position?: string,
@@ -185,6 +212,7 @@ export const updateSavedFilter = async (
       .from('saved_filters')
       .update({
         name,
+        type,
         firm_types: Array.isArray(firmTypes) ? firmTypes : [],
         company_name: companyName,
         position,
@@ -202,6 +230,7 @@ export const updateSavedFilter = async (
     const updatedFilter: SavedFilter = {
       id,
       name,
+      type,
       firmTypes,
       companyName,
       position,
@@ -289,8 +318,8 @@ export const deleteSavedFilter = async (id: string): Promise<boolean> => {
 /**
  * Creates default filters if they don't exist
  */
-export const saveDefaultFilters = (): void => {
-  const filters = getSavedFilters();
+export const saveDefaultFilters = async (): Promise<void> => {
+  const filters = await getSavedFilters();
   
   // Only add default filters if no filters exist
   if (filters.length === 0) {
@@ -319,16 +348,18 @@ export const getSavedFilterById = async (id: string): Promise<SavedFilter | null
 
     if (error) throw error;
 
+    const dbFilter = data as DbSavedFilter;
     return {
-      id: data.id,
-      name: data.name,
-      firmTypes: data.firm_types || [],
-      companyName: data.company_name,
-      position: data.position,
-      location: data.location,
-      responsibilities: data.responsibilities,
-      bio: data.bio,
-      createdAt: new Date(data.created_at).getTime()
+      id: dbFilter.id,
+      name: dbFilter.name,
+      type: dbFilter.type || 'person', // Default to person for backward compatibility
+      firmTypes: dbFilter.firm_types || [],
+      companyName: dbFilter.company_name,
+      position: dbFilter.position,
+      location: dbFilter.location,
+      responsibilities: dbFilter.responsibilities,
+      bio: dbFilter.bio,
+      createdAt: new Date(dbFilter.created_at).getTime()
     };
   } catch (error) {
     console.error("Error fetching filter from Supabase:", error);
@@ -755,6 +786,7 @@ export const syncWithSupabase = async (): Promise<void> => {
       if (!remoteFilters.some(rf => rf.id === localFilter.id)) {
         await saveFilter(
           localFilter.name,
+          localFilter.type || 'person', // Default to person for backward compatibility
           localFilter.firmTypes,
           localFilter.companyName,
           localFilter.position,

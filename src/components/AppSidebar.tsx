@@ -202,7 +202,8 @@ const AppSidebar = () => {
   };
 
   const handleApplySavedSearch = (filter) => {
-    navigate(`/persons?filter=${filter.id}`);
+    const path = filter.type === 'company' ? '/companies' : '/persons';
+    navigate(`${path}?filter=${filter.id}`);
     setSavedSearchesOpen(false);
   };
 
@@ -356,15 +357,49 @@ const AppSidebar = () => {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
                   {savedSearches.length > 0 ? (
-                    savedSearches.map(filter => (
-                      <div 
-                        key={filter.id}
-                        onClick={() => handleApplySavedSearch(filter)}
-                        className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
-                      >
-                        <span className="truncate">{filter.name}</span>
-                      </div>
-                    ))
+                    <>
+                      {/* Companies Section */}
+                      {savedSearches.filter(search => search.type === 'company').length > 0 && (
+                        <>
+                          <div className="px-3 py-1 text-xs font-medium text-gray-500">
+                            Companies
+                          </div>
+                          {savedSearches
+                            .filter(search => search.type === 'company')
+                            .map(filter => (
+                              <div 
+                                key={filter.id}
+                                onClick={() => handleApplySavedSearch(filter)}
+                                className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                              >
+                                <span className="truncate">{filter.name}</span>
+                              </div>
+                            ))
+                          }
+                        </>
+                      )}
+
+                      {/* Persons Section */}
+                      {savedSearches.filter(search => search.type === 'person').length > 0 && (
+                        <>
+                          <div className="px-3 py-1 text-xs font-medium text-gray-500">
+                            Persons
+                          </div>
+                          {savedSearches
+                            .filter(search => search.type === 'person')
+                            .map(filter => (
+                              <div 
+                                key={filter.id}
+                                onClick={() => handleApplySavedSearch(filter)}
+                                className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                              >
+                                <span className="truncate">{filter.name}</span>
+                              </div>
+                            ))
+                          }
+                        </>
+                      )}
+                    </>
                   ) : (
                     <div className="py-2 px-3 text-sm text-gray-400">
                       No saved searches yet

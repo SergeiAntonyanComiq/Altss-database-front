@@ -6,12 +6,14 @@ import { getSavedFilters, saveFilter, deleteSavedFilter, SavedSearchType } from 
 export interface SavedFilterType {
   id: string;
   name: string;
+  type: 'company' | 'person';
   firmTypes: string[];
   companyName?: string;
   position?: string;
   location?: string;
   responsibilities?: string;
   bio?: string;
+  createdAt: number;
 }
 
 export function useFilterModal(initialSelectedTypes: string[] = []) {
@@ -97,6 +99,7 @@ export function useFilterModal(initialSelectedTypes: string[] = []) {
     try {
       const newFilter = await saveFilter(
         filterName,
+        window.location.pathname.includes('/companies') ? 'company' : 'person',
         selectedTypes,
         companyNameFilter,
         positionFilter,

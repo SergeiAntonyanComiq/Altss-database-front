@@ -3,7 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BookmarkIcon, SearchIcon, Trash2, Calendar } from "lucide-react";
+import { BookmarkIcon, SearchIcon, Trash2, Calendar, User, Building2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { 
   getSavedFilters, 
@@ -18,7 +18,6 @@ const SavedSearches = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load saved searches
     const loadSavedSearches = async () => {
       setIsLoading(true);
       try {
@@ -40,8 +39,8 @@ const SavedSearches = () => {
   }, [toast]);
 
   const handleUseSearch = (search: SavedSearchType) => {
-    // Navigate to persons page with saved search parameters
-    navigate(`/persons?filter=${encodeURIComponent(search.id)}`);
+    const path = search.type === 'company' ? '/companies' : '/persons';
+    navigate(`${path}?filter=${encodeURIComponent(search.id)}`);
   };
 
   const handleDeleteSearch = async (id: string, name: string) => {
@@ -58,13 +57,40 @@ const SavedSearches = () => {
       }
     } catch (error) {
       console.error("Error deleting saved search:", error);
-    toast({
+      toast({
         title: "Error",
         description: "There was a problem deleting your saved search. Please try again.",
         variant: "destructive"
-    });
+      });
     }
   };
+
+  const renderEmptyState = () => (
+    <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+      <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <SearchIcon className="h-8 w-8 text-gray-400" />
+      </div>
+      <h2 className="text-xl font-medium text-gray-700 mb-2">You don't have any saved searches yet</h2>
+      <p className="text-gray-500 mb-6">Save your search filters to quickly access them later</p>
+      <div className="flex gap-4 justify-center">
+        <Button 
+          onClick={() => navigate('/persons')}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          Go to Contacts
+        </Button>
+        <Button 
+          onClick={() => navigate('/companies')}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          Go to Companies
+        </Button>
+      </div>
+    </div>
+  );
+
+  const personSearches = savedSearches.filter(search => search.type === 'person');
+  const companySearches = savedSearches.filter(search => search.type === 'company');
 
   return (
     <SidebarProvider>
@@ -82,66 +108,132 @@ const SavedSearches = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
             ) : savedSearches.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                  <SearchIcon className="h-8 w-8 text-gray-400" />
-                </div>
-                <h2 className="text-xl font-medium text-gray-700 mb-2">You don't have any saved searches yet</h2>
-                <p className="text-gray-500 mb-6">Save your search filters to quickly access them later</p>
-                <Button 
-                  onClick={() => navigate('/persons')}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  Go to Search
-                </Button>
-              </div>
+              renderEmptyState()
             ) : (
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div className="grid grid-cols-1 divide-y divide-gray-200">
-                  {savedSearches.map((search) => (
-                    <div key={search.id} className="p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="font-medium text-gray-800">
-                            {search.name}
+              <div className="space-y-6">
+                {/* Companies Section */}
+                {companySearches.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                      <Building2 className="h-5 w-5 mr-2 text-gray-500" />
+                      Companies
+                    </h2>
+                    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                      <div className="grid grid-cols-1 divide-y divide-gray-200">
+                        {companySearches.map((search) => (
+                          <div key={search.id} className="p-4 hover:bg-gray-50 transition-colors">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="flex items-center">
+                                  <div className="font-medium text-gray-800">
+                                    {search.name}
+                                  </div>
+                                  <div className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full">
+                                    Saved Search
+                                  </div>
+                                </div>
+                                
+                                <div className="mt-2 text-sm text-gray-600">
+                                  {search.description ? (
+                                    <p>{search.description}</p>
+                                  ) : (
+                                    <p className="text-gray-400 italic">No description</p>
+                                  )}
+                                </div>
+                                
+                                <div className="mt-3 flex items-center text-xs text-gray-500">
+                                  <Calendar className="h-3 w-3 mr-1 text-gray-400" />
+                                  Saved on {new Date(search.createdAt).toLocaleDateString()}
+                                </div>
+                              </div>
+                              
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleUseSearch(search)}
+                                >
+                                  <SearchIcon className="h-4 w-4 mr-1" />
+                                  Use Search
+                                </Button>
+                                <Button
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => handleDeleteSearch(search.id, search.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
                           </div>
-                          
-                          <div className="mt-2 text-sm text-gray-600">
-                            {search.description ? (
-                              <p>{search.description}</p>
-                            ) : (
-                              <p className="text-gray-400 italic">No description</p>
-                            )}
-                          </div>
-                          
-                          <div className="mt-3 flex items-center text-xs text-gray-500">
-                            <Calendar className="h-3 w-3 mr-1 text-gray-400" />
-                            Saved on {new Date(search.createdAt).toLocaleDateString()}
-                          </div>
-                        </div>
-                        
-                        <div className="flex space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                            onClick={() => handleUseSearch(search)}
-                            >
-                            <SearchIcon className="h-4 w-4 mr-1" />
-                            Use Search
-                            </Button>
-                            <Button
-                            variant="ghost" 
-                              size="sm"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                            onClick={() => handleDeleteSearch(search.id, search.name)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
+
+                {/* Persons Section */}
+                {personSearches.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                      <User className="h-5 w-5 mr-2 text-gray-500" />
+                      Persons
+                    </h2>
+                    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                      <div className="grid grid-cols-1 divide-y divide-gray-200">
+                        {personSearches.map((search) => (
+                          <div key={search.id} className="p-4 hover:bg-gray-50 transition-colors">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="flex items-center">
+                                  <div className="font-medium text-gray-800">
+                                    {search.name}
+                                  </div>
+                                  <div className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full">
+                                    Saved Search
+                                  </div>
+                                </div>
+                                
+                                <div className="mt-2 text-sm text-gray-600">
+                                  {search.description ? (
+                                    <p>{search.description}</p>
+                                  ) : (
+                                    <p className="text-gray-400 italic">No description</p>
+                                  )}
+                                </div>
+                                
+                                <div className="mt-3 flex items-center text-xs text-gray-500">
+                                  <Calendar className="h-3 w-3 mr-1 text-gray-400" />
+                                  Saved on {new Date(search.createdAt).toLocaleDateString()}
+                                </div>
+                              </div>
+                              
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleUseSearch(search)}
+                                >
+                                  <SearchIcon className="h-4 w-4 mr-1" />
+                                  Use Search
+                                </Button>
+                                <Button
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => handleDeleteSearch(search.id, search.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

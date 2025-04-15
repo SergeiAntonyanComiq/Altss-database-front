@@ -146,6 +146,7 @@ const PersonsSearchBar = ({
     try {
       await saveFilter(
         filterName.trim(),
+        'person', // Explicitly set type for persons section
         selectedFirmTypes,
         companyNameFilter,
         positionFilter,

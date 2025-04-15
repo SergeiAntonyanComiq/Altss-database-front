@@ -26,8 +26,8 @@
 - ✅ Sidebar navigation
 - ✅ Responsive layout
 - ✅ User profile section
-- ✅ Favorites quick access
-- ✅ Saved searches
+- ✅ Favorites quick access with type-based grouping
+- ✅ Saved searches with type-based organization
 
 ### Data Management
 - ✅ Supabase integration
@@ -52,20 +52,27 @@
 - Team collaboration features
 
 ## Recent Improvements
-1. Fixed column management:
+1. Enhanced saved searches:
+   - Added type-based grouping (Companies/Persons)
+   - Improved navigation to correct pages
+   - Matched styling with favorites section
+   - Added proper section organization
+
+2. Fixed column management:
    - Moved Columns button to search bar
    - Improved column visibility persistence
    - Better modal state management
 
-2. Enhanced favorites system:
+3. Enhanced favorites system:
    - Fixed display discrepancy
    - Updated terminology for consistency
    - Improved synchronization
 
-3. UI/UX improvements:
+4. UI/UX improvements:
    - Standardized button placement
    - Removed redundant spacing
    - Better visual consistency
+   - Unified type-based content organization
 
 ## Known Issues
 None currently identified
@@ -76,6 +83,8 @@ None currently identified
 3. Look for performance optimization opportunities
 4. Consider adding column width persistence
 5. Plan for advanced filtering features
+6. Consider adding search within saved searches
+7. Consider adding bulk actions for saved searches
 
 ## Technical Debt
 - Consider refactoring table components for better reusability
