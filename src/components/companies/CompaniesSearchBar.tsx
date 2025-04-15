@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Filter, Save, Heart, Settings, X } from "lucide-react";
 import CompaniesFilterModal from "./filters/CompaniesFilterModal";
 import { Badge } from "@/components/ui/badge";
@@ -94,6 +94,23 @@ const CompaniesSearchBar = ({
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
+
+  // Implement search-as-you-type functionality
+  useEffect(() => {
+    // Only trigger search when query has at least 3 characters
+    if (searchQuery.length >= 3 && onSearch) {
+      // Add a small delay to avoid too many API calls while typing
+      const timer = setTimeout(() => {
+        onSearch(searchQuery);
+      }, 300);
+      
+      // Clean up the timer
+      return () => clearTimeout(timer);
+    } else if (searchQuery.length === 0 && onSearch) {
+      // Clear search when query is empty
+      onSearch('');
+    }
+  }, [searchQuery, onSearch]);
 
   const handleSaveSearchClick = () => {
     setFilterName("");

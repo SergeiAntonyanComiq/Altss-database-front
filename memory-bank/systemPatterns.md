@@ -69,6 +69,19 @@ graph LR
     List --> |columns| Modal[Column Modal]
 ```
 
+### Filter Application Flow
+```mermaid
+graph TD
+    URL[URL Parameters] --> |extract| Parent[Parent Component]
+    Parent --> |load| Filter[Saved Filter]
+    Filter --> |apply| Parent
+    Parent --> |props| List[List Component]
+    List --> |sync| Local[Local Filter State]
+    Local --> |params| Hook[Data Hook]
+    Hook --> |request| API[API]
+    Parent --> |update| URL[URL State]
+```
+
 ### User Preferences Flow
 ```mermaid
 graph TD
@@ -85,6 +98,7 @@ graph TD
 - State management at appropriate level
 - Consistent prop patterns
 - Type-safe interfaces
+- Filter state propagation through component hierarchy
 
 ### State Management
 - Prefer local state when possible
@@ -95,7 +109,8 @@ graph TD
 ### UI Patterns
 - Consistent button placement
 - Modal management
-- Loading states
+- Loading states (dynamic skeleton height matches table for pagination)
+- No empty state flicker in /persons or /companies
 - Error handling
 
 ### Code Organization
@@ -105,6 +120,16 @@ graph TD
 - Service layer for API calls
 
 ## Recent Patterns Added
+
+### Filter Application Pattern
+- Parent components manage filter state
+- URL parameters trigger filter loading
+- Filter changes propagate down through props
+- List components synchronize local state with props
+- Data hooks map UI filter fields to API parameters
+- Page resets to 1 when applying filters
+- URL state updates to reflect current filters
+- Detailed logging for debugging filter flow
 
 ### Type-Based Content Organization
 - Consistent grouping by content type (Companies/Persons)
@@ -144,6 +169,7 @@ graph TD
    - Clear update patterns
    - Type-safe state
    - Content type awareness
+   - Proper state propagation through component hierarchy
 
 2. **Component Design**
    - Clear responsibilities
@@ -156,6 +182,7 @@ graph TD
    - Persistent preferences
    - Type-based content organization
    - Unified navigation patterns
+   - URL synchronization with application state
 
 4. **Performance**
    - Optimized renders

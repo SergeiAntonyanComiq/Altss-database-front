@@ -150,10 +150,14 @@ export const fetchFilteredFundManagers = async (
       params.append('offset', '0');
     }
     
-    console.log('Fetching fund managers with params:', Object.fromEntries(params.entries()));
+    // Debug log for URL parameters - more detailed
+    console.log('FILTER DEBUG - API - Original filters:', JSON.stringify(filters, null, 2));
+    console.log('FILTER DEBUG - API - URLSearchParams:', params.toString());
+    const apiUrl = `${API_BASE_URL}&${params.toString()}`;
+    console.log('FILTER DEBUG - API - Final URL:', apiUrl);
     
     const response = await fetch(
-      `${API_BASE_URL}&${params.toString()}`,
+      apiUrl,
       {
         method: 'GET',
         headers: {
@@ -303,4 +307,4 @@ export const filterFundManagersByType = async (
     console.error('Error filtering fund managers by type:', error);
     throw error;
   }
-}; 
+};

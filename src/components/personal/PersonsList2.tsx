@@ -99,6 +99,17 @@ const PersonsList2 = ({
   const [localLocationFilter, setLocationFilter] = useState(locationFilter);
   const [localResponsibilitiesFilter, setResponsibilitiesFilter] = useState(responsibilitiesFilter);
   const [localBioFilter, setBioFilter] = useState(bioFilter);
+  
+  // Update local filter state when props change
+  useEffect(() => {
+    console.log('FILTER DEBUG - PersonsList2 - Updating local filter state from props');
+    setLocalSelectedFirmTypes(selectedFirmTypes);
+    setCompanyNameFilter(companyNameFilter);
+    setPositionFilter(positionFilter);
+    setLocationFilter(locationFilter);
+    setResponsibilitiesFilter(responsibilitiesFilter);
+    setBioFilter(bioFilter);
+  }, [selectedFirmTypes, companyNameFilter, positionFilter, locationFilter, responsibilitiesFilter, bioFilter]);
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -133,17 +144,23 @@ const PersonsList2 = ({
   }, [displayedContacts]); // Зависимость от displayedContacts
 
   const [localPersons, setLocalPersons] = useState<PersonType[]>([]);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-  // Update localPersons for selection/favorites logic, but always show table from personsFromHook
+  // Debug log for filter props
+  useEffect(() => {
+    console.log('FILTER DEBUG - PersonsList2 - Received filter props:', {
+      selectedFirmTypes,
+      companyNameFilter,
+      positionFilter,
+      locationFilter,
+      responsibilitiesFilter,
+      bioFilter
+    });
+  }, [selectedFirmTypes, companyNameFilter, positionFilter, locationFilter, responsibilitiesFilter, bioFilter]);
+
+  // Update localPersons for selection/favorites logic
   useEffect(() => {
     setLocalPersons(personsFromHook);
   }, [personsFromHook]);
-
-  // Set hasLoadedOnce as soon as loading completes (regardless of data)
-  useEffect(() => {
-    if (!isLoading) setHasLoadedOnce(true);
-  }, [isLoading]);
 
   console.log('Final localPersons array:', localPersons); // Debug log
   
@@ -348,25 +365,19 @@ const PersonsList2 = ({
             persons={localPersons}
           />
 
-          <div className="mt-6"></div>
-
-          {isLoading || isSearching ? (
-            <PersonTableSkeleton />
-          ) : hasLoadedOnce ? (
-            <>
-              <PersonsTable2 
-                persons={personsFromHook}
-                isLoading={false}
-                selectedPersons={selectedPersons}
-                handleCheckboxChange={handleCheckboxChange}
-                handleSelectAll={handleSelectAll}
-                isPersonSelected={isPersonSelected}
-                toggleFavorite={toggleFavorite}
-                itemsPerPage={itemsPerPage}
-              />
-              {/* Empty state intentionally disabled */}
-            </>
-          ) : null}
+          <div className="mt-6">
+            {/* Render Table directly if not loading, PersonsTable2 handles empty state internally (returns null) */}
+            <PersonsTable2 
+              persons={personsFromHook}
+              isLoading={isLoading || isSearching} // Pass combined loading state
+              selectedPersons={selectedPersons}
+              handleCheckboxChange={handleCheckboxChange}
+              handleSelectAll={handleSelectAll}
+              isPersonSelected={isPersonSelected}
+              toggleFavorite={toggleFavorite}
+              itemsPerPage={itemsPerPage}
+            />
+          </div>
 
           <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
             <PersonsPagination 

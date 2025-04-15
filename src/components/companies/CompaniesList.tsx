@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PersonsPagination from "@/components/personal/PersonsPagination";
 import CompaniesSearchBar from "./CompaniesSearchBar";
@@ -10,12 +10,15 @@ import { useCompaniesData } from "@/hooks/useCompaniesData";
 import { useCompanySelection } from "./useCompanySelection";
 import { formatAum } from "./companyUtils";
 import { usePersistedColumns } from "./hooks/usePersistedColumns";
+import { getSavedFilterById } from "@/services/savedFiltersService";
+import { useToast } from "@/components/ui/use-toast";
 
 interface CompaniesListProps {
   currentPage: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onItemsPerPageChange: (perPage: number) => void;
+  filterId?: string | null;
 }
 
 const defaultColumns: Column[] = [
@@ -34,13 +37,102 @@ const CompaniesList = ({
   currentPage,
   itemsPerPage,
   onPageChange,
-  onItemsPerPageChange
+  onItemsPerPageChange,
+  filterId
 }: CompaniesListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
   const { columns, updateColumns, resetColumns } = usePersistedColumns();
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
+  const { toast } = useToast();
+  
+  // For URL manipulation
+  const navigate = useNavigate();
+  
+  // Load filter if filter ID is provided in URL
+  useEffect(() => {
+    const loadFilter = async () => {
+      if (filterId) {
+        console.log("FILTER DEBUG - CompaniesList - Loading filter with ID:", filterId);
+        try {
+          const filter = await getSavedFilterById(filterId);
+          if (filter && filter.type === 'company') {
+            console.log("FILTER DEBUG - CompaniesList - Found filter:", filter);
+            
+            // Map saved filter fields to company filter fields
+            // Check if filter name is a year (for year_est filters)
+            const isYear = /^\d{4}(-\d+)?$/.test(filter.name);
+            
+            const companyFilters = {
+              firmTypes: filter.firmTypes || [],
+              firmName: filter.companyName || "",
+              city: filter.location || "",
+              country: "",
+              region: "",
+              background: filter.responsibilities || "",
+              yearEst: isYear ? filter.name.split('-')[0] : "", // Use filter name as yearEst if it's a year
+              totalStaff: "",
+              peMainFirmStrategy: "",
+              peGeographicExposure: ""
+            };
+            
+            // Debug log for filter values
+            console.log('FILTER DEBUG - CompaniesList - Filter values before applying:', companyFilters);
+            
+            // Reset to page 1 when applying a filter
+            onPageChange(1);
+            
+            // Apply the filter
+            setSelectedFirmTypes(companyFilters.firmTypes);
+            setActiveFilters(companyFilters);
+            
+            console.log('FILTER DEBUG - CompaniesList - Current filter state after applying:', {
+              selectedFirmTypes: companyFilters.firmTypes,
+              activeFilters: companyFilters
+            });
+            
+            toast({
+              title: "Filter Applied",
+              description: `Applied "${filter.name}" filter`,
+            });
+            
+            // Remove filter param from URL after applying
+            const currentUrl = new URL(window.location.href);
+            const searchParams = new URLSearchParams(currentUrl.search);
+            if (searchParams.has('filter')) {
+              searchParams.delete('filter');
+              navigate(`${currentUrl.pathname}?${searchParams.toString()}`, { replace: true });
+            }
+          } else {
+            console.log("FILTER DEBUG - CompaniesList - Filter not found or not a company filter:", filter);
+            toast({
+              title: "Filter Not Found",
+              description: "The requested filter could not be found or is not applicable to companies",
+              variant: "destructive",
+            });
+            
+            // Remove filter param from URL if not found
+            const currentUrl = new URL(window.location.href);
+            const searchParams = new URLSearchParams(currentUrl.search);
+            if (searchParams.has('filter')) {
+              searchParams.delete('filter');
+              navigate(`${currentUrl.pathname}?${searchParams.toString()}`, { replace: true });
+            }
+          }
+        } catch (error) {
+          console.error("FILTER DEBUG - CompaniesList - Error loading filter:", error);
+          toast({
+            title: "Error Loading Filter",
+            description: "There was an error loading the filter",
+            variant: "destructive",
+          });
+        }
+      }
+    };
+    
+    loadFilter();
+  }, [filterId, toast, navigate, onPageChange]);
   
   const handleFilterChange = (filters: {
     firmTypes: string[];
@@ -98,8 +190,6 @@ const CompaniesList = ({
     isCompanySelected,
     toggleFavorite
   } = useCompanySelection();
-
-  const navigate = useNavigate();
 
   const handleViewCompany = (id: string) => {
     navigate(`/company/${id}`);

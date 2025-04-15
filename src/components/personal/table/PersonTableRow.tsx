@@ -78,10 +78,10 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
               e.stopPropagation();
                 toggleFavorite(person.id);
               }}
-            className="focus:outline-none ml-auto text-gray-400 hover:text-purple-500"
+            className="focus:outline-none ml-auto text-gray-400 hover:text-[#03887E]"
             >
               <Heart 
-              className={`h-4 w-4 ${person.favorite ? 'text-purple-500 fill-purple-500' : ''}`} 
+              className={`h-4 w-4 ${person.favorite ? 'text-[#03887E] fill-[#03887E]' : ''}`} 
               />
             </button>
           </div>

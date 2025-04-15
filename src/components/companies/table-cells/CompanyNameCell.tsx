@@ -15,10 +15,10 @@ const CompanyNameCell = ({ companyName, isFavorite, onCompanyClick, onFavoriteCl
     </span>
     <button 
       onClick={onFavoriteClick}
-      className="focus:outline-none ml-auto text-gray-400 hover:text-purple-500"
+      className="focus:outline-none ml-auto text-gray-400 hover:text-[#03887E]"
     >
       <Heart 
-        className={`h-4 w-4 ${isFavorite ? 'text-purple-500 fill-purple-500' : ''}`} 
+        className={`h-4 w-4 ${isFavorite ? 'text-[#03887E] fill-[#03887E]' : ''}`} 
       />
     </button>
   </div>

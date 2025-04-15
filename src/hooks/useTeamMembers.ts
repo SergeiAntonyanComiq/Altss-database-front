@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { ContactType } from "@/types/contact";
 import { useToast } from "@/components/ui/use-toast";
+import { fetchFilteredContacts } from "@/services/contactsService";
 
 export function useTeamMembers(firmId?: number | string) {
   const [teamMembers, setTeamMembers] = useState<ContactType[]>([]);
@@ -21,20 +22,15 @@ export function useTeamMembers(firmId?: number | string) {
         setIsLoading(true);
         console.log("Fetching team members for company firm_id:", firmId);
         
-        const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts?firm_id=${firmId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          }
+        // Use the fetchFilteredContacts function from contactsService
+        // with the firm_id parameter to get team members
+        const response = await fetchFilteredContacts({
+          firm_id: firmId.toString(),
+          limit: 50 // Get a reasonable number of team members
         });
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch team members: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log("Team members fetched:", data);
-        setTeamMembers(Array.isArray(data) ? data : []);
+        console.log("Team members fetched:", response);
+        setTeamMembers(response.data || []);
       } catch (err) {
         console.error("Error fetching team members:", err);
         setError("Failed to load team members. Please try again later.");

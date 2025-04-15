@@ -142,6 +142,30 @@ const personSearches = savedSearches.filter(search => search.type === 'person');
 const companySearches = savedSearches.filter(search => search.type === 'company');
 ```
 
+### /persons Table Skeleton & Loading
+```typescript
+// PersonsTable2 skeleton loader matches table height for pagination
+if (isLoading) {
+  return (
+    <div>
+      {/* ... */}
+      {Array.from({ length: itemsPerPage }).map((_, i) => (
+        <Skeleton key={i} className="h-16 w-full" />
+      ))}
+    </div>
+  );
+}
+
+// No empty state is rendered if persons.length === 0
+if (!persons || persons.length === 0) {
+  return null;
+}
+```
+- No flicker or placeholder before data
+- Table appears instantly after loading, matching /companies UX
+- All "lovable" branding and references removed
+- Sidebar logo restored
+
 ### Column Management
 - Moved column button to search bar
 - Improved column state persistence

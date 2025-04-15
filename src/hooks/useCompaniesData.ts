@@ -40,7 +40,13 @@ export function useCompaniesData(
     try {
       const offset = (currentPage - 1) * itemsPerPage;
       
-      const response = await fetchFilteredFundManagers({
+      // Debug log for filter parameters
+      console.log('FILTER DEBUG - useCompaniesData - Raw filter props:', {
+        searchQuery,
+        filters
+      });
+      
+      const filterParams = {
         limit: itemsPerPage,
         offset: offset,
         sortBy: "firm_name",
@@ -54,7 +60,11 @@ export function useCompaniesData(
         pe_main_firm_strategy: filters?.peMainFirmStrategy || "",
         pe_geographic_exposure: filters?.peGeographicExposure || "",
         firm_type: filters?.firmTypes?.join(",") || ""
-      });
+      };
+      
+      console.log('FILTER DEBUG - useCompaniesData - Constructed API params:', filterParams);
+      
+      const response = await fetchFilteredFundManagers(filterParams);
       
       console.log(`Fetched ${response.data.length} companies for page ${currentPage}`);
       

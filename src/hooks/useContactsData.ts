@@ -111,14 +111,30 @@ export const useContactsData = ({
       setError(null);
       
       try {
-        const contactsResponse = await fetchFilteredContacts({
+        // Debug log for filter parameters - more detailed
+        console.log('FILTER DEBUG - Raw filter props:', {
+          firmTypes,
+          companyName,
+          position,
+          location,
+          responsibilities,
+          bio
+        });
+        
+        const filterParams = {
           limit: itemsPerPage,
           offset: (currentPage - 1) * itemsPerPage,
           sortBy: "name",
           ...(firmTypes.length > 0 && { firm_type: firmTypes.join(',') }),
           ...(companyName && { investor: companyName }),
-          ...(position && { job_title: position })
-        });
+          ...(position && { job_title: position }),
+          ...(location && { location: location }),
+          ...(responsibilities && { asset_class: responsibilities }),
+          ...(bio && { role: bio })
+        };
+        console.log('FILTER DEBUG - Constructed API params:', filterParams);
+        
+        const contactsResponse = await fetchFilteredContacts(filterParams);
         const favoritesResponse = await getFavoritePersons();
 
         if (!isMounted) return;
@@ -131,18 +147,13 @@ export const useContactsData = ({
         setFavoriteIds(favIds);
 
         // Обновляем контакты, устанавливая флаг favorite
-        let updatedContacts = contactsResponse.data.map(contact => ({
+        const updatedContacts = contactsResponse.data.map(contact => ({
           ...contact,
           favorite: favIds.has(String(contact.contact_id))
         }));
         
-        if (location) {
-          const locationRegex = new RegExp(location, 'i');
-          updatedContacts = updatedContacts.filter(contact => {
-            const fullLocation = [contact.city, contact.state, contact.country_territory].filter(Boolean).join(", ");
-            return locationRegex.test(fullLocation);
-          });
-        }
+        // Remove client-side location filtering, assuming API handles it now
+        // if (location) { ... }
 
         setContacts(updatedContacts);
         setTotalContacts(contactsResponse.total);

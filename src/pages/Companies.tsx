@@ -10,14 +10,22 @@ const Companies = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Parse the current page and items per page from URL query parameters
+  // Parse the current page, items per page, and filter from URL query parameters
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get('page');
   const perPageParam = searchParams.get('perPage');
   const section = searchParams.get('section');
+  const filterId = searchParams.get('filter');
   
   const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
   const itemsPerPage = perPageParam ? parseInt(perPageParam, 10) : 10;
+  
+  // Debug log for filter ID
+  React.useEffect(() => {
+    if (filterId) {
+      console.log('FILTER DEBUG - Companies - Filter ID from URL:', filterId);
+    }
+  }, [filterId]);
 
   // Update URL when page or items per page changes
   const handlePageChange = (page: number) => {
@@ -43,6 +51,7 @@ const Companies = () => {
             itemsPerPage={itemsPerPage}
             onPageChange={handlePageChange}
             onItemsPerPageChange={handleItemsPerPageChange}
+            filterId={filterId}
           />
         </main>
       </div>
