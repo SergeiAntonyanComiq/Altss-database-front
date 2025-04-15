@@ -132,12 +132,18 @@ const PersonsList2 = ({
       .filter((person): person is PersonType => Boolean(person));
   }, [displayedContacts]); // Зависимость от displayedContacts
 
-  const [localPersons, setLocalPersons] = useState<PersonType[]>([]); 
-  
+  const [localPersons, setLocalPersons] = useState<PersonType[]>([]);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+
+  // Update localPersons for selection/favorites logic, but always show table from personsFromHook
   useEffect(() => {
-    console.log("Syncing localPersons with personsFromHook..."); // Для отладки
     setLocalPersons(personsFromHook);
-  }, [personsFromHook]); 
+  }, [personsFromHook]);
+
+  // Set hasLoadedOnce as soon as loading completes (regardless of data)
+  useEffect(() => {
+    if (!isLoading) setHasLoadedOnce(true);
+  }, [isLoading]);
 
   console.log('Final localPersons array:', localPersons); // Debug log
   
@@ -328,46 +334,50 @@ const PersonsList2 = ({
           <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Persons</h1>
           
           <PersonsSearchBar 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedFirmTypes={localSelectedFirmTypes}
-        companyNameFilter={localCompanyNameFilter}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            selectedFirmTypes={localSelectedFirmTypes}
+            companyNameFilter={localCompanyNameFilter}
             positionFilter={localPositionFilter}
             locationFilter={localLocationFilter}
             responsibilitiesFilter={localResponsibilitiesFilter}
             bioFilter={localBioFilter}
-        onFilterChange={handleFilterChange}
-        onSearch={handleSearch}
+            onFilterChange={handleFilterChange}
+            onSearch={handleSearch}
             selectedPersons={selectedPersons}
             persons={localPersons}
-      />
-      
+          />
+
           <div className="mt-6"></div>
-          
-          <PersonsTable2 
-        persons={localPersons}
-            isLoading={isLoading || isSearching}
-        selectedPersons={selectedPersons}
-        handleCheckboxChange={handleCheckboxChange}
-        handleSelectAll={handleSelectAll}
-            isPersonSelected={isPersonSelected}
-        toggleFavorite={toggleFavorite}
-      />
-      {localPersons.length === 0 && !isLoading && (
-        <div className="text-center mt-4">
-          <p className="text-gray-500">No contacts found with the applied filters.</p>
-        </div>
-      )}
+
+          {isLoading || isSearching ? (
+            <PersonTableSkeleton />
+          ) : hasLoadedOnce ? (
+            <>
+              <PersonsTable2 
+                persons={personsFromHook}
+                isLoading={false}
+                selectedPersons={selectedPersons}
+                handleCheckboxChange={handleCheckboxChange}
+                handleSelectAll={handleSelectAll}
+                isPersonSelected={isPersonSelected}
+                toggleFavorite={toggleFavorite}
+                itemsPerPage={itemsPerPage}
+              />
+              {/* Empty state intentionally disabled */}
+            </>
+          ) : null}
+
           <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
             <PersonsPagination 
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
               totalPages={totalPages}
               itemsPerPage={itemsPerPage}
               onItemsPerPageChange={handleItemsPerPageChange}
-        totalItems={effectiveTotal}
-      />
-    </div>
+              totalItems={effectiveTotal}
+            />
+          </div>
         </div>
       )}
     </>

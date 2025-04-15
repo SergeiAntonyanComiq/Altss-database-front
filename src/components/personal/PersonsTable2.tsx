@@ -14,6 +14,7 @@ interface PersonsTable2Props {
   toggleFavorite: (id: string) => void;
   isPersonSelected: (id: string | undefined) => boolean;
   isLoading: boolean;
+  itemsPerPage?: number;
 }
 
 const PersonsTable2 = ({ 
@@ -23,7 +24,8 @@ const PersonsTable2 = ({
   handleSelectAll, 
   toggleFavorite,
   isPersonSelected,
-  isLoading
+  isLoading,
+  itemsPerPage
 }: PersonsTable2Props) => {
   const navigate = useNavigate();
   const [columns, setColumns] = useState<Column[]>([
@@ -59,7 +61,7 @@ const PersonsTable2 = ({
               onColumnResize={handleColumnResize}
             />
             <div className="space-y-1 p-4">
-              {[1, 2, 3, 4, 5].map((i) => (
+              {Array.from({ length: Math.max(1, itemsPerPage || 10) }).map((_, i) => (
                 <Skeleton key={i} className="h-16 w-full" />
               ))}
             </div>
@@ -70,7 +72,7 @@ const PersonsTable2 = ({
   }
 
   if (!persons || persons.length === 0) {
-    return <EmptyState />;
+    return null;
   }
 
   const allSelected = selectedPersons.length === persons.length && persons.length > 0;

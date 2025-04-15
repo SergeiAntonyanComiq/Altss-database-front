@@ -453,7 +453,7 @@ const AppSidebar = () => {
       </Sidebar>
       
       {state === "collapsed" && (
-        <div className="fixed top-6 left-3 z-50 md:flex">
+        <div className="fixed top-10 left-3 z-50 md:flex">
           <SidebarTrigger className="bg-white shadow-md rounded-md p-1.5 hover:bg-gray-100" />
         </div>
       )}
