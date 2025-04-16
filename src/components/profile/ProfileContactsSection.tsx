@@ -79,54 +79,44 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
           </>
         )}
         
-        <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <img 
-            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
-            alt="Email" 
-            className="w-4 h-4 object-contain"
-          />
-          Work Emails
-        </span>
-        {contact.email ? (
-          <div className="flex items-center">
-            <button 
-              onClick={() => toggleEmailVisibility('work')}
-              className="mr-2 hover:text-blue-600"
-            >
-              {showEmails.work ? contact.email : hiddenEmail}
-            </button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-5 w-5 p-0 mr-1" 
-              onClick={() => copyToClipboard(contact.email || "")}
-              title="Copy email address"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-5 w-5 p-0" 
-              onClick={() => window.location.href = `mailto:${contact.email}`}
-              title="Send email"
-            >
-              <Link className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <span>no data</span>
+        {contact.email && contact.email !== "no data" && (
+          <>
+            <span className="flex items-center gap-1.5 text-gray-600 font-medium">
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
+                alt="Email" 
+                className="w-4 h-4 object-contain"
+              />
+              Email
+            </span>
+            <div className="flex items-center">
+              <button 
+                onClick={() => toggleEmailVisibility('work')}
+                className="mr-2 hover:text-blue-600"
+              >
+                {showEmails.work ? contact.email : hiddenEmail}
+              </button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-5 w-5 p-0 mr-1" 
+                onClick={() => copyToClipboard(contact.email)}
+                title="Copy email address"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-5 w-5 p-0" 
+                onClick={() => window.location.href = `mailto:${contact.email}`}
+                title="Send email"
+              >
+                <Link className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
         )}
-        
-        <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-          <img 
-            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
-            alt="Email" 
-            className="w-4 h-4 object-contain"
-          />
-          Personal Email
-        </span>
-        <span>no data</span>
         
         {contact.tel && (
           <>

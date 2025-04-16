@@ -26,11 +26,19 @@ const ProfileAboutSection: React.FC<ProfileAboutSectionProps> = ({ contact }) =>
         <span className="text-gray-600 font-medium">Resident Location</span>
         <span>{`${contact.city}${contact.state ? `, ${contact.state}` : ''}, ${contact.country_territory}`}</span>
         
-        <span className="text-gray-600 font-medium">Current Company</span>
-        <span>{contact.investor || "No data"}</span>
+        {contact.investor && contact.investor !== "No data" && (
+          <>
+            <span className="text-gray-600 font-medium">Current Company</span>
+            <span>{contact.investor}</span>
+          </>
+        )}
         
-        <span className="text-gray-600 font-medium">Position title</span>
-        <span>{contact.job_title || "No data"}</span>
+        {contact.job_title && contact.job_title !== "No data" && (
+          <>
+            <span className="text-gray-600 font-medium">Position title</span>
+            <span>{contact.job_title}</span>
+          </>
+        )}
         
         {contact.sec_registration && (
           <>
