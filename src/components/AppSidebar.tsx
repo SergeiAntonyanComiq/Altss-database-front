@@ -214,9 +214,9 @@ const AppSidebar = () => {
           <div className="flex w-full items-center justify-between px-6">
             <div className="flex items-center">
               <img 
-                src="/lovable-uploads/bc40263e-ec64-44a5-b196-4642d02eba58.png"
+                src="/images/altss_logo.png"
                 alt="Altss Logo" 
-                className="h-10 w-auto object-contain rounded-md"
+                className="h-10 w-auto object-contain"
               />
             </div>
             <SidebarTrigger className="text-[#637381] w-6 h-6" />
