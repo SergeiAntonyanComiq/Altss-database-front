@@ -395,18 +395,21 @@ const Profile: React.FC = () => {
                   <div className="space-y-4 text-base mb-8">
                     <div className="flex">
                       <span className="text-[rgba(99,115,129,1)] w-[180px]">Name</span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">Jonny Doe</span>
+                      <span className="font-medium text-[rgba(17,25,40,1)]">Dawid Siekiera</span>
                     </div>
                     <div className="flex">
                       <span className="text-[rgba(99,115,129,1)] w-[180px]">Email</span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">jonny@comiq.com</span>
+                      <span className="font-medium text-[rgba(17,25,40,1)]">d@atss.com</span>
                     </div>
                   </div>
-                  <button 
-                    className="self-stretch bg-white border gap-2.5 text-[rgba(38,101,240,1)] w-auto px-6 py-3 rounded-[50px] border-[rgba(38,101,240,1)] border-solid text-base font-medium hover:bg-gray-50 transition-colors"
+                  <a 
+                    href="https://cal.com/dawid.s/altss-support"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="self-stretch bg-white border gap-2.5 text-[rgba(38,101,240,1)] w-auto px-6 py-3 rounded-[50px] border-[rgba(38,101,240,1)] border-solid text-base font-medium hover:bg-gray-50 transition-colors inline-block text-center"
                   >
                     Book a call
-                  </button>
+                  </a>
                 </div>
               )}
             </div>
@@ -417,4 +420,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile; 
+export default Profile;
