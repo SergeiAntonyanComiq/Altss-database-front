@@ -5,12 +5,26 @@
 ### Table System
 ```mermaid
 graph TD
-    CL[CompaniesList] --> |state & handlers| CS[CompaniesSearchBar]
-    CL --> |data & handlers| CT[CompaniesTable]
-    CT --> |row data| TR[TableRow]
-    CT --> |header data| TH[TableHeader]
-    CL --> |modal state| CM[ColumnModal]
-    CL --> |column state| PC[PersistedColumns Hook]
+    subgraph Companies
+        CL[CompaniesList] --> |state & handlers| CS[CompaniesSearchBar]
+        CL --> |data & handlers| CT[CompaniesTable]
+        CT --> |row data| TR[TableRow]
+        CT --> |header data| TH[TableHeader]
+        CL --> |modal state| CM[ColumnModal]
+        CL --> |column state| CPC[PersistedColumns Hook]
+    end
+    
+    subgraph Persons
+        PL[PersonsList] --> |state & handlers| PS[PersonsSearchBar]
+        PL --> |data & handlers| PT[PersonsTable]
+        PT --> |row data| PTR[PersonTableRow]
+        PT --> |header data| PTH[PersonTableHeader]
+        PL --> |modal state| PM[PersonsColumnModal]
+        PL --> |column state| PPC[PersistedColumns Hook]
+    end
+    
+    style Companies fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style Persons fill:#f5f5f5,stroke:#333,stroke-width:2px
 ```
 
 ### State Management
@@ -144,10 +158,15 @@ graph TD
 - Shared styling with favorites system
 
 ### Column Management
-- State lifted to list component
-- Persistence through localStorage
-- Modal state controlled by parent
-- Consistent button placement
+- State lifted to list component in both companies and persons sections
+- Persistence through localStorage with section-specific keys
+- Modal state controlled by parent components
+- Consistent button placement in search bar area
+- Unified column resizing behavior
+- Standardized column header titles
+- Column visibility toggles with required columns (e.g., name)
+- Shared styling for column management UI elements
+- Consistent Settings icon usage for column buttons
 
 ### Button Organization
 - Action buttons grouped in search bar

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, KeyboardEvent } from "react";
-import { Search, Filter, Save, Heart, X } from "lucide-react";
+import { Search, Filter, Save, Heart, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,7 @@ interface PersonsSearchBarProps {
   onSearch?: (query: string) => void;
   selectedPersons?: string[];
   persons?: Array<{id: string, name: string, currentPosition?: string, companies?: string[]}>;
+  onColumnsClick?: () => void; // Add this prop
 }
 
 const PersonsSearchBar = ({ 
@@ -49,7 +50,8 @@ const PersonsSearchBar = ({
   onFilterChange,
   onSearch,
   selectedPersons = [],
-  persons = []
+  persons = [],
+  onColumnsClick
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
@@ -307,6 +309,15 @@ const PersonsSearchBar = ({
             {selectedPersons.length}
           </Badge>
         )}
+      </button>
+
+      {/* Columns Button */}
+      <button 
+        className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]"
+        onClick={onColumnsClick}
+      >
+        <Settings className="h-[18px] w-[18px]" />
+        <span>Columns</span>
       </button>
 
       {/* Filter Modal */}

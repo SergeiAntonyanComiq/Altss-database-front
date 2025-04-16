@@ -89,13 +89,18 @@ const PersonTableHeader: React.FC<PersonTableHeaderProps> = ({
           className={`relative ${index === columns.length - 1 ? '' : 'border-r border-[rgba(223,228,234,1)]'} px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center ${index === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
           style={{ width: column.width, minWidth: column.minWidth }}
         >
-          {index === 0 && "Full Name"}
-          {index === 1 && "Company"}
-          {index === 2 && "Bio / About"}
-          {index === 3 && "Position"}
-          {index === 4 && "Areas of Responsibility"}
-          {index === 5 && "Contacts"}
-          {index === 6 && "Location"}
+          {(() => {
+            switch (column.id) {
+              case 'name': return 'Full Name';
+              case 'company': return 'Company';
+              case 'bio': return 'Bio / About';
+              case 'position': return 'Position';
+              case 'responsibilities': return 'Areas of Responsibility';
+              case 'contacts': return 'Contacts';
+              case 'location': return 'Location';
+              default: return column.id;
+            }
+          })()}
           
           <div
             className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400 active:bg-blue-600"

@@ -14,10 +14,14 @@
 - Ensured proper URL synchronization when applying filters
 
 ### Table Column Management
-- Moved Columns button from table header to search bar area
+- Moved Columns button from table header to search bar area in both /companies and /persons sections
 - Integrated with other action buttons (Filters, Save Search, Add to Favorites)
 - Implemented column state persistence across page changes
 - Added column visibility modal with proper state management
+- Fixed column header titles to match actual content in /persons section
+- Improved column management in /persons section to match /companies functionality
+- Added Settings icon to Columns button for visual consistency
+- Enhanced column resizing functionality in /persons table
 
 ### Favorites System
 - Fixed favorites display discrepancy between sidebar and main view

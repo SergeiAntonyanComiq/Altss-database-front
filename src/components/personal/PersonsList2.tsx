@@ -12,6 +12,8 @@ import { searchContactsByName } from "@/services/contactsService";
 import PersonTableSkeleton from "./PersonTableSkeleton";
 import PersonsPagination from "./PersonsPagination";
 import PersonsTable2 from "./PersonsTable2";
+import PersonsColumnModal from "./PersonsColumnModal";
+import { usePersistedPersonColumns } from "./hooks/usePersistedPersonColumns";
 import {
   isPersonInFavorites,
   addPersonToFavorites,
@@ -93,23 +95,14 @@ const PersonsList2 = ({
   onFilterChange
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
+  const { visibleColumns, updateVisibleColumns, handleColumnResize } = usePersistedPersonColumns();
   const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
   const [localCompanyNameFilter, setCompanyNameFilter] = useState(companyNameFilter);
   const [localPositionFilter, setPositionFilter] = useState(positionFilter);
   const [localLocationFilter, setLocationFilter] = useState(locationFilter);
   const [localResponsibilitiesFilter, setResponsibilitiesFilter] = useState(responsibilitiesFilter);
   const [localBioFilter, setBioFilter] = useState(bioFilter);
-  
-  // Update local filter state when props change
-  useEffect(() => {
-    console.log('FILTER DEBUG - PersonsList2 - Updating local filter state from props');
-    setLocalSelectedFirmTypes(selectedFirmTypes);
-    setCompanyNameFilter(companyNameFilter);
-    setPositionFilter(positionFilter);
-    setLocationFilter(locationFilter);
-    setResponsibilitiesFilter(responsibilitiesFilter);
-    setBioFilter(bioFilter);
-  }, [selectedFirmTypes, companyNameFilter, positionFilter, locationFilter, responsibilitiesFilter, bioFilter]);
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -133,46 +126,27 @@ const PersonsList2 = ({
   });
 
   const displayedContacts = isSearchActive ? searchResults : contacts;
-  console.log('Displayed contacts:', displayedContacts); // Debug log
   
   const personsFromHook: PersonType[] = useMemo(() => {
-    console.log("Recalculating personsFromHook..."); // Для отладки
     return displayedContacts
       .filter((contact): contact is ContactType => Boolean(contact))
       .map(contact => contactToPerson(contact))
       .filter((person): person is PersonType => Boolean(person));
-  }, [displayedContacts]); // Зависимость от displayedContacts
+  }, [displayedContacts]);
 
   const [localPersons, setLocalPersons] = useState<PersonType[]>([]);
 
-  // Debug log for filter props
-  useEffect(() => {
-    console.log('FILTER DEBUG - PersonsList2 - Received filter props:', {
-      selectedFirmTypes,
-      companyNameFilter,
-      positionFilter,
-      locationFilter,
-      responsibilitiesFilter,
-      bioFilter
-    });
-  }, [selectedFirmTypes, companyNameFilter, positionFilter, locationFilter, responsibilitiesFilter, bioFilter]);
-
-  // Update localPersons for selection/favorites logic
   useEffect(() => {
     setLocalPersons(personsFromHook);
   }, [personsFromHook]);
-
-  console.log('Final localPersons array:', localPersons); // Debug log
   
   useEffect(() => {
-    // Reset search state when filters change
     if (localSelectedFirmTypes.length > 0 || 
         localCompanyNameFilter || 
         localPositionFilter || 
         localLocationFilter || 
         localResponsibilitiesFilter || 
         localBioFilter) {
-      // If we have filters active, we want to show filtered results, not search
       if (isSearchActive) {
         setIsSearchActive(false);
         setSearchQuery("");
@@ -188,7 +162,6 @@ const PersonsList2 = ({
       return;
     }
 
-    // Clear any active filters when searching
     setLocalSelectedFirmTypes([]);
     setCompanyNameFilter("");
     setPositionFilter("");
@@ -252,7 +225,6 @@ const PersonsList2 = ({
   }, [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive]);
 
   const toggleFavorite = useCallback(async (id: string) => {
-    // Используем localPersons для поиска и обновления
     const originalPersons = [...localPersons]; 
     const personIndex = localPersons.findIndex(p => p.id === id);
     if (personIndex === -1) return; 
@@ -260,7 +232,6 @@ const PersonsList2 = ({
     const person = localPersons[personIndex];
     const isCurrentlyFavorite = person.favorite;
 
-    // Оптимистичное обновление UI с использованием setLocalPersons
     const updatedPersons = localPersons.map((p, index) => 
       index === personIndex ? { ...p, favorite: !isCurrentlyFavorite } : p
     );
@@ -285,7 +256,6 @@ const PersonsList2 = ({
           description: `${person.name} has been added to your favorites`,
          });
       }
-      // Если успешно, отправляем событие для обновления сайдбара
       const event = new CustomEvent('favoritesUpdated');
       window.dispatchEvent(event);
     } catch (error) {
@@ -295,10 +265,9 @@ const PersonsList2 = ({
         description: "There was a problem updating your favorites",
         variant: "destructive",
        });
-      // Откат UI в случае ошибки с использованием setLocalPersons
       setLocalPersons(originalPersons); 
     }
-  }, [localPersons, toast]); // Зависимость от localPersons
+  }, [localPersons, toast]);
   
   const handleFilterChange = useCallback((filters: {
     firmTypes: string[];
@@ -315,10 +284,8 @@ const PersonsList2 = ({
     setResponsibilitiesFilter(filters.responsibilities);
     setBioFilter(filters.bio);
     
-    // When applying filters, reset to page 1
     handlePageChange(1);
     
-    // Let parent component know about filter change
     if (onFilterChange) {
       onFilterChange(filters);
     }
@@ -345,7 +312,7 @@ const PersonsList2 = ({
             <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
           </div>
           <PersonTableSkeleton />
-      </div>
+        </div>
       ) : (
         <div className="w-full py-8 px-4 md:px-6 lg:px-8">
           <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Persons</h1>
@@ -363,19 +330,21 @@ const PersonsList2 = ({
             onSearch={handleSearch}
             selectedPersons={selectedPersons}
             persons={localPersons}
+            onColumnsClick={() => setIsColumnModalOpen(true)}
           />
 
           <div className="mt-6">
-            {/* Render Table directly if not loading, PersonsTable2 handles empty state internally (returns null) */}
             <PersonsTable2 
               persons={personsFromHook}
-              isLoading={isLoading || isSearching} // Pass combined loading state
+              isLoading={isLoading || isSearching}
               selectedPersons={selectedPersons}
               handleCheckboxChange={handleCheckboxChange}
               handleSelectAll={handleSelectAll}
               isPersonSelected={isPersonSelected}
               toggleFavorite={toggleFavorite}
               itemsPerPage={itemsPerPage}
+              columns={visibleColumns}
+              onColumnResize={handleColumnResize}
             />
           </div>
 
@@ -389,6 +358,13 @@ const PersonsList2 = ({
               totalItems={effectiveTotal}
             />
           </div>
+
+          <PersonsColumnModal
+            isOpen={isColumnModalOpen}
+            onClose={() => setIsColumnModalOpen(false)}
+            columns={visibleColumns}
+            onApplyColumns={updateVisibleColumns}
+          />
         </div>
       )}
     </>

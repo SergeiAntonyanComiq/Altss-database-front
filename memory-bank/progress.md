@@ -24,6 +24,9 @@
 - ✅ Skeleton loader matches table height for pagination (like /companies)
 - ✅ No empty state flicker or placeholder before data
 - ✅ Saved filters properly applied from URL
+- ✅ Column management with resizing and visibility toggles
+- ✅ Column header titles standardized
+- ✅ Column settings button in search bar
 
 ### Navigation & Layout
 - ✅ Sidebar navigation
@@ -80,10 +83,15 @@
    - Matched styling with favorites section
    - Added proper section organization
 
-5. Fixed column management:
-   - Moved Columns button to search bar
+5. Enhanced column management:
+   - Moved Columns button to search bar in both sections
+   - Added Settings icon for visual consistency
    - Improved column visibility persistence
    - Better modal state management
+   - Fixed column header titles in persons section
+   - Added column resizing functionality to persons table
+   - Standardized column management across sections
+   - Improved column state persistence with section-specific keys
 
 6. Enhanced favorites system:
    - Fixed display discrepancy

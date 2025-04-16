@@ -15,6 +15,8 @@ interface PersonsTable2Props {
   isPersonSelected: (id: string | undefined) => boolean;
   isLoading: boolean;
   itemsPerPage?: number;
+  columns: Column[];
+  onColumnResize: (columns: Column[]) => void;
 }
 
 const PersonsTable2 = ({ 
@@ -25,26 +27,18 @@ const PersonsTable2 = ({
   toggleFavorite,
   isPersonSelected,
   isLoading,
-  itemsPerPage
+  itemsPerPage,
+  columns,
+  onColumnResize
 }: PersonsTable2Props) => {
   const navigate = useNavigate();
-  const [columns, setColumns] = useState<Column[]>([
-    { id: 'name', width: 250, minWidth: 250 },
-    { id: 'company', width: 200, minWidth: 180 },
-    { id: 'bio', width: 280, minWidth: 250 },
-    { id: 'position', width: 170, minWidth: 170 },
-    { id: 'responsibilities', width: 250, minWidth: 250 },
-    { id: 'contacts', width: 150, minWidth: 150 },
-    { id: 'location', width: 170, minWidth: 170 },
-  ]);
-
   const handleProfileClick = useCallback((personId: string) => {
     navigate(`/profile/${personId}`);
   }, [navigate]);
 
   const handleColumnResize = useCallback((newColumns: Column[]) => {
-    setColumns(newColumns);
-  }, []);
+    onColumnResize(newColumns);
+  }, [onColumnResize]);
 
   // Debug logs
   console.log('PersonsTable2 render:', { persons, isLoading });
@@ -58,7 +52,7 @@ const PersonsTable2 = ({
               allSelected={false} 
               handleSelectAll={() => {}}
               columns={columns}
-              onColumnResize={handleColumnResize}
+              onColumnResize={onColumnResize}
             />
             <div className="space-y-1 p-4">
               {Array.from({ length: Math.max(1, itemsPerPage || 10) }).map((_, i) => (
@@ -85,7 +79,7 @@ const PersonsTable2 = ({
             allSelected={allSelected} 
             handleSelectAll={handleSelectAll}
             columns={columns}
-            onColumnResize={handleColumnResize}
+            onColumnResize={onColumnResize}
           />
           
           <div className="w-full">
