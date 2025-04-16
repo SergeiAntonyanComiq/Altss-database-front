@@ -214,7 +214,7 @@ const AppSidebar = () => {
           <div className="flex w-full items-center justify-between px-6">
             <div className="flex items-center">
               <img 
-                src="/images/altss_logo.png"
+                src="./images/altss_logo.png"
                 alt="Altss Logo" 
                 className="h-10 w-auto object-contain"
               />
