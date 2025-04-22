@@ -93,7 +93,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
                 <span className="ml-1">Order Enrich</span>
               </button>
               
-              <button className="bg-white border gap-2.5 px-6 py-[5px] rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
+              <button className="bg-white border px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] text-sm font-medium whitespace-nowrap">
                 Claim a mistake
               </button>
             </div>

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, Star } from "lucide-react";
@@ -56,23 +55,10 @@ const CompanyProfileHeader: React.FC<CompanyProfileHeaderProps> = ({ company }) 
               <span className="ml-1">Order Enrich</span>
             </button>
             
-            <button className="bg-white border gap-2.5 px-6 py-[5px] rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
+            <button className="bg-white border px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] text-sm font-medium whitespace-nowrap">
               Claim a mistake
             </button>
           </div>
-        </div>
-
-        {/* List tags section */}
-        <div className="mt-4 flex gap-2">
-          <span className="inline-block bg-[#E0F2EF] text-[#03887E] px-4 py-1 rounded-full text-sm">
-            My Long Super List
-          </span>
-          <span className="inline-block bg-[#E0F2EF] text-[#03887E] px-4 py-1 rounded-full text-sm">
-            UserList1
-          </span>
-          <span className="inline-block bg-[#E0F2EF] text-[#03887E] px-4 py-1 rounded-full text-sm">
-            Update Subscription
-          </span>
         </div>
       </div>
     </div>
