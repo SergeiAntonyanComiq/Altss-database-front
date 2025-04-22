@@ -57,7 +57,7 @@ const SavedSearches = () => {
       }
     } catch (error) {
       console.error("Error deleting saved search:", error);
-      toast({
+    toast({
         title: "Error",
         description: "There was a problem deleting your saved search. Please try again.",
         variant: "destructive"
@@ -210,22 +210,22 @@ const SavedSearches = () => {
                               </div>
                               
                               <div className="flex space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
+                            <Button
+                              variant="outline"
+                              size="sm"
                                   onClick={() => handleUseSearch(search)}
-                                >
+                            >
                                   <SearchIcon className="h-4 w-4 mr-1" />
                                   Use Search
-                                </Button>
-                                <Button
+                            </Button>
+                            <Button
                                   variant="ghost" 
-                                  size="sm"
+                              size="sm"
                                   className="text-red-500 hover:text-red-600 hover:bg-red-50"
                                   onClick={() => handleDeleteSearch(search.id, search.name)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                               </div>
                             </div>
                           </div>
@@ -234,7 +234,7 @@ const SavedSearches = () => {
                     </div>
                   </div>
                 )}
-              </div>
+            </div>
             )}
           </div>
         </main>

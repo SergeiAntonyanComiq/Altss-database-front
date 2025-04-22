@@ -135,11 +135,11 @@ const PersonalCabinet3 = () => {
             });
           }
           // Remove filter param from URL after applying (or not found)
-          const params = new URLSearchParams(location.search);
-          if (params.has('filter')) {
-            params.delete('filter');
-            navigate(`${location.pathname}?${params.toString()}`, { replace: true });
-          }
+    const params = new URLSearchParams(location.search);
+    if (params.has('filter')) {
+      params.delete('filter');
+      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    }
         } catch (error) {
           console.error("Error loading filter:", error);
           toast({

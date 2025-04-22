@@ -335,7 +335,7 @@ const PersonsList2 = ({
 
           <div className="mt-6">
             <PersonsTable2 
-              persons={personsFromHook}
+              persons={localPersons}
               isLoading={isLoading || isSearching}
               selectedPersons={selectedPersons}
               handleCheckboxChange={handleCheckboxChange}

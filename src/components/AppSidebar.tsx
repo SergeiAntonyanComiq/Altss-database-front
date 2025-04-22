@@ -154,13 +154,13 @@ const AppSidebar = () => {
 
   const menuItems = [
     {
-      title: "Companies",
+      title: "Company search",
       path: "/companies",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
       hasRightIcon: false
     },
     {
-      title: "Persons",
+      title: "People search",
       path: "/persons",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
       hasRightIcon: false
@@ -430,7 +430,7 @@ const AppSidebar = () => {
                 />
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
               </Avatar>
-              <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">
+              <span className="text-[#637381] text-base font-medium">
                     {userName || user?.email || "User Name"}
               </span>
             </div>

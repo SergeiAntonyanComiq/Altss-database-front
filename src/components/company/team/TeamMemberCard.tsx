@@ -20,7 +20,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ contact, isPrimary = fa
     <div className={`flex items-start space-x-4 p-4 border border-gray-200 rounded-lg bg-white ${isPrimary ? 'border-blue-300 shadow-sm' : ''}`}>
       <Avatar className="h-12 w-12 flex-shrink-0">
         <AvatarImage 
-          src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
+          src="./images/placeholder.svg" 
           alt={contact.name} 
         />
         <AvatarFallback className="text-xs bg-blue-100 text-blue-600">

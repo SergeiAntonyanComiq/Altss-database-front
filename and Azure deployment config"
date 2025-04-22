@@ -1,0 +1,239 @@
+[1mdiff --git a/.github/workflows/azure-static-web-apps-yellow-flower-054f5cf0f.yml b/.github/workflows/azure-static-web-apps-yellow-flower-054f5cf0f.yml[m
+[1mindex e23f1bc0..ad9cb542 100644[m
+[1m--- a/.github/workflows/azure-static-web-apps-yellow-flower-054f5cf0f.yml[m
+[1m+++ b/.github/workflows/azure-static-web-apps-yellow-flower-054f5cf0f.yml[m
+[36m@@ -42,5 +42,6 @@[m [mjobs:[m
+         id: closepullrequest[m
+         uses: Azure/static-web-apps-deploy@v1[m
+         with:[m
+[32m+[m[32m          app_location: "/"[m[41m[m
+           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_FLOWER_054F5CF0F }}[m
+           action: "close"[m
+[1mdiff --git a/src/components/AppSidebar.tsx b/src/components/AppSidebar.tsx[m
+[1mindex e85b13ff..5e5fa23b 100644[m
+[1m--- a/src/components/AppSidebar.tsx[m
+[1m+++ b/src/components/AppSidebar.tsx[m
+[36m@@ -154,13 +154,13 @@[m [mconst AppSidebar = () => {[m
+ [m
+   const menuItems = [[m
+     {[m
+[31m-      title: "Companies",[m
+[32m+[m[32m      title: "Company search",[m
+       path: "/companies",[m
+       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",[m
+       hasRightIcon: false[m
+     },[m
+     {[m
+[31m-      title: "Persons",[m
+[32m+[m[32m      title: "People search",[m
+       path: "/persons",[m
+       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",[m
+       hasRightIcon: false[m
+[36m@@ -430,7 +430,7 @@[m [mconst AppSidebar = () => {[m
+                 />[m
+                     <AvatarFallback>{getUserInitials()}</AvatarFallback>[m
+               </Avatar>[m
+[31m-              <span className="text-[#637381] text-base font-medium truncate max-w-[120px]">[m
+[32m+[m[32m              <span className="text-[#637381] text-base font-medium">[m
+                     {userName || user?.email || "User Name"}[m
+               </span>[m
+             </div>[m
+[1mdiff --git a/src/components/companies/filters/CompaniesFilterModal.tsx b/src/components/companies/filters/CompaniesFilterModal.tsx[m
+[1mindex 14c92bd7..512b107e 100644[m
+[1m--- a/src/components/companies/filters/CompaniesFilterModal.tsx[m
+[1m+++ b/src/components/companies/filters/CompaniesFilterModal.tsx[m
+[36m@@ -186,9 +186,9 @@[m [mconst CompaniesFilterModal = ({[m
+             <TabsTrigger value="saved" className="flex-1">Saved Filters</TabsTrigger>[m
+           </TabsList>[m
+           [m
+[31m-          <TabsContent value="create" className="flex-1 overflow-hidden flex flex-col mt-4">[m
+[31m-            <ScrollArea className="flex-1 px-1">[m
+[31m-              <div className="space-y-6">[m
+[32m+[m[32m          <TabsContent value="create" className="flex-1 overflow-auto flex flex-col mt-4">[m
+[32m+[m[32m            <ScrollArea className="flex-1 px-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">[m
+[32m+[m[32m              <div className="space-y-6 pb-6">[m
+                 {/* Input Fields Grid */}[m
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">[m
+                   <FilterInput[m
+[36m@@ -290,7 +290,7 @@[m [mconst CompaniesFilterModal = ({[m
+                   {loading && <p className="text-sm text-gray-500">Loading types...</p>}[m
+                   {error && <p className="text-sm text-red-500">{error}</p>}[m
+                   {!loading && !error && ([m
+[31m-                    <ScrollArea className="h-[150px] border rounded-md p-2">[m
+[32m+[m[32m                    <ScrollArea className="h-[150px] border rounded-md p-2 overflow-y-auto overflow-x-hidden">[m
+                       <div className="space-y-2">[m
+                         {filteredFirmTypes.length > 0 ? ([m
+                           filteredFirmTypes.map((type) => ([m
+[36m@@ -376,13 +376,17 @@[m [mconst CompaniesFilterModal = ({[m
+           </TabsContent>[m
+           [m
+           <TabsContent value="saved" className="flex-1 overflow-auto">[m
+[31m-            <SavedFiltersGroup [m
+[31m-              filters={savedFilters}[m
+[31m-              onApplyFilter={applyFilter}[m
+[31m-              onDeleteFilter={handleDeleteFilter}[m
+[31m-              currentActiveFilter={selectedTypes}[m
+[31m-              onClearFilter={handleClearFilters}[m
+[31m-            />[m
+[32m+[m[32m            <ScrollArea className="flex-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">[m
+[32m+[m[32m              <div className="pb-6">[m
+[32m+[m[32m                <SavedFiltersGroup[m[41m [m
+[32m+[m[32m                  filters={savedFilters}[m
+[32m+[m[32m                  onApplyFilter={applyFilter}[m
+[32m+[m[32m                  onDeleteFilter={handleDeleteFilter}[m
+[32m+[m[32m                  currentActiveFilter={selectedTypes}[m
+[32m+[m[32m                  onClearFilter={handleClearFilters}[m
+[32m+[m[32m                />[m
+[32m+[m[32m              </div>[m
+[32m+[m[32m            </ScrollArea>[m
+           </TabsContent>[m
+         </Tabs>[m
+ [m
+[1mdiff --git a/src/components/company/team/TeamMemberCard.tsx b/src/components/company/team/TeamMemberCard.tsx[m
+[1mindex 043f9f19..f8499857 100644[m
+[1m--- a/src/components/company/team/TeamMemberCard.tsx[m
+[1m+++ b/src/components/company/team/TeamMemberCard.tsx[m
+[36m@@ -20,7 +20,7 @@[m [mconst TeamMemberCard: React.FC<TeamMemberCardProps> = ({ contact, isPrimary = fa[m
+     <div className={`flex items-start space-x-4 p-4 border border-gray-200 rounded-lg bg-white ${isPrimary ? 'border-blue-300 shadow-sm' : ''}`}>[m
+       <Avatar className="h-12 w-12 flex-shrink-0">[m
+         <AvatarImage [m
+[31m-          src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" [m
+[32m+[m[32m          src="./images/placeholder.svg"[m[41m [m
+           alt={contact.name} [m
+         />[m
+         <AvatarFallback className="text-xs bg-blue-100 text-blue-600">[m
+[1mdiff --git a/src/components/personal/PersonsList2.tsx b/src/components/personal/PersonsList2.tsx[m
+[1mindex 1f3ac780..0de78aeb 100644[m
+[1m--- a/src/components/personal/PersonsList2.tsx[m
+[1m+++ b/src/components/personal/PersonsList2.tsx[m
+[36m@@ -335,7 +335,7 @@[m [mconst PersonsList2 = ({[m
+ [m
+           <div className="mt-6">[m
+             <PersonsTable2 [m
+[31m-              persons={personsFromHook}[m
+[32m+[m[32m              persons={localPersons}[m
+               isLoading={isLoading || isSearching}[m
+               selectedPersons={selectedPersons}[m
+               handleCheckboxChange={handleCheckboxChange}[m
+[1mdiff --git a/src/components/personal/filters/PersonsFilterModal.tsx b/src/components/personal/filters/PersonsFilterModal.tsx[m
+[1mindex 81d2a524..9c48312b 100644[m
+[1m--- a/src/components/personal/filters/PersonsFilterModal.tsx[m
+[1m+++ b/src/components/personal/filters/PersonsFilterModal.tsx[m
+[36m@@ -157,9 +157,9 @@[m [mconst PersonsFilterModal = ({[m
+             <TabsTrigger value="saved" className="flex-1">Saved Filters</TabsTrigger>[m
+           </TabsList>[m
+           [m
+[31m-          <TabsContent value="create" className="flex-1 overflow-hidden flex flex-col mt-4">[m
+[31m-            <ScrollArea className="flex-1 px-1">[m
+[31m-              <div className="space-y-6">[m
+[32m+[m[32m          <TabsContent value="create" className="flex-1 overflow-auto flex flex-col mt-4">[m
+[32m+[m[32m            <ScrollArea className="flex-1 px-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">[m
+[32m+[m[32m              <div className="space-y-6 pb-6">[m
+                 {/* Input Fields Grid */}[m
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">[m
+                   <FilterInput[m
+[36m@@ -233,7 +233,7 @@[m [mconst PersonsFilterModal = ({[m
+                   {loading && <p className="text-sm text-gray-500">Loading types...</p>}[m
+                   {error && <p className="text-sm text-red-500">{error}</p>}[m
+                   {!loading && !error && ([m
+[31m-                    <ScrollArea className="h-[150px] border rounded-md p-2">[m
+[32m+[m[32m                    <ScrollArea className="h-[150px] border rounded-md p-2 overflow-y-auto overflow-x-hidden">[m
+                       <div className="space-y-2">[m
+                         {filteredFirmTypes.length > 0 ? ([m
+                           filteredFirmTypes.map((type) => ([m
+[36m@@ -319,13 +319,17 @@[m [mconst PersonsFilterModal = ({[m
+           </TabsContent>[m
+           [m
+           <TabsContent value="saved" className="flex-1 overflow-auto">[m
+[31m-            <SavedFiltersGroup [m
+[31m-              filters={savedFilters}[m
+[32m+[m[32m            <ScrollArea className="flex-1 h-full pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">[m
+[32m+[m[32m              <div className="pb-6">[m
+[32m+[m[32m                <SavedFiltersGroup[m[41m [m
+[32m+[m[32m                  filters={savedFilters}[m
+               onApplyFilter={applyFilter}[m
+               onDeleteFilter={handleDeleteFilter}[m
+               currentActiveFilter={selectedTypes}[m
+               onClearFilter={handleClearFilters}[m
+             />[m
+[32m+[m[32m              </div>[m
+[32m+[m[32m            </ScrollArea>[m
+           </TabsContent>[m
+         </Tabs>[m
+ [m
+[1mdiff --git a/src/pages/PersonalCabinet3.tsx b/src/pages/PersonalCabinet3.tsx[m
+[1mindex af3f55c0..fe864220 100644[m
+[1m--- a/src/pages/PersonalCabinet3.tsx[m
+[1m+++ b/src/pages/PersonalCabinet3.tsx[m
+[36m@@ -135,11 +135,11 @@[m [mconst PersonalCabinet3 = () => {[m
+             });[m
+           }[m
+           // Remove filter param from URL after applying (or not found)[m
+[31m-          const params = new URLSearchParams(location.search);[m
+[31m-          if (params.has('filter')) {[m
+[31m-            params.delete('filter');[m
+[31m-            navigate(`${location.pathname}?${params.toString()}`, { replace: true });[m
+[31m-          }[m
+[32m+[m[32m    const params = new URLSearchParams(location.search);[m
+[32m+[m[32m    if (params.has('filter')) {[m
+[32m+[m[32m      params.delete('filter');[m
+[32m+[m[32m      navigate(`${location.pathname}?${params.toString()}`, { replace: true });[m
+[32m+[m[32m    }[m
+         } catch (error) {[m
+           console.error("Error loading filter:", error);[m
+           toast({[m
+[1mdiff --git a/src/pages/SavedSearches.tsx b/src/pages/SavedSearches.tsx[m
+[1mindex 4a73f565..f2eaa78f 100644[m
+[1m--- a/src/pages/SavedSearches.tsx[m
+[1m+++ b/src/pages/SavedSearches.tsx[m
+[36m@@ -57,7 +57,7 @@[m [mconst SavedSearches = () => {[m
+       }[m
+     } catch (error) {[m
+       console.error("Error deleting saved search:", error);[m
+[31m-      toast({[m
+[32m+[m[32m    toast({[m
+         title: "Error",[m
+         description: "There was a problem deleting your saved search. Please try again.",[m
+         variant: "destructive"[m
+[36m@@ -210,22 +210,22 @@[m [mconst SavedSearches = () => {[m
+                               </div>[m
+                               [m
+                               <div className="flex space-x-2">[m
+[31m-                                <Button[m
+[31m-                                  variant="outline"[m
+[31m-                                  size="sm"[m
+[32m+[m[32m                            <Button[m
+[32m+[m[32m                              variant="outline"[m
+[32m+[m[32m                              size="sm"[m
+                                   onClick={() => handleUseSearch(search)}[m
+[31m-                                >[m
+[32m+[m[32m                            >[m
+                                   <SearchIcon className="h-4 w-4 mr-1" />[m
+                                   Use Search[m
+[31m-                                </Button>[m
+[31m-                                <Button[m
+[32m+[m[32m                            </Button>[m
+[32m+[m[32m                            <Button[m
+                                   variant="ghost" [m
+[31m-                                  size="sm"[m
+[32m+[m[32m                              size="sm"[m
+                                   className="text-red-500 hover:text-red-600 hover:bg-red-50"[m
+                                   onClick={() => handleDeleteSearch(search.id, search.name)}[m
+[31m-                                >[m
+[31m-                                  <Trash2 className="h-4 w-4" />[m
+[31m-                                </Button>[m
+[32m+[m[32m                            >[m
+[32m+[m[32m                              <Trash2 className="h-4 w-4" />[m
+[32m+[m[32m                            </Button>[m
+                               </div>[m
+                             </div>[m
+                           </div>[m
+[36m@@ -234,7 +234,7 @@[m [mconst SavedSearches = () => {[m
+                     </div>[m
+                   </div>[m
+                 )}[m
+[31m-              </div>[m
+[32m+[m[32m            </div>[m
+             )}[m
+           </div>[m
+         </main>[m

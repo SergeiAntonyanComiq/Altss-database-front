@@ -186,9 +186,9 @@ const CompaniesFilterModal = ({
             <TabsTrigger value="saved" className="flex-1">Saved Filters</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="create" className="flex-1 overflow-hidden flex flex-col mt-4">
-            <ScrollArea className="flex-1 px-1">
-              <div className="space-y-6">
+          <TabsContent value="create" className="flex-1 overflow-auto flex flex-col mt-4">
+            <ScrollArea className="flex-1 px-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">
+              <div className="space-y-6 pb-6">
                 {/* Input Fields Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <FilterInput
@@ -290,7 +290,7 @@ const CompaniesFilterModal = ({
                   {loading && <p className="text-sm text-gray-500">Loading types...</p>}
                   {error && <p className="text-sm text-red-500">{error}</p>}
                   {!loading && !error && (
-                    <ScrollArea className="h-[150px] border rounded-md p-2">
+                    <ScrollArea className="h-[150px] border rounded-md p-2 overflow-y-auto overflow-x-hidden">
                       <div className="space-y-2">
                         {filteredFirmTypes.length > 0 ? (
                           filteredFirmTypes.map((type) => (
@@ -376,13 +376,17 @@ const CompaniesFilterModal = ({
           </TabsContent>
           
           <TabsContent value="saved" className="flex-1 overflow-auto">
-            <SavedFiltersGroup 
-              filters={savedFilters}
-              onApplyFilter={applyFilter}
-              onDeleteFilter={handleDeleteFilter}
-              currentActiveFilter={selectedTypes}
-              onClearFilter={handleClearFilters}
-            />
+            <ScrollArea className="flex-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">
+              <div className="pb-6">
+                <SavedFiltersGroup 
+                  filters={savedFilters}
+                  onApplyFilter={applyFilter}
+                  onDeleteFilter={handleDeleteFilter}
+                  currentActiveFilter={selectedTypes}
+                  onClearFilter={handleClearFilters}
+                />
+              </div>
+            </ScrollArea>
           </TabsContent>
         </Tabs>
 
