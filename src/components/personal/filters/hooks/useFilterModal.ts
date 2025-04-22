@@ -53,6 +53,7 @@ export function useFilterModal(initialSelectedTypes: string[] = []) {
     
     // Load firm types (mock data for now)
     setFirmTypes([
+      'Family Office',
       'Family Office - Single',
       'Family Office - Multi',
       'Investment Bank',

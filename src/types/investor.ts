@@ -1,0 +1,170 @@
+export interface InvestorType {
+  firm_id: string;
+  background?: string | null;
+  firm_name: string;
+  funds_count?: string | null;
+  firm_type: string;
+  city?: string | null;
+  country?: string | null;
+  aum?: string | null; // AUM ($ mn)
+  region?: string | null;
+  address?: string | null;
+  state_county?: string | null;
+  zip_code?: string | null;
+  website?: string | null;
+  email?: string | null;
+  tel?: string | null;
+  fax?: string | null;
+  general_consultant?: string | null;
+  secondary_locations?: string | null;
+  ria?: string | null;
+  year_est?: string | null;
+  investor_currency?: string | null;
+  aum_1?: string | null; // More specific AUM fields if available
+  aum_2?: string | null;
+
+  // Allocation fields
+  allocation_alternatives?: string | null;
+  allocation_alternatives_1?: string | null;
+  allocation_alternatives_2?: string | null;
+  allocation_alternatives_3?: string | null;
+  allocation_equities?: string | null;
+  allocation_equities_1?: string | null;
+  allocation_equities_2?: string | null;
+  allocation_equities_3?: string | null;
+  allocation_fixed_income?: string | null;
+  allocation_fixed_income_1?: string | null;
+  allocation_fixed_income_2?: string | null;
+  allocation_fixed_income_3?: string | null;
+  allocation_cash?: string | null;
+  allocation_cash_1?: string | null;
+  allocation_cash_2?: string | null;
+  allocation_cash_3?: string | null;
+  allocation_other?: string | null;
+  allocation_other_1?: string | null;
+  allocation_other_2?: string | null;
+  allocation_other_3?: string | null;
+
+  // Target Allocation fields
+  target_allocation_alternatives?: string | null;
+  target_allocation_alternatives_1?: string | null;
+  target_allocation_alternatives_2?: string | null;
+  target_allocation_alternatives_3?: string | null;
+  target_allocation_alternatives_4?: string | null;
+  target_allocation_alternatives_5?: string | null;
+  target_allocation_alternatives_6?: string | null;
+  target_allocation_alternatives_7?: string | null;
+  target_allocation_equities?: string | null;
+  target_allocation_equities_1?: string | null;
+  target_allocation_equities_2?: string | null;
+  target_allocation_equities_3?: string | null;
+  target_allocation_equities_4?: string | null;
+  target_allocation_equities_5?: string | null;
+  target_allocation_equities_6?: string | null;
+  target_allocation_equities_7?: string | null;
+  target_allocation_fixed_income?: string | null;
+  target_allocation_fixed_income_1?: string | null;
+  target_allocation_fixed_income_2?: string | null;
+  target_allocation_fixed_income_3?: string | null;
+  target_allocation_fixed_income_4?: string | null;
+  target_allocation_fixed_income_5?: string | null;
+  target_allocation_fixed_income_6?: string | null;
+  target_allocation_fixed_income_7?: string | null;
+  target_allocation_cash?: string | null;
+  target_allocation_cash_1?: string | null;
+  target_allocation_cash_2?: string | null;
+  target_allocation_cash_3?: string | null;
+  target_allocation_cash_4?: string | null;
+  target_allocation_cash_5?: string | null;
+  target_allocation_cash_6?: string | null;
+  target_allocation_cash_7?: string | null;
+  target_allocation_other?: string | null;
+  target_allocation_other_1?: string | null;
+  target_allocation_other_2?: string | null;
+  target_allocation_other_3?: string | null;
+  target_allocation_other_4?: string | null;
+  target_allocation_other_5?: string | null;
+  target_allocation_other_6?: string | null;
+  target_allocation_other_7?: string | null;
+
+  // PE Allocation fields
+  pe_allocation?: string | null;
+  investing_in_pe?: string | null;
+  pe_allocation_1?: string | null;
+  pe_allocation_2?: string | null;
+  pe_allocation_3?: string | null;
+  pe_target_allocation?: string | null;
+  pe_target_allocation_1?: string | null;
+  pe_target_allocation_2?: string | null;
+  pe_target_allocation_3?: string | null;
+  pe_allocation_primary?: string | null;
+  pe_allocation_primary_1?: string | null;
+  pe_allocation_primary_2?: string | null;
+  pe_allocation_primary_3?: string | null;
+  pe_allocation_secondary?: string | null;
+  pe_allocation_secondary_1?: string | null;
+  pe_allocation_secondary_2?: string | null;
+  pe_allocation_secondary_3?: string | null;
+  pe_allocation_direct?: string | null;
+  pe_allocation_direct_1?: string | null;
+  pe_allocation_direct_2?: string | null;
+  pe_allocation_direct_3?: string | null;
+
+  // PE Strategy fields
+  pe_strategy_preferences?: string | null;
+  pe_geographic_preferences?: string | null;
+  pe_industries?: string | null;
+  pe_industry_verticals?: string | null;
+  pe_typical_investment?: string | null;
+  pe_typical_investment_1?: string | null;
+  pe_typical_investment_2?: string | null;
+  pe_typical_investment_3?: string | null;
+  pe_typical_investment_4?: string | null;
+  pe_typical_investment_5?: string | null;
+  pe_first_time_funds?: string | null;
+  pe_co_invest?: string | null;
+  pe_first_close_investor?: string | null;
+  pe_separate_accounts?: string | null;
+  pe_buyout_fund_preferences?: string | null;
+  pe_other_manager_requirements?: string | null;
+  pe_investment_currency_in_china?: string | null;
+
+  // PE Next 12 months plans
+  pe_next_12_mths?: string | null;
+  pe_next_12_mths_no_funds_min?: string | null;
+  pe_next_12_mths_no_funds_max?: string | null;
+  pe_next_12_mths_min?: string | null;
+  pe_next_12_mths_max?: string | null;
+  pe_next_12_mths_min_1?: string | null;
+  pe_next_12_mths_max_1?: string | null;
+  pe_next_12_mths_min_2?: string | null;
+  pe_next_12_mths_max_2?: string | null;
+  pe_next_12_mths_strategies?: string | null;
+  pe_next_12_mths_buyout_pref?: string | null;
+  pe_date_added?: string | null;
+  pe_last_updated_date?: string | null;
+  pe_next_12_mths_regions?: string | null;
+  pe_next_12_mths_industries?: string | null;
+  pe_next_12_mths_industry_verticals?: string | null;
+  pe_next_12_mths_date_of_plans?: string | null;
+  pe_next_12_mths_date_of_plans_inserted_date?: string | null;
+  pe_next_12_mths_gp_relationships?: string | null;
+
+  // PE Contact preferences
+  pe_preferred_method_of_initial_contact?: string | null;
+  pe_preferred_initial_contact_email?: string | null;
+  pe_priority_contact_name?: string | null;
+  pe_priority_contact_job_title?: string | null;
+  pe_priority_contact_email?: string | null;
+  pe_priority_contact_phone?: string | null;
+  pe_consultant?: string | null;
+
+  // Other fields
+  local_language_firm_name?: string | null;
+  status?: string | null;
+  employees?: string | null;
+  latest_fund_name?: string | null;
+  linkedin_url?: string | null;
+  twitter_url?: string | null;
+  facebook_url?: string | null;
+} 

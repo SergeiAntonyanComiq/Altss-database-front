@@ -56,20 +56,20 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
       </div>
       
       {columns.find(col => col.id === 'name') && (
-        <div 
+      <div 
           className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center gap-2.5 cursor-pointer"
           style={{ width: columns.find(col => col.id === 'name')!.width, minWidth: columns.find(col => col.id === 'name')!.minWidth }}
-          onClick={() => onProfileClick(person.id)}
-        >
+        onClick={() => onProfileClick(person.id)}
+      >
           <Avatar className="h-8 w-8 shrink-0">
-            <AvatarImage 
-              src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
-              alt={person.name} 
-            />
-            <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
-              {getInitials(person.name)}
-            </AvatarFallback>
-          </Avatar>
+              <AvatarImage 
+                src="/lovable-uploads/fed0ab22-4812-4812-9ed8-1094621576ed.png" 
+                alt={person.name} 
+              />
+              <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                {getInitials(person.name)}
+              </AvatarFallback>
+            </Avatar>
           <div className="flex items-center gap-1 ml-1 flex-1 min-w-0">
             <span className="text-sm font-medium text-gray-800 truncate">
               {person.name}
@@ -97,7 +97,7 @@ const PersonTableRow: React.FC<PersonTableRowProps> = ({
           <span className="text-sm text-gray-600">
             {person.companies && person.companies.length > 0 ? person.companies[0] : "-"}
           </span>
-        </div>
+      </div>
       )}
       
       {columns.find(col => col.id === 'bio') && (

@@ -160,6 +160,12 @@ const AppSidebar = () => {
       hasRightIcon: false
     },
     {
+      title: "Investors search",
+      path: "/investors",
+      iconSrc: "/images/investor_icon.svg",
+      hasRightIcon: false
+    },
+    {
       title: "People search",
       path: "/persons",
       iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
@@ -227,7 +233,7 @@ const AppSidebar = () => {
           <SidebarMenu>
             {menuItems.map((item, index) => (
               <React.Fragment key={item.title}>
-                {index === 2 && <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />}
+                {index === 3 && <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />}
                 <SidebarMenuItem>
                   <button 
                     onClick={() => handleNavigation(item.path)}

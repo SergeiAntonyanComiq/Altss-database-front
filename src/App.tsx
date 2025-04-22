@@ -11,11 +11,13 @@ import ProfilePage from "./pages/ProfilePage";
 import CompanyProfile from "./pages/CompanyProfile";
 import Auth from "./pages/Auth";
 import Companies from "./pages/Companies";
+import Investors from "./pages/Investors";
 import CompanyDetails from "./pages/CompanyDetails";
 import MyOrders from "./pages/MyOrders";
 import Favorites from "./pages/Favorites";
 import SavedSearches from "./pages/SavedSearches";
 import Profile from "./pages/Profile";
+import InvestorProfile from "./pages/InvestorProfile";
 
 const queryClient = new QueryClient();
 
@@ -33,9 +35,6 @@ const App = () => (
             {/* Public route - no protection */}
             <Route path="/auth" element={<Auth />} />
             
-            {/* NotFound should remain accessible */}
-            <Route path="*" element={<NotFound />} />
-            
             {/* All protected routes */}
             <Route path="/persons" element={
               <ProtectedRoute>
@@ -52,9 +51,19 @@ const App = () => (
                 <CompanyProfile />
               </ProtectedRoute>
             } />
+            <Route path="/investorprofile/:id" element={
+              <ProtectedRoute>
+                <InvestorProfile />
+              </ProtectedRoute>
+            } />
             <Route path="/companies" element={
               <ProtectedRoute>
                 <Companies />
+              </ProtectedRoute>
+            } />
+            <Route path="/investors" element={
+              <ProtectedRoute>
+                <Investors />
               </ProtectedRoute>
             } />
             <Route path="/company/:id" element={
@@ -82,6 +91,8 @@ const App = () => (
                 <Profile />
               </ProtectedRoute>
             } />
+            {/* NotFound fallback (keep last) */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

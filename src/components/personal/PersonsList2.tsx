@@ -35,15 +35,15 @@ const contactToPerson = (contact: ContactType): PersonType | null => {
       responsibilities: contact.asset_class ? 
         contact.asset_class.split(',').map(s => s.trim()).filter(Boolean) : 
         [],
-      linkedin: contact.linkedin || "",
+    linkedin: contact.linkedin || "",
       location: [
         contact.city,
         contact.state,
         contact.country_territory
       ].filter(Boolean).join(", "),
       companies: [contact.investor].filter(Boolean),
-      currentPosition: contact.job_title || "",
-      shortBio: contact.role || "",
+    currentPosition: contact.job_title || "",
+    shortBio: contact.role || "",
       email: contact.email || "",
       phone: contact.tel || undefined,
       linkedinHandle: undefined,
@@ -312,22 +312,22 @@ const PersonsList2 = ({
             <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
           </div>
           <PersonTableSkeleton />
-        </div>
+      </div>
       ) : (
         <div className="w-full py-8 px-4 md:px-6 lg:px-8">
           <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Persons</h1>
-          
-          <PersonsSearchBar 
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedFirmTypes={localSelectedFirmTypes}
+      
+      <PersonsSearchBar 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedFirmTypes={localSelectedFirmTypes}
             companyNameFilter={localCompanyNameFilter}
             positionFilter={localPositionFilter}
             locationFilter={localLocationFilter}
             responsibilitiesFilter={localResponsibilitiesFilter}
             bioFilter={localBioFilter}
-            onFilterChange={handleFilterChange}
-            onSearch={handleSearch}
+        onFilterChange={handleFilterChange}
+        onSearch={handleSearch}
             selectedPersons={selectedPersons}
             persons={localPersons}
             onColumnsClick={() => setIsColumnModalOpen(true)}
@@ -337,25 +337,25 @@ const PersonsList2 = ({
             <PersonsTable2 
               persons={localPersons}
               isLoading={isLoading || isSearching}
-              selectedPersons={selectedPersons}
-              handleCheckboxChange={handleCheckboxChange}
-              handleSelectAll={handleSelectAll}
+        selectedPersons={selectedPersons}
+        handleCheckboxChange={handleCheckboxChange}
+        handleSelectAll={handleSelectAll}
               isPersonSelected={isPersonSelected}
-              toggleFavorite={toggleFavorite}
+        toggleFavorite={toggleFavorite}
               itemsPerPage={itemsPerPage}
               columns={visibleColumns}
               onColumnResize={handleColumnResize}
-            />
+      />
           </div>
-
+      
           <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
             <PersonsPagination 
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
               totalPages={totalPages}
               itemsPerPage={itemsPerPage}
               onItemsPerPageChange={handleItemsPerPageChange}
-              totalItems={effectiveTotal}
+        totalItems={effectiveTotal}
             />
           </div>
 
@@ -364,8 +364,8 @@ const PersonsList2 = ({
             onClose={() => setIsColumnModalOpen(false)}
             columns={visibleColumns}
             onApplyColumns={updateVisibleColumns}
-          />
-        </div>
+      />
+    </div>
       )}
     </>
   );
