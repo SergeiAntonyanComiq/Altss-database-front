@@ -56,7 +56,7 @@ const ContactsTable = ({
       <div className="bg-white rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-gray-200">
+            <TableRow className="hover:bg-transparent border-b border-[#DFE4EA]">
               <TableHead className="w-12">
                 <Checkbox
                   checked={selectedContacts.length === contacts.length && contacts.length > 0}
@@ -97,7 +97,7 @@ const ContactsTable = ({
       <div className="bg-white rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-gray-200">
+            <TableRow className="hover:bg-transparent border-b border-[#DFE4EA]">
               <TableHead className="w-12">
                 <Checkbox
                   checked={selectedContacts.length === contacts.length && contacts.length > 0}
@@ -137,7 +137,7 @@ const ContactsTable = ({
     <div className="bg-white rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent border-b border-gray-200">
+          <TableRow className="hover:bg-transparent border-b border-[#DFE4EA]">
             <TableHead className="w-12">
               <Checkbox
                 checked={selectedContacts.length === contacts.length && contacts.length > 0}

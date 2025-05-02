@@ -22,7 +22,7 @@ const InvestorProfileHeader: React.FC<InvestorProfileHeaderProps> = ({ investor 
         </div>
       </div>
       {/* main header */}
-      <div className="p-4 border-b">
+      <div className="p-4 border-b border-[#DFE4EA]">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">

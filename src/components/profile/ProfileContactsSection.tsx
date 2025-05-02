@@ -35,7 +35,7 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
   return (
     <section>
       <h2 className="text-xl font-bold mb-2">Contacts</h2>
-      <hr className="mb-4" />
+      <hr className="mb-4 border-t border-[#DFE4EA]" />
       <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
         {contact.linkedin && (
           <>

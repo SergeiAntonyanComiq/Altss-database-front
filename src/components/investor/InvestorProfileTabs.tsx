@@ -17,7 +17,7 @@ interface InvestorProfileTabsProps {
 const InvestorProfileTabs: React.FC<InvestorProfileTabsProps> = ({ investor, activeTab, setActiveTab }) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <div className="px-4 flex gap-6 border-b">
+      <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
         <TabsList className="bg-transparent p-0 h-auto">
           <TabsTrigger value="overview" className="py-3 px-0 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium">
             Overview

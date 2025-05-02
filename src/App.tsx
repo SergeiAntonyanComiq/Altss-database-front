@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,9 @@ import ProfilePage from "./pages/ProfilePage";
 import CompanyProfile from "./pages/CompanyProfile";
 import Auth from "./pages/Auth";
 import Companies from "./pages/Companies";
+import FamilyOffices from "./pages/FamilyOffices";
+import FamilyOfficesContacts from "./pages/FamilyOfficesContacts";
+import FamilyOfficeProfile from "./pages/FamilyOfficeProfile";
 import Investors from "./pages/Investors";
 import CompanyDetails from "./pages/CompanyDetails";
 import MyOrders from "./pages/MyOrders";
@@ -18,6 +22,7 @@ import Favorites from "./pages/Favorites";
 import SavedSearches from "./pages/SavedSearches";
 import Profile from "./pages/Profile";
 import InvestorProfile from "./pages/InvestorProfile";
+import FamilyOfficesContactsProfile from "./pages/FamilyOfficesContactsProfile";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +64,35 @@ const App = () => (
             <Route path="/companies" element={
               <ProtectedRoute>
                 <Companies />
+              </ProtectedRoute>
+            } />
+            <Route path="/familyoffices" element={
+              <ProtectedRoute>
+                <FamilyOffices />
+              </ProtectedRoute>
+            } />
+            <Route path="/familyofficescontacts" element={
+              <ProtectedRoute>
+                <FamilyOfficesContacts />
+              </ProtectedRoute>
+            } />
+            <Route path="/familyofficescontacts/:id" element={
+              <ProtectedRoute>
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <FamilyOfficeProfile />
+                </React.Suspense>
+              </ProtectedRoute>
+            } />
+            <Route path="/familyofficescontactsprofile/:id" element={
+              <ProtectedRoute>
+                <FamilyOfficesContactsProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/familyoffices/:id" element={
+              <ProtectedRoute>
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <FamilyOfficeProfile />
+                </React.Suspense>
               </ProtectedRoute>
             } />
             <Route path="/investors" element={

@@ -9,7 +9,7 @@ const ProfileAboutSection: React.FC<ProfileAboutSectionProps> = ({ contact }) =>
   return (
     <section>
       <h2 className="text-xl font-bold mb-2">About</h2>
-      <hr className="mb-4" />
+      <hr className="mb-4 border-t border-[#DFE4EA]" />
       <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
         <span className="text-gray-600 font-medium">Area of responsibility</span>
         <div className="flex gap-2">

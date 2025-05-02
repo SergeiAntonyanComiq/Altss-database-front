@@ -107,8 +107,8 @@ export const useContactsData = ({
     
     const fetchContactsAndFavorites = async () => {
       if (!isMounted) return;
-      setIsLoading(true);
-      setError(null);
+        setIsLoading(true);
+        setError(null);
       
       try {
         // Debug log for filter parameters - more detailed
@@ -161,13 +161,13 @@ export const useContactsData = ({
       } catch (err) { 
         if (!isMounted) return;
         console.error("Error fetching contacts or favorites:", err);
-        setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+          setError(err instanceof Error ? err : new Error('An unknown error occurred'));
         setContacts([]); // Clear contacts on error
-        toast({
-          title: "Error",
+          toast({
+            title: "Error",
           description: "Failed to fetch contacts or favorites. Please try again later.",
-          variant: "destructive",
-        });
+            variant: "destructive",
+          });
       } finally {
         if (isMounted) {
           setIsLoading(false);

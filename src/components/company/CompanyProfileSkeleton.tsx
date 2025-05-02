@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -27,7 +26,7 @@ const CompanyProfileSkeleton: React.FC = () => {
       
       {/* Tabs skeleton */}
       <div className="mb-6">
-        <div className="flex gap-4 border-b">
+        <div className="flex gap-4 border-b border-[#DFE4EA]">
           <Skeleton className="h-10 w-20" />
           <Skeleton className="h-10 w-20" />
           <Skeleton className="h-10 w-20" />

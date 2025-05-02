@@ -160,6 +160,18 @@ const AppSidebar = () => {
       hasRightIcon: false
     },
     {
+      title: "Family Offices search",
+      path: "/familyoffices",
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
+      hasRightIcon: false
+    },
+    {
+      title: "Family Offices contacts",
+      path: "/familyofficescontacts",
+      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
+      hasRightIcon: false
+    },
+    {
       title: "Investors search",
       path: "/investors",
       iconSrc: "/images/investor_icon.svg",
@@ -178,6 +190,10 @@ const AppSidebar = () => {
       hasRightIcon: false
     }
   ];
+
+  // Updated menu grouping - first 5 items above the separator, only My Orders below
+  const mainMenuItems = menuItems.slice(0, 5);
+  const secondaryMenuItems = menuItems.slice(5);
 
   const getUserInitials = () => {
     if (userName) {
@@ -231,32 +247,54 @@ const AppSidebar = () => {
         
         <SidebarContent className="px-4 mt-10">
           <SidebarMenu>
-            {menuItems.map((item, index) => (
-              <React.Fragment key={item.title}>
-                {index === 3 && <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />}
-                <SidebarMenuItem>
-                  <button 
-                    onClick={() => handleNavigation(item.path)}
-                    className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
-                      ${isActive(item.path) 
-                        ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
-                        : "text-[#637381] hover:bg-gray-100"
-                      }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <img 
-                        src={item.iconSrc} 
-                        alt={item.title} 
-                        className="h-6 w-6 object-contain"
-                      />
-                      <span>{item.title}</span>
-                    </div>
-                    {item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
-                    )}
-                  </button>
-                </SidebarMenuItem>
-              </React.Fragment>
+            {mainMenuItems.map((item, index) => (
+              <SidebarMenuItem key={item.title}>
+                <button 
+                  onClick={() => handleNavigation(item.path)}
+                  className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                    ${isActive(item.path) 
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
+                      : "text-[#637381] hover:bg-gray-100"
+                    }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <img 
+                      src={item.iconSrc} 
+                      alt={item.title} 
+                      className="h-6 w-6 object-contain"
+                    />
+                    <span className="whitespace-nowrap">{item.title}</span>
+                  </div>
+                  {item.hasRightIcon && (
+                    <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                  )}
+                </button>
+              </SidebarMenuItem>
+            ))}
+            <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />
+            {secondaryMenuItems.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <button 
+                  onClick={() => handleNavigation(item.path)}
+                  className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                    ${isActive(item.path) 
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
+                      : "text-[#637381] hover:bg-gray-100"
+                    }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <img 
+                      src={item.iconSrc} 
+                      alt={item.title} 
+                      className="h-6 w-6 object-contain"
+                    />
+                    <span className="whitespace-nowrap">{item.title}</span>
+                  </div>
+                  {item.hasRightIcon && (
+                    <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                  )}
+                </button>
+              </SidebarMenuItem>
             ))}
 
             {/* Favorites Dropdown */}

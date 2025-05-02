@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CompanyOverviewTab from "./tabs/CompanyOverviewTab";
@@ -29,7 +28,7 @@ const CompanyProfileTabs: React.FC<CompanyProfileTabsProps> = ({
       value={activeTab} 
       onValueChange={setActiveTab}
     >
-      <div className="px-4 flex gap-6 border-b">
+      <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
         <TabsList className="bg-transparent p-0 h-auto">
           <TabsTrigger 
             value="overview" 

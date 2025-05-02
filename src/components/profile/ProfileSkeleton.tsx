@@ -24,25 +24,31 @@ const ProfileSkeleton: React.FC = () => {
           <Skeleton className="h-10 w-32" />
         </div>
         
-        <div className="border-b border-gray-200 mb-6">
-          <Skeleton className="h-10 w-full" />
-        </div>
-        
-        <div className="space-y-8">
-          <div>
-            <Skeleton className="h-6 w-24 mb-4" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Skeleton className="h-24 w-full" />
-              <Skeleton className="h-24 w-full" />
+        <div className="bg-white rounded-lg shadow p-6 animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+          <div className="border-b border-[#DFE4EA] mb-6">
+            <div className="flex space-x-8">
+              <div className="h-10 bg-gray-200 rounded w-24"></div>
             </div>
           </div>
           
-          <div>
-            <Skeleton className="h-6 w-24 mb-4" />
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-full" />
+          <div className="space-y-8">
+            <div>
+              <Skeleton className="h-6 w-24 mb-4" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+              </div>
+            </div>
+            
+            <div>
+              <Skeleton className="h-6 w-24 mb-4" />
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
             </div>
           </div>
         </div>

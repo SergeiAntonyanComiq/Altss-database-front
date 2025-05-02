@@ -44,7 +44,7 @@ const InvestorAllocationTab: React.FC<Props> = ({ investor }) => {
       {hasAnyAllocationData && (
         <section>
           <h2 className="text-xl font-bold mb-2">Current Allocation</h2>
-          <hr className="mb-4" />
+          <hr className="mb-4 border-t border-[#DFE4EA]" />
           <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
             {renderAllocationGroup("Alternatives", investor.allocation_alternatives, investor.allocation_alternatives_1, investor.allocation_alternatives_2, investor.allocation_alternatives_3)}
             {renderAllocationGroup("Equities", investor.allocation_equities, investor.allocation_equities_1, investor.allocation_equities_2, investor.allocation_equities_3)}
@@ -59,7 +59,7 @@ const InvestorAllocationTab: React.FC<Props> = ({ investor }) => {
       {hasAnyTargetAllocationData && (
         <section>
           <h2 className="text-xl font-bold mb-2">Target Allocation</h2>
-          <hr className="mb-4" />
+          <hr className="mb-4 border-t border-[#DFE4EA]" />
           <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
             {/* Render target fields similarly, including all 7 fields */}
             <Field label="Target Alternatives" value={investor.target_allocation_alternatives} />

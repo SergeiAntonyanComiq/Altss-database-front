@@ -36,7 +36,7 @@ const InvestorPEFocusTab: React.FC<Props> = ({ investor }) => {
       {/* PE Allocation & Strategy */}
       <section>
         <h2 className="text-xl font-bold mb-2">PE Allocation & Strategy</h2>
-        <hr className="mb-4" />
+        <hr className="mb-4 border-t border-[#DFE4EA]" />
         <div className="grid grid-cols-[250px_auto] gap-x-8 gap-y-4 text-base">
           <Field label="Investing in PE?" value={investor.investing_in_pe} />
           <Field label="Current PE Allocation" value={investor.pe_allocation} />
@@ -54,7 +54,7 @@ const InvestorPEFocusTab: React.FC<Props> = ({ investor }) => {
       {/* PE Investment Criteria */}
       <section>
         <h2 className="text-xl font-bold mb-2">PE Investment Criteria</h2>
-        <hr className="mb-4" />
+        <hr className="mb-4 border-t border-[#DFE4EA]" />
         <div className="grid grid-cols-[250px_auto] gap-x-8 gap-y-4 text-base">
           <Field label="Typical Investment Size" value={investor.pe_typical_investment} />
           <Field label="Invests in First Time Funds?" value={investor.pe_first_time_funds} />
@@ -70,7 +70,7 @@ const InvestorPEFocusTab: React.FC<Props> = ({ investor }) => {
       {/* PE Future Plans (Next 12 Months) */}
       <section>
         <h2 className="text-xl font-bold mb-2">PE Future Plans (Next 12 Months)</h2>
-        <hr className="mb-4" />
+        <hr className="mb-4 border-t border-[#DFE4EA]" />
         <div className="grid grid-cols-[250px_auto] gap-x-8 gap-y-4 text-base">
           <Field label="Plans" value={investor.pe_next_12_mths} />
           <Field label="Min/Max Funds" value={investor.pe_next_12_mths_no_funds_min ? `${investor.pe_next_12_mths_no_funds_min} - ${investor.pe_next_12_mths_no_funds_max}` : null} />
@@ -88,7 +88,7 @@ const InvestorPEFocusTab: React.FC<Props> = ({ investor }) => {
       {/* PE Contact Preferences */}
       <section>
         <h2 className="text-xl font-bold mb-2">PE Contact Preferences</h2>
-        <hr className="mb-4" />
+        <hr className="mb-4 border-t border-[#DFE4EA]" />
         <div className="grid grid-cols-[250px_auto] gap-x-8 gap-y-4 text-base">
           <Field label="Preferred Method" value={investor.pe_preferred_method_of_initial_contact} />
           <Field label="Preferred Email" value={investor.pe_preferred_initial_contact_email} />

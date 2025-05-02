@@ -5,7 +5,7 @@ import { Globe, Mail, Phone, Linkedin, Twitter, Facebook, MapPin, Building, Cale
 interface Props { investor: InvestorType; }
 
 const SectionTitle: React.FC<{children: React.ReactNode}> = ({ children }) => (
-  <h2 className="text-xl font-bold mt-8 mb-4 border-b pb-2">{children}</h2>
+  <h2 className="text-xl font-bold mt-8 mb-4 border-b border-[#DFE4EA] pb-2">{children}</h2>
 );
 
 const DataGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => (

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { CompanyType } from "@/types/company";
 import { Globe, Mail, Phone, Linkedin, Twitter } from "lucide-react";
@@ -12,7 +11,7 @@ const CompanyOverviewTab: React.FC<CompanyOverviewTabProps> = ({ company }) => {
     <div className="space-y-8">
       <section>
         <h2 className="text-xl font-bold mb-2">About</h2>
-        <hr className="mb-4" />
+        <hr className="mb-4 border-t border-[#DFE4EA]" />
         <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
           <span className="text-gray-600 font-medium">Company type</span>
           <div className="flex gap-2">
@@ -38,7 +37,7 @@ const CompanyOverviewTab: React.FC<CompanyOverviewTabProps> = ({ company }) => {
       
       <section>
         <h2 className="text-xl font-bold mb-2">Contacts</h2>
-        <hr className="mb-4" />
+        <hr className="mb-4 border-t border-[#DFE4EA]" />
         <div className="grid grid-cols-[180px_auto] gap-x-8 gap-y-4 text-base">
           <span className="flex items-center gap-1.5 text-gray-600 font-medium">
             <Globe className="w-4 h-4" />
@@ -108,7 +107,7 @@ const CompanyOverviewTab: React.FC<CompanyOverviewTabProps> = ({ company }) => {
       {company.description && (
         <section>
           <h2 className="text-xl font-bold mb-2">Description</h2>
-          <hr className="mb-4" />
+          <hr className="mb-4 border-t border-[#DFE4EA]" />
           <p className="text-gray-700">{company.description}</p>
         </section>
       )}

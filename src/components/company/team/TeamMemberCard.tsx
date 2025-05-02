@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ContactType } from "@/types/contact";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,7 +16,7 @@ const getAvatarFallback = (name: string) => {
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({ contact, isPrimary = false }) => {
   return (
-    <div className={`flex items-start space-x-4 p-4 border border-gray-200 rounded-lg bg-white ${isPrimary ? 'border-blue-300 shadow-sm' : ''}`}>
+    <div className={`flex items-start space-x-4 p-4 border border-[#DFE4EA] rounded-lg bg-white ${isPrimary ? 'border-blue-300 shadow-sm' : ''}`}>
       <Avatar className="h-12 w-12 flex-shrink-0">
         <AvatarImage 
           src="./images/placeholder.svg" 

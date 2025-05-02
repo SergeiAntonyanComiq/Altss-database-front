@@ -46,7 +46,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
       {isContactProfile ? (
         // Person profile tabs
         <>
-          <div className="px-4 flex gap-6 border-b">
+          <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
             <TabsList className="bg-transparent p-0 h-auto">
               <TabsTrigger 
                 value="details" 
@@ -88,7 +88,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
         </>
       ) : (
         // User profile tabs
-        <div className="px-4 flex gap-6 border-b">
+        <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
           <TabsList className="bg-transparent p-0 h-auto">
             <TabsTrigger 
               value="general" 
