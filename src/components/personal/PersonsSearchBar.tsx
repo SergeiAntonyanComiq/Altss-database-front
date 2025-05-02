@@ -299,13 +299,13 @@ const PersonsSearchBar = ({
       
       {/* Add to Favorites Button */}
       <button 
-        className="justify-center items-center border border-[#DFE4EA] bg-white hover:bg-gray-50 flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors"
+        className={`justify-center items-center border ${selectedPersons.length > 0 ? 'bg-primary text-white border-primary hover:bg-primary/90' : 'border-[#DFE4EA] bg-white hover:bg-gray-50'} flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors`}
         onClick={handleAddToFavorites}
       >
         <Heart className="h-[18px] w-[18px]" />
         <span>Add to Favorites</span>
         {selectedPersons.length > 0 && (
-          <Badge variant="secondary" className="bg-primary text-white ml-1 h-5 px-1.5">
+          <Badge variant="secondary" className="bg-white text-primary ml-1 h-5 px-1.5">
             {selectedPersons.length}
           </Badge>
         )}
