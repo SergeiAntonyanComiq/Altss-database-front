@@ -89,7 +89,7 @@ const CompaniesColumnModal: React.FC<CompaniesColumnModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
-      <DialogContent className="sm:max-w-[400px] max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[400px] max-h-[85vh] overflow-hidden flex flex-col bg-white">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">Manage Columns</DialogTitle>
         </DialogHeader>
