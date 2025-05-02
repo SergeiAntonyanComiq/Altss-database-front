@@ -26,3 +26,4 @@ dist-ssr
 supabase/
 memory-bank/
 test-task-2/
+.cursor/
