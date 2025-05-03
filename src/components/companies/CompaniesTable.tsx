@@ -1,6 +1,8 @@
 import React from "react";
 import { CompanyType } from "@/types/company";
-import CompaniesTableHeader, { Column } from "./table-parts/CompaniesTableHeader";
+import CompaniesTableHeader, {
+  Column,
+} from "./table-parts/CompaniesTableHeader";
 import CompanyTableRow from "./table-parts/CompanyTableRow";
 import EmptyState from "../personal/table/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +39,7 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
   onColumnResize,
   onColumnsChange,
   isColumnModalOpen = false,
-  onColumnModalClose = () => {}
+  onColumnModalClose = () => {},
 }: CompaniesTableProps) => {
   if (isLoading) {
     return (
@@ -45,7 +47,7 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
         <div className="w-full border border-[rgba(223,228,234,1)] rounded-lg overflow-hidden">
           <div className="overflow-x-auto thin-scrollbar">
             <CompaniesTableHeader
-              allSelected={false} 
+              allSelected={false}
               toggleAllCompanies={() => {}}
               columns={columns}
               onColumnResize={onColumnResize}
@@ -65,7 +67,8 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
     return <EmptyState />;
   }
 
-  const allSelected = selectedCompanies.length === companies.length && companies.length > 0;
+  const allSelected =
+    selectedCompanies.length === companies.length && companies.length > 0;
 
   return (
     <div className="bg-white rounded-lg shadow-sm w-full">
@@ -77,16 +80,18 @@ const CompaniesTable: React.FC<CompaniesTableProps> = ({
             columns={columns}
             onColumnResize={onColumnResize}
           />
-          
+
           <div className="w-full">
             {companies.map((company) => (
               <CompanyTableRow
                 key={company.id}
                 company={company}
                 isSelected={isCompanySelected(company.id)}
-                onToggleSelection={() => toggleCompanySelection(company.id || '')}
-                onViewCompany={() => handleViewCompany(company.id || '')}
-                onToggleFavorite={(e) => toggleFavorite(company.id || '', e)}
+                onToggleSelection={() =>
+                  toggleCompanySelection(company.id || "")
+                }
+                onViewCompany={() => handleViewCompany(company.id || "")}
+                onToggleFavorite={(e) => toggleFavorite(company.id || "", e)}
                 columns={columns}
                 formatAum={formatAum}
               />

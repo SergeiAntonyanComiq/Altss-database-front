@@ -1,20 +1,19 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { TableCheckbox } from "@/components/ui/table-checkbox";
-
-const defaultWidths: Record<string, number> = {
-  name: 280,
-  type: 200,
-  background: 300,
-  location: 300,
-  website: 200,
-  contact: 250,
-  aum: 170,
-  founded: 150,
-  team: 150,
-};
+import { cn } from "@/lib/utils.ts";
+import { columnTitleMap } from "@/components/companies/constants.ts";
 
 export interface Column {
-  id: 'name' | 'type' | 'aum' | 'founded' | 'team' | 'background' | 'location' | 'website' | 'contact';
+  id:
+    | "name"
+    | "type"
+    | "aum"
+    | "founded"
+    | "team"
+    | "background"
+    | "location"
+    | "website"
+    | "contact";
   width: number;
   minWidth: number;
 }
@@ -26,103 +25,119 @@ interface CompaniesTableHeaderProps {
   onColumnResize: (columns: Column[]) => void;
 }
 
-const CompaniesTableHeader: React.FC<CompaniesTableHeaderProps> = ({ 
-  allSelected, 
-  toggleAllCompanies, 
+const CompaniesTableHeader: React.FC<CompaniesTableHeaderProps> = ({
+  allSelected,
+  toggleAllCompanies,
   columns,
-  onColumnResize
+  onColumnResize,
 }) => {
   const [resizing, setResizing] = useState<string | null>(null);
   const initialX = useRef<number>(0);
   const initialWidth = useRef<number>(0);
 
-  const startResizing = useCallback((e: React.MouseEvent, columnId: string) => {
-    e.preventDefault();
-    setResizing(columnId);
-    initialX.current = e.clientX;
-    const column = columns.find(col => col.id === columnId);
-    if (column) {
-      initialWidth.current = column.width;
-    }
-  }, [columns]);
+  const startResizing = useCallback(
+    (e: React.MouseEvent, columnId: string) => {
+      e.preventDefault();
+      setResizing(columnId);
+      initialX.current = e.clientX;
+      const column = columns.find((col) => col.id === columnId);
+      if (column) {
+        initialWidth.current = column.width;
+      }
+    },
+    [columns],
+  );
 
   const stopResizing = useCallback(() => {
     setResizing(null);
   }, []);
 
-  const resize = useCallback((e: React.MouseEvent) => {
-    if (resizing) {
-      const diff = e.clientX - initialX.current;
-      const newColumns = columns.map(column => {
-        if (column.id === resizing) {
-          const newWidth = Math.max(column.minWidth, initialWidth.current + diff);
-          return { ...column, width: newWidth };
-        }
-        return column;
-      });
-      onColumnResize(newColumns);
-    }
-  }, [resizing, columns, onColumnResize]);
+  const handleResize = useCallback(
+    (e: MouseEvent) => {
+      if (resizing) {
+        const diff = e.clientX - initialX.current;
+        const newColumns = columns.map((column) => {
+          if (column.id === resizing) {
+            const newWidth = Math.max(
+              column.minWidth,
+              initialWidth.current + diff,
+            );
+            return { ...column, width: newWidth };
+          }
+          return column;
+        });
+        onColumnResize(newColumns);
+      }
+    },
+    [resizing, columns, onColumnResize],
+  );
 
-  React.useEffect(() => {
+  const resize = useCallback(
+    (e: React.MouseEvent) => {
+      handleResize(e.nativeEvent);
+    },
+    [handleResize],
+  );
+
+  useEffect(() => {
     if (resizing) {
-      document.addEventListener('mousemove', resize as any);
-      document.addEventListener('mouseup', stopResizing);
+      document.addEventListener("mousemove", handleResize);
+      document.addEventListener("mouseup", stopResizing);
       return () => {
-        document.removeEventListener('mousemove', resize as any);
-        document.removeEventListener('mouseup', stopResizing);
+        document.removeEventListener("mousemove", handleResize);
+        document.removeEventListener("mouseup", stopResizing);
       };
     }
-  }, [resizing, resize, stopResizing]);
+  }, [resizing, handleResize, stopResizing]);
 
-  // Calculate total minimum width and ensure we have valid columns
-  const totalMinWidth = (columns || []).reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
+  const totalMinWidth =
+    (columns || []).reduce((sum, col) => sum + col.minWidth, 0) + 44;
 
-  // If no columns provided, don't render anything
   if (!columns || columns.length === 0) {
     return null;
   }
 
-  const getColumnTitle = (id: string) => {
-    switch (id) {
-      case 'name': return 'Name';
-      case 'type': return 'Type';
-      case 'aum': return 'AUM';
-      case 'founded': return 'Founded';
-      case 'team': return 'Team';
-      case 'background': return 'Background';
-      case 'location': return 'Location';
-      case 'website': return 'Website';
-      case 'contact': return 'Contact';
-      default: return '';
-    }
-  };
-
   return (
-    <div 
-      className="bg-gray-100 flex h-12 w-full select-none rounded-t-lg"
+    <div
+      className={cn(
+        "bg-gray-100 flex h-[44px] w-full select-none rounded-t-lg",
+      )}
       style={{ minWidth: `${totalMinWidth}px` }}
       onMouseMove={resize}
     >
-      <div 
-        className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center rounded-tl-lg"
-      >
+      <div className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center rounded-tl-lg bg-gray-100 z-10 sticky left-0">
         <TableCheckbox
-            id="selectAllCompanies"
-            checked={allSelected}
-            onCheckedChange={toggleAllCompanies}
-            aria-label="Select all companies"
+          id="selectAllCompanies"
+          checked={allSelected}
+          onCheckedChange={toggleAllCompanies}
+          aria-label="Select all companies"
         />
       </div>
-      
+
       {columns.map((column, index) => (
-        <div 
+        <div
           key={column.id}
-          className={`relative ${index === columns.length - 1 ? '' : 'border-r border-[rgba(223,228,234,1)]'} px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center ${index === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
-          style={{ width: column.width, minWidth: column.minWidth }}
+          className={cn(
+            `relative px-4 py-3 text-[18px] text-[#637381] font-medium flex items-center`,
+            index === columns.length - 1
+              ? "rounded-tr-lg"
+              : "border-r border-[rgba(223,228,234,1)]",
+            index === 0 ? "shadow-[6px_0px_8px_-4px_rgba(0,0,0,0.1)]" : "",
+          )}
+          style={{
+            width: column.width,
+            minWidth: column.minWidth,
+            ...(index === 0
+              ? {
+                  position: "sticky",
+                  left: 44,
+                  zIndex: 10,
+                  background: "#f3f4f6",
+                }
+              : {}),
+          }}
         >
-          {getColumnTitle(column.id)}
-          
+          {columnTitleMap[column.id]}
           <div
             className="absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-blue-400 active:bg-blue-600"
             onMouseDown={(e) => startResizing(e, column.id)}

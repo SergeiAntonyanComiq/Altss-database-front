@@ -4,8 +4,12 @@ import CompaniesFilterModal from "./filters/CompaniesFilterModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { addCompanyToFavorites, isCompanyInFavorites, saveFilter } from "@/services/savedFiltersService";
-import { 
+import {
+  addCompanyToFavorites,
+  isCompanyInFavorites,
+  saveFilter,
+} from "@/services/savedFiltersService";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -13,6 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { CompanyType } from "@/types/company";
 
 interface CompanyFilters {
   firmTypes: string[];
@@ -33,28 +38,14 @@ interface CompaniesSearchBarProps {
   onSearch?: (query: string) => void;
   selectedFirmTypes?: string[];
   activeFilters?: CompanyFilters;
-  onFilterChange?: (filters: {
-    firmTypes: string[];
-    firmName: string;
-    city: string;
-    country: string;
-    region: string;
-    background: string;
-    yearEst: string;
-    totalStaff: string;
-    peMainFirmStrategy: string;
-    peGeographicExposure: string;
-  }) => void;
+  onFilterChange?: (filters: CompanyFilters) => void;
   selectedCompanies: string[];
   companies: CompanyType[];
-  toggleFavorite: (id: string, event: React.MouseEvent) => void;
   onColumnsClick: () => void;
 }
 
-import { CompanyType } from "@/types/company";
-
-const CompaniesSearchBar = ({ 
-  searchQuery, 
+const CompaniesSearchBar = ({
+  searchQuery,
   setSearchQuery,
   onSearch,
   selectedFirmTypes = [],
@@ -68,47 +59,37 @@ const CompaniesSearchBar = ({
     yearEst: "",
     totalStaff: "",
     peMainFirmStrategy: "",
-    peGeographicExposure: ""
+    peGeographicExposure: "",
   },
-  onFilterChange = () => {
-    // Default empty filter object
-    return {
-      firmTypes: [],
-      firmName: "",
-      city: "",
-      country: "",
-      region: "",
-      background: "",
-      yearEst: "",
-      totalStaff: "",
-      peMainFirmStrategy: "",
-      peGeographicExposure: ""
-    };
-  },
+  onFilterChange = () => ({
+    firmTypes: [],
+    firmName: "",
+    city: "",
+    country: "",
+    region: "",
+    background: "",
+    yearEst: "",
+    totalStaff: "",
+    peMainFirmStrategy: "",
+    peGeographicExposure: "",
+  }),
   selectedCompanies,
   companies,
-  toggleFavorite,
-  onColumnsClick
+  onColumnsClick,
 }: CompaniesSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
 
-  // Implement search-as-you-type functionality
   useEffect(() => {
-    // Only trigger search when query has at least 3 characters
     if (searchQuery.length >= 3 && onSearch) {
-      // Add a small delay to avoid too many API calls while typing
       const timer = setTimeout(() => {
         onSearch(searchQuery);
       }, 300);
-      
-      // Clean up the timer
       return () => clearTimeout(timer);
     } else if (searchQuery.length === 0 && onSearch) {
-      // Clear search when query is empty
-      onSearch('');
+      onSearch("");
     }
   }, [searchQuery, onSearch]);
 
@@ -122,7 +103,7 @@ const CompaniesSearchBar = ({
       toast({
         title: "Error",
         description: "Please enter a name for your filter",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -130,13 +111,13 @@ const CompaniesSearchBar = ({
     try {
       await saveFilter(
         filterName.trim(),
-        'company', // Explicitly set type for companies section
+        "company",
         selectedFirmTypes,
         activeFilters.firmName,
         activeFilters.city,
         activeFilters.country,
         activeFilters.region,
-        activeFilters.background
+        activeFilters.background,
       );
 
       setIsSaveDialogOpen(false);
@@ -149,7 +130,7 @@ const CompaniesSearchBar = ({
       toast({
         title: "Error",
         description: "There was an error saving your filter",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -159,36 +140,38 @@ const CompaniesSearchBar = ({
       toast({
         title: "No companies selected",
         description: "Please select at least one company to add to favorites",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     try {
-      const selectedCompaniesDetails = companies.filter(company => 
-        selectedCompanies.includes(company.id || '')
+      const selectedCompaniesDetails = companies.filter((company) =>
+        selectedCompanies.includes(company.id || ""),
       );
-      
+
       let addedCount = 0;
-      await Promise.all(selectedCompaniesDetails.map(async (company) => {
-        const isFavorite = await isCompanyInFavorites(company.id || '');
-        if (!isFavorite) {
-          await addCompanyToFavorites(
-            company.id || '',
-            company.name || '',
-            company.type || '',
-            company.location || ''
-          );
-          addedCount++;
-        }
-      }));
-      
+      await Promise.all(
+        selectedCompaniesDetails.map(async (company) => {
+          const isFavorite = await isCompanyInFavorites(company.id || "");
+          if (!isFavorite) {
+            await addCompanyToFavorites(
+              company.id || "",
+              company.name || "",
+              company.type || "",
+              company.location || "",
+            );
+            addedCount++;
+          }
+        }),
+      );
+
       if (addedCount > 0) {
         toast({
           title: "Added to favorites",
           description: `${addedCount} ${addedCount === 1 ? "company has" : "companies have"} been added to your favorites`,
         });
-        const event = new CustomEvent('favoritesUpdated');
+        const event = new CustomEvent("favoritesUpdated");
         window.dispatchEvent(event);
       } else {
         toast({
@@ -201,8 +184,15 @@ const CompaniesSearchBar = ({
       toast({
         title: "Error",
         description: "There was a problem adding to your favorites",
-        variant: "destructive"
+        variant: "destructive",
       });
+    }
+  };
+
+  const handleSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && onSearch) {
+      event.preventDefault();
+      onSearch(searchQuery);
     }
   };
 
@@ -214,15 +204,16 @@ const CompaniesSearchBar = ({
     setIsFilterModalOpen(false);
   };
 
-  const hasActiveFilters = selectedFirmTypes.length > 0 || 
-    activeFilters?.firmName || 
-    activeFilters?.city || 
-    activeFilters?.country || 
-    activeFilters?.region || 
-    activeFilters?.background || 
-    activeFilters?.yearEst || 
-    activeFilters?.totalStaff || 
-    activeFilters?.peMainFirmStrategy || 
+  const hasActiveFilters =
+    selectedFirmTypes.length > 0 ||
+    activeFilters?.firmName ||
+    activeFilters?.city ||
+    activeFilters?.country ||
+    activeFilters?.region ||
+    activeFilters?.background ||
+    activeFilters?.yearEst ||
+    activeFilters?.totalStaff ||
+    activeFilters?.peMainFirmStrategy ||
     activeFilters?.peGeographicExposure;
 
   const activeFiltersCount = [
@@ -235,33 +226,32 @@ const CompaniesSearchBar = ({
     activeFilters?.yearEst,
     activeFilters?.totalStaff,
     activeFilters?.peMainFirmStrategy,
-    activeFilters?.peGeographicExposure
+    activeFilters?.peGeographicExposure,
   ].filter(Boolean).length;
 
   return (
     <>
       <div className="flex min-h-11 gap-4 text-base text-[rgba(99,115,129,1)] font-medium flex-wrap mt-10 w-full">
         <div className="min-w-60 min-h-11 text-gray-400 font-normal w-[363px]">
-          <div className="w-full flex-1">
+          <div className="w-full flex-1 h-[44px]">
             <div className="justify-between items-center border border-[#DFE4EA] bg-white flex w-full gap-2 flex-1 h-full pl-5 pr-4 py-3 rounded-[50px]">
-              <input 
+              <input
                 type="text"
                 placeholder="Search the company"
                 className="self-stretch my-auto bg-transparent outline-none flex-1"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && onSearch) {
-                    e.preventDefault();
-                    onSearch(searchQuery);
-                  }
-                }}
+                onKeyDown={handleSearch}
               />
-              <button 
-                onClick={searchQuery ? () => {
-                  setSearchQuery('');
-                  if (onSearch) onSearch('');
-                } : () => onSearch && onSearch(searchQuery)}
+              <button
+                onClick={
+                  searchQuery
+                    ? () => {
+                        setSearchQuery("");
+                        if (onSearch) onSearch("");
+                      }
+                    : () => onSearch && onSearch(searchQuery)
+                }
                 className="cursor-pointer hover:text-gray-600 transition-colors p-1"
               >
                 {searchQuery ? (
@@ -273,50 +263,56 @@ const CompaniesSearchBar = ({
             </div>
           </div>
         </div>
-        
-        <button 
-          className={`justify-center items-center border ${hasActiveFilters ? 'bg-primary text-white border-primary hover:bg-primary/90' : 'border-[#DFE4EA] bg-white hover:bg-gray-50'} flex gap-2 whitespace-nowrap px-4 py-2.5 rounded-[50px] transition-colors`}
+
+        <button
+          className={`justify-center items-center border h-[44px] ${hasActiveFilters ? "bg-primary text-white border-primary hover:bg-primary/90" : "border-[#DFE4EA] bg-white hover:bg-gray-50"} flex gap-2 whitespace-nowrap px-4 py-2.5 rounded-[50px] transition-colors`}
           onClick={openFilterModal}
         >
           <Filter className="h-[18px] w-[18px]" />
           <span>Filters</span>
           {hasActiveFilters && (
-            <Badge variant="secondary" className="bg-white text-primary ml-1 h-5 px-1.5">
+            <Badge
+              variant="secondary"
+              className="bg-white text-primary ml-1 h-5 px-1.5"
+            >
               {activeFiltersCount}
             </Badge>
           )}
         </button>
-        
-        <button 
-          className="justify-center items-center border border-[#DFE4EA] bg-white hover:bg-gray-50 flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors"
+
+        <button
+          className="justify-center items-center h-[44px] border border-[#DFE4EA] bg-white hover:bg-gray-50 flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors"
           onClick={handleSaveSearchClick}
         >
           <Save className="h-[18px] w-[18px]" />
           <span>Save this Search</span>
         </button>
-        
-        <button 
-          className={`justify-center items-center border ${selectedCompanies.length > 0 ? 'bg-primary text-white border-primary hover:bg-primary/90' : 'border-[#DFE4EA] bg-white hover:bg-gray-50'} flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors`}
+
+        <button
+          className={`justify-center items-center h-[44px] border ${selectedCompanies.length > 0 ? "bg-primary text-white border-primary hover:bg-primary/90" : "border-[#DFE4EA] bg-white hover:bg-gray-50"} flex gap-2 px-4 py-2.5 rounded-[50px] transition-colors`}
           onClick={handleAddToFavorites}
         >
           <Heart className="h-[18px] w-[18px]" />
           <span>Add to Favorites</span>
           {selectedCompanies.length > 0 && (
-            <Badge variant="secondary" className="bg-white text-primary ml-1 h-5 px-1.5">
+            <Badge
+              variant="secondary"
+              className="bg-white text-primary ml-1 h-5 px-1.5"
+            >
               {selectedCompanies.length}
             </Badge>
           )}
         </button>
 
-        <button 
-          className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]"
+        <button
+          className="justify-center items-center h-[44px] border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]"
           onClick={onColumnsClick}
         >
           <Settings className="h-[18px] w-[18px]" />
           <span>Columns</span>
         </button>
       </div>
-      
+
       <CompaniesFilterModal
         isOpen={isFilterModalOpen}
         onClose={closeFilterModal}
@@ -342,12 +338,13 @@ const CompaniesSearchBar = ({
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsSaveDialogOpen(false)}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSaveFilter}>
-              Save
-            </Button>
+            <Button onClick={handleSaveFilter}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
