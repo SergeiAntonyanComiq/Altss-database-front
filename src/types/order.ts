@@ -3,11 +3,12 @@ export type OrderStatus = "Ready" | "In progress" | "Error";
 export interface OrderType {
   id: string;
   name: string;
+  profileName: string;
   email?: string;
   avatarUrl?: string;
   favorite: boolean;
-  type: string; // e.g., Person, Incubator, Venture Studio, Startup, VC, Family Office
+  type: string;
   status: OrderStatus;
-  date: string; // Assuming string format like 'DD.MM.YYYY'
+  date: string;
   description: string;
-} 
+}

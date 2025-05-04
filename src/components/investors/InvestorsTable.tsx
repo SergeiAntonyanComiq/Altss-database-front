@@ -1,5 +1,7 @@
 import React from "react";
-import InvestorsTableHeader, { Column } from "./table-parts/InvestorsTableHeader";
+import InvestorsTableHeader, {
+  Column,
+} from "./table-parts/InvestorsTableHeader";
 import { InvestorType } from "@/types/investor";
 
 interface InvestorsTableProps {
@@ -8,33 +10,30 @@ interface InvestorsTableProps {
   onViewInvestor?: (id: string) => void;
 }
 
-const InvestorsTable: React.FC<InvestorsTableProps> = ({ investors, columns, onViewInvestor }) => {
-  const totalMinWidth = (columns || []).reduce((sum, col) => sum + col.minWidth, 0);
+const InvestorsTable: React.FC<InvestorsTableProps> = ({
+  investors,
+  columns,
+  onViewInvestor,
+}) => {
+  const totalMinWidth = columns.reduce((sum, col) => sum + col.minWidth, 0);
 
-  const getCellContent = (investor: InvestorType, columnId: Column["id"]) => {
-    switch (columnId) {
-      case "name":
-        return (
-          <button
-            onClick={() => onViewInvestor && onViewInvestor(investor.firm_id)}
-            className="text-blue-600 hover:underline truncate"
-          >
-            {investor.firm_name}
-          </button>
-        );
-      case "type":
-        return investor.firm_type;
-      case "location":
-        return [investor.city, investor.country].filter(Boolean).join(", ");
-      case "aum":
-        return investor.aum || "-";
-      case "founded":
-        return investor.year_est || "-";
-      case "funds":
-        return investor.funds_count || "-";
-      default:
-        return "";
-    }
+  const cellRenderers: Record<
+    Column["id"],
+    (inv: InvestorType) => React.ReactNode
+  > = {
+    name: (inv) => (
+      <button
+        onClick={() => onViewInvestor?.(inv.firm_id)}
+        className="text-blue-600 hover:underline truncate"
+      >
+        {inv.firm_name}
+      </button>
+    ),
+    type: (inv) => inv.firm_type,
+    location: (inv) => [inv.city, inv.country].filter(Boolean).join(", "),
+    aum: (inv) => inv.aum || "-",
+    founded: (inv) => inv.year_est || "-",
+    funds: (inv) => inv.funds_count || "-",
   };
 
   return (
@@ -52,12 +51,14 @@ const InvestorsTable: React.FC<InvestorsTableProps> = ({ investors, columns, onV
                 {columns.map((col, idx) => (
                   <div
                     key={col.id}
-                    className={`px-4 py-3 flex items-center text-[rgba(17,25,40,1)] text-sm ${
-                      idx < columns.length - 1 ? "border-r border-[rgba(223,228,234,1)]" : ""
+                    className={`max-h-[44px] px-4 py-3 flex items-center text-[rgba(17,25,40,1)] text-sm ${
+                      idx < columns.length - 1
+                        ? "border-r border-[rgba(223,228,234,1)]"
+                        : ""
                     }`}
                     style={{ width: col.width, minWidth: col.minWidth }}
                   >
-                    {getCellContent(inv, col.id)}
+                    {cellRenderers[col.id](inv)}
                   </div>
                 ))}
               </div>
@@ -69,4 +70,4 @@ const InvestorsTable: React.FC<InvestorsTableProps> = ({ investors, columns, onV
   );
 };
 
-export default InvestorsTable; 
+export default InvestorsTable;

@@ -61,18 +61,7 @@ const CompaniesSearchBar = ({
     peMainFirmStrategy: "",
     peGeographicExposure: "",
   },
-  onFilterChange = () => ({
-    firmTypes: [],
-    firmName: "",
-    city: "",
-    country: "",
-    region: "",
-    background: "",
-    yearEst: "",
-    totalStaff: "",
-    peMainFirmStrategy: "",
-    peGeographicExposure: "",
-  }),
+  onFilterChange = () => {},
   selectedCompanies,
   companies,
   onColumnsClick,
@@ -125,8 +114,7 @@ const CompaniesSearchBar = ({
         title: "Filter Saved",
         description: `Filter "${filterName}" has been saved successfully`,
       });
-    } catch (error) {
-      console.error("Error saving filter:", error);
+    } catch {
       toast({
         title: "Error",
         description: "There was an error saving your filter",
@@ -179,8 +167,7 @@ const CompaniesSearchBar = ({
           description: "The selected companies are already in your favorites",
         });
       }
-    } catch (error) {
-      console.error("Error adding to favorites:", error);
+    } catch {
       toast({
         title: "Error",
         description: "There was a problem adding to your favorites",
@@ -196,37 +183,29 @@ const CompaniesSearchBar = ({
     }
   };
 
-  const openFilterModal = () => {
-    setIsFilterModalOpen(true);
-  };
-
-  const closeFilterModal = () => {
-    setIsFilterModalOpen(false);
-  };
-
   const hasActiveFilters =
     selectedFirmTypes.length > 0 ||
-    activeFilters?.firmName ||
-    activeFilters?.city ||
-    activeFilters?.country ||
-    activeFilters?.region ||
-    activeFilters?.background ||
-    activeFilters?.yearEst ||
-    activeFilters?.totalStaff ||
-    activeFilters?.peMainFirmStrategy ||
-    activeFilters?.peGeographicExposure;
+    activeFilters.firmName ||
+    activeFilters.city ||
+    activeFilters.country ||
+    activeFilters.region ||
+    activeFilters.background ||
+    activeFilters.yearEst ||
+    activeFilters.totalStaff ||
+    activeFilters.peMainFirmStrategy ||
+    activeFilters.peGeographicExposure;
 
   const activeFiltersCount = [
     selectedFirmTypes.length > 0,
-    activeFilters?.firmName,
-    activeFilters?.city,
-    activeFilters?.country,
-    activeFilters?.region,
-    activeFilters?.background,
-    activeFilters?.yearEst,
-    activeFilters?.totalStaff,
-    activeFilters?.peMainFirmStrategy,
-    activeFilters?.peGeographicExposure,
+    activeFilters.firmName,
+    activeFilters.city,
+    activeFilters.country,
+    activeFilters.region,
+    activeFilters.background,
+    activeFilters.yearEst,
+    activeFilters.totalStaff,
+    activeFilters.peMainFirmStrategy,
+    activeFilters.peGeographicExposure,
   ].filter(Boolean).length;
 
   return (
@@ -238,7 +217,7 @@ const CompaniesSearchBar = ({
               <input
                 type="text"
                 placeholder="Search the company"
-                className="self-stretch my-auto bg-transparent outline-none flex-1"
+                className="self-stretch bg-transparent outline-none flex-1"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
@@ -248,9 +227,9 @@ const CompaniesSearchBar = ({
                   searchQuery
                     ? () => {
                         setSearchQuery("");
-                        if (onSearch) onSearch("");
+                        onSearch?.("");
                       }
-                    : () => onSearch && onSearch(searchQuery)
+                    : () => onSearch?.(searchQuery)
                 }
                 className="cursor-pointer hover:text-gray-600 transition-colors p-1"
               >
@@ -266,7 +245,7 @@ const CompaniesSearchBar = ({
 
         <button
           className={`justify-center items-center border h-[44px] ${hasActiveFilters ? "bg-primary text-white border-primary hover:bg-primary/90" : "border-[#DFE4EA] bg-white hover:bg-gray-50"} flex gap-2 whitespace-nowrap px-4 py-2.5 rounded-[50px] transition-colors`}
-          onClick={openFilterModal}
+          onClick={() => setIsFilterModalOpen(true)}
         >
           <Filter className="h-[18px] w-[18px]" />
           <span>Filters</span>
@@ -315,14 +294,13 @@ const CompaniesSearchBar = ({
 
       <CompaniesFilterModal
         isOpen={isFilterModalOpen}
-        onClose={closeFilterModal}
+        onClose={() => setIsFilterModalOpen(false)}
         selectedFirmTypes={selectedFirmTypes}
         onApplyFilters={onFilterChange}
       />
 
-      {/* Save Filter Dialog */}
       <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white">
           <DialogHeader>
             <DialogTitle>Save Search Filter</DialogTitle>
           </DialogHeader>

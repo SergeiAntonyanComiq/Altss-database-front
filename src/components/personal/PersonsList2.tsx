@@ -2,18 +2,15 @@ import React, { useState, useCallback, memo, useEffect, useMemo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import { PersonType } from "@/types/person";
-import PersonsListHeader from "./list/PersonsListHeader";
-import PersonsListContent from "./list/PersonsListContent";
-import PersonsListFooter from "./list/PersonsListFooter";
-import { usePersonsSelection } from "./hooks/usePersonsSelection";
 import PersonsSearchBar from "./PersonsSearchBar";
-import { toast } from "@/components/ui/use-toast";
-import { searchContactsByName } from "@/services/contactsService";
 import PersonTableSkeleton from "./PersonTableSkeleton";
 import PersonsPagination from "./PersonsPagination";
 import PersonsTable2 from "./PersonsTable2";
 import PersonsColumnModal from "./PersonsColumnModal";
 import { usePersistedPersonColumns } from "./hooks/usePersistedPersonColumns";
+import { usePersonsSelection } from "./hooks/usePersonsSelection";
+import { toast } from "@/components/ui/use-toast";
+import { searchContactsByName } from "@/services/contactsService";
 import {
   isPersonInFavorites,
   addPersonToFavorites,
@@ -21,41 +18,33 @@ import {
 } from "@/services/savedFiltersService";
 
 const contactToPerson = (contact: ContactType): PersonType | null => {
-  // Проверяем наличие обязательных полей
-  if (!contact || !contact.contact_id || !contact.firm_id) {
-    console.warn('Missing required fields in contact:', contact);
-    return null;
-  }
-
+  if (!contact || !contact.contact_id || !contact.firm_id) return null;
   try {
-    const person: PersonType = {
-      id: String(contact.contact_id), // Используем contact_id вместо id
+    return {
+      id: String(contact.contact_id),
       name: contact.name?.trim() || "Unnamed Contact",
       favorite: Boolean(contact.favorite),
-      responsibilities: contact.asset_class ? 
-        contact.asset_class.split(',').map(s => s.trim()).filter(Boolean) : 
-        [],
-    linkedin: contact.linkedin || "",
-      location: [
-        contact.city,
-        contact.state,
-        contact.country_territory
-      ].filter(Boolean).join(", "),
+      responsibilities:
+        contact.asset_class
+          ?.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean) || [],
+      linkedin: contact.linkedin || "",
+      location: [contact.city, contact.state, contact.country_territory]
+        .filter(Boolean)
+        .join(", "),
       companies: [contact.investor].filter(Boolean),
-    currentPosition: contact.job_title || "",
-    shortBio: contact.role || "",
+      currentPosition: contact.job_title || "",
+      shortBio: contact.role || "",
       email: contact.email || "",
       phone: contact.tel || undefined,
       linkedinHandle: undefined,
       profileImage: undefined,
       jobHistory: undefined,
       news: undefined,
-      lastUpdate: undefined
+      lastUpdate: undefined,
     };
-
-    return person;
-  } catch (error) {
-    console.error('Error converting contact to person:', error, contact);
+  } catch {
     return null;
   }
 };
@@ -92,28 +81,33 @@ const PersonsList2 = ({
   locationFilter = "",
   responsibilitiesFilter = "",
   bioFilter = "",
-  onFilterChange
+  onFilterChange,
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
-  const { visibleColumns, updateVisibleColumns, handleColumnResize } = usePersistedPersonColumns();
-  const [localSelectedFirmTypes, setLocalSelectedFirmTypes] = useState<string[]>(selectedFirmTypes);
-  const [localCompanyNameFilter, setCompanyNameFilter] = useState(companyNameFilter);
+  const { visibleColumns, updateVisibleColumns, handleColumnResize } =
+    usePersistedPersonColumns();
+  const [localSelectedFirmTypes, setLocalSelectedFirmTypes] =
+    useState<string[]>(selectedFirmTypes);
+  const [localCompanyNameFilter, setCompanyNameFilter] =
+    useState(companyNameFilter);
   const [localPositionFilter, setPositionFilter] = useState(positionFilter);
   const [localLocationFilter, setLocationFilter] = useState(locationFilter);
-  const [localResponsibilitiesFilter, setResponsibilitiesFilter] = useState(responsibilitiesFilter);
+  const [localResponsibilitiesFilter, setResponsibilitiesFilter] = useState(
+    responsibilitiesFilter,
+  );
   const [localBioFilter, setBioFilter] = useState(bioFilter);
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [totalContacts, setTotalContacts] = useState(0);
-  
+
   const {
     contacts,
     isLoading,
     totalContacts: originalTotalContacts,
     setCurrentPage: setContactsCurrentPage,
-    setItemsPerPage: setContactsItemsPerPage
+    setItemsPerPage: setContactsItemsPerPage,
   } = useContactsData({
     initialPage: currentPage,
     initialItemsPerPage: itemsPerPage,
@@ -122,15 +116,15 @@ const PersonsList2 = ({
     position: localPositionFilter,
     location: localLocationFilter,
     responsibilities: localResponsibilitiesFilter,
-    bio: localBioFilter
+    bio: localBioFilter,
   });
 
   const displayedContacts = isSearchActive ? searchResults : contacts;
-  
+
   const personsFromHook: PersonType[] = useMemo(() => {
     return displayedContacts
-      .filter((contact): contact is ContactType => Boolean(contact))
-      .map(contact => contactToPerson(contact))
+      .filter(Boolean)
+      .map((contact) => contactToPerson(contact))
       .filter((person): person is PersonType => Boolean(person));
   }, [displayedContacts]);
 
@@ -139,223 +133,234 @@ const PersonsList2 = ({
   useEffect(() => {
     setLocalPersons(personsFromHook);
   }, [personsFromHook]);
-  
+
   useEffect(() => {
-    if (localSelectedFirmTypes.length > 0 || 
-        localCompanyNameFilter || 
-        localPositionFilter || 
-        localLocationFilter || 
-        localResponsibilitiesFilter || 
-        localBioFilter) {
+    if (
+      localSelectedFirmTypes.length > 0 ||
+      localCompanyNameFilter ||
+      localPositionFilter ||
+      localLocationFilter ||
+      localResponsibilitiesFilter ||
+      localBioFilter
+    ) {
       if (isSearchActive) {
         setIsSearchActive(false);
         setSearchQuery("");
       }
     }
-  }, [localSelectedFirmTypes, localCompanyNameFilter, localPositionFilter, localLocationFilter, localResponsibilitiesFilter, localBioFilter]);
-  
-  const handleSearch = useCallback(async (query: string) => {
-    if (!query) {
-      setIsSearchActive(false);
-      setSearchResults([]);
-      setTotalContacts(0);
-      return;
-    }
+  }, [
+    localSelectedFirmTypes,
+    localCompanyNameFilter,
+    localPositionFilter,
+    localLocationFilter,
+    localResponsibilitiesFilter,
+    localBioFilter,
+  ]);
 
-    setLocalSelectedFirmTypes([]);
-    setCompanyNameFilter("");
-    setPositionFilter("");
-    setLocationFilter("");
-    setResponsibilitiesFilter("");
-    setBioFilter("");
+  const handleSearch = useCallback(
+    async (query: string) => {
+      if (!query) {
+        setIsSearchActive(false);
+        setSearchResults([]);
+        setTotalContacts(0);
+        return;
+      }
 
-    setIsSearching(true);
-    try {
-      const { data, total } = await searchContactsByName(
-        query,
-        currentPage,
-        itemsPerPage
-      );
-      
-      setSearchResults(data);
-      setTotalContacts(total);
-      setIsSearchActive(true);
-      
-      toast({
-        title: data.length > 0 ? "Search Results" : "No Results",
-        description: data.length > 0 ? 
-          `Found ${total} results for "${query}"` : 
-          `No results found for "${query}"`,
-      });
-    } catch (error) {
-      console.error('Search error:', error);
-      toast({
-        title: "Search Error",
-        description: "Failed to perform search. Please try again.",
-        variant: "destructive",
-      });
-      setSearchResults([]);
-      setTotalContacts(0);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [currentPage, itemsPerPage, toast]);
-  
-  const { 
-    selectedPersons, 
-    handleCheckboxChange, 
-    handleSelectAll, 
-    isPersonSelected 
+      setLocalSelectedFirmTypes([]);
+      setCompanyNameFilter("");
+      setPositionFilter("");
+      setLocationFilter("");
+      setResponsibilitiesFilter("");
+      setBioFilter("");
+
+      setIsSearching(true);
+      try {
+        const { data, total } = await searchContactsByName(
+          query,
+          currentPage,
+          itemsPerPage,
+        );
+        setSearchResults(data);
+        setTotalContacts(total);
+        setIsSearchActive(true);
+        toast({
+          title: data.length > 0 ? "Search Results" : "No Results",
+          description:
+            data.length > 0
+              ? `Found ${total} results for "${query}"`
+              : `No results found for "${query}"`,
+        });
+      } catch {
+        toast({
+          title: "Search Error",
+          description: "Failed to perform search. Please try again.",
+          variant: "destructive",
+        });
+        setSearchResults([]);
+        setTotalContacts(0);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [currentPage, itemsPerPage],
+  );
+
+  const {
+    selectedPersons,
+    handleCheckboxChange,
+    handleSelectAll,
+    isPersonSelected,
   } = usePersonsSelection(localPersons);
 
-  const handlePageChange = useCallback((page: number) => {
+  const handlePageChange = useCallback(
+    (page: number) => {
       onPageChange(page);
       setContactsCurrentPage(page);
-    
-    if (isSearchActive && searchQuery) {
-      handleSearch(searchQuery);
-    }
-  }, [onPageChange, setContactsCurrentPage, isSearchActive, searchQuery, handleSearch]);
-
-  const handleItemsPerPageChange = useCallback((perPage: number) => {
-    if (!isSearchActive) {
-      onItemsPerPageChange(perPage);
-      setContactsItemsPerPage(perPage);
-    }
-  }, [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive]);
-
-  const toggleFavorite = useCallback(async (id: string) => {
-    const originalPersons = [...localPersons]; 
-    const personIndex = localPersons.findIndex(p => p.id === id);
-    if (personIndex === -1) return; 
-
-    const person = localPersons[personIndex];
-    const isCurrentlyFavorite = person.favorite;
-
-    const updatedPersons = localPersons.map((p, index) => 
-      index === personIndex ? { ...p, favorite: !isCurrentlyFavorite } : p
-    );
-    setLocalPersons(updatedPersons);
-
-    try {
-      if (isCurrentlyFavorite) {
-        await removePersonFromFavorites(id);
-        toast({ 
-          title: "Removed from favorites",
-          description: `${person.name} has been removed from your favorites`,
-         });
-      } else {
-        await addPersonToFavorites(
-          id,
-          person.name,
-          person.currentPosition,
-          person.companies?.[0] || ""
-        );
-        toast({ 
-          title: "Added to favorites",
-          description: `${person.name} has been added to your favorites`,
-         });
+      if (isSearchActive && searchQuery) {
+        handleSearch(searchQuery);
       }
-      const event = new CustomEvent('favoritesUpdated');
-      window.dispatchEvent(event);
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-      toast({ 
-        title: "Error",
-        description: "There was a problem updating your favorites",
-        variant: "destructive",
-       });
-      setLocalPersons(originalPersons); 
-    }
-  }, [localPersons, toast]);
-  
-  const handleFilterChange = useCallback((filters: {
-    firmTypes: string[];
-    companyName: string;
-    position: string;
-    location: string;
-    responsibilities: string;
-    bio: string;
-  }) => {
-    setLocalSelectedFirmTypes(filters.firmTypes);
-    setCompanyNameFilter(filters.companyName);
-    setPositionFilter(filters.position);
-    setLocationFilter(filters.location);
-    setResponsibilitiesFilter(filters.responsibilities);
-    setBioFilter(filters.bio);
-    
-    handlePageChange(1);
-    
-    if (onFilterChange) {
-      onFilterChange(filters);
-    }
-  }, [onFilterChange, handlePageChange]);
+    },
+    [
+      onPageChange,
+      setContactsCurrentPage,
+      isSearchActive,
+      searchQuery,
+      handleSearch,
+    ],
+  );
+
+  const handleItemsPerPageChange = useCallback(
+    (perPage: number) => {
+      if (!isSearchActive) {
+        onItemsPerPageChange(perPage);
+        setContactsItemsPerPage(perPage);
+      }
+    },
+    [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive],
+  );
+
+  const toggleFavorite = useCallback(
+    async (id: string) => {
+      const originalPersons = [...localPersons];
+      const personIndex = localPersons.findIndex((p) => p.id === id);
+      if (personIndex === -1) return;
+      const person = localPersons[personIndex];
+      const isFavorite = person.favorite;
+      const updatedPersons = localPersons.map((p, idx) =>
+        idx === personIndex ? { ...p, favorite: !isFavorite } : p,
+      );
+      setLocalPersons(updatedPersons);
+      try {
+        if (isFavorite) {
+          await removePersonFromFavorites(id);
+          toast({
+            title: "Removed from favorites",
+            description: `${person.name} has been removed.`,
+          });
+        } else {
+          await addPersonToFavorites(
+            id,
+            person.name,
+            person.currentPosition,
+            person.companies?.[0] || "",
+          );
+          toast({
+            title: "Added to favorites",
+            description: `${person.name} has been added.`,
+          });
+        }
+        window.dispatchEvent(new CustomEvent("favoritesUpdated"));
+      } catch {
+        toast({
+          title: "Error",
+          description: "Problem updating favorites",
+          variant: "destructive",
+        });
+        setLocalPersons(originalPersons);
+      }
+    },
+    [localPersons],
+  );
+
+  const handleFilterChange = useCallback(
+    (filters: {
+      firmTypes: string[];
+      companyName: string;
+      position: string;
+      location: string;
+      responsibilities: string;
+      bio: string;
+    }) => {
+      setLocalSelectedFirmTypes(filters.firmTypes);
+      setCompanyNameFilter(filters.companyName);
+      setPositionFilter(filters.position);
+      setLocationFilter(filters.location);
+      setResponsibilitiesFilter(filters.responsibilities);
+      setBioFilter(filters.bio);
+      handlePageChange(1);
+      onFilterChange?.(filters);
+    },
+    [handlePageChange, onFilterChange],
+  );
 
   const effectiveTotal = isSearchActive ? totalContacts : originalTotalContacts;
   const totalPages = Math.max(Math.ceil(effectiveTotal / itemsPerPage) || 1, 1);
-  
-  const hasActiveFilters = Boolean(
-    localSelectedFirmTypes.length > 0 || 
-    localCompanyNameFilter || 
-    localPositionFilter || 
-    localLocationFilter || 
-    localResponsibilitiesFilter || 
-    localBioFilter || 
-    isSearchActive
-  );
 
   return (
-    <>
+    <div className="w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
       {isLoading ? (
-        <div className="w-full py-8 px-4 md:px-6 lg:px-8">
+        <>
           <div className="flex gap-4 items-center mt-10">
             <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
           </div>
           <PersonTableSkeleton />
-      </div>
+        </>
       ) : (
-        <div className="w-full py-8 px-4 md:px-6 lg:px-8">
-          <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">Persons</h1>
-      
-      <PersonsSearchBar 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedFirmTypes={localSelectedFirmTypes}
+        <>
+          <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
+            Persons
+          </h1>
+
+          <PersonsSearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            selectedFirmTypes={localSelectedFirmTypes}
             companyNameFilter={localCompanyNameFilter}
             positionFilter={localPositionFilter}
             locationFilter={localLocationFilter}
             responsibilitiesFilter={localResponsibilitiesFilter}
             bioFilter={localBioFilter}
-        onFilterChange={handleFilterChange}
-        onSearch={handleSearch}
+            onFilterChange={handleFilterChange}
+            onSearch={handleSearch}
             selectedPersons={selectedPersons}
             persons={localPersons}
             onColumnsClick={() => setIsColumnModalOpen(true)}
           />
 
-          <div className="mt-6">
-            <PersonsTable2 
+          <div className="mt-6 flex-grow">
+            <PersonsTable2
               persons={localPersons}
               isLoading={isLoading || isSearching}
-        selectedPersons={selectedPersons}
-        handleCheckboxChange={handleCheckboxChange}
-        handleSelectAll={handleSelectAll}
+              selectedPersons={selectedPersons}
+              handleCheckboxChange={handleCheckboxChange}
+              handleSelectAll={handleSelectAll}
               isPersonSelected={isPersonSelected}
-        toggleFavorite={toggleFavorite}
+              toggleFavorite={toggleFavorite}
               itemsPerPage={itemsPerPage}
               columns={visibleColumns}
               onColumnResize={handleColumnResize}
-      />
+            />
           </div>
-      
-          <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
-            <PersonsPagination 
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
+
+          <div className="mt-6">
+            <PersonsPagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
               totalPages={totalPages}
               itemsPerPage={itemsPerPage}
               onItemsPerPageChange={handleItemsPerPageChange}
-        totalItems={effectiveTotal}
+              totalItems={effectiveTotal}
+              disabled={isLoading}
             />
           </div>
 
@@ -364,10 +369,10 @@ const PersonsList2 = ({
             onClose={() => setIsColumnModalOpen(false)}
             columns={visibleColumns}
             onApplyColumns={updateVisibleColumns}
-      />
-    </div>
+          />
+        </>
       )}
-    </>
+    </div>
   );
 };
 
