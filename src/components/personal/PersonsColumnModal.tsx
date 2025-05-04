@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -28,22 +34,23 @@ const PersonsColumnModal: React.FC<PersonsColumnModalProps> = ({
     applyColumnChanges,
   } = usePersonColumnModal(columns);
 
-  // Ensure name column is always visible
   useEffect(() => {
-    if (!visibleColumns.includes('name')) {
-      toggleColumn('name');
+    if (!visibleColumns.includes("name")) {
+      toggleColumn("name");
     }
   }, [visibleColumns, toggleColumn]);
 
   const handleApply = () => {
-    // Ensure at least one column is selected
-    if (visibleColumns.length === 0 || (visibleColumns.length === 1 && visibleColumns[0] === 'name')) {
+    if (
+      visibleColumns.length === 0 ||
+      (visibleColumns.length === 1 && visibleColumns[0] === "name")
+    ) {
       resetColumns();
-      onApplyColumns(resetColumns()); // Apply default columns immediately
+      onApplyColumns(resetColumns());
       onClose();
       return;
     }
-    
+
     const newColumns = applyColumnChanges();
     if (newColumns.length > 0) {
       onApplyColumns(newColumns);
@@ -53,7 +60,7 @@ const PersonsColumnModal: React.FC<PersonsColumnModalProps> = ({
 
   const handleReset = () => {
     const defaultColumns = resetColumns();
-    onApplyColumns(defaultColumns); // Apply default columns immediately
+    onApplyColumns(defaultColumns);
     onClose();
   };
 
@@ -63,37 +70,41 @@ const PersonsColumnModal: React.FC<PersonsColumnModalProps> = ({
   };
 
   const columnLabels: Record<string, string> = {
-    name: 'Full name',
-    company: 'Company',
-    bio: 'Bio',
-    position: 'Position',
-    responsibilities: 'Responsibilities',
-    contacts: 'Contacts',
-    location: 'Location',
+    name: "Full name",
+    company: "Company",
+    bio: "Bio",
+    position: "Position",
+    responsibilities: "Responsibilities",
+    contacts: "Contacts",
+    location: "Location",
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleCancel()}>
-      <DialogContent className="sm:max-w-[400px] max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-white sm:max-w-[400px] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Manage Columns</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Manage Columns
+          </DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="flex-1 px-1 py-4">
           <div className="space-y-4">
             {availableColumns.map((column) => (
               <div key={column.id} className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id={`column-${column.id}`}
                   checked={visibleColumns.includes(column.id)}
-                  onCheckedChange={() => column.id !== 'name' && toggleColumn(column.id)}
-                  disabled={column.id === 'name'}
-                  defaultChecked={column.id === 'name'}
+                  onCheckedChange={() =>
+                    column.id !== "name" && toggleColumn(column.id)
+                  }
+                  disabled={column.id === "name"}
+                  defaultChecked={column.id === "name"}
                 />
-                <label 
+                <label
                   htmlFor={`column-${column.id}`}
                   className={`text-sm font-medium leading-none ${
-                    column.id === 'name' ? 'opacity-70 cursor-not-allowed' : ''
+                    column.id === "name" ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                 >
                   {columnLabels[column.id] || column.id}
@@ -108,10 +119,15 @@ const PersonsColumnModal: React.FC<PersonsColumnModalProps> = ({
             Reset
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-            <Button 
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button
               onClick={handleApply}
-              disabled={visibleColumns.length === 0 || (visibleColumns.length === 1 && visibleColumns[0] === 'name')}
+              disabled={
+                visibleColumns.length === 0 ||
+                (visibleColumns.length === 1 && visibleColumns[0] === "name")
+              }
             >
               Apply
               <Badge variant="secondary" className="ml-2 bg-white text-primary">

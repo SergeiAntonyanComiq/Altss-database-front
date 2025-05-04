@@ -36,90 +36,6 @@ const CompaniesList = ({
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const loadFilter = async () => {
-      if (filterId) {
-        try {
-          const filter = await getSavedFilterById(filterId);
-          if (filter && filter.type === "company") {
-            const isYear = /^\d{4}(-\d+)?$/.test(filter.name);
-
-            const companyFilters = {
-              firmTypes: filter.firmTypes || [],
-              firmName: filter.companyName || "",
-              city: filter.location || "",
-              country: "",
-              region: "",
-              background: filter.responsibilities || "",
-              yearEst: isYear ? filter.name.split("-")[0] : "",
-              totalStaff: "",
-              peMainFirmStrategy: "",
-              peGeographicExposure: "",
-            };
-
-            onPageChange(1);
-            setSelectedFirmTypes(companyFilters.firmTypes);
-            setActiveFilters(companyFilters);
-
-            toast({
-              title: "Filter Applied",
-              description: `Applied "${filter.name}" filter`,
-            });
-
-            const currentUrl = new URL(window.location.href);
-            const searchParams = new URLSearchParams(currentUrl.search);
-            if (searchParams.has("filter")) {
-              searchParams.delete("filter");
-              navigate(`${currentUrl.pathname}?${searchParams.toString()}`, {
-                replace: true,
-              });
-            }
-          } else {
-            toast({
-              title: "Filter Not Found",
-              description:
-                "The requested filter could not be found or is not applicable to companies",
-              variant: "destructive",
-            });
-
-            const currentUrl = new URL(window.location.href);
-            const searchParams = new URLSearchParams(currentUrl.search);
-            if (searchParams.has("filter")) {
-              searchParams.delete("filter");
-              navigate(`${currentUrl.pathname}?${searchParams.toString()}`, {
-                replace: true,
-              });
-            }
-          }
-        } catch {
-          toast({
-            title: "Error Loading Filter",
-            description: "There was an error loading the filter",
-            variant: "destructive",
-          });
-        }
-      }
-    };
-
-    loadFilter();
-  }, [filterId, toast, navigate, onPageChange]);
-
-  const handleFilterChange = (filters: {
-    firmTypes: string[];
-    firmName: string;
-    city: string;
-    country: string;
-    region: string;
-    background: string;
-    yearEst: string;
-    totalStaff: string;
-    peMainFirmStrategy: string;
-    peGeographicExposure: string;
-  }) => {
-    setSelectedFirmTypes(filters.firmTypes);
-    setActiveFilters(filters);
-  };
-
   const [activeFilters, setActiveFilters] = useState({
     firmTypes: [],
     firmName: "",
@@ -132,6 +48,69 @@ const CompaniesList = ({
     peMainFirmStrategy: "",
     peGeographicExposure: "",
   });
+
+  useEffect(() => {
+    const loadFilter = async () => {
+      if (!filterId) return;
+      try {
+        const filter = await getSavedFilterById(filterId);
+        if (filter && filter.type === "company") {
+          const isYear = /^\d{4}(-\d+)?$/.test(filter.name);
+
+          const companyFilters = {
+            firmTypes: filter.firmTypes || [],
+            firmName: filter.companyName || "",
+            city: filter.location || "",
+            country: "",
+            region: "",
+            background: filter.responsibilities || "",
+            yearEst: isYear ? filter.name.split("-")[0] : "",
+            totalStaff: "",
+            peMainFirmStrategy: "",
+            peGeographicExposure: "",
+          };
+
+          onPageChange(1);
+          setSelectedFirmTypes(companyFilters.firmTypes);
+          setActiveFilters(companyFilters);
+
+          toast({
+            title: "Filter Applied",
+            description: `Applied "${filter.name}" filter`,
+          });
+        } else {
+          toast({
+            title: "Filter Not Found",
+            description:
+              "The requested filter could not be found or is not applicable to companies",
+            variant: "destructive",
+          });
+        }
+      } catch {
+        toast({
+          title: "Error Loading Filter",
+          description: "There was an error loading the filter",
+          variant: "destructive",
+        });
+      }
+
+      const currentUrl = new URL(window.location.href);
+      const searchParams = new URLSearchParams(currentUrl.search);
+      if (searchParams.has("filter")) {
+        searchParams.delete("filter");
+        navigate(`${currentUrl.pathname}?${searchParams.toString()}`, {
+          replace: true,
+        });
+      }
+    };
+
+    loadFilter();
+  }, [filterId, toast, navigate, onPageChange]);
+
+  const handleFilterChange = (filters: typeof activeFilters) => {
+    setSelectedFirmTypes(filters.firmTypes);
+    setActiveFilters(filters);
+  };
 
   const { companies, isLoading, error, totalPages, totalItems } =
     useCompaniesData(
@@ -175,35 +154,37 @@ const CompaniesList = ({
   };
 
   return (
-    <div className="bg-[#FEFEFE] w-full py-8 px-4 md:px-6 lg:px-8">
+    <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
       <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
         Companies
       </h1>
 
-      {isLoading ? (
-        <div className="flex gap-4 items-center mt-10">
-          <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
-        </div>
-      ) : (
-        <CompaniesSearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onSearch={(query) => setActiveSearchQuery(query)}
-          selectedFirmTypes={selectedFirmTypes}
-          activeFilters={activeFilters}
-          onFilterChange={handleFilterChange}
-          selectedCompanies={selectedCompanies}
-          companies={companies}
-          onColumnsClick={() => setIsColumnModalOpen(true)}
-        />
-      )}
+      <div className="mt-6">
+        {isLoading ? (
+          <div className="flex gap-4 items-center">
+            <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
+          </div>
+        ) : (
+          <CompaniesSearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onSearch={(query) => setActiveSearchQuery(query)}
+            selectedFirmTypes={selectedFirmTypes}
+            activeFilters={activeFilters}
+            onFilterChange={handleFilterChange}
+            selectedCompanies={selectedCompanies}
+            companies={companies}
+            onColumnsClick={() => setIsColumnModalOpen(true)}
+          />
+        )}
+      </div>
 
-      {isLoading ? (
-        <CompaniesTableSkeleton />
-      ) : error ? (
-        <CompaniesError errorMessage={error} />
-      ) : (
-        <div className="w-full mt-8">
+      <div className="flex-grow mt-8">
+        {isLoading ? (
+          <CompaniesTableSkeleton />
+        ) : error ? (
+          <CompaniesError errorMessage={error} />
+        ) : (
           <CompaniesTable
             companies={companies}
             selectedCompanies={selectedCompanies}
@@ -220,10 +201,10 @@ const CompaniesList = ({
             isColumnModalOpen={isColumnModalOpen}
             onColumnModalClose={() => setIsColumnModalOpen(false)}
           />
-        </div>
-      )}
+        )}
+      </div>
 
-      <div className="flex w-full gap-[40px_100px] justify-between flex-wrap mt-6">
+      <div className="mt-6">
         <PersonsPagination
           currentPage={currentPage}
           onPageChange={onPageChange}
@@ -231,6 +212,7 @@ const CompaniesList = ({
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={onItemsPerPageChange}
           totalItems={totalItems}
+          disabled={isLoading}
         />
       </div>
     </div>

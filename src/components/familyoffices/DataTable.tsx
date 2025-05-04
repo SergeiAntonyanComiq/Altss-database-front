@@ -1,4 +1,5 @@
 "use client";
+
 import {
   ColumnDef,
   flexRender,
@@ -20,10 +21,14 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+}: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
+    enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -38,13 +43,18 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
               <TableHead
                 key={header.id}
                 className={cn(
-                  (header.column.columnDef.meta as any)?.headerClassName,
-                  stickyColumnId.includes(header.column.id) && "sticky left-0 z-10 p-0!"
+                  (header.column.columnDef.meta as { headerClassName?: string })
+                    ?.headerClassName,
+                  stickyColumnId.includes(header.column.id) &&
+                    "sticky left-0 z-10 p-0!",
                 )}
               >
                 {header.isPlaceholder
                   ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
+                  : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
               </TableHead>
             ))}
           </TableRow>
@@ -53,20 +63,19 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
       <TableBody>
         {table.getRowModel().rows.map((row) => (
           <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-            {row.getVisibleCells().map((cell) => {
-              console.log(cell.column.id);
-              return (
+            {row.getVisibleCells().map((cell) => (
               <TableCell
                 key={cell.id}
                 className={cn(
-                  (cell.column.columnDef.meta as any)?.cellClassName,
-                  stickyColumnId.includes(cell.column.id) && "sticky left-0 z-10 p-0!"
+                  (cell.column.columnDef.meta as { cellClassName?: string })
+                    ?.cellClassName,
+                  stickyColumnId.includes(cell.column.id) &&
+                    "sticky left-0 z-10 p-0!",
                 )}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
-              )
-            })}
+            ))}
           </TableRow>
         ))}
       </TableBody>

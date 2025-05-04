@@ -1,5 +1,11 @@
 import React from "react";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +36,13 @@ interface CompaniesFilterModalProps {
   }) => void;
 }
 
-const FilterInput = ({ id, label, value, onChange, placeholder }: {
+const FilterInput = ({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
   id: string;
   label: string;
   value: string;
@@ -42,7 +54,7 @@ const FilterInput = ({ id, label, value, onChange, placeholder }: {
       {label}
     </Label>
     <div className="relative">
-      <Input 
+      <Input
         id={id}
         placeholder={placeholder}
         value={value}
@@ -87,7 +99,6 @@ const CompaniesFilterModal = ({
     applyFilter,
   } = useFilterModal(selectedFirmTypes);
 
-  // Company-specific filter states
   const [firmNameFilter, setFirmNameFilter] = React.useState("");
   const [cityFilter, setCityFilter] = React.useState("");
   const [countryFilter, setCountryFilter] = React.useState("");
@@ -95,8 +106,10 @@ const CompaniesFilterModal = ({
   const [backgroundFilter, setBackgroundFilter] = React.useState("");
   const [yearEstFilter, setYearEstFilter] = React.useState("");
   const [totalStaffFilter, setTotalStaffFilter] = React.useState("");
-  const [peMainFirmStrategyFilter, setPeMainFirmStrategyFilter] = React.useState("");
-  const [peGeographicExposureFilter, setPeGeographicExposureFilter] = React.useState("");
+  const [peMainFirmStrategyFilter, setPeMainFirmStrategyFilter] =
+    React.useState("");
+  const [peGeographicExposureFilter, setPeGeographicExposureFilter] =
+    React.useState("");
 
   const handleApply = () => {
     onApplyFilters({
@@ -109,7 +122,7 @@ const CompaniesFilterModal = ({
       yearEst: yearEstFilter.trim(),
       totalStaff: totalStaffFilter.trim(),
       peMainFirmStrategy: peMainFirmStrategyFilter.trim(),
-      peGeographicExposure: peGeographicExposureFilter.trim()
+      peGeographicExposure: peGeographicExposureFilter.trim(),
     });
     onClose();
   };
@@ -139,20 +152,21 @@ const CompaniesFilterModal = ({
       yearEst: "",
       totalStaff: "",
       peMainFirmStrategy: "",
-      peGeographicExposure: ""
+      peGeographicExposure: "",
     });
     onClose();
   };
 
-  const hasActiveFilters = (Array.isArray(selectedTypes) && selectedTypes.length > 0) || 
-    firmNameFilter || 
-    cityFilter || 
-    countryFilter || 
-    regionFilter || 
-    backgroundFilter || 
-    yearEstFilter || 
-    totalStaffFilter || 
-    peMainFirmStrategyFilter || 
+  const hasActiveFilters =
+    (Array.isArray(selectedTypes) && selectedTypes.length > 0) ||
+    firmNameFilter ||
+    cityFilter ||
+    countryFilter ||
+    regionFilter ||
+    backgroundFilter ||
+    yearEstFilter ||
+    totalStaffFilter ||
+    peMainFirmStrategyFilter ||
     peGeographicExposureFilter;
 
   const activeFiltersCount = [
@@ -165,31 +179,41 @@ const CompaniesFilterModal = ({
     yearEstFilter,
     totalStaffFilter,
     peMainFirmStrategyFilter,
-    peGeographicExposureFilter
+    peGeographicExposureFilter,
   ].filter(Boolean).length;
 
-  // Filter firm types based on search term
-  const filteredFirmTypes = firmTypes.filter(type => 
-    type.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFirmTypes = firmTypes.filter((type) =>
+    type.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="bg-white sm:max-w-[600px] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">Filter Companies</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">
+            Filter Companies
+          </DialogTitle>
         </DialogHeader>
-        
-        <Tabs defaultValue="create" className="flex-1 overflow-hidden flex flex-col">
+
+        <Tabs
+          defaultValue="create"
+          className="flex-1 overflow-hidden flex flex-col"
+        >
           <TabsList className="w-full">
-            <TabsTrigger value="create" className="flex-1">Create Filter</TabsTrigger>
-            <TabsTrigger value="saved" className="flex-1">Saved Filters</TabsTrigger>
+            <TabsTrigger value="create" className="flex-1">
+              Create Filter
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="flex-1">
+              Saved Filters
+            </TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="create" className="flex-1 overflow-auto flex flex-col mt-4">
+
+          <TabsContent
+            value="create"
+            className="flex-1 overflow-auto flex flex-col mt-4"
+          >
             <ScrollArea className="flex-1 px-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">
               <div className="space-y-6 pb-6">
-                {/* Input Fields Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <FilterInput
                     id="firmName"
@@ -256,18 +280,17 @@ const CompaniesFilterModal = ({
                   />
                 </div>
 
-                {/* Firm Types Filter */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-medium">Filter by Company Type</h3>
+                    <h3 className="text-sm font-medium">
+                      Filter by Company Type
+                    </h3>
                     {selectedTypes.length > 0 && (
                       <span className="text-xs text-gray-500">
                         {selectedTypes.length} selected
                       </span>
                     )}
                   </div>
-                  
-                  {/* Search for firm types */}
                   <div className="relative">
                     <Input
                       placeholder="Search company types..."
@@ -285,42 +308,44 @@ const CompaniesFilterModal = ({
                       </button>
                     )}
                   </div>
-                  
-                  {/* List of firm types */}
-                  {loading && <p className="text-sm text-gray-500">Loading types...</p>}
-                  {error && <p className="text-sm text-red-500">{error}</p>}
+
                   {!loading && !error && (
                     <ScrollArea className="h-[150px] border rounded-md p-2 overflow-y-auto overflow-x-hidden">
                       <div className="space-y-2">
                         {filteredFirmTypes.length > 0 ? (
                           filteredFirmTypes.map((type) => (
-                            <div key={type} className="flex items-center space-x-2">
-                              <Checkbox 
+                            <div
+                              key={type}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
                                 id={`type-${type}`}
-                                checked={Array.isArray(selectedTypes) && selectedTypes.includes(type)}
+                                checked={selectedTypes.includes(type)}
                                 onCheckedChange={() => toggleFirmType(type)}
                               />
-                              <label 
+                              <label
                                 htmlFor={`type-${type}`}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                className="text-sm font-medium leading-none"
                               >
                                 {type}
                               </label>
                             </div>
                           ))
                         ) : (
-                          <p className="text-sm text-gray-500 text-center py-4">No types match your search.</p>
+                          <p className="text-sm text-gray-500 text-center py-4">
+                            No types match your search.
+                          </p>
                         )}
                       </div>
                       <Scrollbar orientation="vertical" />
                     </ScrollArea>
                   )}
-                  
-                  {Array.isArray(selectedTypes) && selectedTypes.length > 0 && (
-                    <Button 
-                      variant="link" 
-                      size="sm" 
-                      onClick={clearAllFilters} 
+
+                  {selectedTypes.length > 0 && (
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={clearAllFilters}
                       className="text-red-500 p-0 h-auto"
                     >
                       Clear selected types
@@ -328,18 +353,17 @@ const CompaniesFilterModal = ({
                   )}
                 </div>
 
-                {/* Save Filter UI */}
                 {hasActiveFilters && (
                   <div className="mt-4">
                     {showSaveFilterInput ? (
                       <div className="flex items-center gap-2">
-                        <Input 
-                          placeholder="Enter filter name" 
+                        <Input
+                          placeholder="Enter filter name"
                           value={filterName}
                           onChange={(e) => setFilterName(e.target.value)}
                           className="flex-1"
                         />
-                        <Button 
+                        <Button
                           onClick={handleSaveFilter}
                           variant="outline"
                           size="sm"
@@ -350,7 +374,7 @@ const CompaniesFilterModal = ({
                         <Button
                           onClick={() => {
                             setShowSaveFilterInput(false);
-                            setFilterName('');
+                            setFilterName("");
                           }}
                           variant="ghost"
                           size="sm"
@@ -359,8 +383,8 @@ const CompaniesFilterModal = ({
                         </Button>
                       </div>
                     ) : (
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => setShowSaveFilterInput(true)}
                         className="w-full"
@@ -374,11 +398,11 @@ const CompaniesFilterModal = ({
               </div>
             </ScrollArea>
           </TabsContent>
-          
+
           <TabsContent value="saved" className="flex-1 overflow-auto">
             <ScrollArea className="flex-1 pr-4 max-h-[calc(85vh-180px)] overflow-y-auto overflow-x-hidden">
               <div className="pb-6">
-                <SavedFiltersGroup 
+                <SavedFiltersGroup
                   filters={savedFilters}
                   onApplyFilter={applyFilter}
                   onDeleteFilter={handleDeleteFilter}
@@ -395,11 +419,16 @@ const CompaniesFilterModal = ({
             Clear All
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
             <Button onClick={handleApply}>
               Apply Filters
               {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-2 bg-white text-primary">
+                <Badge
+                  variant="secondary"
+                  className="ml-2 bg-white text-primary"
+                >
                   {activeFiltersCount}
                 </Badge>
               )}
