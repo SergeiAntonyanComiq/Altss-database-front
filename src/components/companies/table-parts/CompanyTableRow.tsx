@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { CompanyType } from "@/types/company";
 import { TableCheckbox } from "@/components/ui/table-checkbox";
 import CompanyNameCell from "../table-cells/CompanyNameCell";
@@ -29,7 +29,7 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
   onViewCompany,
   onToggleFavorite,
   columns,
-  formatAum
+  formatAum,
 }: CompanyTableRowProps) => {
   const defaultWidths: Record<string, number> = {
     name: 280,
@@ -43,26 +43,27 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
     team: 150,
   };
 
-  // Calculate total minimum width and ensure we have valid columns
-  const totalMinWidth = (columns || []).reduce((sum, col) => sum + col.minWidth, 0) + 44; // Include checkbox column width
-  
-  // If no columns provided, don't render anything
+  const totalMinWidth =
+    (columns || []).reduce((sum, col) => sum + col.minWidth, 0) + 44;
+
   if (!columns || columns.length === 0) {
     return null;
   }
 
-  // Helper function to get column by index with fallback
   const getColumnStyle = (index: number) => {
     const column = columns[index];
     return {
-      width: column?.width || defaultWidths[column?.id || ''] || 200,
-      minWidth: column?.minWidth || defaultWidths[column?.id || ''] || 200,
+      width: column?.width || defaultWidths[column?.id || ""] || 200,
+      minWidth: column?.minWidth || defaultWidths[column?.id || ""] || 200,
     };
   };
-  
+
   return (
-    <div className="flex w-full border-b border-[rgba(223,228,234,1)]" style={{ minWidth: `${totalMinWidth}px` }}>
-      <div className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center py-3">
+    <div
+      className="max-h-[44px] flex w-full border-b border-[rgba(223,228,234,1)]"
+      style={{ minWidth: `${totalMinWidth}px` }}
+    >
+      <div className="w-11 min-w-[44px] border-r border-[rgba(223,228,234,1)] flex items-center justify-center py-3 bg-white z-10 sticky left-0">
         <TableCheckbox
           id={`company-${company.id}`}
           checked={isSelected}
@@ -72,12 +73,22 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
       </div>
       {columns.map((column, index) => {
         switch (column.id) {
-          case 'name':
+          case "name":
             return (
               <div
                 key={column.id}
-                className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center gap-2.5 cursor-pointer"
-                style={getColumnStyle(index)}
+                className="shadow-[6px_0px_8px_-4px_rgba(0,0,0,0.1)] border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center gap-2.5 cursor-pointer"
+                style={{
+                  ...getColumnStyle(index),
+                  ...(index === 0
+                    ? {
+                        position: "sticky",
+                        left: 44,
+                        zIndex: 10,
+                        background: "white",
+                      }
+                    : {}),
+                }}
                 onClick={onViewCompany}
               >
                 <CompanyNameCell
@@ -88,17 +99,19 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 />
               </div>
             );
-          case 'type':
+          case "type":
             return (
               <div
                 key={column.id}
                 className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center overflow-hidden"
                 style={getColumnStyle(index)}
               >
-                <CompanyTypeCell type={company.firm_type || company.type || 'N/A'} />
+                <CompanyTypeCell
+                  type={company.firm_type || company.type || "N/A"}
+                />
               </div>
             );
-          case 'background':
+          case "background":
             return (
               <div
                 key={column.id}
@@ -108,7 +121,7 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 <BackgroundCell background={company.background} />
               </div>
             );
-          case 'location':
+          case "location":
             return (
               <div
                 key={column.id}
@@ -122,7 +135,7 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 />
               </div>
             );
-          case 'website':
+          case "website":
             return (
               <div
                 key={column.id}
@@ -132,11 +145,11 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 <WebsiteCell website={company.website} />
               </div>
             );
-          case 'contact':
+          case "contact":
             return (
               <div
                 key={column.id}
-                className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center overflow-hidden"
+                className="px-4 py-3 flex items-center overflow-hidden"
                 style={getColumnStyle(index)}
               >
                 <ContactCell
@@ -146,7 +159,7 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 />
               </div>
             );
-          case 'aum':
+          case "aum":
             return (
               <div
                 key={column.id}
@@ -156,7 +169,7 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 <AumCell aumFormatted={formatAum(company.aum)} />
               </div>
             );
-          case 'founded':
+          case "founded":
             return (
               <div
                 key={column.id}
@@ -166,11 +179,11 @@ const CompanyTableRow: React.FC<CompanyTableRowProps> = ({
                 <FoundedYearCell year={company.year_est} />
               </div>
             );
-          case 'team':
+          case "team":
             return (
               <div
                 key={column.id}
-                className="px-4 py-3 flex items-center overflow-hidden"
+                className="border-r border-[rgba(223,228,234,1)] px-4 py-3 flex items-center overflow-hidden"
                 style={getColumnStyle(index)}
               >
                 <TeamCell staffCount={company.total_staff} />
