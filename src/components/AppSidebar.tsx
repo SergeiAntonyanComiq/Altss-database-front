@@ -34,6 +34,7 @@ import {
   getSavedFilters,
   getFavoriteCompanies,
 } from "@/services/savedFiltersService";
+import { isLocked } from "@/utils/routeAccess.ts";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -235,9 +236,6 @@ const AppSidebar = () => {
     navigate(`${path}?filter=${filter.id}`);
     setSavedSearchesOpen(false);
   };
-
-  const isLocked = (path: string) =>
-    path !== "/familyoffices" && path !== "/familyofficescontacts";
 
   return (
     <>
