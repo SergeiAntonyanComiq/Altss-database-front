@@ -38,11 +38,12 @@ export function DataTable<TData, TValue>({
     <Table>
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
+          <TableRow key={headerGroup.id} className="h-[44px]">
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
                 className={cn(
+                  "max-h-[44px] h-full font-medium text-lg px-2 py-0 align-middle overflow-hidden",
                   (header.column.columnDef.meta as { headerClassName?: string })
                     ?.headerClassName,
                   stickyColumnId.includes(header.column.id) &&
@@ -59,14 +60,28 @@ export function DataTable<TData, TValue>({
             ))}
           </TableRow>
         ))}
+
+        <tr>
+          <th colSpan={table.getAllLeafColumns().length} className="p-0">
+            <div
+              className="h-2 bg-white
+           "
+            />
+          </th>
+        </tr>
       </TableHeader>
       <TableBody>
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+          <TableRow
+            className="mt-[8px]"
+            key={row.id}
+            data-state={row.getIsSelected() && "selected"}
+          >
             {row.getVisibleCells().map((cell) => (
               <TableCell
                 key={cell.id}
                 className={cn(
+                  "h-[44px] text-lg px-2 py-0 border-r align-middle overflow-hidden",
                   (cell.column.columnDef.meta as { cellClassName?: string })
                     ?.cellClassName,
                   stickyColumnId.includes(cell.column.id) &&
