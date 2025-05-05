@@ -4,7 +4,6 @@ import { ContactType } from "@/types/contact";
 import { PersonType } from "@/types/person";
 import PersonsSearchBar from "./PersonsSearchBar";
 import PersonTableSkeleton from "./PersonTableSkeleton";
-import PersonsPagination from "./PersonsPagination";
 import PersonsTable2 from "./PersonsTable2";
 import PersonsColumnModal from "./PersonsColumnModal";
 import { usePersistedPersonColumns } from "./hooks/usePersistedPersonColumns";
@@ -16,6 +15,7 @@ import {
   addPersonToFavorites,
   removePersonFromFavorites,
 } from "@/services/savedFiltersService";
+import CustomPagination from "../ui/CustomPagination.tsx";
 
 const contactToPerson = (contact: ContactType): PersonType | null => {
   if (!contact || !contact.contact_id || !contact.firm_id) return null;
@@ -353,7 +353,7 @@ const PersonsList2 = ({
           </div>
 
           <div className="mt-6">
-            <PersonsPagination
+            <CustomPagination
               currentPage={currentPage}
               onPageChange={handlePageChange}
               totalPages={totalPages}

@@ -3,7 +3,7 @@ import { OrderType } from "@/types/order";
 import { mockOrders } from "@/data/mockOrders";
 import OrdersSearchBar from "./OrdersSearchBar";
 import OrdersTable from "./OrdersTable";
-import PersonsPagination from "@/components/personal/PersonsPagination";
+import CustomPagination from "@/components/ui/CustomPagination.tsx";
 
 const OrdersList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,7 +94,7 @@ const OrdersList = () => {
       />
 
       <div className="mt-6">
-        <PersonsPagination
+        <CustomPagination
           currentPage={currentPage}
           onPageChange={handlePageChange}
           totalPages={totalPages}

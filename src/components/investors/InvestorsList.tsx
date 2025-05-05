@@ -3,10 +3,10 @@ import { Column } from "./table-parts/InvestorsTableHeader";
 import InvestorsSearchBar from "./InvestorsSearchBar";
 import InvestorsTable from "./InvestorsTable";
 import { useInvestorsData } from "@/hooks/useInvestorsData";
-import PersonsPagination from "@/components/personal/PersonsPagination";
 import InvestorsTableSkeleton from "./InvestorsTableSkeleton";
 import CompaniesError from "../companies/CompaniesError";
 import { useNavigate } from "react-router-dom";
+import CustomPagination from "@/components/ui/CustomPagination.tsx";
 
 interface InvestorsListProps {
   currentPage: number;
@@ -83,7 +83,7 @@ const InvestorsList = ({
       </div>
 
       <div className="mt-6">
-        <PersonsPagination
+        <CustomPagination
           currentPage={currentPage}
           onPageChange={onPageChange}
           totalPages={totalPages}

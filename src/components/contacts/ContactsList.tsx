@@ -3,7 +3,6 @@ import { ContactType } from "@/types/contact";
 import { useContactsData } from "@/hooks/useContactsData";
 import ContactsTable from "./ContactsTable";
 import PersonsSearchBar from "../personal/PersonsSearchBar";
-import PersonsPagination from "../personal/PersonsPagination";
 import { toast } from "@/components/ui/use-toast";
 import {
   Select,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import CustomPagination from "../ui/CustomPagination.tsx";
 
 // Mock data to use when API fails or for initial load
 const mockContacts: ContactType[] = [
@@ -25,7 +25,8 @@ const mockContacts: ContactType[] = [
     name: "Rémi Carnimolla",
     alternative_name: "",
     role: "Investment Team",
-    job_title: "Senior Partner, Managing Director, Global Head of Services & Software Sector and Member of the Investment Committee",
+    job_title:
+      "Senior Partner, Managing Director, Global Head of Services & Software Sector and Member of the Investment Committee",
     asset_class: "PE,INF,NR",
     email: "remi.carnimolla@3i.com",
     tel: "+33 (0)1 7315 1100",
@@ -34,7 +35,7 @@ const mockContacts: ContactType[] = [
     country_territory: "France",
     zip_code: "75008",
     linkedin: "www.linkedin.com/in/rémi-carnimolla-4227873/",
-    favorite: false
+    favorite: false,
   },
   {
     id: 3,
@@ -55,7 +56,7 @@ const mockContacts: ContactType[] = [
     country_territory: "UK",
     zip_code: "EC1V",
     linkedin: "www.linkedin.com/in/janesmith/",
-    favorite: false
+    favorite: false,
   },
   {
     id: 4,
@@ -76,20 +77,22 @@ const mockContacts: ContactType[] = [
     country_territory: "USA",
     zip_code: "10001",
     linkedin: "www.linkedin.com/in/johndoe/",
-    favorite: false
-  }
+    favorite: false,
+  },
 ];
 
 const fetchContact = async (contactId: number): Promise<ContactType> => {
   try {
-    const response = await fetch(`https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${contactId}`);
+    const response = await fetch(
+      `https://x1r0-gjeb-bouz.n7d.xano.io/api:fljcbPEu/contacts/${contactId}`,
+    );
     if (!response.ok) {
       throw new Error(`Failed to fetch contact with ID ${contactId}`);
     }
     const data = await response.json();
     return {
       ...data,
-      favorite: false // Add favorite property
+      favorite: false, // Add favorite property
     };
   } catch (error) {
     console.error(`Error fetching contact ${contactId}:`, error);
@@ -117,10 +120,10 @@ const ContactsList = () => {
     currentPage,
     setCurrentPage,
     itemsPerPage,
-    setItemsPerPage
+    setItemsPerPage,
   } = useContactsData({
     initialPage: 1,
-    initialItemsPerPage: contactsPerPage
+    initialItemsPerPage: contactsPerPage,
   });
 
   useEffect(() => {
@@ -134,10 +137,10 @@ const ContactsList = () => {
   }, [error]);
 
   const handleCheckboxChange = (contactId: number) => {
-    setSelectedContacts(prev => 
-      prev.includes(contactId) 
-        ? prev.filter(id => id !== contactId) 
-        : [...prev, contactId]
+    setSelectedContacts((prev) =>
+      prev.includes(contactId)
+        ? prev.filter((id) => id !== contactId)
+        : [...prev, contactId],
     );
   };
 
@@ -145,17 +148,15 @@ const ContactsList = () => {
     if (selectedContacts.length === contacts.length) {
       setSelectedContacts([]);
     } else {
-      setSelectedContacts(contacts.map(contact => contact.id));
+      setSelectedContacts(contacts.map((contact) => contact.id));
     }
   };
 
   const toggleFavorite = (id: number) => {
     // In a real application, this would be an API call to change the favorite status
     // For now, we'll just update the local state
-    const updatedContacts = contacts.map(contact => 
-        contact.id === id 
-          ? { ...contact, favorite: !contact.favorite } 
-          : contact
+    const updatedContacts = contacts.map((contact) =>
+      contact.id === id ? { ...contact, favorite: !contact.favorite } : contact,
     );
     // Note: In a real app, you would update this through the useContactsData hook
     console.log(`Toggle favorite for contact with ID: ${id}`);
@@ -175,7 +176,9 @@ const ContactsList = () => {
     return (
       <div className="container py-6">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-red-600">Error loading contacts</h2>
+          <h2 className="text-xl font-semibold text-red-600">
+            Error loading contacts
+          </h2>
           <p className="text-gray-600 mt-2">Please try refreshing the page</p>
         </div>
       </div>
@@ -192,22 +195,24 @@ const ContactsList = () => {
             onChange={(value) => setSearchQuery(value)}
             placeholder="Search persons..."
           />
-            <Select
+          <Select
             value={String(contactsPerPage)}
-            onValueChange={(value) => handleContactsPerPageChange(Number(value))}
-            >
+            onValueChange={(value) =>
+              handleContactsPerPageChange(Number(value))
+            }
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select items per page" />
-              </SelectTrigger>
-              <SelectContent>
+            </SelectTrigger>
+            <SelectContent>
               <SelectItem value="10">10 per page</SelectItem>
               <SelectItem value="20">20 per page</SelectItem>
               <SelectItem value="50">50 per page</SelectItem>
-              </SelectContent>
-            </Select>
+            </SelectContent>
+          </Select>
         </div>
       </div>
-      
+
       <ContactsTable
         contacts={contacts}
         isLoading={isLoading}
@@ -216,10 +221,10 @@ const ContactsList = () => {
         onSelectAll={handleSelectAll}
         onToggleFavorite={toggleFavorite}
       />
-      
+
       <div className="mt-4">
-        <PersonsPagination 
-          currentPage={currentPage} 
+        <CustomPagination
+          currentPage={currentPage}
           totalItems={totalContacts}
           itemsPerPage={contactsPerPage}
           onPageChange={handlePageChange}
