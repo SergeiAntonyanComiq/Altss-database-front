@@ -237,7 +237,7 @@ const AppSidebar = () => {
   };
 
   const isLocked = (path: string) =>
-    path === "/familyoffices" || path === "/familyofficescontacts";
+    path !== "/familyoffices" && path !== "/familyofficescontacts";
 
   return (
     <>
