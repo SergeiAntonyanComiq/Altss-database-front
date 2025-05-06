@@ -1,28 +1,20 @@
 import React from "react";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronsLeft,
-  ChevronsRight
-} from "lucide-react";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select.tsx";
 
-interface PersonsPaginationProps {
+interface CustomPaginationProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   totalPages: number;
@@ -32,7 +24,11 @@ interface PersonsPaginationProps {
   disabled?: boolean;
 }
 
-const generatePaginationItems = (currentPage: number, totalPages: number, siblingCount = 1) => {
+const generatePaginationItems = (
+  currentPage: number,
+  totalPages: number,
+  siblingCount = 1,
+) => {
   const totalPageNumbers = siblingCount + 5;
 
   if (totalPages <= totalPageNumbers) {
@@ -49,41 +45,52 @@ const generatePaginationItems = (currentPage: number, totalPages: number, siblin
   const lastPageIndex = totalPages;
 
   if (!shouldShowLeftEllipsis && shouldShowRightEllipsis) {
-    let leftItemCount = 3 + 2 * siblingCount;
-    let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
-    return [...leftRange, '...', lastPageIndex];
+    const leftItemCount = 3 + 2 * siblingCount;
+    const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+    return [...leftRange, "...", lastPageIndex];
   }
 
   if (shouldShowLeftEllipsis && !shouldShowRightEllipsis) {
-    let rightItemCount = 3 + 2 * siblingCount;
-    let rightRange = Array.from({ length: rightItemCount }, (_, i) => totalPages - i).reverse();
-    return [firstPageIndex, '...', ...rightRange];
+    const rightItemCount = 3 + 2 * siblingCount;
+    const rightRange = Array.from(
+      { length: rightItemCount },
+      (_, i) => totalPages - i,
+    ).reverse();
+    return [firstPageIndex, "...", ...rightRange];
   }
 
   if (shouldShowLeftEllipsis && shouldShowRightEllipsis) {
-    let middleRange = Array.from({ length: rightSiblingIndex - leftSiblingIndex + 1 }, (_, i) => leftSiblingIndex + i);
-    return [firstPageIndex, '...', ...middleRange, '...', lastPageIndex];
+    const middleRange = Array.from(
+      { length: rightSiblingIndex - leftSiblingIndex + 1 },
+      (_, i) => leftSiblingIndex + i,
+    );
+    return [firstPageIndex, "...", ...middleRange, "...", lastPageIndex];
   }
-  return Array.from({ length: totalPages }, (_, i) => i + 1); 
+  return Array.from({ length: totalPages }, (_, i) => i + 1);
 };
 
-const PersonsPagination = ({
+const CustomPagination = ({
   currentPage,
   onPageChange,
   totalPages,
   itemsPerPage,
   onItemsPerPageChange,
   totalItems,
-  disabled = false
-}: PersonsPaginationProps) => {
+  disabled = false,
+}: CustomPaginationProps) => {
   const paginationItems = generatePaginationItems(currentPage, totalPages);
 
   const handlePageSelect = (page: number | string) => {
-    if (typeof page === 'number' && !disabled && page >= 1 && page <= totalPages) {
+    if (
+      typeof page === "number" &&
+      !disabled &&
+      page >= 1 &&
+      page <= totalPages
+    ) {
       onPageChange(page);
     }
   };
-  
+
   const handleItemsPerPageSelect = (value: string) => {
     if (!disabled) {
       onItemsPerPageChange(Number(value));
@@ -115,7 +122,7 @@ const PersonsPagination = ({
 
           {paginationItems.map((item, index) => (
             <div key={index} className="self-stretch my-auto">
-              {item === '...' ? (
+              {item === "..." ? (
                 <div className="text-[rgba(99,115,129,1)] text-base font-normal leading-none text-center">
                   ...
                 </div>
@@ -123,11 +130,12 @@ const PersonsPagination = ({
                 <div
                   onClick={() => handlePageSelect(item)}
                   className={`
-                    ${currentPage === item 
-                      ? 'bg-[rgba(38,101,240,1)] text-white' 
-                      : 'text-[rgba(99,115,129,1)]'
+                    ${
+                      currentPage === item
+                        ? "bg-[rgba(38,101,240,1)] text-white"
+                        : "text-[rgba(99,115,129,1)]"
                     }
-                    ${typeof item === 'number' ? 'w-[25px] h-[25px] flex items-center justify-center rounded-md cursor-pointer' : ''}
+                    ${typeof item === "number" ? "w-[25px] h-[25px] flex items-center justify-center rounded-md cursor-pointer" : ""}
                     text-base font-normal leading-none text-center
                   `}
                 >
@@ -159,8 +167,8 @@ const PersonsPagination = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <Select 
-          value={itemsPerPage.toString()} 
+        <Select
+          value={itemsPerPage.toString()}
           onValueChange={handleItemsPerPageSelect}
           disabled={disabled}
         >
@@ -168,10 +176,30 @@ const PersonsPagination = ({
             <SelectValue className="self-stretch my-auto">{`${itemsPerPage} results per page`}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="10" className="text-base text-[#637381] font-normal">10 results per page</SelectItem>
-            <SelectItem value="20" className="text-base text-[#637381] font-normal">20 results per page</SelectItem>
-            <SelectItem value="50" className="text-base text-[#637381] font-normal">50 results per page</SelectItem>
-            <SelectItem value="100" className="text-base text-[#637381] font-normal">100 results per page</SelectItem>
+            <SelectItem
+              value="10"
+              className="text-base text-[#637381] font-normal"
+            >
+              10 results per page
+            </SelectItem>
+            <SelectItem
+              value="20"
+              className="text-base text-[#637381] font-normal"
+            >
+              20 results per page
+            </SelectItem>
+            <SelectItem
+              value="50"
+              className="text-base text-[#637381] font-normal"
+            >
+              50 results per page
+            </SelectItem>
+            <SelectItem
+              value="100"
+              className="text-base text-[#637381] font-normal"
+            >
+              100 results per page
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -179,4 +207,4 @@ const PersonsPagination = ({
   );
 };
 
-export default PersonsPagination;
+export default CustomPagination;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { LogOut, ChevronRight, ChevronDown, Heart, Search } from "lucide-react";
+import { ChevronRight, ChevronDown, Heart } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { Lock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -19,19 +19,22 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarProvider,
   SidebarTrigger,
   SidebarSeparator,
-  useSidebar
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { 
-  Collapsible, 
-  CollapsibleContent, 
-  CollapsibleTrigger 
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { getFavoritePersons, getSavedFilters, getFavoriteCompanies } from "@/services/savedFiltersService";
+import {
+  getFavoritePersons,
+  getSavedFilters,
+  getFavoriteCompanies,
+} from "@/services/savedFiltersService";
+import { isLocked } from "@/utils/routeAccess.ts";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -65,7 +68,7 @@ const AppSidebar = () => {
         console.error("Error loading favorite companies:", error);
         setFavoriteCompanies([]); // Reset on error
       }
-      
+
       try {
         const searches = await getSavedFilters();
         setSavedSearches(searches || []);
@@ -83,13 +86,13 @@ const AppSidebar = () => {
       loadData();
     };
 
-    window.addEventListener('favoritesUpdated', handleUpdate);
-    window.addEventListener('savedFiltersUpdated', handleUpdate);
+    window.addEventListener("favoritesUpdated", handleUpdate);
+    window.addEventListener("savedFiltersUpdated", handleUpdate);
 
     // Cleanup listener on unmount
     return () => {
-      window.removeEventListener('favoritesUpdated', handleUpdate);
-      window.removeEventListener('savedFiltersUpdated', handleUpdate);
+      window.removeEventListener("favoritesUpdated", handleUpdate);
+      window.removeEventListener("savedFiltersUpdated", handleUpdate);
     };
   }, [location.pathname]); // Re-run on navigation
 
@@ -97,34 +100,34 @@ const AppSidebar = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user) return;
-      
+
       try {
         const { data, error } = await supabase
-          .from('profiles')
-          .select('first_name, last_name, avatar_url')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("first_name, last_name, avatar_url")
+          .eq("id", user.id)
           .single();
-          
+
         if (error) {
-          console.error('Error fetching user profile:', error);
+          console.error("Error fetching user profile:", error);
           return;
         }
-        
+
         if (data) {
           setAvatarUrl(data.avatar_url || null);
-          
+
           // Set user name for display
-          const firstName = data.first_name || '';
-          const lastName = data.last_name || '';
+          const firstName = data.first_name || "";
+          const lastName = data.last_name || "";
           if (firstName || lastName) {
             setUserName(`${firstName} ${lastName}`.trim());
           }
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
+        console.error("Error fetching profile:", error);
       }
     };
-    
+
     fetchUserProfile();
   }, [user]);
 
@@ -139,7 +142,7 @@ const AppSidebar = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/auth');
+      navigate("/auth");
       toast({
         title: "Logged out successfully",
       });
@@ -154,41 +157,46 @@ const AppSidebar = () => {
 
   const menuItems = [
     {
-      title: "Company search",
-      path: "/companies",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
-      hasRightIcon: false
-    },
-    {
       title: "Family Offices search",
       path: "/familyoffices",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
-      hasRightIcon: false
+      iconSrc:
+        "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
+      hasRightIcon: false,
     },
     {
       title: "Family Offices contacts",
       path: "/familyofficescontacts",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
-      hasRightIcon: false
+      iconSrc:
+        "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
+      hasRightIcon: false,
+    },
+    {
+      title: "Company search",
+      path: "/companies",
+      iconSrc:
+        "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ddb46b8f5e3677e41421100e12cb4f99fefdcce6",
+      hasRightIcon: false,
     },
     {
       title: "Investors search",
       path: "/investors",
       iconSrc: "/images/investor_icon.svg",
-      hasRightIcon: false
+      hasRightIcon: false,
     },
     {
       title: "People search",
       path: "/persons",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
-      hasRightIcon: false
+      iconSrc:
+        "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
+      hasRightIcon: false,
     },
     {
       title: "My Orders",
       path: "/my-orders",
-      iconSrc: "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
-      hasRightIcon: false
-    }
+      iconSrc:
+        "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
+      hasRightIcon: false,
+    },
   ];
 
   // Updated menu grouping - first 5 items above the separator, only My Orders below
@@ -197,16 +205,16 @@ const AppSidebar = () => {
 
   const getUserInitials = () => {
     if (userName) {
-      const nameParts = userName.split(' ');
+      const nameParts = userName.split(" ");
       if (nameParts.length >= 2) {
         return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
       } else if (nameParts.length === 1) {
         return nameParts[0].substring(0, 2).toUpperCase();
       }
     }
-    
+
     if (!user) return "UN";
-    
+
     const email = user.email || "";
     if (email) {
       return email.substring(0, 2).toUpperCase();
@@ -214,8 +222,8 @@ const AppSidebar = () => {
     return "UN";
   };
 
-  const handleNavigateToFavorite = (item, type: 'person' | 'company') => {
-    if (type === 'company') {
+  const handleNavigateToFavorite = (item, type: "person" | "company") => {
+    if (type === "company") {
       navigate(`/company/${item.id}`);
     } else {
       navigate(`/profile/${item.id}`);
@@ -224,7 +232,7 @@ const AppSidebar = () => {
   };
 
   const handleApplySavedSearch = (filter) => {
-    const path = filter.type === 'company' ? '/companies' : '/persons';
+    const path = filter.type === "company" ? "/companies" : "/persons";
     navigate(`${path}?filter=${filter.id}`);
     setSavedSearchesOpen(false);
   };
@@ -235,57 +243,70 @@ const AppSidebar = () => {
         <SidebarHeader className="pt-4 pb-3">
           <div className="flex w-full items-center justify-between px-6">
             <div className="flex items-center">
-              <img 
+              <img
                 src="/images/altss_logo.png"
-                alt="Altss Logo" 
+                alt="Altss Logo"
                 className="h-10 w-auto object-contain"
               />
             </div>
             <SidebarTrigger className="text-[#637381] w-6 h-6" />
           </div>
         </SidebarHeader>
-        
+
         <SidebarContent className="px-4 mt-10">
           <SidebarMenu>
-            {mainMenuItems.map((item, index) => (
+            {mainMenuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <button 
-                  onClick={() => handleNavigation(item.path)}
-                  className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
-                    ${isActive(item.path) 
-                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
-                      : "text-[#637381] hover:bg-gray-100"
-                    }`}
+                <button
+                  onClick={() =>
+                    !isLocked(item.path) && handleNavigation(item.path)
+                  }
+                  disabled={isLocked(item.path)}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
+                    isActive(item.path) && !isLocked(item.path)
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                      : "text-[#637381]",
+                    isLocked(item.path)
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-100",
+                  )}
                 >
                   <div className="flex items-center gap-2.5">
-                    <img 
-                      src={item.iconSrc} 
-                      alt={item.title} 
+                    <img
+                      src={item.iconSrc}
+                      alt={item.title}
                       className="h-6 w-6 object-contain"
                     />
                     <span className="whitespace-nowrap">{item.title}</span>
                   </div>
-                  {item.hasRightIcon && (
-                    <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                  {isLocked(item.path) ? (
+                    <Lock className="w-4 h-4 text-[#A0AEC0]" />
+                  ) : (
+                    item.hasRightIcon && (
+                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                    )
                   )}
                 </button>
               </SidebarMenuItem>
             ))}
+
             <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />
             {secondaryMenuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <button 
+                <button
                   onClick={() => handleNavigation(item.path)}
                   className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
-                    ${isActive(item.path) 
-                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
-                      : "text-[#637381] hover:bg-gray-100"
+                    ${
+                      isActive(item.path)
+                        ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                        : "text-[#637381] hover:bg-gray-100"
                     }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <img 
-                      src={item.iconSrc} 
-                      alt={item.title} 
+                    <img
+                      src={item.iconSrc}
+                      alt={item.title}
                       className="h-6 w-6 object-contain"
                     />
                     <span className="whitespace-nowrap">{item.title}</span>
@@ -299,23 +320,32 @@ const AppSidebar = () => {
 
             {/* Favorites Dropdown */}
             <SidebarMenuItem>
-              <Collapsible open={favoritesOpen} onOpenChange={setFavoritesOpen} className="w-full">
-                <CollapsibleTrigger className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
-                  ${isActive("/favorites") 
-                    ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
-                    : "text-[#637381] hover:bg-gray-100"
-                  }`}>
+              <Collapsible
+                open={favoritesOpen}
+                onOpenChange={setFavoritesOpen}
+                className="w-full"
+              >
+                <CollapsibleTrigger
+                  className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                  ${
+                    isActive("/favorites")
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                      : "text-[#637381] hover:bg-gray-100"
+                  }`}
+                >
                   <div className="flex items-center gap-2.5">
                     <Heart className="h-6 w-6" />
                     <span>Favorites</span>
                   </div>
-                  {favoritesOpen ? 
-                    <ChevronDown className="h-5 w-5 text-[#637381]" /> : 
+                  {favoritesOpen ? (
+                    <ChevronDown className="h-5 w-5 text-[#637381]" />
+                  ) : (
                     <ChevronRight className="h-5 w-5 text-[#637381]" />
-                  }
+                  )}
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                  {favoritePersons.length > 0 || favoriteCompanies.length > 0 ? (
+                  {favoritePersons.length > 0 ||
+                  favoriteCompanies.length > 0 ? (
                     <>
                       {/* Companies Section */}
                       {favoriteCompanies.length > 0 && (
@@ -323,10 +353,12 @@ const AppSidebar = () => {
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
                             Companies
                           </div>
-                          {favoriteCompanies.map(favorite => (
-                            <div 
+                          {favoriteCompanies.map((favorite) => (
+                            <div
                               key={favorite.id}
-                              onClick={() => handleNavigateToFavorite(favorite, 'company')}
+                              onClick={() =>
+                                handleNavigateToFavorite(favorite, "company")
+                              }
                               className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
                             >
                               <span className="truncate">{favorite.name}</span>
@@ -346,10 +378,12 @@ const AppSidebar = () => {
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
                             Persons
                           </div>
-                          {favoritePersons.map(favorite => (
-                            <div 
+                          {favoritePersons.map((favorite) => (
+                            <div
                               key={favorite.id}
-                              onClick={() => handleNavigateToFavorite(favorite, 'person')}
+                              onClick={() =>
+                                handleNavigateToFavorite(favorite, "person")
+                              }
                               className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
                             >
                               <span className="truncate">{favorite.name}</span>
@@ -368,9 +402,9 @@ const AppSidebar = () => {
                       No favorites yet
                     </div>
                   )}
-                  <div 
+                  <div
                     className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-blue-500 font-medium"
-                    onClick={() => handleNavigation('/favorites')}
+                    onClick={() => handleNavigation("/favorites")}
                   >
                     View all favorites
                   </div>
@@ -380,67 +414,77 @@ const AppSidebar = () => {
 
             {/* Saved Searches Dropdown */}
             <SidebarMenuItem>
-              <Collapsible open={savedSearchesOpen} onOpenChange={setSavedSearchesOpen} className="w-full">
-                <CollapsibleTrigger className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
-                  ${isActive("/saved-searches") 
-                    ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]" 
-                    : "text-[#637381] hover:bg-gray-100"
-                  }`}>
+              <Collapsible
+                open={savedSearchesOpen}
+                onOpenChange={setSavedSearchesOpen}
+                className="w-full"
+              >
+                <CollapsibleTrigger
+                  className={`flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11
+                  ${
+                    isActive("/saved-searches")
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                      : "text-[#637381] hover:bg-gray-100"
+                  }`}
+                >
                   <div className="flex items-center gap-2.5">
-                    <img 
-                      src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f69faa278a069ce4b2090e224b9110b1e63802ea" 
-                      alt="Saved Searches" 
+                    <img
+                      src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f69faa278a069ce4b2090e224b9110b1e63802ea"
+                      alt="Saved Searches"
                       className="h-6 w-6 object-contain"
                     />
                     <span>Saved Searches</span>
                   </div>
-                  {savedSearchesOpen ? 
-                    <ChevronDown className="h-5 w-5 text-[#637381]" /> : 
+                  {savedSearchesOpen ? (
+                    <ChevronDown className="h-5 w-5 text-[#637381]" />
+                  ) : (
                     <ChevronRight className="h-5 w-5 text-[#637381]" />
-                  }
+                  )}
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
                   {savedSearches.length > 0 ? (
                     <>
                       {/* Companies Section */}
-                      {savedSearches.filter(search => search.type === 'company').length > 0 && (
+                      {savedSearches.filter(
+                        (search) => search.type === "company",
+                      ).length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
                             Companies
                           </div>
                           {savedSearches
-                            .filter(search => search.type === 'company')
-                            .map(filter => (
-                              <div 
+                            .filter((search) => search.type === "company")
+                            .map((filter) => (
+                              <div
                                 key={filter.id}
                                 onClick={() => handleApplySavedSearch(filter)}
                                 className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
                               >
                                 <span className="truncate">{filter.name}</span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </>
                       )}
 
                       {/* Persons Section */}
-                      {savedSearches.filter(search => search.type === 'person').length > 0 && (
+                      {savedSearches.filter(
+                        (search) => search.type === "person",
+                      ).length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
                             Persons
                           </div>
                           {savedSearches
-                            .filter(search => search.type === 'person')
-                            .map(filter => (
-                              <div 
+                            .filter((search) => search.type === "person")
+                            .map((filter) => (
+                              <div
                                 key={filter.id}
                                 onClick={() => handleApplySavedSearch(filter)}
                                 className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
                               >
                                 <span className="truncate">{filter.name}</span>
                               </div>
-                            ))
-                          }
+                            ))}
                         </>
                       )}
                     </>
@@ -449,9 +493,9 @@ const AppSidebar = () => {
                       No saved searches yet
                     </div>
                   )}
-                  <div 
+                  <div
                     className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-blue-500 font-medium"
-                    onClick={() => handleNavigation('/saved-searches')}
+                    onClick={() => handleNavigation("/saved-searches")}
                   >
                     View all saved searches
                   </div>
@@ -460,34 +504,46 @@ const AppSidebar = () => {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
-        
+
         <SidebarFooter className="mt-auto p-6 border-t border-[#DFE4EA]">
           <div className="flex flex-col gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors">
-              <Avatar>
-                <AvatarImage 
-                      src={avatarUrl || ""} 
-                  alt="User Profile"
-                      className="rounded-full object-cover" 
-                />
+                  <Avatar>
+                    <AvatarImage
+                      src={avatarUrl || ""}
+                      alt="User Profile"
+                      className="rounded-full object-cover"
+                    />
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
-              </Avatar>
-              <span className="text-[#637381] text-base font-medium">
+                  </Avatar>
+                  <span className="text-[#637381] text-base font-medium">
                     {userName || user?.email || "User Name"}
-              </span>
-            </div>
+                  </span>
+                </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[200px] rounded-md bg-[rgba(0,39,115,1)] text-white p-0 border-none">
-                <DropdownMenuItem onClick={handleLogout} className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer">
+              <DropdownMenuContent
+                align="start"
+                className="w-[200px] rounded-md bg-[rgba(0,39,115,1)] text-white p-0 border-none"
+              >
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer"
+                >
                   Sign-out
                 </DropdownMenuItem>
                 <div className="border-t border-[rgba(225,232,255,1)] w-full my-[5px]" />
-                <DropdownMenuItem onClick={() => window.open('mailto:support@altss.com')} className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer">
+                <DropdownMenuItem
+                  onClick={() => window.open("mailto:support@altss.com")}
+                  className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer"
+                >
                   Contact Support
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleNavigation("/userprofile")} className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer">
+                <DropdownMenuItem
+                  onClick={() => handleNavigation("/userprofile")}
+                  className="px-4 py-[7px] hover:bg-[rgba(0,39,115,0.8)] cursor-pointer"
+                >
                   Open My Profile
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -495,7 +551,7 @@ const AppSidebar = () => {
           </div>
         </SidebarFooter>
       </Sidebar>
-      
+
       {state === "collapsed" && (
         <div className="fixed top-10 left-3 z-50 md:flex">
           <SidebarTrigger className="bg-white shadow-md rounded-md p-1.5 hover:bg-gray-100" />

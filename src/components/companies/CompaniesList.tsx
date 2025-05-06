@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PersonsPagination from "@/components/personal/PersonsPagination";
 import CompaniesSearchBar from "./CompaniesSearchBar";
 import CompaniesTable from "./CompaniesTable";
 import { Column } from "./table-parts/CompaniesTableHeader";
@@ -12,6 +11,7 @@ import { formatAum } from "./companyUtils";
 import { usePersistedColumns } from "./hooks/usePersistedColumns";
 import { getSavedFilterById } from "@/services/savedFiltersService";
 import { useToast } from "@/components/ui/use-toast";
+import CustomPagination from "@/components/ui/CustomPagination.tsx";
 
 interface CompaniesListProps {
   currentPage: number;
@@ -160,23 +160,17 @@ const CompaniesList = ({
       </h1>
 
       <div className="mt-6">
-        {isLoading ? (
-          <div className="flex gap-4 items-center">
-            <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
-          </div>
-        ) : (
-          <CompaniesSearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            onSearch={(query) => setActiveSearchQuery(query)}
-            selectedFirmTypes={selectedFirmTypes}
-            activeFilters={activeFilters}
-            onFilterChange={handleFilterChange}
-            selectedCompanies={selectedCompanies}
-            companies={companies}
-            onColumnsClick={() => setIsColumnModalOpen(true)}
-          />
-        )}
+        <CompaniesSearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onSearch={(query) => setActiveSearchQuery(query)}
+          selectedFirmTypes={selectedFirmTypes}
+          activeFilters={activeFilters}
+          onFilterChange={handleFilterChange}
+          selectedCompanies={selectedCompanies}
+          companies={companies}
+          onColumnsClick={() => setIsColumnModalOpen(true)}
+        />
       </div>
 
       <div className="flex-grow mt-8">
@@ -205,7 +199,7 @@ const CompaniesList = ({
       </div>
 
       <div className="mt-6">
-        <PersonsPagination
+        <CustomPagination
           currentPage={currentPage}
           onPageChange={onPageChange}
           totalPages={totalPages}
