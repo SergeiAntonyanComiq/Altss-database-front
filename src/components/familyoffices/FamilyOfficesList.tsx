@@ -26,6 +26,7 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
 }) => {
   const { familyOffices, isLoading, error, totalPages, totalItems } =
     useFamilyOfficesData(currentPage, itemsPerPage);
+
   const [favorites, setFavorites] = useState<Record<number, boolean>>({});
 
   const toggleFavorite = (id: string) => {

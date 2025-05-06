@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CompaniesSearchBar from "./CompaniesSearchBar";
-import CompaniesTable from "./CompaniesTable";
-import { Column } from "./table-parts/CompaniesTableHeader";
 import CompaniesTableSkeleton from "./CompaniesTableSkeleton";
 import CompaniesError from "./CompaniesError";
 import { useCompaniesData } from "@/hooks/useCompaniesData";
 import { useCompanySelection } from "./useCompanySelection";
-import { formatAum } from "./companyUtils";
-import { usePersistedColumns } from "./hooks/usePersistedColumns";
 import { getSavedFilterById } from "@/services/savedFiltersService";
 import { useToast } from "@/components/ui/use-toast";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
+import { DataTable } from "@/components/ui/DataTable.tsx";
+import { companiesColumns } from "@/components/columns-bucket";
 
 interface CompaniesListProps {
   currentPage: number;
@@ -31,8 +29,9 @@ const CompaniesList = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
-  const { columns, updateColumns } = usePersistedColumns();
-  const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
+
+  const [favorites, setFavorites] = useState<Record<number, boolean>>({});
+
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -124,16 +123,13 @@ const CompaniesList = ({
     selectedCompanies,
     toggleCompanySelection,
     toggleAllCompanies,
-    isCompanySelected,
     toggleFavorite,
   } = useCompanySelection();
 
-  const handleViewCompany = (id: string) => {
-    navigate(`/company/${id}`);
-  };
+  const handleToggleFavorite = (id: string) => {
+    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const handleToggleFavorite = (id: string, event: React.MouseEvent) => {
-    toggleFavorite(id, event, companies, () => {
+    toggleFavorite(id, companies, () => {
       const updatedCompanies = companies.map((company) =>
         company.id === id
           ? { ...company, isFavorite: !company.isFavorite }
@@ -145,13 +141,16 @@ const CompaniesList = ({
     });
   };
 
-  const handleColumnResize = (newColumns: Column[]) => {
-    updateColumns(newColumns);
-  };
+  useEffect(() => {
+    if (companies) {
+      const initialFavorites: Record<number, boolean> = {};
+      companies.forEach((fo) => {
+        initialFavorites[fo.id] = fo.isFavorite;
+      });
 
-  const handleColumnsChange = (newColumns: Column[]) => {
-    updateColumns(newColumns);
-  };
+      setFavorites(initialFavorites);
+    }
+  }, [companies]);
 
   return (
     <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
@@ -169,7 +168,6 @@ const CompaniesList = ({
           onFilterChange={handleFilterChange}
           selectedCompanies={selectedCompanies}
           companies={companies}
-          onColumnsClick={() => setIsColumnModalOpen(true)}
         />
       </div>
 
@@ -179,22 +177,17 @@ const CompaniesList = ({
         ) : error ? (
           <CompaniesError errorMessage={error} />
         ) : (
-          <CompaniesTable
-            companies={companies}
-            selectedCompanies={selectedCompanies}
-            toggleCompanySelection={toggleCompanySelection}
-            toggleAllCompanies={() => toggleAllCompanies(companies)}
-            handleViewCompany={handleViewCompany}
-            toggleFavorite={handleToggleFavorite}
-            formatAum={formatAum}
-            isCompanySelected={isCompanySelected}
-            isLoading={isLoading}
-            columns={columns}
-            onColumnResize={handleColumnResize}
-            onColumnsChange={handleColumnsChange}
-            isColumnModalOpen={isColumnModalOpen}
-            onColumnModalClose={() => setIsColumnModalOpen(false)}
-          />
+          <div>
+            <DataTable
+              columns={companiesColumns(
+                favorites,
+                handleToggleFavorite,
+                toggleAllCompanies,
+                toggleCompanySelection,
+              )}
+              data={companies}
+            />
+          </div>
         )}
       </div>
 

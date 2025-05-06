@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search, Filter, Save, Heart, Settings, X } from "lucide-react";
-import CompaniesFilterModal from "./filters/CompaniesFilterModal";
+import { CompaniesFilterModal } from "./filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -41,7 +41,6 @@ interface CompaniesSearchBarProps {
   onFilterChange?: (filters: CompanyFilters) => void;
   selectedCompanies: string[];
   companies: CompanyType[];
-  onColumnsClick: () => void;
 }
 
 const CompaniesSearchBar = ({
@@ -64,7 +63,6 @@ const CompaniesSearchBar = ({
   onFilterChange = () => {},
   selectedCompanies,
   companies,
-  onColumnsClick,
 }: CompaniesSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
@@ -281,14 +279,6 @@ const CompaniesSearchBar = ({
               {selectedCompanies.length}
             </Badge>
           )}
-        </button>
-
-        <button
-          className="justify-center items-center h-[44px] border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]"
-          onClick={onColumnsClick}
-        >
-          <Settings className="h-[18px] w-[18px]" />
-          <span>Columns</span>
         </button>
       </div>
 

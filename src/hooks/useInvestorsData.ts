@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-interface Investor {
+export interface Investor {
   firm_id: string;
   firm_name: string;
-  firm_type: string;
+  firm_type: string[];
   city?: string;
   country?: string;
   region?: string;
@@ -34,7 +34,7 @@ export function useInvestorsData(
   currentPage: number,
   itemsPerPage: number,
   searchQuery: string,
-  filters: Filters
+  filters: Filters,
 ): InvestorsDataResult {
   const [investors, setInvestors] = useState<Investor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,9 +72,18 @@ export function useInvestorsData(
         const json = await res.json();
         const data: Investor[] = json.data || [];
         const metadata = json.metadata || { total: data.length };
-        setInvestors(data);
+        setInvestors(
+          data.map((item) => ({
+            ...item,
+            firm_type: Array.isArray(item.firm_type)
+              ? item.firm_type
+              : [item.firm_type],
+          })),
+        );
         setTotalItems(metadata.total || data.length);
-        setTotalPages(Math.ceil((metadata.total || data.length) / itemsPerPage));
+        setTotalPages(
+          Math.ceil((metadata.total || data.length) / itemsPerPage),
+        );
       } catch (err: any) {
         setError(err.message || "Unknown error");
       } finally {
@@ -86,4 +95,4 @@ export function useInvestorsData(
   }, [currentPage, itemsPerPage, searchQuery, filters]);
 
   return { investors, isLoading, error, totalPages, totalItems };
-} 
+}

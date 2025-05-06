@@ -41,6 +41,7 @@ export function DataTable<TData, TValue>({
           <TableRow key={headerGroup.id} className="h-[44px]">
             {headerGroup.headers.map((header) => (
               <TableHead
+                style={{ width: header.getSize() }}
                 key={header.id}
                 className={cn(
                   "max-h-[44px] h-full font-medium text-lg px-2 py-0 align-middle overflow-hidden",
@@ -87,6 +88,7 @@ export function DataTable<TData, TValue>({
                   stickyColumnId.includes(cell.column.id) &&
                     "sticky left-0 z-10 p-0!",
                 )}
+                style={{ ...cell.column.columnDef.meta }}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>

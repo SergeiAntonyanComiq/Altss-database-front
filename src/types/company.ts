@@ -1,4 +1,3 @@
-
 export interface CompanyType {
   id?: string;
   firm_id?: number | string; // Add firm_id property
@@ -16,7 +15,7 @@ export interface CompanyType {
   fax?: string;
   local_language_firm_name?: string;
   secondary_locations?: string;
-  firm_type?: string;
+  firm_type?: string[];
   year_est?: number;
   total_staff?: string;
   management_team_staff?: string;
@@ -96,19 +95,19 @@ export interface CompanyType {
   pe_assets_under_management_usd_mn?: string;
   pe_assets_under_management_eur_mn?: string;
   pe_assets_under_management_date?: string;
-  
+
   // Additional fields for UI functionality
   isFavorite?: boolean;
   team?: string[];
   location?: string;
   foundedYear?: string;
-  aum?: number;
+  aum?: string;
   employees?: number | string;
   revenue?: string;
   status?: string;
   name?: string;
   type?: string;
-  
+
   // Additional fields used in CompanyDetails component
   description?: string;
   industry?: string;
