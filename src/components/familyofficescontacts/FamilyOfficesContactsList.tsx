@@ -5,7 +5,7 @@ import { useFamilyOfficesContactsData } from "@/hooks/useFamilyOfficesContactsDa
 import { Search, Filter, Save, Heart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/DataTable.tsx";
-import { familyOfficesContactsColumns } from "@/components/columns-bucket/FamilyOfficesContactsColumns.tsx";
+import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 
 export interface FamilyOfficeContact {

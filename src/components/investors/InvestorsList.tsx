@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Column } from "./table-parts/InvestorsTableHeader";
 import InvestorsSearchBar from "./InvestorsSearchBar";
-import InvestorsTable from "./InvestorsTable";
 import { useInvestorsData } from "@/hooks/useInvestorsData";
 import InvestorsTableSkeleton from "./InvestorsTableSkeleton";
 import CompaniesError from "../companies/CompaniesError";
-import { useNavigate } from "react-router-dom";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
+import { DataTable } from "@/components/ui/DataTable.tsx";
+import { investorsColumns } from "@/components/columns-bucket";
 
 interface InvestorsListProps {
   currentPage: number;
@@ -24,15 +23,6 @@ type FilterType = {
   bio?: string;
 };
 
-const defaultColumns: Column[] = [
-  { id: "name", width: 280, minWidth: 280 },
-  { id: "type", width: 200, minWidth: 200 },
-  { id: "location", width: 300, minWidth: 300 },
-  { id: "aum", width: 170, minWidth: 170 },
-  { id: "founded", width: 150, minWidth: 150 },
-  { id: "funds", width: 150, minWidth: 150 },
-];
-
 const InvestorsList = ({
   currentPage,
   itemsPerPage,
@@ -42,8 +32,6 @@ const InvestorsList = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [filters, setFilters] = useState<FilterType>({});
-  const [columns] = useState<Column[]>(defaultColumns);
-  const navigate = useNavigate();
 
   const { investors, isLoading, error, totalPages, totalItems } =
     useInvestorsData(currentPage, itemsPerPage, activeSearchQuery, filters);
@@ -51,8 +39,6 @@ const InvestorsList = ({
   const handleFilterChange = (newFilters: FilterType) => {
     setFilters(newFilters);
   };
-
-  const handleView = (id: string) => navigate(`/investorprofile/${id}`);
 
   return (
     <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
@@ -74,11 +60,9 @@ const InvestorsList = ({
         ) : error ? (
           <CompaniesError errorMessage={error} />
         ) : (
-          <InvestorsTable
-            investors={investors}
-            columns={columns}
-            onViewInvestor={handleView}
-          />
+          <div>
+            <DataTable columns={investorsColumns()} data={investors} />
+          </div>
         )}
       </div>
 

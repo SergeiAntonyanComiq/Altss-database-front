@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -36,7 +36,7 @@ interface CompaniesFilterModalProps {
   }) => void;
 }
 
-const FilterInput = ({
+export const FilterInput = ({
   id,
   label,
   value,
@@ -99,17 +99,16 @@ const CompaniesFilterModal = ({
     applyFilter,
   } = useFilterModal(selectedFirmTypes);
 
-  const [firmNameFilter, setFirmNameFilter] = React.useState("");
-  const [cityFilter, setCityFilter] = React.useState("");
-  const [countryFilter, setCountryFilter] = React.useState("");
-  const [regionFilter, setRegionFilter] = React.useState("");
-  const [backgroundFilter, setBackgroundFilter] = React.useState("");
-  const [yearEstFilter, setYearEstFilter] = React.useState("");
-  const [totalStaffFilter, setTotalStaffFilter] = React.useState("");
-  const [peMainFirmStrategyFilter, setPeMainFirmStrategyFilter] =
-    React.useState("");
+  const [firmNameFilter, setFirmNameFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
+  const [regionFilter, setRegionFilter] = useState("");
+  const [backgroundFilter, setBackgroundFilter] = useState("");
+  const [yearEstFilter, setYearEstFilter] = useState("");
+  const [totalStaffFilter, setTotalStaffFilter] = useState("");
+  const [peMainFirmStrategyFilter, setPeMainFirmStrategyFilter] = useState("");
   const [peGeographicExposureFilter, setPeGeographicExposureFilter] =
-    React.useState("");
+    useState("");
 
   const handleApply = () => {
     onApplyFilters({
@@ -440,4 +439,4 @@ const CompaniesFilterModal = ({
   );
 };
 
-export default CompaniesFilterModal;
+export { CompaniesFilterModal };

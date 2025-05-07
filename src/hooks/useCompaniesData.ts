@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CompanyType } from "@/types/company";
-import { 
-  fetchFilteredFundManagers, 
-  fetchFundManagersCount 
+import {
+  fetchFilteredFundManagers,
+  fetchFundManagersCount,
 } from "@/services/fundManagersService";
 import { getFavoriteCompanies } from "@/services/savedFiltersService";
 
@@ -21,10 +21,10 @@ interface CompanyFilters {
 }
 
 export function useCompaniesData(
-  currentPage: number, 
-  itemsPerPage: number, 
+  currentPage: number,
+  itemsPerPage: number,
   searchQuery?: string,
-  filters?: CompanyFilters
+  filters?: CompanyFilters,
 ) {
   const [companies, setCompanies] = useState<CompanyType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,16 +36,16 @@ export function useCompaniesData(
   const fetchCompaniesData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const offset = (currentPage - 1) * itemsPerPage;
-      
+
       // Debug log for filter parameters
-      console.log('FILTER DEBUG - useCompaniesData - Raw filter props:', {
+      console.log("FILTER DEBUG - useCompaniesData - Raw filter props:", {
         searchQuery,
-        filters
+        filters,
       });
-      
+
       const filterParams = {
         limit: itemsPerPage,
         offset: offset,
@@ -59,23 +59,32 @@ export function useCompaniesData(
         total_staff: filters?.totalStaff || "",
         pe_main_firm_strategy: filters?.peMainFirmStrategy || "",
         pe_geographic_exposure: filters?.peGeographicExposure || "",
-        firm_type: filters?.firmTypes?.join(",") || ""
+        firm_type: filters?.firmTypes?.join(",") || "",
       };
-      
-      console.log('FILTER DEBUG - useCompaniesData - Constructed API params:', filterParams);
-      
+
+      console.log(
+        "FILTER DEBUG - useCompaniesData - Constructed API params:",
+        filterParams,
+      );
+
       const response = await fetchFilteredFundManagers(filterParams);
-      
-      console.log(`Fetched ${response.data.length} companies for page ${currentPage}`);
-      
+
+      console.log(
+        `Fetched ${response.data.length} companies for page ${currentPage}`,
+      );
+
       // Fetch favorite companies
       const favorites = await getFavoriteCompanies();
-      const favoriteIds = new Set(favorites.map(f => f.id));
+      const favoriteIds = new Set(favorites.map((f) => f.id));
 
       // Mark companies as favorites if they're in the favorites list
-      const companiesWithFavorites = response.data.map(company => ({
+      const companiesWithFavorites = response.data.map((company) => ({
         ...company,
-        isFavorite: favoriteIds.has(company.id || '')
+        aum: company.aum ? `${company.aum}` : undefined,
+        firm_type: Array.isArray(company.firm_type)
+          ? company.firm_type
+          : [company.firm_type],
+        isFavorite: favoriteIds.has(company.id || ""),
       }));
 
       setCompanies(companiesWithFavorites);
@@ -112,18 +121,18 @@ export function useCompaniesData(
       console.error("Error fetching total companies count:", err);
       toast({
         title: "Error",
-        description: "Could not fetch total companies count. Pagination may be inaccurate.",
+        description:
+          "Could not fetch total companies count. Pagination may be inaccurate.",
         variant: "destructive",
       });
     }
   };
 
-
-  return { 
-    companies, 
-    isLoading, 
-    error, 
+  return {
+    companies,
+    isLoading,
+    error,
     totalPages,
-    totalItems
+    totalItems,
   };
 }
