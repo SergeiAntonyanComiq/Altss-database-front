@@ -6,6 +6,7 @@ import CompaniesError from "../companies/CompaniesError";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { investorsColumns } from "@/components/columns-bucket";
+import { Loading } from "@/utils.tsx";
 
 interface InvestorsListProps {
   currentPage: number;
@@ -42,6 +43,7 @@ const InvestorsList = ({
 
   return (
     <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
+      <Loading show={isLoading} />
       <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
         Investors
       </h1>
@@ -55,9 +57,7 @@ const InvestorsList = ({
       />
 
       <div className="flex-grow mt-8">
-        {isLoading ? (
-          <InvestorsTableSkeleton />
-        ) : error ? (
+        {error ? (
           <CompaniesError errorMessage={error} />
         ) : (
           <div>

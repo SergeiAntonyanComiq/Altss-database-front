@@ -40,12 +40,6 @@ export function useCompaniesData(
     try {
       const offset = (currentPage - 1) * itemsPerPage;
 
-      // Debug log for filter parameters
-      console.log("FILTER DEBUG - useCompaniesData - Raw filter props:", {
-        searchQuery,
-        filters,
-      });
-
       const filterParams = {
         limit: itemsPerPage,
         offset: offset,
@@ -62,22 +56,11 @@ export function useCompaniesData(
         firm_type: filters?.firmTypes?.join(",") || "",
       };
 
-      console.log(
-        "FILTER DEBUG - useCompaniesData - Constructed API params:",
-        filterParams,
-      );
-
       const response = await fetchFilteredFundManagers(filterParams);
 
-      console.log(
-        `Fetched ${response.data.length} companies for page ${currentPage}`,
-      );
-
-      // Fetch favorite companies
       const favorites = await getFavoriteCompanies();
       const favoriteIds = new Set(favorites.map((f) => f.id));
 
-      // Mark companies as favorites if they're in the favorites list
       const companiesWithFavorites = response.data.map((company) => ({
         ...company,
         aum: company.aum ? `${company.aum}` : undefined,

@@ -19,8 +19,6 @@ const CompanyProfile: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("Company profile page loaded with ID:", id);
-    
     if (!id) {
       toast({
         title: "Error",
@@ -30,14 +28,13 @@ const CompanyProfile: React.FC = () => {
       navigate("/companies");
       return;
     }
-    
+
     const fetchCompanyData = async () => {
       setIsLoading(true);
       try {
         const fetchedCompany = await fetchFundManagerById(id);
-        
+
         if (fetchedCompany) {
-          console.log("Fetched company:", fetchedCompany);
           setCompany(fetchedCompany);
         } else {
           toast({
@@ -50,14 +47,15 @@ const CompanyProfile: React.FC = () => {
         console.error("Error fetching company:", error);
         toast({
           title: "Error",
-          description: "Failed to load company details. Please try again later.",
+          description:
+            "Failed to load company details. Please try again later.",
           variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchCompanyData();
   }, [id, navigate, toast]);
 
@@ -72,16 +70,16 @@ const CompanyProfile: React.FC = () => {
             <CompanyNotFound />
           ) : (
             <div className="max-w-6xl mx-auto">
-              <CompanyProfileHeader 
+              <CompanyProfileHeader
                 company={{
                   name: company.name || company.firm_name || "",
-                  last_updated: company.last_updated || "N/A"
-                }} 
+                  last_updated: company.last_updated || "N/A",
+                }}
               />
-              <CompanyProfileTabs 
-                company={company} 
-                activeTab={activeTab} 
-                setActiveTab={setActiveTab} 
+              <CompanyProfileTabs
+                company={company}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
               />
             </div>
           )}

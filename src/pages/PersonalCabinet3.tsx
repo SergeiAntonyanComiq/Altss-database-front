@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import ContactsList from "@/components/contacts/ContactsList";
-import PersonsList2 from "@/components/personal/PersonsList.tsx";
+import PersonsList from "@/components/personal/PersonsList.tsx";
 import { Toaster } from "@/components/ui/toaster";
 import { getSavedFilterById } from "@/services/savedFiltersService";
 import { useToast } from "@/components/ui/use-toast";
@@ -96,11 +96,9 @@ const PersonalCabinet3 = () => {
   useEffect(() => {
     const loadFilter = async () => {
       if (filterId) {
-        console.log("Loading filter with ID:", filterId);
         try {
           const filter = await getSavedFilterById(filterId);
           if (filter) {
-            console.log("Found filter:", filter);
             const newFilters = {
               firmTypes: filter.firmTypes || [],
               companyName: filter.companyName || "",
@@ -126,40 +124,19 @@ const PersonalCabinet3 = () => {
             setResponsibilitiesFilter(newFilters.responsibilities);
             setBioFilter(newFilters.bio);
 
-            // Debug log for filter values
-            console.log(
-              "FILTER DEBUG - PersonalCabinet3 - Filter values before applying:",
-              newFilters,
-            );
-
-            // Call handleFilterChange to ensure filters are properly applied
             handleFilterChange(newFilters);
-
-            console.log(
-              "FILTER DEBUG - PersonalCabinet3 - Current filter state after applying:",
-              {
-                selectedFirmTypes,
-                companyNameFilter,
-                positionFilter,
-                locationFilter,
-                responsibilitiesFilter,
-                bioFilter,
-              },
-            );
 
             toast({
               title: "Filter Applied",
               description: `Applied "${filter.name}" filter`,
             });
           } else {
-            console.log("Filter not found for ID:", filterId);
             toast({
               title: "Filter Not Found",
               description: "The requested filter could not be found",
               variant: "destructive",
             });
           }
-          // Remove filter param from URL after applying (or not found)
           const params = new URLSearchParams(location.search);
           if (params.has("filter")) {
             params.delete("filter");
@@ -178,7 +155,9 @@ const PersonalCabinet3 = () => {
       }
     };
 
-    loadFilter();
+    (async () => {
+      await loadFilter();
+    })();
   }, [
     filterId,
     toast,
@@ -186,6 +165,12 @@ const PersonalCabinet3 = () => {
     location.pathname,
     location.search,
     navigate,
+    selectedFirmTypes,
+    companyNameFilter,
+    positionFilter,
+    locationFilter,
+    responsibilitiesFilter,
+    bioFilter,
   ]);
 
   // Keep URL and state in sync - using proper dependency array
@@ -218,7 +203,7 @@ const PersonalCabinet3 = () => {
       case "persons":
       default:
         return (
-          <PersonsList2
+          <PersonsList
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
             onPageChange={handlePageChange}

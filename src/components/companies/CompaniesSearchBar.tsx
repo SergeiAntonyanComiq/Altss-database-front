@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Filter, Save, Heart, Settings, X } from "lucide-react";
+import { Search, Filter, Save, Heart, X } from "lucide-react";
 import { CompaniesFilterModal } from "./filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

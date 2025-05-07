@@ -3,8 +3,8 @@ import { CompanyType } from "@/types/company.ts";
 import React from "react";
 
 export const CompanyContact: ColumnDef<CompanyType, string> = {
-  id: "location",
-  header: "Company Location",
+  id: "contact",
+  header: "Company Contact",
   meta: {
     cellClassName:
       "text-sm font-normal text-[#637381] truncate max-w-full overflow-hidden whitespace-nowrap",

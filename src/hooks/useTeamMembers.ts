@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ContactType } from "@/types/contact";
 import { useToast } from "@/components/ui/use-toast";
@@ -20,16 +19,12 @@ export function useTeamMembers(firmId?: number | string) {
 
       try {
         setIsLoading(true);
-        console.log("Fetching team members for company firm_id:", firmId);
-        
-        // Use the fetchFilteredContacts function from contactsService
-        // with the firm_id parameter to get team members
+
         const response = await fetchFilteredContacts({
           firm_id: firmId.toString(),
-          limit: 50 // Get a reasonable number of team members
+          limit: 50,
         });
 
-        console.log("Team members fetched:", response);
         setTeamMembers(response.data || []);
       } catch (err) {
         console.error("Error fetching team members:", err);
