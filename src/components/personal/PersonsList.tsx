@@ -3,11 +3,7 @@ import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import { PersonType } from "@/types/person";
 import PersonsSearchBar from "./PersonsSearchBar";
-import PersonTableSkeleton from "./PersonTableSkeleton";
-import PersonsTable from "./PersonsTable.tsx";
-import PersonsColumnModal from "./PersonsColumnModal";
-import { usePersistedPersonColumns } from "./hooks/usePersistedPersonColumns";
-import { usePersonsSelection } from "./hooks/usePersonsSelection";
+import { usePersonsSelection } from "./hooks";
 import { toast } from "@/components/ui/use-toast";
 import { searchContactsByName } from "@/services/contactsService";
 import {
@@ -17,8 +13,7 @@ import {
 import CustomPagination from "../ui/CustomPagination.tsx";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { personsColumns } from "@/components/columns-bucket";
-import favorites from "@/pages/Favorites.tsx";
-import EmptyState from "@/components/personal/table/EmptyState.tsx";
+import { Loading } from "@/utils.tsx";
 
 const contactToPerson = (contact: ContactType): PersonType | null => {
   if (!contact || !contact.contact_id || !contact.firm_id) return null;
@@ -87,9 +82,7 @@ const PersonsList = ({
   onFilterChange,
 }: PersonsList2Props) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
-  const { visibleColumns, updateVisibleColumns, handleColumnResize } =
-    usePersistedPersonColumns();
+
   const [localSelectedFirmTypes, setLocalSelectedFirmTypes] =
     useState<string[]>(selectedFirmTypes);
   const [localCompanyNameFilter, setCompanyNameFilter] =
@@ -101,7 +94,6 @@ const PersonsList = ({
   );
   const [localBioFilter, setBioFilter] = useState(bioFilter);
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [totalContacts, setTotalContacts] = useState(0);
   const [favorites, setFavorites] = useState<Record<number, boolean>>({});
@@ -125,12 +117,14 @@ const PersonsList = ({
 
   const displayedContacts = isSearchActive ? searchResults : contacts;
 
-  const personsFromHook: PersonType[] = useMemo(() => {
-    return displayedContacts
-      .filter(Boolean)
-      .map((contact) => contactToPerson(contact))
-      .filter((person): person is PersonType => Boolean(person));
-  }, [displayedContacts]);
+  const personsFromHook: PersonType[] = useMemo(
+    () =>
+      displayedContacts
+        .filter(Boolean)
+        .map((contact) => contactToPerson(contact))
+        .filter((person): person is PersonType => Boolean(person)),
+    [displayedContacts],
+  );
 
   const [localPersons, setLocalPersons] = useState<PersonType[]>([]);
 
@@ -159,6 +153,7 @@ const PersonsList = ({
     localLocationFilter,
     localResponsibilitiesFilter,
     localBioFilter,
+    isSearchActive,
   ]);
 
   const handleSearch = useCallback(
@@ -177,7 +172,6 @@ const PersonsList = ({
       setResponsibilitiesFilter("");
       setBioFilter("");
 
-      setIsSearching(true);
       try {
         const { data, total } = await searchContactsByName(
           query,
@@ -202,19 +196,13 @@ const PersonsList = ({
         });
         setSearchResults([]);
         setTotalContacts(0);
-      } finally {
-        setIsSearching(false);
       }
     },
     [currentPage, itemsPerPage],
   );
 
-  const {
-    selectedPersons,
-    handleCheckboxChange,
-    handleSelectAll,
-    isPersonSelected,
-  } = usePersonsSelection(localPersons);
+  const { selectedPersons, handleCheckboxChange, handleSelectAll } =
+    usePersonsSelection(localPersons);
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -325,71 +313,49 @@ const PersonsList = ({
 
   return (
     <div className="w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
-      {isLoading ? (
-        <>
-          <div className="flex gap-4 items-center mt-10">
-            <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
-          </div>
-          <PersonTableSkeleton />
-        </>
-      ) : (
-        <>
-          <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
-            Persons
-          </h1>
+      <Loading show={isLoading} />
+      <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
+        Persons
+      </h1>
 
-          <PersonsSearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedFirmTypes={localSelectedFirmTypes}
-            companyNameFilter={localCompanyNameFilter}
-            positionFilter={localPositionFilter}
-            locationFilter={localLocationFilter}
-            responsibilitiesFilter={localResponsibilitiesFilter}
-            bioFilter={localBioFilter}
-            onFilterChange={handleFilterChange}
-            onSearch={handleSearch}
-            selectedPersons={selectedPersons}
-            persons={localPersons}
-            onColumnsClick={() => setIsColumnModalOpen(true)}
-          />
+      <PersonsSearchBar
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedFirmTypes={localSelectedFirmTypes}
+        companyNameFilter={localCompanyNameFilter}
+        positionFilter={localPositionFilter}
+        locationFilter={localLocationFilter}
+        responsibilitiesFilter={localResponsibilitiesFilter}
+        bioFilter={localBioFilter}
+        onFilterChange={handleFilterChange}
+        onSearch={handleSearch}
+        selectedPersons={selectedPersons}
+        persons={localPersons}
+      />
 
-          <div className="mt-6 flex-grow overflow-x-auto w-full">
-            {!localPersons.length ? (
-              <EmptyState />
-            ) : (
-              <DataTable
-                columns={personsColumns(
-                  favorites,
-                  toggleFavorite,
-                  handleSelectAll,
-                  handleCheckboxChange,
-                )}
-                data={localPersons}
-              />
-            )}
-          </div>
+      <div className="mt-6 flex-grow overflow-x-auto w-full">
+        <DataTable
+          columns={personsColumns(
+            favorites,
+            toggleFavorite,
+            handleSelectAll,
+            handleCheckboxChange,
+          )}
+          data={localPersons}
+        />
+      </div>
 
-          <div className="mt-6">
-            <CustomPagination
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-              totalPages={totalPages}
-              itemsPerPage={itemsPerPage}
-              onItemsPerPageChange={handleItemsPerPageChange}
-              totalItems={effectiveTotal}
-              disabled={isLoading}
-            />
-          </div>
-
-          <PersonsColumnModal
-            isOpen={isColumnModalOpen}
-            onClose={() => setIsColumnModalOpen(false)}
-            columns={visibleColumns}
-            onApplyColumns={updateVisibleColumns}
-          />
-        </>
-      )}
+      <div className="mt-6">
+        <CustomPagination
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          totalItems={effectiveTotal}
+          disabled={isLoading}
+        />
+      </div>
     </div>
   );
 };

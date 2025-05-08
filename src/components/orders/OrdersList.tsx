@@ -64,7 +64,7 @@ const OrdersList = () => {
   );
 
   const toggleFavorite = useCallback((id: string) => {
-    console.log(`Toggle favorite for order ID: ${id}`);
+    return;
   }, []);
 
   const allCurrentPageItemsSelected = useMemo(() => {

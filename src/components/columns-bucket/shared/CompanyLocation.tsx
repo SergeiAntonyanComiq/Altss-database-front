@@ -9,7 +9,7 @@ export const CompanyLocation = <
   },
 >(): ColumnDef<T> => ({
   id: "location",
-  header: "Company Contact",
+  header: "Company Location",
   meta: {
     cellClassName:
       "text-sm font-normal text-[#637381] truncate max-w-full overflow-hidden whitespace-nowrap",

@@ -4,202 +4,202 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   public: {
     Tables: {
       profiles: {
         Row: {
-          avatar_url: string | null
-          first_name: string | null
-          id: string
-          last_name: string | null
-          updated_at: string | null
-        }
+          avatar_url: string | null;
+          first_name: string | null;
+          id: string;
+          last_name: string | null;
+          updated_at: string | null;
+        };
         Insert: {
-          avatar_url?: string | null
-          first_name?: string | null
-          id: string
-          last_name?: string | null
-          updated_at?: string | null
-        }
+          avatar_url?: string | null;
+          first_name?: string | null;
+          id: string;
+          last_name?: string | null;
+          updated_at?: string | null;
+        };
         Update: {
-          avatar_url?: string | null
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
- favorite_companies: {
+          avatar_url?: string | null;
+          first_name?: string | null;
+          id?: string;
+          last_name?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      favorite_companies: {
         Row: {
-          id: string
-          user_id: string
-          company_id: string
-          name: string
-          type: string | null
-          aum: string | null
-          added_at: string
-        }
+          id: string;
+          user_id: string;
+          company_id: string;
+          name: string;
+          type: string | null;
+          aum: string | null;
+          added_at: string;
+        };
         Insert: {
-          id?: string
-          user_id: string
-          company_id: string
-          name: string
-          type?: string | null
-          aum?: string | null
-          added_at?: string
-        }
+          id?: string;
+          user_id: string;
+          company_id: string;
+          name: string;
+          type?: string | null;
+          aum?: string | null;
+          added_at?: string;
+        };
         Update: {
-          id?: string
-          user_id?: string
-          company_id?: string
-          name?: string
-          type?: string | null
-          aum?: string | null
-          added_at?: string
-        }
+          id?: string;
+          user_id?: string;
+          company_id?: string;
+          name?: string;
+          type?: string | null;
+          aum?: string | null;
+          added_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "favorite_companies_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+            foreignKeyName: "favorite_companies_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       favorite_persons: {
         Row: {
-          id: string
-          user_id: string
-          contact_id: string
-          name: string
-          position: string | null
-          company: string | null
-          added_at: string
-        }
+          id: string;
+          user_id: string;
+          contact_id: string;
+          name: string;
+          position: string | null;
+          company: string | null;
+          added_at: string;
+        };
         Insert: {
-          id?: string
-          user_id: string
-          contact_id: string
-          name: string
-          position?: string | null
-          company?: string | null
-          added_at?: string
-        }
+          id?: string;
+          user_id: string;
+          contact_id: string;
+          name: string;
+          position?: string | null;
+          company?: string | null;
+          added_at?: string;
+        };
         Update: {
-          id?: string
-          user_id?: string
-          contact_id?: string
-          name?: string
-          position?: string | null
-          company?: string | null
-          added_at?: string
-        }
+          id?: string;
+          user_id?: string;
+          contact_id?: string;
+          name?: string;
+          position?: string | null;
+          company?: string | null;
+          added_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "favorite_persons_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+            foreignKeyName: "favorite_persons_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       saved_filters: {
         Row: {
-          id: string
-          user_id: string
-          name: string
-          firm_types: string[] | null
-          company_name: string | null
-          position: string | null
-          location: string | null
-          responsibilities: string | null
-          bio: string | null
-          created_at: string
-          updated_at: string | null
-        }
+          id: string;
+          user_id: string;
+          name: string;
+          firm_types: string[] | null;
+          company_name: string | null;
+          position: string | null;
+          location: string | null;
+          responsibilities: string | null;
+          bio: string | null;
+          created_at: string;
+          updated_at: string | null;
+        };
         Insert: {
-          id?: string
-          user_id: string
-          name: string
-          firm_types?: string[] | null
-          company_name?: string | null
-          position?: string | null
-          location?: string | null
-          responsibilities?: string | null
-          bio?: string | null
-          created_at?: string
-          updated_at?: string | null
-        }
+          id?: string;
+          user_id: string;
+          name: string;
+          firm_types?: string[] | null;
+          company_name?: string | null;
+          position?: string | null;
+          location?: string | null;
+          responsibilities?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          updated_at?: string | null;
+        };
         Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          firm_types?: string[] | null
-          company_name?: string | null
-          position?: string | null
-          location?: string | null
-          responsibilities?: string | null
-          bio?: string | null
-          created_at?: string
-          updated_at?: string | null
-        }
+          id?: string;
+          user_id?: string;
+          name?: string;
+          firm_types?: string[] | null;
+          company_name?: string | null;
+          position?: string | null;
+          location?: string | null;
+          responsibilities?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          updated_at?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "saved_filters_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+            foreignKeyName: "saved_filters_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       saved_searches: {
         Row: {
-          created_at: string
-          filter_data: Json
-          id: string
-          name: string
-          user_id: string
-        }
+          created_at: string;
+          filter_data: Json;
+          id: string;
+          name: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          filter_data?: Json
-          id?: string
-          name: string
-          user_id: string
-        }
+          created_at?: string;
+          filter_data?: Json;
+          id?: string;
+          name: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          filter_data?: Json
-          id?: string
-          name?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          created_at?: string;
+          filter_data?: Json;
+          id?: string;
+          name?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database[Extract<keyof Database, "public">];
 
 export type Tables<
   PublicTableNameOrOptions extends
@@ -212,7 +212,7 @@ export type Tables<
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
@@ -220,11 +220,11 @@ export type Tables<
         PublicSchema["Views"])
     ? (PublicSchema["Tables"] &
         PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
@@ -235,17 +235,17 @@ export type TablesInsert<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
@@ -256,17 +256,17 @@ export type TablesUpdate<
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
     ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   PublicEnumNameOrOptions extends
@@ -279,14 +279,14 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof PublicSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof Database;
   }
     ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
@@ -294,4 +294,4 @@ export type CompositeTypes<
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;

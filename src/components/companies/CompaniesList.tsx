@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CompaniesSearchBar from "./CompaniesSearchBar";
-import CompaniesTableSkeleton from "./CompaniesTableSkeleton";
 import CompaniesError from "./CompaniesError";
 import { useCompaniesData } from "@/hooks/useCompaniesData";
 import { useCompanySelection } from "./useCompanySelection";
 import { getSavedFilterById } from "@/services/savedFiltersService";
 import { useToast } from "@/components/ui/use-toast";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
-import { DataTable } from "@/components/ui/DataTable.tsx";
 import { companiesColumns } from "@/components/columns-bucket";
+
+import { DataTable } from "@/components/ui/DataTable.tsx";
+import { Loading } from "@/utils.tsx";
 
 interface CompaniesListProps {
   currentPage: number;
@@ -153,31 +154,30 @@ const CompaniesList = ({
   }, [companies]);
 
   return (
-    <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
-      <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
-        Companies
-      </h1>
+    <>
+      <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
+        <Loading show={isLoading} />
+        <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
+          Companies
+        </h1>
 
-      <div className="mt-6">
-        <CompaniesSearchBar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onSearch={(query) => setActiveSearchQuery(query)}
-          selectedFirmTypes={selectedFirmTypes}
-          activeFilters={activeFilters}
-          onFilterChange={handleFilterChange}
-          selectedCompanies={selectedCompanies}
-          companies={companies}
-        />
-      </div>
+        <div className="mt-6">
+          <CompaniesSearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onSearch={(query) => setActiveSearchQuery(query)}
+            selectedFirmTypes={selectedFirmTypes}
+            activeFilters={activeFilters}
+            onFilterChange={handleFilterChange}
+            selectedCompanies={selectedCompanies}
+            companies={companies}
+          />
+        </div>
 
-      <div className="flex-grow mt-8">
-        {isLoading ? (
-          <CompaniesTableSkeleton />
-        ) : error ? (
-          <CompaniesError errorMessage={error} />
-        ) : (
-          <div>
+        <div className="flex-grow mt-8">
+          {error ? (
+            <CompaniesError errorMessage={error} />
+          ) : (
             <DataTable
               columns={companiesColumns(
                 favorites,
@@ -187,22 +187,22 @@ const CompaniesList = ({
               )}
               data={companies}
             />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      <div className="mt-6">
-        <CustomPagination
-          currentPage={currentPage}
-          onPageChange={onPageChange}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onItemsPerPageChange={onItemsPerPageChange}
-          totalItems={totalItems}
-          disabled={isLoading}
-        />
+        <div className="mt-6">
+          <CustomPagination
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={onItemsPerPageChange}
+            totalItems={totalItems}
+            disabled={isLoading}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

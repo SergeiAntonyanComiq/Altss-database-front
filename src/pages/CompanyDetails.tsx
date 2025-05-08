@@ -20,8 +20,6 @@ const CompanyDetails: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("Company details page loaded with ID:", id);
-    
     if (!id) {
       toast({
         title: "Error",
@@ -31,19 +29,18 @@ const CompanyDetails: React.FC = () => {
       navigate("/companies");
       return;
     }
-    
+
     const fetchCompanyData = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const fetchedCompany = await fetchFundManagerById(id);
-        
+
         if (fetchedCompany) {
-          console.log("Fetched company details:", fetchedCompany);
           setCompany({
             ...fetchedCompany,
-            last_updated: fetchedCompany.last_updated || "Recently updated"
+            last_updated: fetchedCompany.last_updated || "Recently updated",
           });
         } else {
           toast({
@@ -58,14 +55,15 @@ const CompanyDetails: React.FC = () => {
         setError("Failed to load company details. Please try again later.");
         toast({
           title: "Error",
-          description: "Failed to load company details. Please try again later.",
+          description:
+            "Failed to load company details. Please try again later.",
           variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchCompanyData();
   }, [id, navigate, toast]);
 
@@ -81,13 +79,13 @@ const CompanyDetails: React.FC = () => {
               <CompanyNotFound />
             ) : (
               <div className="bg-white shadow rounded-lg overflow-hidden">
-                <CompanyProfileHeader 
+                <CompanyProfileHeader
                   company={{
                     name: company.name || company.firm_name || "",
-                    last_updated: company.last_updated
-                  }} 
+                    last_updated: company.last_updated,
+                  }}
                 />
-                <CompanyProfileTabs 
+                <CompanyProfileTabs
                   company={company}
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}

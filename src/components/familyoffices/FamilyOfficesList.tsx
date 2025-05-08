@@ -9,6 +9,7 @@ import { Search, Filter, Save, Heart } from "lucide-react";
 import { familyOfficeColumnList } from "@/components/columns-bucket";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
+import { Loading } from "@/utils.tsx";
 
 interface FamilyOfficesListProps {
   currentPage: number;
@@ -48,6 +49,7 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
 
   return (
     <div className="bg-[#FEFEFE] w-full h-full py-8 px-4 md:px-6 lg:px-8 flex flex-col justify-between">
+      <Loading show={isLoading} />
       <div className="flex-grow">
         <h1 className="text-[#111928] text-2xl font-semibold mb-10">
           Family Offices
@@ -84,11 +86,7 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
             Add to Favorites
           </Button>
         </div>
-        {isLoading ? (
-          <div className="flex gap-4 items-center mt-10">
-            <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
-          </div>
-        ) : error ? (
+        {error ? (
           <div className="text-red-500 mt-8">{error}</div>
         ) : (
           <div className="w-full mt-8 mb-8 overflow-x-auto">

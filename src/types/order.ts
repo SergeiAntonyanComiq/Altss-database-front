@@ -3,7 +3,6 @@ export type OrderStatus = "Ready" | "In progress" | "Error";
 export interface OrderType {
   id: string;
   name: string;
-  profileName: string;
   email?: string;
   avatarUrl?: string;
   favorite: boolean;
@@ -11,4 +10,5 @@ export interface OrderType {
   status: OrderStatus;
   date: string;
   description: string;
+  profileName?: string;
 }

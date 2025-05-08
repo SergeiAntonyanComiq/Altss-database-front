@@ -1,15 +1,13 @@
-import React, { useState, useEffect, KeyboardEvent } from "react";
+import React, { useState, KeyboardEvent } from "react";
 import { Search, Filter, Save, Heart, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PersonsFilterModal from "./filters/PersonsFilterModal";
 import { Badge } from "@/components/ui/badge";
 import {
-  getSavedFilters,
   saveFilter,
   addPersonToFavorites,
   isPersonInFavorites,
 } from "@/services/savedFiltersService";
-import { SavedFilterType } from "./filters/hooks/useFilterModal";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
@@ -45,7 +43,6 @@ interface PersonsSearchBarProps {
     currentPosition?: string;
     companies?: string[];
   }>;
-  onColumnsClick?: () => void;
 }
 
 const PersonsSearchBar = ({
@@ -61,52 +58,11 @@ const PersonsSearchBar = ({
   onSearch,
   selectedPersons = [],
   persons = [],
-  onColumnsClick,
 }: PersonsSearchBarProps) => {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [savedFilters, setSavedFilters] = useState<SavedFilterType[]>([]);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
   const { toast } = useToast();
-
-  useEffect(() => {
-    const loadFilters = async () => {
-      try {
-        const filters = await getSavedFilters();
-        setSavedFilters(filters);
-      } catch {
-        setSavedFilters([]);
-      }
-    };
-
-    loadFilters();
-  }, [isFilterModalOpen]);
-
-  const handleApplySavedFilter = (filter: SavedFilterType) => {
-    onFilterChange?.({
-      firmTypes: filter.firmTypes,
-      companyName: filter.companyName || "",
-      position: filter.position || "",
-      location: filter.location || "",
-      responsibilities: filter.responsibilities || "",
-      bio: filter.bio || "",
-    });
-  };
-
-  const handleClearFilters = () => {
-    onFilterChange?.({
-      firmTypes: [],
-      companyName: "",
-      position: "",
-      location: "",
-      responsibilities: "",
-      bio: "",
-    });
-    toast({
-      title: "Filters Cleared",
-      description: "Showing all contacts",
-    });
-  };
 
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -309,10 +265,7 @@ const PersonsSearchBar = ({
         )}
       </button>
 
-      <button
-        className="justify-center max-h-[44px] items-center border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]"
-        onClick={onColumnsClick}
-      >
+      <button className="justify-center max-h-[44px] items-center border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px]">
         <Settings className="h-[18px] w-[18px]" />
         <span>Columns</span>
       </button>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
+import { Loading } from "@/utils.tsx";
 
 export interface FamilyOfficeContact {
   contact_id: string;
@@ -72,6 +73,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
 
   return (
     <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
+      <Loading show={isLoading} />
       <div className="flex-grow">
         <h1 className="text-[#111928] text-2xl font-semibold mb-10">
           Family Offices Contacts

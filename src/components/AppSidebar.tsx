@@ -50,53 +50,47 @@ const AppSidebar = () => {
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
 
-  // Load favorites and saved searches
   useEffect(() => {
     const loadData = async () => {
       try {
         const favPersons = await getFavoritePersons();
         setFavoritePersons(favPersons || []);
       } catch (error) {
-        console.error("Error loading favorite persons:", error);
-        setFavoritePersons([]); // Reset on error
+        setFavoritePersons([]);
       }
 
       try {
         const favCompanies = await getFavoriteCompanies();
         setFavoriteCompanies(favCompanies || []);
       } catch (error) {
-        console.error("Error loading favorite companies:", error);
-        setFavoriteCompanies([]); // Reset on error
+        setFavoriteCompanies([]);
       }
 
       try {
         const searches = await getSavedFilters();
         setSavedSearches(searches || []);
       } catch (error) {
-        console.error("Error loading saved searches:", error);
-        setSavedSearches([]); // Reset on error
+        setSavedSearches([]);
       }
     };
 
-    loadData();
+    (async () => {
+      await loadData();
+    })();
 
-    // Add event listener for updates
-    const handleUpdate = () => {
-      console.log("Favorites or Saved Searches updated, reloading data...");
-      loadData();
+    const handleUpdate = async () => {
+      await loadData();
     };
 
     window.addEventListener("favoritesUpdated", handleUpdate);
     window.addEventListener("savedFiltersUpdated", handleUpdate);
 
-    // Cleanup listener on unmount
     return () => {
       window.removeEventListener("favoritesUpdated", handleUpdate);
       window.removeEventListener("savedFiltersUpdated", handleUpdate);
     };
-  }, [location.pathname]); // Re-run on navigation
+  }, [location.pathname]);
 
-  // Fetch user profile including avatar when component mounts
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user) return;
@@ -109,14 +103,12 @@ const AppSidebar = () => {
           .single();
 
         if (error) {
-          console.error("Error fetching user profile:", error);
           return;
         }
 
         if (data) {
           setAvatarUrl(data.avatar_url || null);
 
-          // Set user name for display
           const firstName = data.first_name || "";
           const lastName = data.last_name || "";
           if (firstName || lastName) {
@@ -124,11 +116,13 @@ const AppSidebar = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error(error);
       }
     };
 
-    fetchUserProfile();
+    (async () => {
+      await fetchUserProfile();
+    })();
   }, [user]);
 
   const isActive = (path: string) => {
@@ -147,7 +141,6 @@ const AppSidebar = () => {
         title: "Logged out successfully",
       });
     } catch (error) {
-      console.error("Error logging out:", error);
       toast({
         title: "Error logging out",
         variant: "destructive",
@@ -199,7 +192,6 @@ const AppSidebar = () => {
     },
   ];
 
-  // Updated menu grouping - first 5 items above the separator, only My Orders below
   const mainMenuItems = menuItems.slice(0, 5);
   const secondaryMenuItems = menuItems.slice(5);
 
@@ -318,7 +310,6 @@ const AppSidebar = () => {
               </SidebarMenuItem>
             ))}
 
-            {/* Favorites Dropdown */}
             <SidebarMenuItem>
               <Collapsible
                 open={favoritesOpen}
@@ -347,7 +338,6 @@ const AppSidebar = () => {
                   {favoritePersons.length > 0 ||
                   favoriteCompanies.length > 0 ? (
                     <>
-                      {/* Companies Section */}
                       {favoriteCompanies.length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
@@ -372,7 +362,6 @@ const AppSidebar = () => {
                         </>
                       )}
 
-                      {/* Persons Section */}
                       {favoritePersons.length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
@@ -412,7 +401,6 @@ const AppSidebar = () => {
               </Collapsible>
             </SidebarMenuItem>
 
-            {/* Saved Searches Dropdown */}
             <SidebarMenuItem>
               <Collapsible
                 open={savedSearchesOpen}
@@ -444,7 +432,6 @@ const AppSidebar = () => {
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
                   {savedSearches.length > 0 ? (
                     <>
-                      {/* Companies Section */}
                       {savedSearches.filter(
                         (search) => search.type === "company",
                       ).length > 0 && (
@@ -466,7 +453,6 @@ const AppSidebar = () => {
                         </>
                       )}
 
-                      {/* Persons Section */}
                       {savedSearches.filter(
                         (search) => search.type === "person",
                       ).length > 0 && (

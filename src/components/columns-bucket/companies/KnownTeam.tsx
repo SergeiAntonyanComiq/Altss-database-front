@@ -4,8 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CompanyType } from "@/types/company.ts";
 
 export const KnownTeam: ColumnDef<CompanyType, string> = {
-  id: "location",
-  header: "Company Contact",
+  id: "team",
+  header: "Known Team",
   meta: {
     cellClassName:
       "text-sm font-normal text-[#637381] truncate max-w-full overflow-hidden whitespace-nowrap",
