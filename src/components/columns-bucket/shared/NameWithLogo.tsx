@@ -21,6 +21,9 @@ export const NameWithLogo = <
 ): ColumnDef<T> => ({
   id: field,
   accessorFn: (row) => row[field],
+  meta: {
+    maxWidth: 350,
+  },
   header: ({ table }) => {
     const handleCheckedChange = (value: CheckedState) => {
       const selectedData = table.getRowModel().rows.map((row) => row.original);
