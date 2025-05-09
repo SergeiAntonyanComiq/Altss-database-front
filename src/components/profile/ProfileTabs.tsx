@@ -33,35 +33,34 @@ interface ProfileTabsContactProps extends ProfileTabsBaseProps {
 type ProfileTabsProps = ProfileTabsUserProps | ProfileTabsContactProps;
 
 const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
-  const isContactProfile = 'contact' in props && props.contact !== undefined;
-  
+  const isContactProfile = "contact" in props && props.contact !== undefined;
+
   // Choose the appropriate change handler based on the props
-  const handleTabChange = isContactProfile ? props.setActiveTab : props.onTabChange;
-  
+  const handleTabChange = isContactProfile
+    ? props.setActiveTab
+    : props.onTabChange;
+
   return (
-    <Tabs 
-      value={props.activeTab} 
-      onValueChange={handleTabChange}
-    >
+    <Tabs value={props.activeTab} onValueChange={handleTabChange}>
       {isContactProfile ? (
         // Person profile tabs
         <>
           <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
             <TabsList className="bg-transparent p-0 h-auto">
-              <TabsTrigger 
-                value="details" 
+              <TabsTrigger
+                value="details"
                 className="py-3 px-0 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
               >
                 Details
               </TabsTrigger>
-              <TabsTrigger 
-                value="bio" 
+              <TabsTrigger
+                value="bio"
                 className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
               >
                 Bio & News
               </TabsTrigger>
-              <TabsTrigger 
-                value="job" 
+              <TabsTrigger
+                value="job"
                 className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
               >
                 Job history
@@ -78,7 +77,10 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
             </TabsContent>
 
             <TabsContent value="bio" className="mt-0">
-              <ProfileBioSection contact={props.contact} newsItems={props.newsItems} />
+              <ProfileBioSection
+                contact={props.contact}
+                newsItems={props.newsItems}
+              />
             </TabsContent>
 
             <TabsContent value="job" className="mt-0">
@@ -90,20 +92,20 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
         // User profile tabs
         <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
           <TabsList className="bg-transparent p-0 h-auto">
-            <TabsTrigger 
-              value="general" 
+            <TabsTrigger
+              value="details"
               className="py-3 px-0 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
             >
-              General
+              Details
             </TabsTrigger>
-            <TabsTrigger 
-              value="billing" 
+            <TabsTrigger
+              value="billing"
               className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
             >
               Billing
             </TabsTrigger>
-            <TabsTrigger 
-              value="support" 
+            <TabsTrigger
+              value="support"
               className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
             >
               Support

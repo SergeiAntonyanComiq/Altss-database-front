@@ -2,24 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
-import { fetchFamilyOfficeContacts, FamilyOfficeContact } from "@/services/familyOfficeContactsService";
+import {
+  fetchFamilyOfficeContacts,
+  FamilyOfficeContact,
+} from "@/services/familyOfficeContactsService";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import ProfileTabs from "@/components/profile/ProfileTabs";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const TABS = [
-  { key: "general", label: "General" },
-  { key: "contact", label: "Contact Details" },
-  { key: "notes", label: "Notes" },
-  { key: "other", label: "Other Info" },
-];
-
 const FamilyOfficesContactsProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [contact, setContact] = useState<FamilyOfficeContact | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
     const fetchContact = async () => {
@@ -91,12 +87,9 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                 favorite: false,
               }}
             />
-            <ProfileTabs
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
+            <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
             <div className="w-full mt-4 px-6 pb-4">
-              {activeTab === "general" && (
+              {activeTab === "details" && (
                 <Card className="p-6 mb-4">
                   <div className="flex items-center gap-6">
                     <Avatar className="h-20 w-20">
@@ -120,8 +113,9 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                             <AvatarImage
                               src={`https://sinerg.blob.core.windows.net/main/img/avatars/${avatar}`}
                               alt={contact.full_name}
-                              onError={e => {
-                                (e.target as HTMLImageElement).src = "/placeholder.svg";
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  "/placeholder.svg";
                               }}
                             />
                           );
@@ -139,7 +133,9 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                       })()}
                     </Avatar>
                     <div>
-                      <div className="text-2xl font-bold">{contact.full_name}</div>
+                      <div className="text-2xl font-bold">
+                        {contact.full_name}
+                      </div>
                       <div className="text-gray-500">{contact.title}</div>
                       {/* Display office_tag and family_office if present */}
                       {(() => {
@@ -155,12 +151,16 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                           <>
                             {other && other.office_tag && (
                               <div className="text-sm text-gray-700 mt-1">
-                                <span className="font-medium">Office Tag:</span> {other.office_tag}
+                                <span className="font-medium">Office Tag:</span>{" "}
+                                {other.office_tag}
                               </div>
                             )}
                             {other && other.family_office && (
                               <div className="text-sm text-gray-700">
-                                <span className="font-medium">Family Office:</span> {other.family_office}
+                                <span className="font-medium">
+                                  Family Office:
+                                </span>{" "}
+                                {other.family_office}
                               </div>
                             )}
                           </>
@@ -174,7 +174,12 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                 <Card className="p-6 mb-4">
                   <div className="mb-2">
                     <span className="font-medium text-gray-700">Email:</span>{" "}
-                    <a href={`mailto:${contact.email}`} className="text-blue-600">{contact.email}</a>
+                    <a
+                      href={`mailto:${contact.email}`}
+                      className="text-blue-600"
+                    >
+                      {contact.email}
+                    </a>
                   </div>
                   <div className="mb-2">
                     <span className="font-medium text-gray-700">Phone:</span>{" "}
@@ -183,7 +188,12 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                   <div className="mb-2">
                     <span className="font-medium text-gray-700">LinkedIn:</span>{" "}
                     {contact.linkedin ? (
-                      <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600">
+                      <a
+                        href={contact.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600"
+                      >
                         {contact.linkedin}
                       </a>
                     ) : (
@@ -191,7 +201,9 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                     )}
                   </div>
                   <div className="mb-2">
-                    <span className="font-medium text-gray-700">Company ID:</span>{" "}
+                    <span className="font-medium text-gray-700">
+                      Company ID:
+                    </span>{" "}
                     <span>{contact.company_id}</span>
                   </div>
                 </Card>
@@ -200,14 +212,18 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                 <Card className="p-6 mb-4">
                   <div>
                     <span className="font-medium text-gray-700">Notes:</span>
-                    <div className="mt-2 text-gray-800 whitespace-pre-line">{contact.notes || "—"}</div>
+                    <div className="mt-2 text-gray-800 whitespace-pre-line">
+                      {contact.notes || "—"}
+                    </div>
                   </div>
                 </Card>
               )}
               {activeTab === "other" && (
                 <Card className="p-6 mb-4">
                   <div>
-                    <span className="font-medium text-gray-700">Other Info:</span>
+                    <span className="font-medium text-gray-700">
+                      Other Info:
+                    </span>
                     {(() => {
                       let other = contact.other_fields;
                       if (typeof other === "string") {
@@ -219,7 +235,10 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                       }
                       if (other && typeof other === "object") {
                         // Display tags if present
-                        if (Array.isArray(other.tags) && other.tags.length > 0) {
+                        if (
+                          Array.isArray(other.tags) &&
+                          other.tags.length > 0
+                        ) {
                           return (
                             <div className="mt-2 mb-2 flex flex-wrap gap-2">
                               {other.tags.map((tag: string) => (
@@ -234,14 +253,20 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                           );
                         }
                         // Display other fields
-                        const keys = Object.keys(other).filter(k => k !== "tags");
+                        const keys = Object.keys(other).filter(
+                          (k) => k !== "tags",
+                        );
                         if (keys.length > 0) {
                           return (
                             <div className="mt-2">
                               {keys.map((key) => (
                                 <div key={key} className="mb-1">
-                                  <span className="font-medium text-gray-600">{key}:</span>{" "}
-                                  <span className="text-gray-800">{JSON.stringify(other[key])}</span>
+                                  <span className="font-medium text-gray-600">
+                                    {key}:
+                                  </span>{" "}
+                                  <span className="text-gray-800">
+                                    {JSON.stringify(other[key])}
+                                  </span>
                                 </div>
                               ))}
                             </div>

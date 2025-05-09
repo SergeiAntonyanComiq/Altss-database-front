@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import {
-  CompanyId,
+  FamilyOfficeContactsCompanyName,
   FamilyOfficeContactsName,
   FamilyOfficeContactsTitle,
 } from "./family-office-contacts";
@@ -14,6 +14,6 @@ export const familyOfficesContactsColumns = (
 ): ColumnDef<FamilyOfficeContact, unknown>[] => [
   FamilyOfficeContactsName(favorites, toggleFavorite),
   FamilyOfficeContactsTitle,
-  CompanyId,
+  FamilyOfficeContactsCompanyName,
   Website("linkedin", "LinkedIn"),
 ];

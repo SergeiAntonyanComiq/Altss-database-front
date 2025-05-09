@@ -13,7 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 const Profile: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState("details");
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -332,7 +332,7 @@ const Profile: React.FC = () => {
             <ProfileTabs activeTab={activeTab} onTabChange={handleTabChange} />
 
             <div className="w-full mt-4 px-6 pb-4">
-              {activeTab === "general" && (
+              {activeTab === "details" && (
                 <>
                   <AccountInfo
                     formData={formData}
