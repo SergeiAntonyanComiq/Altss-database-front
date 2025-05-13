@@ -1,5 +1,5 @@
 import React from "react";
-import { ContactType } from "@/types/contact";
+import { ContactType } from "@/types/contact.ts";
 
 interface ProfileJobSectionProps {
   contact: ContactType;

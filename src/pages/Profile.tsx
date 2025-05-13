@@ -2,20 +2,28 @@ import React, { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { useAuth } from "@/contexts/AuthContext";
-import AccountInfo from "@/components/profile/AccountInfo";
-import PasswordSection from "@/components/profile/PasswordSection";
-import ActionButtons from "@/components/profile/ActionButtons";
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import ProfileTabs from "@/components/profile/ProfileTabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Tabs } from "@radix-ui/react-tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
+import { Details, Billing, Support } from "@/components/profile";
+
+export interface ProfileFormValues {
+  firstName: string;
+  secondName: string;
+  email: string;
+  website: string;
+  companyName: string;
+  plan: string;
+  avatar_url: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
 
 const Profile: React.FC = () => {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("details");
-  const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({
+  const defaultValues = {
     firstName: "",
     secondName: "",
     email: "",
@@ -26,8 +34,14 @@ const Profile: React.FC = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-  });
-  const [initialFormData, setInitialFormData] = useState(formData); // To enable Undo
+  };
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("details");
+  const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState<ProfileFormValues>();
+  const [initialFormData, setInitialFormData] =
+    useState<ProfileFormValues>(defaultValues);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -72,18 +86,11 @@ const Profile: React.FC = () => {
           variant: "destructive",
         });
         // Set default/empty state on error
-        const defaultData = {
-          firstName: "",
-          secondName: "",
+        const defaultData: ProfileFormValues = {
+          ...defaultValues,
           email: user.email || "",
-          website: "",
-          companyName: "",
-          plan: "Free",
-          avatar_url: "",
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
         };
+
         setFormData(defaultData);
         setInitialFormData(defaultData);
       } finally {
@@ -91,12 +98,10 @@ const Profile: React.FC = () => {
       }
     };
 
-    fetchProfile();
+    (async () => {
+      await fetchProfile();
+    })();
   }, [user, toast]);
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -304,7 +309,7 @@ const Profile: React.FC = () => {
     });
   };
 
-  if (isLoading && !formData.email) {
+  if (isLoading && !formData?.email) {
     return (
       <SidebarProvider>
         <div className="flex h-screen w-full overflow-hidden">
@@ -329,125 +334,48 @@ const Profile: React.FC = () => {
               plan={formData.plan}
             />
 
-            <ProfileTabs activeTab={activeTab} onTabChange={handleTabChange} />
-
-            <div className="w-full mt-4 px-6 pb-4">
-              {activeTab === "details" && (
-                <>
-                  <AccountInfo
-                    formData={formData}
-                    onChange={handleInputChange}
-                    avatarUrl={formData.avatar_url}
-                    onAvatarUpload={handleAvatarUpload}
-                  />
-
-                  <PasswordSection
-                    formData={formData}
-                    onChange={handleInputChange}
-                  />
-
-                  <ActionButtons onSave={handleSave} onUndo={handleUndo} />
-                </>
-              )}
-
-              {activeTab === "billing" && (
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-[rgba(17,25,40,1)] mb-4">
-                    My Subscription
-                  </h2>
-                  <div className="space-y-4 text-base mb-8">
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Plan
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        {formData.plan}
-                      </span>
-                    </div>
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Expiration date
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        10 April 2025
-                      </span>
-                    </div>
-                  </div>
-
-                  <h2 className="text-xl font-bold text-[rgba(17,25,40,1)] mb-4">
-                    Lifetime Statistics
-                  </h2>
-                  <div className="space-y-4 text-base">
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Persons found
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        12 347
-                      </span>
-                    </div>
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Companies found
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        456
-                      </span>
-                    </div>
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Enriches ordered
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        --
-                      </span>
-                    </div>
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Saved Search & Lists
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        14
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === "support" && (
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-[rgba(17,25,40,1)] mb-4">
-                    Your manager
-                  </h2>
-                  <div className="space-y-4 text-base mb-8">
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Name
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        Dawid Siekiera
-                      </span>
-                    </div>
-                    <div className="flex">
-                      <span className="text-[rgba(99,115,129,1)] w-[180px]">
-                        Email
-                      </span>
-                      <span className="font-medium text-[rgba(17,25,40,1)]">
-                        d@atss.com
-                      </span>
-                    </div>
-                  </div>
-                  <a
-                    href="https://cal.com/dawid.s/altss-support"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="self-stretch bg-white border gap-2.5 text-[rgba(38,101,240,1)] w-auto px-6 py-3 rounded-[50px] border-[rgba(38,101,240,1)] border-solid text-base font-medium hover:bg-gray-50 transition-colors inline-block text-center"
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
+                <TabsList className="bg-transparent p-0 h-auto">
+                  <TabsTrigger
+                    value="details"
+                    className="py-3 px-0 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
                   >
-                    Book a call
-                  </a>
-                </div>
-              )}
-            </div>
+                    General Information
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="billing"
+                    className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+                  >
+                    Billing
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="support"
+                    className="py-3 px-0 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+                  >
+                    Support
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              <div className="p-4">
+                <TabsContent value="details" className="mt-0">
+                  <Details
+                    formData={formData}
+                    handleUndo={handleUndo}
+                    handleSave={handleSave}
+                    handleAvatarUpload={handleAvatarUpload}
+                    handleInputChange={handleInputChange}
+                  />
+                </TabsContent>
+                <TabsContent value="billing" className="mt-0">
+                  <Billing plan={formData.plan} />
+                </TabsContent>
+                <TabsContent value="support" className="mt-0">
+                  <Support />
+                </TabsContent>
+              </div>
+            </Tabs>
+            {/*<ProfileTabs activeTab={activeTab} onTabChange={handleTabChange} />*/}
           </section>
         </div>
       </div>
