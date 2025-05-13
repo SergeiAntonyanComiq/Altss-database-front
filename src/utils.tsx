@@ -16,7 +16,7 @@ export const Loading = ({
       onClick={onClick}
       className={`${
         local ? "absolute" : "fixed"
-      } inset-0 z-50 flex items-center justify-center ${
+      } inset-0 z-[100] flex items-center justify-center ${
         local ? "bg-white/60 text-gray-700" : "bg-black/60 text-white"
       }`}
       data-testid="backdrop"
