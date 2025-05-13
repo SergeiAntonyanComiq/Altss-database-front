@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
-import FamilyOfficesContactsList from "@/components/familyofficescontacts/FamilyOfficesContactsList";
+import { FamilyOfficesContactsList } from "@/components/familyofficescontacts";
 
 const FamilyOfficesContacts = () => {
-  const [activeSection, setActiveSection] = useState<string>(
-    "familyofficescontacts",
-  );
   const location = useLocation();
   const navigate = useNavigate();
 
