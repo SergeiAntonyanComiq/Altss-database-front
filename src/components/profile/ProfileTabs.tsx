@@ -1,10 +1,10 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContactType } from "@/types/contact";
-import ProfileAboutSection from "./ProfileAboutSection";
-import ProfileContactsSection from "./ProfileContactsSection";
-import ProfileBioSection from "./ProfileBioSection";
-import ProfileJobSection from "./ProfileJobSection";
+import ProfileAboutSection from "./tabs/sections/ProfileAboutSection.tsx";
+import ProfileContactsSection from "./tabs/sections/ProfileContactsSection.tsx";
+import ProfileBioSection from "./tabs/sections/ProfileBioSection.tsx";
+import ProfileJobSection from "./tabs/sections/ProfileJobSection.tsx";
 
 interface ProfileTabsBaseProps {
   activeTab: string;

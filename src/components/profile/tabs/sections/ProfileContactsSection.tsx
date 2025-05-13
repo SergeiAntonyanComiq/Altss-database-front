@@ -1,23 +1,25 @@
 import React, { useState } from "react";
 import { Copy, Link } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ContactType } from "@/types/contact";
-import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button.tsx";
+import { ContactType } from "@/types/contact.ts";
+import { toast } from "@/components/ui/use-toast.ts";
 
 interface ProfileContactsSectionProps {
   contact: ContactType;
 }
 
-const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact }) => {
+const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({
+  contact,
+}) => {
   const [showEmails, setShowEmails] = useState({
     work: false,
-    personal: false
+    personal: false,
   });
 
-  const toggleEmailVisibility = (emailType: 'work' | 'personal') => {
-    setShowEmails(prev => ({
+  const toggleEmailVisibility = (emailType: "work" | "personal") => {
+    setShowEmails((prev) => ({
       ...prev,
-      [emailType]: !prev[emailType]
+      [emailType]: !prev[emailType],
     }));
   };
 
@@ -30,7 +32,9 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
     });
   };
 
-  const hiddenEmail = contact.email ? contact.email.replace(/(.{2})(.*)(@.*)/, '$1••••••$3') : '••••••••••••@••.•••';
+  const hiddenEmail = contact.email
+    ? contact.email.replace(/(.{2})(.*)(@.*)/, "$1••••••$3")
+    : "••••••••••••@••.•••";
 
   return (
     <section>
@@ -40,16 +44,16 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
         {contact.linkedin && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/beb16618d740a2aa8ec04b177ad0bb8cbdc7b395" 
-                alt="LinkedIn" 
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/beb16618d740a2aa8ec04b177ad0bb8cbdc7b395"
+                alt="LinkedIn"
                 className="w-4 h-4 object-contain"
               />
               LinkedIn
             </span>
-            <a 
-              href={`https://${contact.linkedin}`} 
-              target="_blank" 
+            <a
+              href={`https://${contact.linkedin}`}
+              target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
@@ -57,20 +61,20 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
             </a>
           </>
         )}
-        
+
         {contact.twitter && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/bb26636b166183963917f2201fbb87cba7d39a94" 
-                alt="X (Twitter)" 
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/bb26636b166183963917f2201fbb87cba7d39a94"
+                alt="X (Twitter)"
                 className="w-4 h-4 object-contain"
               />
               X (Twitter)
             </span>
-            <a 
-              href={`https://x.com/${contact.twitter}`} 
-              target="_blank" 
+            <a
+              href={`https://x.com/${contact.twitter}`}
+              target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
@@ -78,38 +82,40 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
             </a>
           </>
         )}
-        
+
         {contact.email && contact.email !== "no data" && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54" 
-                alt="Email" 
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
+                alt="Email"
                 className="w-4 h-4 object-contain"
               />
               Email
             </span>
             <div className="flex items-center">
-              <button 
-                onClick={() => toggleEmailVisibility('work')}
+              <button
+                onClick={() => toggleEmailVisibility("work")}
                 className="mr-2 hover:text-blue-600"
               >
                 {showEmails.work ? contact.email : hiddenEmail}
               </button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-5 w-5 p-0 mr-1" 
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 p-0 mr-1"
                 onClick={() => copyToClipboard(contact.email)}
                 title="Copy email address"
               >
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-5 w-5 p-0" 
-                onClick={() => window.location.href = `mailto:${contact.email}`}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 p-0"
+                onClick={() =>
+                  (window.location.href = `mailto:${contact.email}`)
+                }
                 title="Send email"
               >
                 <Link className="h-4 w-4" />
@@ -117,13 +123,13 @@ const ProfileContactsSection: React.FC<ProfileContactsSectionProps> = ({ contact
             </div>
           </>
         )}
-        
+
         {contact.tel && (
           <>
             <span className="flex items-center gap-1.5 text-gray-600 font-medium">
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b" 
-                alt="Phone" 
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b"
+                alt="Phone"
                 className="w-4 h-4 object-contain"
               />
               Phone number
