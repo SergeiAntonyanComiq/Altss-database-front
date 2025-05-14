@@ -47,13 +47,8 @@ const FieldsRenderer = ({
                     key={item}
                     className="flex items-center min-h-[26px] max-w-[] mr-3"
                   >
-                    <Badge
-                      variant={variant}
-                      className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap"
-                    >
-                      <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
-                        {item}
-                      </span>
+                    <Badge variant={variant} className="max-w-[200px] ">
+                      {item}
                     </Badge>
                   </div>
                 ) : (
@@ -72,9 +67,7 @@ const FieldsRenderer = ({
                   variant={variant}
                   className="w-full px-2 py-1 cursor-pointer"
                 >
-                  <span className="block w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                    {`+ ${values.length - 3}`}
-                  </span>
+                  {`+ ${values.length - 3}`}
                 </Badge>
               </div>
             ) : null}
@@ -93,7 +86,7 @@ const FieldsRenderer = ({
               <Badge
                 key={`${item}-${idx}`}
                 variant={variant}
-                className="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap"
+                className="max-w-[300px]"
               >
                 <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
                   {item}
