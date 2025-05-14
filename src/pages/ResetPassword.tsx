@@ -62,7 +62,7 @@ const ResetPassword = () => {
         title: "Password updated",
         description: "You can now sign in with your new password.",
       });
-      navigate("/signin");
+      navigate("/auth");
     }
 
     setLoading(false);
