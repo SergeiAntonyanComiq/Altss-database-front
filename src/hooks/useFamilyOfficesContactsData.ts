@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
+import apiClient from "@/lib/axios.ts";
 
 interface UseFamilyOfficesContactsDataResult {
   contacts: Array<FamilyOfficeContact & { favorited?: boolean }> | null;
@@ -29,9 +29,11 @@ export function useFamilyOfficesContactsData(
     const fetchContacts = async () => {
       try {
         const offset = (currentPage - 1) * itemsPerPage;
-        const url = `https://altss.azurewebsites.net/api/familyofficescontacts?code=fNUrumNSDEUYQh-R_E76Zr5W2Yg869Wsp7J0rXGRmqbDAzFuYgolFw==&limit=${itemsPerPage}&offset=${offset}`;
-        const response = await axios.get(url);
-        // The API returns { data: [...], metadata: {...} }
+
+        const response = await apiClient.get(
+          `/family-offices-contacts?limit=${itemsPerPage}&offset=${offset}`,
+        );
+
         const apiData = response.data as {
           data: FamilyOfficeContact[];
           metadata: { total: number };
