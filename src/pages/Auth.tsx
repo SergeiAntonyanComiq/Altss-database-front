@@ -110,6 +110,7 @@ const Auth = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
+          scopes: "email",
           redirectTo: window.location.origin + "/companies",
         },
       });
