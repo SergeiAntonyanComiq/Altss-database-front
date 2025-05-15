@@ -111,7 +111,7 @@ const Auth = () => {
         provider,
         options: {
           scopes: "email",
-          redirectTo: window.location.origin + "/companies",
+          redirectTo: window.location.origin + "/familyoffices",
         },
       });
 
