@@ -32,12 +32,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const getSession = async () => {
       try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
 
-        console.log(session);
+        console.log(data);
 
         if (error) {
           console.error(error, "error");
