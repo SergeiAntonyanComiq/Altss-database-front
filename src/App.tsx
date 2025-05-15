@@ -24,6 +24,8 @@ import Profile from "./pages/Profile";
 import InvestorProfile from "./pages/InvestorProfile";
 import FamilyOfficesContactsProfile from "./pages/FamilyOfficesContactsProfile";
 import { isLocked } from "@/utils/routeAccess.ts";
+import ForgotPassword from "@/pages/ForgotPassowrd.tsx";
+import ResetPassword from "@/pages/ResetPassword.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
 
             {/* Public route - no protection */}
             <Route path="/auth" element={<Auth />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* All protected routes */}
             <Route

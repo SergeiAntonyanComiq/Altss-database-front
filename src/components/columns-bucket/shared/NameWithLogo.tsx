@@ -2,6 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils.ts";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 
 export const NameWithLogo = <
   T extends {
@@ -80,12 +81,15 @@ export const NameWithLogo = <
               (e.target as HTMLImageElement).src = "/placeholder.svg";
             }}
           />
-          <a
-            href={`/${path}/${row.original[fieldId]}`}
-            className="truncate text-inherit hover:underline cursor-pointer"
-          >
-            {row.getValue(field)}
-          </a>
+          {withTooltipRenderer(
+            <a
+              href={`/${path}/${row.original[fieldId]}`}
+              className="truncate text-inherit hover:underline cursor-pointer"
+            >
+              {row.getValue(field)}
+            </a>,
+            row.getValue(field),
+          )}
         </div>
         <div className="flex items-center flex-shrink-0 justify-end min-w-[32px]">
           <button

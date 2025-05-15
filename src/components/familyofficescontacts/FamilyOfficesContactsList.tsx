@@ -9,20 +9,6 @@ import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
 
-export interface FamilyOfficeContact {
-  contact_id: string;
-  company_id: string;
-  full_name: string;
-  title: string;
-  email: string;
-  phone: string;
-  linkedin: string;
-  notes: string;
-  other_fields: string;
-  avatar_filename: string;
-  favorited: boolean;
-}
-
 interface FamilyOfficesContactsListProps {
   currentPage: number;
   itemsPerPage: number;
@@ -146,4 +132,4 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   );
 };
 
-export default FamilyOfficesContactsList;
+export { FamilyOfficesContactsList };

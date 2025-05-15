@@ -1,10 +1,10 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContactType } from "@/types/contact";
-import ProfileAboutSection from "./ProfileAboutSection";
-import ProfileContactsSection from "./ProfileContactsSection";
-import ProfileBioSection from "./ProfileBioSection";
-import ProfileJobSection from "./ProfileJobSection";
+import ProfileAboutSection from "./tabs/sections/ProfileAboutSection.tsx";
+import ProfileContactsSection from "./tabs/sections/ProfileContactsSection.tsx";
+import ProfileBioSection from "./tabs/sections/ProfileBioSection.tsx";
+import ProfileJobSection from "./tabs/sections/ProfileJobSection.tsx";
 
 interface ProfileTabsBaseProps {
   activeTab: string;
@@ -35,7 +35,6 @@ type ProfileTabsProps = ProfileTabsUserProps | ProfileTabsContactProps;
 const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
   const isContactProfile = "contact" in props && props.contact !== undefined;
 
-  // Choose the appropriate change handler based on the props
   const handleTabChange = isContactProfile
     ? props.setActiveTab
     : props.onTabChange;
@@ -43,7 +42,6 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
   return (
     <Tabs value={props.activeTab} onValueChange={handleTabChange}>
       {isContactProfile ? (
-        // Person profile tabs
         <>
           <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
             <TabsList className="bg-transparent p-0 h-auto">
@@ -89,7 +87,6 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
           </div>
         </>
       ) : (
-        // User profile tabs
         <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
           <TabsList className="bg-transparent p-0 h-auto">
             <TabsTrigger
@@ -99,16 +96,16 @@ const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
               Details
             </TabsTrigger>
             <TabsTrigger
-              value="billing"
+              value="bio&news"
               className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
             >
-              Billing
+              Bio & News
             </TabsTrigger>
             <TabsTrigger
-              value="support"
+              value="jobhistory"
               className="py-3 px-6 rounded-none text-gray-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
             >
-              Support
+              Job history
             </TabsTrigger>
           </TabsList>
         </div>

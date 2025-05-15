@@ -1,5 +1,5 @@
 import React from "react";
-import { ContactType } from "@/types/contact";
+import { ContactType } from "@/types/contact.ts";
 
 interface ProfileBioSectionProps {
   contact: ContactType;
@@ -12,7 +12,10 @@ interface ProfileBioSectionProps {
   }[];
 }
 
-const ProfileBioSection: React.FC<ProfileBioSectionProps> = ({ contact, newsItems }) => {
+const ProfileBioSection: React.FC<ProfileBioSectionProps> = ({
+  contact,
+  newsItems,
+}) => {
   return (
     <div className="space-y-8">
       <section>
@@ -25,9 +28,9 @@ const ProfileBioSection: React.FC<ProfileBioSectionProps> = ({ contact, newsItem
       <section>
         <h2 className="text-xl font-medium mb-4">News</h2>
         <div className="space-y-4">
-          {newsItems.map(item => (
+          {newsItems.map((item) => (
             <div key={item.id} className="flex gap-4">
-              <div 
+              <div
                 className="flex-shrink-0 w-12 h-12 flex items-center justify-center text-xl font-bold"
                 style={{ backgroundColor: item.color, color: item.textColor }}
               >
@@ -35,7 +38,12 @@ const ProfileBioSection: React.FC<ProfileBioSectionProps> = ({ contact, newsItem
               </div>
               <div className="flex-1">
                 <p className="text-gray-700">{item.content}</p>
-                <a href="#" className="text-blue-600 hover:underline mt-1 inline-block">Read more.</a>
+                <a
+                  href="#"
+                  className="text-blue-600 hover:underline mt-1 inline-block"
+                >
+                  Read more.
+                </a>
               </div>
             </div>
           ))}

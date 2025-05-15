@@ -1,0 +1,129 @@
+import { FieldsRenderer } from "@/components/common";
+import React from "react";
+import { FamilyOffice } from "@/services/familyOfficesService.ts";
+
+export const Details = ({
+  firm_type,
+  city,
+  country,
+  region,
+  aum,
+  year_founded,
+  wealth_creator,
+  industry_wealth_origin,
+  sec_registered,
+  office_phone,
+  website,
+  general_email,
+}: FamilyOffice) => {
+  const overviewFields = [
+    {
+      label: "Family Office",
+      value: Array.isArray(firm_type) ? firm_type.join(", ") : firm_type,
+    },
+    { label: "City", value: city },
+    { label: "Country", value: country },
+    { label: "Region", value: region },
+    { label: "AUM", value: aum },
+    { label: "Year Founded", value: year_founded },
+    { label: "Wealth Creator", value: wealth_creator },
+    {
+      label: "Industry Wealth Origin",
+      value: industry_wealth_origin,
+    },
+    { label: "SEC Registered", value: sec_registered },
+  ];
+
+  const overviewFieldsContacts = [
+    {
+      label: "Office Phone",
+      value: office_phone,
+      icon: (
+        <a
+          href={`tel:${office_phone}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b"
+            alt="Phone"
+            className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+          />
+        </a>
+      ),
+    },
+    { label: "Website", value: website },
+    {
+      label: "Office Email",
+      value: general_email,
+      icon: (
+        <a
+          href={`mailto:${general_email}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
+            alt="Email"
+            className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+          />
+        </a>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <div className="mb-6">
+        <h2 className="font-semibold text-xl py-2 mb-2">About</h2>
+        <hr className="border-t border-gray-200 mb-4" />
+        <div className="flex space-x-[120px]">
+          <div className="space-y-[24px]">
+            {overviewFields
+              .filter((f) => f.value)
+              .map((f) => (
+                <FieldsRenderer key={f.label} label={f.label} />
+              ))}
+          </div>
+          <div className="space-y-[24px]">
+            {overviewFields
+              .filter((f) => f.value)
+              .map((f) => (
+                <FieldsRenderer
+                  key={f.label}
+                  value={f.value}
+                  modalHeader={f.label}
+                  isBadge={f.label === "Family Office"}
+                />
+              ))}
+          </div>
+        </div>
+      </div>
+      <div className="mb-6">
+        <h2 className="font-semibold text-xl py-2 mb-2">Contacts</h2>
+        <hr className="border-t border-gray-200 mb-4" />
+        <div className="flex space-x-[120px]">
+          <div className="space-y-[24px]">
+            {overviewFieldsContacts
+              .filter((f) => f.value)
+              .map((f) => (
+                <FieldsRenderer key={f.label} label={f.label} icon={f.icon} />
+              ))}
+          </div>
+          <div className="space-y-[24px]">
+            {overviewFieldsContacts
+              .filter((f) => f.value)
+              .map((f) => (
+                <FieldsRenderer
+                  key={f.label}
+                  value={f.value}
+                  modalHeader={f.label}
+                  isBadge={f.label === "Firm Type"}
+                />
+              ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};

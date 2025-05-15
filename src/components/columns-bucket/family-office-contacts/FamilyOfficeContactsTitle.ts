@@ -1,5 +1,4 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { FamilyOffice } from "@/services/familyOfficesService.ts";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 
 export const FamilyOfficeContactsTitle: ColumnDef<FamilyOfficeContact, string> =

@@ -107,9 +107,10 @@ const Auth = () => {
   ) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
+          scopes: "email",
           redirectTo: window.location.origin + "/companies",
         },
       });
@@ -197,6 +198,16 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                </div>
+                <div className="text-right mt-2">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/forgot-password")}
+                    className="text-sm text-blue-600 hover:underline"
+                    disabled={loading}
+                  >
+                    Forgot password?
+                  </button>
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
