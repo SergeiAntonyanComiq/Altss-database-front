@@ -77,9 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const { error } = await supabase.auth.signOut();
 
-      localStorage.removeItem("userName");
-      localStorage.removeItem("avatarUrl");
-
       if (error) {
         console.error("Error signing out:", error);
         toast({
@@ -89,6 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       } else {
         // Clear user and session state
+        localStorage.removeItem("userName");
+        localStorage.removeItem("avatarUrl");
         setUser(null);
         setSession(null);
 
