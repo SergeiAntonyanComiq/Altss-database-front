@@ -1,1 +1,2 @@
-export const isLocked = (path: string): boolean => false;
+export const isLocked = (path: string): boolean =>
+  path !== "/familyoffices" && path !== "/familyofficescontacts";
