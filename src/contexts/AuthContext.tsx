@@ -37,9 +37,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           error,
         } = await supabase.auth.getSession();
 
+        console.log(session);
+
         if (error) {
+          console.error(error, "error");
           throw error;
         } else if (mounted) {
+          console.log(session, 2);
           setSession(session);
           setUser(session?.user ?? null);
         }
