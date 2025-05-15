@@ -77,6 +77,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const { error } = await supabase.auth.signOut();
 
+      localStorage.removeItem("userName");
+      localStorage.removeItem("avatarUrl");
+
       if (error) {
         console.error("Error signing out:", error);
         toast({
