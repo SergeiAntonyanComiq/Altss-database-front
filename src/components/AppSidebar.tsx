@@ -42,8 +42,8 @@ const AppSidebar = () => {
   const { user, signOut } = useAuth();
   const { state } = useSidebar();
   const { toast } = useToast();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>("");
+  const avatarUrl = localStorage.getItem("avatarUrl");
+  const userName = localStorage.getItem("userName");
   const [favoritePersons, setFavoritePersons] = useState([]);
   const [favoriteCompanies, setFavoriteCompanies] = useState([]);
   const [savedSearches, setSavedSearches] = useState([]);
@@ -107,13 +107,12 @@ const AppSidebar = () => {
         }
 
         if (data) {
-          setAvatarUrl(data.avatar_url || null);
-
-          const firstName = data.first_name || "";
-          const lastName = data.last_name || "";
-          if (firstName || lastName) {
-            setUserName(`${firstName} ${lastName}`.trim());
-          }
+          const name = `${data.first_name || ""} ${
+            data.last_name || ""
+          }`.trim();
+          if (name) localStorage.setItem("userName", name);
+          if (data.avatar_url)
+            localStorage.setItem("avatarUrl", data.avatar_url);
         }
       } catch (error) {
         console.error(error);
@@ -261,7 +260,7 @@ const AppSidebar = () => {
                       : "text-[#637381]",
                     isLocked(item.path)
                       ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-gray-100",
+                      : "hover:bg-gray-100"
                   )}
                 >
                   <div className="flex items-center gap-2.5">
@@ -433,7 +432,7 @@ const AppSidebar = () => {
                   {savedSearches.length > 0 ? (
                     <>
                       {savedSearches.filter(
-                        (search) => search.type === "company",
+                        (search) => search.type === "company"
                       ).length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
@@ -454,7 +453,7 @@ const AppSidebar = () => {
                       )}
 
                       {savedSearches.filter(
-                        (search) => search.type === "person",
+                        (search) => search.type === "person"
                       ).length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
@@ -505,7 +504,7 @@ const AppSidebar = () => {
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <span className="text-[#637381] text-base font-medium">
-                    {userName || user?.email || "User Name"}
+                    {userName ?? user?.email ?? "User Name"}
                   </span>
                 </div>
               </DropdownMenuTrigger>
