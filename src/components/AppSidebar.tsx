@@ -30,11 +30,14 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  getFavoritePersons,
+  FavoriteFamilyOfficeType,
+  FavoriteItem,
+  FavoriteContactType,
   getSavedFilters,
-  getFavoriteCompanies,
 } from "@/services/savedFiltersService";
 import { isLocked } from "@/utils/routeAccess.ts";
+import apiClient from "@/lib/axios.ts";
+import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -44,27 +47,30 @@ const AppSidebar = () => {
   const { toast } = useToast();
   const avatarUrl = localStorage.getItem("avatarUrl");
   const userName = localStorage.getItem("userName");
-  const [favoritePersons, setFavoritePersons] = useState([]);
-  const [favoriteCompanies, setFavoriteCompanies] = useState([]);
+  const [favoriteFamilyOfficesContacts, setFavoriteFamilyOfficesContacts] =
+    useState<FavoriteContactType[]>([]);
+  const [favoriteFamilyOffices, setFavoriteFamilyOffices] = useState<
+    FavoriteFamilyOfficeType[]
+  >([]);
   const [savedSearches, setSavedSearches] = useState([]);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const favPersons = await getFavoritePersons();
-        setFavoritePersons(favPersons || []);
-      } catch (error) {
-        setFavoritePersons([]);
-      }
+      const { data } = await apiClient.get<{ data: FavoriteItem[] }>(
+        `favorites`
+      );
+      const items = data.data;
 
-      try {
-        const favCompanies = await getFavoriteCompanies();
-        setFavoriteCompanies(favCompanies || []);
-      } catch (error) {
-        setFavoriteCompanies([]);
-      }
+      setFavoriteFamilyOffices(
+        (items?.filter((item) => item.item_type === "family_office") ??
+          []) as FavoriteFamilyOfficeType[]
+      );
+      setFavoriteFamilyOfficesContacts(
+        (items?.filter((item) => item.item_type === "family_office_contacts") ??
+          []) as FavoriteContactType[]
+      );
 
       try {
         const searches = await getSavedFilters();
@@ -213,11 +219,11 @@ const AppSidebar = () => {
     return "UN";
   };
 
-  const handleNavigateToFavorite = (item, type: "person" | "company") => {
-    if (type === "company") {
-      navigate(`/company/${item.id}`);
+  const handleNavigateToFavorite = (id: string, type: "office" | "contact") => {
+    if (type === "office") {
+      navigate(`/familyoffices/${id}`);
     } else {
-      navigate(`/profile/${item.id}`);
+      navigate(`/familyofficescontactsprofile/${id}`);
     }
     setFavoritesOpen(false);
   };
@@ -334,51 +340,82 @@ const AppSidebar = () => {
                   )}
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                  {favoritePersons.length > 0 ||
-                  favoriteCompanies.length > 0 ? (
+                  {favoriteFamilyOfficesContacts.length > 0 ||
+                  favoriteFamilyOffices.length > 0 ? (
                     <>
-                      {favoriteCompanies.length > 0 && (
+                      {favoriteFamilyOffices.length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
-                            Companies
+                            Family Offices
                           </div>
-                          {favoriteCompanies.map((favorite) => (
+                          {favoriteFamilyOffices.map((favorite) => (
                             <div
-                              key={favorite.id}
+                              key={favorite.data.company_id}
                               onClick={() =>
-                                handleNavigateToFavorite(favorite, "company")
+                                handleNavigateToFavorite(
+                                  favorite.data.company_id,
+                                  "office"
+                                )
                               }
                               className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
                             >
-                              <span className="truncate">{favorite.name}</span>
-                              {favorite.type && (
-                                <span className="text-xs text-gray-400 truncate">
-                                  {favorite.type}
-                                </span>
+                              <div className="truncate">
+                                {withTooltipRenderer(
+                                  <span>{favorite.data.firm_name}</span>,
+                                  favorite.data.firm_name
+                                )}
+                              </div>
+
+                              {favorite.data.firm_type && (
+                                <div className="truncate">
+                                  {withTooltipRenderer(
+                                    <span className="text-xs text-gray-400">
+                                      {Array.isArray(favorite.data.firm_type)
+                                        ? favorite.data.firm_type[0]
+                                        : favorite.data.firm_type}
+                                    </span>,
+                                    Array.isArray(favorite.data.firm_type)
+                                      ? favorite.data.firm_type[0]
+                                      : favorite.data.firm_type
+                                  )}
+                                </div>
                               )}
                             </div>
                           ))}
                         </>
                       )}
 
-                      {favoritePersons.length > 0 && (
+                      {favoriteFamilyOfficesContacts.length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
-                            Persons
+                            Family Offices Contacts
                           </div>
-                          {favoritePersons.map((favorite) => (
+                          {favoriteFamilyOfficesContacts.map((favorite) => (
                             <div
                               key={favorite.id}
                               onClick={() =>
-                                handleNavigateToFavorite(favorite, "person")
+                                handleNavigateToFavorite(
+                                  favorite.item_id,
+                                  "contact"
+                                )
                               }
                               className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
                             >
-                              <span className="truncate">{favorite.name}</span>
-                              {favorite.position && (
-                                <span className="text-xs text-gray-400 truncate">
-                                  {favorite.position}
-                                </span>
+                              <div className="truncate">
+                                {withTooltipRenderer(
+                                  <span>{favorite.data.full_name}</span>,
+                                  favorite.data.full_name
+                                )}
+                              </div>
+                              {favorite.data.title && (
+                                <div className="truncate">
+                                  {withTooltipRenderer(
+                                    <span className="text-xs text-gray-400">
+                                      {favorite.data.title}
+                                    </span>,
+                                    favorite.data.title
+                                  )}
+                                </div>
                               )}
                             </div>
                           ))}

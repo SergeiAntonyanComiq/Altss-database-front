@@ -5,7 +5,6 @@ import {
   fetchFilteredFundManagers,
   fetchFundManagersCount,
 } from "@/services/fundManagersService";
-import { getFavoriteCompanies } from "@/services/savedFiltersService";
 
 interface CompanyFilters {
   firmTypes: string[];
@@ -24,7 +23,7 @@ export function useCompaniesData(
   currentPage: number,
   itemsPerPage: number,
   searchQuery?: string,
-  filters?: CompanyFilters,
+  filters?: CompanyFilters
 ) {
   const [companies, setCompanies] = useState<CompanyType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,16 +57,12 @@ export function useCompaniesData(
 
       const response = await fetchFilteredFundManagers(filterParams);
 
-      const favorites = await getFavoriteCompanies();
-      const favoriteIds = new Set(favorites.map((f) => f.id));
-
       const companiesWithFavorites = response.data.map((company) => ({
         ...company,
         aum: company.aum ? `${company.aum}` : undefined,
         firm_type: Array.isArray(company.firm_type)
           ? company.firm_type
           : [company.firm_type],
-        isFavorite: favoriteIds.has(company.id || ""),
       }));
 
       setCompanies(companiesWithFavorites);

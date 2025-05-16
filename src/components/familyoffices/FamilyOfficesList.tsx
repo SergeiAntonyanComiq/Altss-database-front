@@ -10,6 +10,8 @@ import { familyOfficeColumnList } from "@/components/columns-bucket";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
+import apiClient from "@/lib/axios.ts";
+import { FamilyOffice } from "@/services/familyOfficesService.ts";
 
 interface FamilyOfficesListProps {
   currentPage: number;
@@ -25,26 +27,77 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
   onPageChange,
   onItemsPerPageChange,
 }) => {
-  const { familyOffices, isLoading, error, totalPages, totalItems } =
-    useFamilyOfficesData(currentPage, itemsPerPage);
+  const {
+    familyOffices,
+    isLoading,
+    error,
+    totalPages,
+    totalItems,
+    updateFavorites,
+  } = useFamilyOfficesData(currentPage, itemsPerPage);
 
-  const [favorites, setFavorites] = useState<Record<number, boolean>>({});
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
 
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const onSelectAllRows = (rows: FamilyOffice[]) => {
+    const allIds = rows.map((row) => String(row.company_id));
+
+    setSelectedIds(allIds);
+  };
+
+  const onSelectRow = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const onBulkUpdateFavorites = async () => {
+    const data = {
+      itemType: "family_office",
+      itemIds: selectedIds,
+      favorited: true,
+    };
+
+    setFavoriteMap((prev) => {
+      const updated = { ...prev };
+      selectedIds.forEach((id) => {
+        updated[id] = true;
+      });
+      return updated;
+    });
+
+    await updateFavorites(data);
+  };
+
+  const toggleFavorite = async (id: string) => {
+    const defaultFavorite =
+      familyOffices.find((item) => item.company_id === id)?.isFavorite ?? false;
+
+    const isFav = favoriteMap[id] ?? defaultFavorite;
+
+    const data = {
+      itemType: "family_office",
+      itemIds: [id],
+      favorited: !isFav,
+    };
+
+    setFavoriteMap((prev) => ({ ...prev, [id]: !isFav }));
+
+    await updateFavorites(data);
   };
 
   useEffect(() => {
-    if (familyOffices) {
-      const initialFavorites: Record<number, boolean> = {};
-      familyOffices.forEach((fo) => {
-        initialFavorites[fo.company_id] = fo.favorited;
-      });
-      setFavorites(initialFavorites);
-    }
+    if (!familyOffices) return;
+
+    const initialFavorites = familyOffices.reduce<Record<number, boolean>>(
+      (acc, office) => {
+        acc[office.company_id] = office.isFavorite;
+        return acc;
+      },
+      {}
+    );
+
+    setFavoriteMap(initialFavorites);
   }, [familyOffices]);
 
   return (
@@ -74,14 +127,16 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
             Filters
           </Button>
 
-          {/* Save search button - Using Button component */}
           <Button variant="outline" className="h-11 rounded-full" disabled>
             <Save className="mr-2 size-4.5" />
             Save this Search
           </Button>
 
-          {/* Add to favorites button - Using Button component */}
-          <Button variant="outline" className="h-11 rounded-full">
+          <Button
+            variant="outline"
+            className="h-11 rounded-full"
+            onClick={onBulkUpdateFavorites}
+          >
             <Heart className="mr-2 size-5" />
             Add to Favorites
           </Button>
@@ -91,7 +146,12 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
         ) : (
           <div className="w-full mt-8 mb-8 overflow-x-auto">
             <DataTable
-              columns={familyOfficeColumnList(favorites, toggleFavorite)}
+              columns={familyOfficeColumnList(
+                favoriteMap,
+                toggleFavorite,
+                onSelectAllRows,
+                onSelectRow
+              )}
               data={familyOffices || []}
             />
           </div>

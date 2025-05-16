@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
+import { FamilyOffice } from "@/services/familyOfficesService.ts";
 
 interface DbSavedFilter {
   id: string;
@@ -29,31 +31,39 @@ interface SavedFilter {
   description?: string;
 }
 
-// Export SavedFilter as SavedSearchType for compatibility
 export type SavedSearchType = SavedFilter;
 
-export interface FavoritePersonType {
-  id: string;
-  name: string;
-  position?: string;
-  company?: string;
-  addedAt: number;
+export interface FavoriteContactType {
+  created_at: Date;
+  id: number;
+  item_id: string;
+  user_id: string;
+  item_type?: string;
+  data: FamilyOfficeContact;
 }
 
-export interface FavoriteCompanyType {
-  id: string;
-  name: string;
-  type?: string;
-  aum?: string;
-  addedAt: number;
+export interface FavoriteFamilyOfficeType {
+  created_at: Date;
+  id: number;
+  item_id: string;
+  user_id: string;
+  item_type?: string;
+  data: FamilyOffice;
 }
 
-// Fallback to localStorage for offline or error cases
+export interface FavoriteItem {
+  created_at: Date;
+  id: number;
+  item_id: string;
+  user_id: string;
+  item_type?: string;
+  data: FamilyOffice | FamilyOfficeContact;
+}
+
 const STORAGE_KEY = "saved_filters";
 const FAVORITES_PERSONS_KEY = "favorites_persons";
 const FAVORITES_COMPANIES_KEY = "favorites_companies";
 
-// Helper function to get current user ID
 const getUserId = async (): Promise<string | null> => {
   const {
     data: { user },
@@ -111,7 +121,7 @@ export const saveFilter = async (
   position?: string,
   location?: string,
   responsibilities?: string,
-  bio?: string,
+  bio?: string
 ): Promise<SavedFilter> => {
   try {
     const userId = await getUserId();
@@ -135,7 +145,7 @@ export const saveFilter = async (
     // Ensure type is either 'company' or 'person'
     if (type !== "company" && type !== "person") {
       throw new Error(
-        'Invalid filter type. Must be either "company" or "person".',
+        'Invalid filter type. Must be either "company" or "person".'
       );
     }
 
@@ -204,7 +214,7 @@ export const updateSavedFilter = async (
   position?: string,
   location?: string,
   responsibilities?: string,
-  bio?: string,
+  bio?: string
 ): Promise<SavedFilter | null> => {
   try {
     const userId = await getUserId();
@@ -247,7 +257,7 @@ export const updateSavedFilter = async (
     // Update localStorage backup
     const filters = await getSavedFilters();
     const updatedFilters = filters.map((filter) =>
-      filter.id === id ? updatedFilter : filter,
+      filter.id === id ? updatedFilter : filter
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedFilters));
 
@@ -337,7 +347,7 @@ export const saveDefaultFilters = async (): Promise<void> => {
  * Gets a saved filter by ID
  */
 export const getSavedFilterById = async (
-  id: string,
+  id: string
 ): Promise<SavedFilter | null> => {
   try {
     const userId = await getUserId();
@@ -381,7 +391,7 @@ export const getSavedFilterById = async (
 /**
  * Gets all favorite persons from Supabase
  */
-export const getFavoritePersons = async (): Promise<FavoritePersonType[]> => {
+export const getFavoritePersons = async (): Promise<FavoriteContactType[]> => {
   try {
     const userId = await getUserId();
     if (!userId) {
@@ -419,8 +429,8 @@ export const addPersonToFavorites = async (
   id: string,
   name: string,
   position?: string,
-  company?: string,
-): Promise<FavoritePersonType> => {
+  company?: string
+): Promise<FavoriteContactType> => {
   try {
     const userId = await getUserId();
     if (!userId) {
@@ -467,7 +477,7 @@ export const addPersonToFavorites = async (
     if (insertError) throw insertError;
 
     // Return the created favorite
-    const createdFavorite: FavoritePersonType = {
+    const createdFavorite: FavoriteContactType = {
       id,
       name,
       position,
@@ -492,7 +502,7 @@ export const addPersonToFavorites = async (
       return favorites.find((fav) => fav.id === id)!;
     }
 
-    const newFavorite: FavoritePersonType = {
+    const newFavorite: FavoriteContactType = {
       id,
       name,
       position,
@@ -511,7 +521,7 @@ export const addPersonToFavorites = async (
  * Removes a person from favorites in Supabase
  */
 export const removePersonFromFavorites = async (
-  id: string,
+  id: string
 ): Promise<boolean> => {
   try {
     const userId = await getUserId();
@@ -532,7 +542,7 @@ export const removePersonFromFavorites = async (
     const updatedFavorites = favorites.filter((fav) => fav.id !== id);
     localStorage.setItem(
       FAVORITES_PERSONS_KEY,
-      JSON.stringify(updatedFavorites),
+      JSON.stringify(updatedFavorites)
     );
 
     return true;
@@ -549,7 +559,7 @@ export const removePersonFromFavorites = async (
 
     localStorage.setItem(
       FAVORITES_PERSONS_KEY,
-      JSON.stringify(updatedFavorites),
+      JSON.stringify(updatedFavorites)
     );
     return true;
   }
@@ -583,51 +593,12 @@ export const isPersonInFavorites = async (id: string): Promise<boolean> => {
   }
 };
 
-/**
- * Gets all favorite companies from Supabase
- */
-export const getFavoriteCompanies = async (): Promise<
-  FavoriteCompanyType[]
-> => {
-  try {
-    const userId = await getUserId();
-    if (!userId) {
-      throw new Error("User not authenticated");
-    }
-
-    const { data, error } = await supabase
-      .from("favorite_companies")
-      .select("*")
-      .eq("user_id", userId)
-      .order("added_at", { ascending: false });
-
-    if (error) throw error;
-
-    return data.map((favorite) => ({
-      id: favorite.company_id,
-      name: favorite.name,
-      type: favorite.type,
-      aum: favorite.aum,
-      addedAt: new Date(favorite.added_at).getTime(),
-    }));
-  } catch (error) {
-    console.error("Error fetching company favorites from Supabase:", error);
-
-    // Fallback to localStorage
-    const favoritesJson = localStorage.getItem(FAVORITES_COMPANIES_KEY);
-    return favoritesJson ? JSON.parse(favoritesJson) : [];
-  }
-};
-
-/**
- * Adds a company to favorites in Supabase
- */
 export const addCompanyToFavorites = async (
   id: string,
   name: string,
   type?: string,
-  aum?: string,
-): Promise<FavoriteCompanyType> => {
+  aum?: string
+): Promise<FavoriteFamilyOfficeType> => {
   try {
     const userId = await getUserId();
     if (!userId) {
@@ -673,41 +644,25 @@ export const addCompanyToFavorites = async (
     if (insertError) throw insertError;
 
     // Return the created favorite
-    const createdFavorite: FavoriteCompanyType = {
+    const createdFavorite: FavoriteFamilyOfficeType = {
       id,
       name,
       type,
       aum,
       addedAt: Date.now(),
     };
-
-    // Also update localStorage as backup
-    const favorites = await getFavoriteCompanies();
-    favorites.push(createdFavorite);
-    localStorage.setItem(FAVORITES_COMPANIES_KEY, JSON.stringify(favorites));
 
     return createdFavorite;
   } catch (error) {
     console.error("Error adding company favorite to Supabase:", error);
 
-    // Fallback to localStorage-only operation
-    const favorites = await getFavoriteCompanies();
-
-    // Check if company is already in favorites in localStorage
-    if (favorites.some((fav) => fav.id === id)) {
-      return favorites.find((fav) => fav.id === id)!;
-    }
-
-    const newFavorite: FavoriteCompanyType = {
+    const newFavorite: FavoriteFamilyOfficeType = {
       id,
       name,
       type,
       aum,
       addedAt: Date.now(),
     };
-
-    favorites.push(newFavorite);
-    localStorage.setItem(FAVORITES_COMPANIES_KEY, JSON.stringify(favorites));
 
     return newFavorite;
   }
@@ -717,7 +672,7 @@ export const addCompanyToFavorites = async (
  * Removes a company from favorites in Supabase
  */
 export const removeCompanyFromFavorites = async (
-  id: string,
+  id: string
 ): Promise<boolean> => {
   try {
     const userId = await getUserId();
@@ -733,30 +688,10 @@ export const removeCompanyFromFavorites = async (
 
     if (error) throw error;
 
-    // Update localStorage backup
-    const favorites = await getFavoriteCompanies();
-    const updatedFavorites = favorites.filter((fav) => fav.id !== id);
-    localStorage.setItem(
-      FAVORITES_COMPANIES_KEY,
-      JSON.stringify(updatedFavorites),
-    );
-
     return true;
   } catch (error) {
     console.error("Error removing company favorite from Supabase:", error);
 
-    // Fallback to localStorage-only operation
-    const favorites = await getFavoriteCompanies();
-    const updatedFavorites = favorites.filter((fav) => fav.id !== id);
-
-    if (updatedFavorites.length === favorites.length) {
-      return false;
-    }
-
-    localStorage.setItem(
-      FAVORITES_COMPANIES_KEY,
-      JSON.stringify(updatedFavorites),
-    );
     return true;
   }
 };
@@ -782,10 +717,6 @@ export const isCompanyInFavorites = async (id: string): Promise<boolean> => {
     return data.length > 0;
   } catch (error) {
     console.error("Error checking company favorites in Supabase:", error);
-
-    // Fallback to localStorage
-    const favorites = await getFavoriteCompanies();
-    return favorites.some((fav) => fav.id === id);
   }
 };
 
@@ -810,14 +741,14 @@ export const syncWithSupabase = async (): Promise<void> => {
           localFilter.position,
           localFilter.location,
           localFilter.responsibilities,
-          localFilter.bio,
+          localFilter.bio
         );
       }
     }
 
     // Sync favorites
     const localFavorites = JSON.parse(
-      localStorage.getItem(FAVORITES_PERSONS_KEY) || "[]",
+      localStorage.getItem(FAVORITES_PERSONS_KEY) || "[]"
     );
     const remoteFavorites = await getFavoritePersons();
 
@@ -828,7 +759,7 @@ export const syncWithSupabase = async (): Promise<void> => {
           localFav.id,
           localFav.name,
           localFav.position,
-          localFav.company,
+          localFav.company
         );
       }
     }
@@ -836,21 +767,16 @@ export const syncWithSupabase = async (): Promise<void> => {
     console.error("Error syncing with Supabase:", error);
   }
 
-  // Sync company favorites
   const localCompanyFavorites = JSON.parse(
-    localStorage.getItem(FAVORITES_COMPANIES_KEY) || "[]",
+    localStorage.getItem(FAVORITES_COMPANIES_KEY) || "[]"
   );
-  const remoteCompanyFavorites = await getFavoriteCompanies();
 
-  // Merge company favorites that exist locally but not in Supabase
   for (const localFav of localCompanyFavorites) {
-    if (!remoteCompanyFavorites.some((rf) => rf.id === localFav.id)) {
-      await addCompanyToFavorites(
-        localFav.id,
-        localFav.name,
-        localFav.type,
-        localFav.aum,
-      );
-    }
+    await addCompanyToFavorites(
+      localFav.id,
+      localFav.name,
+      localFav.type,
+      localFav.aum
+    );
   }
 };

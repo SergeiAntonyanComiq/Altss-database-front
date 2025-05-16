@@ -8,6 +8,9 @@ import { DataTable } from "@/components/ui/DataTable.tsx";
 import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
+import { FamilyOffice } from "@/services/familyOfficesService.ts";
+import familyOffices from "@/pages/FamilyOffices.tsx";
+import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 
 interface FamilyOfficesContactsListProps {
   currentPage: number;
@@ -24,26 +27,80 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   onItemsPerPageChange,
 }) => {
   const [search, setSearch] = useState("");
-  const [favorites, setFavorites] = useState<Record<number, boolean>>({});
+  const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
 
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const {
+    contacts,
+    isLoading,
+    error,
+    totalPages,
+    totalItems,
+    updateFavorites,
+  } = useFamilyOfficesContactsData(currentPage, itemsPerPage);
+
+  const onSelectAllRows = (rows: FamilyOfficeContact[]) => {
+    const allIds = rows.map((row) => String(row.contact_id));
+
+    setSelectedIds(allIds);
   };
 
-  const { contacts, isLoading, error, totalPages, totalItems } =
-    useFamilyOfficesContactsData(currentPage, itemsPerPage);
+  const onSelectRow = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const onBulkUpdateFavorites = async () => {
+    const data = {
+      itemType: "family_office_contacts",
+      itemIds: selectedIds,
+      favorited: true,
+    };
+
+    console.log(selectedIds);
+
+    setFavoriteMap((prev) => {
+      const updated = { ...prev };
+      selectedIds.forEach((id) => {
+        updated[id] = true;
+      });
+      return updated;
+    });
+
+    await updateFavorites(data);
+  };
+
+  const toggleFavorite = async (id: string) => {
+    const defaultFavorite =
+      contacts.find((item) => item.company_id === id)?.isFavorite ?? false;
+
+    const isFav = favoriteMap[id] ?? defaultFavorite;
+
+    const data = {
+      itemType: "family_office_contacts",
+      itemIds: [id],
+      favorited: !isFav,
+    };
+
+    setFavoriteMap((prev) => ({ ...prev, [id]: !isFav }));
+
+    await updateFavorites(data);
+  };
 
   useEffect(() => {
-    if (contacts) {
-      const initialFavorites: Record<number, boolean> = {};
-      contacts.forEach((fo) => {
-        initialFavorites[fo.company_id] = fo.favorited;
-      });
-      setFavorites(initialFavorites);
-    }
+    if (!contacts) return;
+
+    const initialFavorites = contacts.reduce<Record<number, boolean>>(
+      (acc, office) => {
+        acc[office.contact_id] = office.isFavorite;
+        return acc;
+      },
+      {}
+    );
+
+    setFavoriteMap(initialFavorites);
   }, [contacts]);
 
   const filteredContacts = contacts
@@ -53,7 +110,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
           c.title?.toLowerCase().includes(search.toLowerCase()) ||
           c.email?.toLowerCase().includes(search.toLowerCase()) ||
           c.phone?.toLowerCase().includes(search.toLowerCase()) ||
-          c.linkedin?.toLowerCase().includes(search.toLowerCase()),
+          c.linkedin?.toLowerCase().includes(search.toLowerCase())
       )
     : [];
 
@@ -90,7 +147,11 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
             Save this Search
           </Button>
 
-          <Button variant="outline" className="h-11 rounded-full">
+          <Button
+            variant="outline"
+            className="h-11 rounded-full"
+            onClick={onBulkUpdateFavorites}
+          >
             <Heart className="mr-2 size-5" />
             Add to Favorites
           </Button>
@@ -112,7 +173,12 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
         ) : (
           <div className="w-full mt-8 mb-8 overflow-x-auto">
             <DataTable
-              columns={familyOfficesContactsColumns(favorites, toggleFavorite)}
+              columns={familyOfficesContactsColumns(
+                favoriteMap,
+                toggleFavorite,
+                onSelectAllRows,
+                onSelectRow
+              )}
               data={filteredContacts}
             />
           </div>

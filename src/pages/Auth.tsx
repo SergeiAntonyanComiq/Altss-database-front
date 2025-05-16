@@ -150,7 +150,7 @@ const Auth = () => {
             </div>
           </CardTitle>
           <CardDescription className="flex justify-center text-2xl font-semibold text-[#111928]">
-            Welcome to Comiq Alt
+            Welcome to Altss
           </CardDescription>
         </CardHeader>
         <Tabs defaultValue="signin" className="w-full">

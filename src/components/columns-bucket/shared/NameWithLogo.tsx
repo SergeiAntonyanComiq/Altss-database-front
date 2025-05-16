@@ -5,11 +5,7 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 
 export const NameWithLogo = <
-  T extends {
-    logo_filename?: string;
-    firm_name?: string;
-    name?: string;
-  },
+  T extends { logo_filename?: string; firm_name?: string; name?: string }
 >(
   fieldId: string,
   field: string,
@@ -18,7 +14,7 @@ export const NameWithLogo = <
   toggleFavorite: (id: string) => void,
   path: string,
   onSelectAll?: (id: T[]) => void,
-  onSelect?: (id: string) => void,
+  onSelect?: (id: string) => void
 ): ColumnDef<T> => ({
   id: field,
   accessorFn: (row) => row[field],
@@ -27,9 +23,12 @@ export const NameWithLogo = <
   },
   header: ({ table }) => {
     const handleCheckedChange = (value: CheckedState) => {
-      const selectedData = table.getRowModel().rows.map((row) => row.original);
-
       table.toggleAllPageRowsSelected(!!value);
+
+      const selectedData = value
+        ? table.getRowModel().rows.map((row) => row.original)
+        : [];
+
       onSelectAll?.(selectedData);
     };
 
@@ -42,8 +41,8 @@ export const NameWithLogo = <
               table.getIsSomePageRowsSelected()
                 ? "indeterminate"
                 : table.getIsAllPageRowsSelected()
-                  ? "checked"
-                  : "unchecked"
+                ? "checked"
+                : "unchecked"
             }
             onCheckedChange={handleCheckedChange}
             aria-label="Select all"
@@ -60,14 +59,15 @@ export const NameWithLogo = <
       <div className="flex h-full items-center px-4 justify-between">
         <div
           className={cn(
-            "flex items-center h-full border-r border-[#DFE4EA] pr-3",
+            "flex items-center h-full border-r border-[#DFE4EA] pr-3"
           )}
         >
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => {
               row.toggleSelected(!!value);
-              onSelect?.(row.id);
+
+              onSelect?.(row.original[fieldId]);
             }}
             aria-label="Select row"
           />
@@ -88,7 +88,7 @@ export const NameWithLogo = <
             >
               {row.getValue(field)}
             </a>,
-            row.getValue(field),
+            row.getValue(field)
           )}
         </div>
         <div className="flex items-center flex-shrink-0 justify-end min-w-[32px]">

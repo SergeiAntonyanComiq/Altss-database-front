@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import apiClient from "@/lib/axios.ts";
+import { UpdateFavorites } from "@/hooks/useFamilyOfficesData.ts";
 
 interface UseFamilyOfficesContactsDataResult {
-  contacts: Array<FamilyOfficeContact & { favorited?: boolean }> | null;
+  contacts: Array<FamilyOfficeContact> | null;
   isLoading: boolean;
   error: string | null;
   totalPages: number;
   totalItems: number;
+  updateFavorites: (data: UpdateFavorites) => Promise<void>;
 }
 
 export function useFamilyOfficesContactsData(
   currentPage: number,
-  itemsPerPage: number,
+  itemsPerPage: number
 ): UseFamilyOfficesContactsDataResult {
-  const [contacts, setContacts] = useState<Array<
-    FamilyOfficeContact & { favorited?: boolean }
-  > | null>(null);
+  const [contacts, setContacts] = useState<Array<FamilyOfficeContact> | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -31,7 +33,7 @@ export function useFamilyOfficesContactsData(
         const offset = (currentPage - 1) * itemsPerPage;
 
         const response = await apiClient.get(
-          `/family-offices-contacts?limit=${itemsPerPage}&offset=${offset}`,
+          `/family-offices-contacts?limit=${itemsPerPage}&offset=${offset}`
         );
 
         const apiData = response.data as {
@@ -44,7 +46,7 @@ export function useFamilyOfficesContactsData(
         setTotalPages(
           apiData.metadata?.total
             ? Math.ceil(apiData.metadata.total / itemsPerPage)
-            : 1,
+            : 1
         );
       } catch (err) {
         setError(err.message || "Failed to fetch contacts");
@@ -57,5 +59,24 @@ export function useFamilyOfficesContactsData(
     fetchContacts();
   }, [currentPage, itemsPerPage]);
 
-  return { contacts, isLoading, error, totalPages, totalItems };
+  const updateFavorites = async (data: UpdateFavorites) => {
+    try {
+      setIsLoading(true);
+
+      await apiClient.post("/favorites/toggle", data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    updateFavorites,
+    contacts,
+    isLoading,
+    error,
+    totalPages,
+    totalItems,
+  };
 }

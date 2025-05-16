@@ -2,42 +2,60 @@ import { Checkbox } from "@/components/ui/checkbox.tsx";
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 export const FamilyOfficeContactsName = (
   favorites: Record<string, boolean>,
   toggleFavorite: (id: string) => void,
+  onSelectAll?: (id: FamilyOfficeContact[]) => void,
+  onSelect?: (id: string) => void
 ): ColumnDef<FamilyOfficeContact, string> => ({
   id: "select",
   accessorFn: (row) => row.full_name,
   meta: { headerClassName: "bg-white", cellClassName: "bg-white" },
-  header: ({ table }) => (
-    <div className="flex h-[44px] items-center w-full bg-white">
-      <div className="flex items-center h-full border-r border-[#DFE4EA] pr-3">
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          data-state={
-            table.getIsSomePageRowsSelected()
-              ? "indeterminate"
-              : table.getIsAllPageRowsSelected()
+  header: ({ table }) => {
+    const handleCheckedChange = (value: CheckedState) => {
+      table.toggleAllPageRowsSelected(!!value);
+
+      const selectedData = value
+        ? table.getRowModel().rows.map((row) => row.original)
+        : [];
+
+      onSelectAll?.(selectedData);
+    };
+
+    return (
+      <div className="flex h-[44px] items-center w-full bg-white">
+        <div className="flex items-center h-full border-r border-[#DFE4EA] pr-3">
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            data-state={
+              table.getIsSomePageRowsSelected()
+                ? "indeterminate"
+                : table.getIsAllPageRowsSelected()
                 ? "checked"
                 : "unchecked"
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
+            }
+            onCheckedChange={handleCheckedChange}
+            aria-label="Select all"
+          />
+        </div>
+        <div className="ml-3 flex items-center gap-2.5">Full Name</div>
       </div>
-      <div className="ml-3 flex items-center gap-2.5">Full Name</div>
-    </div>
-  ),
+    );
+  },
   cell: ({ row }) => {
-    const isFavorited = favorites[row.original.company_id];
+    const isFavorited = favorites[row.original.contact_id];
 
     return (
       <div className="flex h-full items-center justify-between bg-white">
         <div className="flex items-center h-full border-r border-[#DFE4EA] pr-3">
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            onCheckedChange={(value) => {
+              onSelect(row.original.contact_id);
+              row.toggleSelected(!!value);
+            }}
             aria-label="Select row"
           />
         </div>
@@ -59,7 +77,7 @@ export const FamilyOfficeContactsName = (
         </div>
         <div className="flex items-center flex-shrink-0 justify-end min-w-[32px] ml-4 bg-white px-2 py-1 rounded border border-[#DFE4EA]">
           <button
-            onClick={() => toggleFavorite(row.original.company_id)}
+            onClick={() => toggleFavorite(row.original.contact_id)}
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-transparent hover:bg-transparent p-0"
             aria-label={
               isFavorited ? "Remove from favorites" : "Add to favorites"

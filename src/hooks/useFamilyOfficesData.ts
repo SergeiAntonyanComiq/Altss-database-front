@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { fetchFamilyOffices, FamilyOffice } from "@/services/familyOfficesService";
+import {
+  fetchFamilyOffices,
+  FamilyOffice,
+} from "@/services/familyOfficesService";
+import apiClient from "@/lib/axios.ts";
 
 interface UseFamilyOfficesDataParams {
   page: number;
@@ -8,12 +12,19 @@ interface UseFamilyOfficesDataParams {
   filters?: Record<string, any>;
 }
 
+export interface UpdateFavorites {
+  itemType: string;
+  itemIds: string[];
+  favorited: boolean;
+}
+
 interface UseFamilyOfficesDataResult {
   familyOffices: FamilyOffice[];
   isLoading: boolean;
   error: string | null;
   totalPages: number;
   totalItems: number;
+  updateFavorites: (data: UpdateFavorites) => Promise<void>;
 }
 
 export function useFamilyOfficesData(
@@ -53,8 +64,8 @@ export function useFamilyOfficesData(
       .catch((err) => {
         setError(
           err?.response?.data?.error ||
-          err?.message ||
-          "Failed to fetch family offices"
+            err?.message ||
+            "Failed to fetch family offices"
         );
         setFamilyOffices([]);
         setTotalItems(0);
@@ -65,7 +76,20 @@ export function useFamilyOfficesData(
       });
   }, [page, perPage, searchQuery, JSON.stringify(filters)]);
 
+  const updateFavorites = async (data: UpdateFavorites) => {
+    try {
+      setIsLoading(true);
+
+      await apiClient.post("/favorites/toggle", data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
+    updateFavorites,
     familyOffices,
     isLoading,
     error,
