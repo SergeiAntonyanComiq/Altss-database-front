@@ -3,6 +3,7 @@ import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { CheckedState } from "@radix-ui/react-checkbox";
+import { LinkedinIcon } from "@/components/ui/icons";
 
 export const FamilyOfficeContactsName = (
   favorites: Record<string, boolean>,
@@ -75,6 +76,15 @@ export const FamilyOfficeContactsName = (
             {row.getValue("select")}
           </a>
         </div>
+        {row.original.linkedin ? (
+          <a
+            href={row.original.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <LinkedinIcon />
+          </a>
+        ) : null}
         <div className="flex items-center flex-shrink-0 justify-end min-w-[32px] ml-4 bg-white px-2 py-1 rounded border border-[#DFE4EA]">
           <button
             onClick={() => toggleFavorite(row.original.contact_id)}
