@@ -18,5 +18,4 @@ export const familyOfficesContactsColumns = (
   FamilyOfficeContactsName(favorites, toggleFavorite, onSelectAll, onSelect),
   FamilyOfficeContactsTitle,
   FamilyOfficeContactsCompanyName,
-  Website("linkedin", "LinkedIn"),
 ];
