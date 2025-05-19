@@ -158,14 +158,15 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/my-orders"
-              element={
-                <ProtectedRoute>
-                  <MyOrders />
-                </ProtectedRoute>
-              }
-            />
+            {/*TODO integrate Orders page*/}
+            {/*<Route*/}
+            {/*  path="/my-orders"*/}
+            {/*  element={*/}
+            {/*    <ProtectedRoute>*/}
+            {/*      <MyOrders />*/}
+            {/*    </ProtectedRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
             <Route
               path="/favorites"
               element={

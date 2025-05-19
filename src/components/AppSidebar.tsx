@@ -188,13 +188,14 @@ const AppSidebar = () => {
         "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/94865fa92bf7a1022c9d340f97476cfd56b8e6d4",
       hasRightIcon: false,
     },
-    {
-      title: "My Orders",
-      path: "/my-orders",
-      iconSrc:
-        "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
-      hasRightIcon: false,
-    },
+    // TODO integrate My Order page
+    // {
+    //   title: "My Orders",
+    //   path: "/my-orders",
+    //   iconSrc:
+    //     "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/cb551c4c9f44d0939c54de446551512a630f1b13",
+    //   hasRightIcon: false,
+    // },
   ];
 
   const mainMenuItems = menuItems.slice(0, 5);
