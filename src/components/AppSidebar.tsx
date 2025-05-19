@@ -240,9 +240,12 @@ const AppSidebar = () => {
       <Sidebar className="border-r border-[#DFE4EA] bg-white">
         <SidebarHeader className="pt-4 pb-3">
           <div className="flex w-full items-center justify-between px-6">
-            <div className="flex items-center">
+            <div
+              className="flex items-center cursor-pointer"
+              onClick={() => navigate(`/familyoffices`)}
+            >
               <img
-                src="/images/altss_logo.png"
+                src="/comiq.png"
                 alt="Altss Logo"
                 className="h-10 w-auto object-contain"
               />
