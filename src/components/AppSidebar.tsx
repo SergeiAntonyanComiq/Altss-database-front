@@ -31,12 +31,14 @@ import {
 } from "@/components/ui/collapsible";
 import {
   FavoriteFamilyOfficeType,
-  FavoriteItem,
   FavoriteContactType,
-  getSavedFilters,
+  getSavedSearches,
+  SavedSearchType,
+  FavoriteItem,
+  getFavorites,
 } from "@/services/savedFiltersService";
 import { isLocked } from "@/utils/routeAccess.ts";
-import apiClient from "@/lib/axios.ts";
+import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 
 const AppSidebar = () => {
@@ -52,31 +54,47 @@ const AppSidebar = () => {
   const [favoriteFamilyOffices, setFavoriteFamilyOffices] = useState<
     FavoriteFamilyOfficeType[]
   >([]);
-  const [savedSearches, setSavedSearches] = useState([]);
+  const [savedSearchesOffices, setSavedSearchesOffices] = useState<
+    SavedSearchType[]
+  >([]);
+  const [savedSearchesContacts, setSavedSearchesContacts] = useState<
+    SavedSearchType[]
+  >([]);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
-      const { data } = await apiClient.get<{ data: FavoriteItem[] }>(
-        `favorites`
-      );
-      const items = data.data;
-
-      setFavoriteFamilyOffices(
-        (items?.filter((item) => item.item_type === "family_office") ??
-          []) as FavoriteFamilyOfficeType[]
-      );
-      setFavoriteFamilyOfficesContacts(
-        (items?.filter((item) => item.item_type === "family_office_contacts") ??
-          []) as FavoriteContactType[]
-      );
-
       try {
-        const searches = await getSavedFilters();
-        setSavedSearches(searches || []);
+        const { data: favoriteData } = await getFavorites();
+
+        setFavoriteFamilyOffices(
+          favoriteData?.filter(
+            (item: FavoriteItem) => item.item_type === "family_office"
+          ) ?? []
+        );
+        setFavoriteFamilyOfficesContacts(
+          favoriteData?.filter(
+            (item: FavoriteItem) => item.item_type === "family_office_contacts"
+          ) ?? []
+        );
+
+        const { data: searchesData } = await getSavedSearches();
+
+        setSavedSearchesOffices(
+          searchesData.filter(
+            (search: SavedSearchType) => search.table_name === "family_office"
+          ) || []
+        );
+        setSavedSearchesContacts(
+          searchesData.filter(
+            (search: SavedSearchType) =>
+              search.table_name === "family_office_contacts"
+          ) || []
+        );
       } catch (error) {
-        setSavedSearches([]);
+        setSavedSearchesContacts([]);
+        setSavedSearchesOffices([]);
       }
     };
 
@@ -229,10 +247,19 @@ const AppSidebar = () => {
     setFavoritesOpen(false);
   };
 
-  const handleApplySavedSearch = (filter) => {
-    const path = filter.type === "company" ? "/companies" : "/persons";
-    navigate(`${path}?filter=${filter.id}`);
-    setSavedSearchesOpen(false);
+  const handleApplySavedSearch = (search: SavedSearchType) => {
+    const path =
+      search.table_name === "family_office"
+        ? "/familyoffices"
+        : "/familyofficescontacts";
+
+    const query = new URLSearchParams();
+
+    if (search.searchQuery) {
+      query.set("search", search.searchQuery);
+    }
+
+    navigate(`${path}?${query.toString()}`);
   };
 
   return (
@@ -353,38 +380,16 @@ const AppSidebar = () => {
                             Family Offices
                           </div>
                           {favoriteFamilyOffices.map((favorite) => (
-                            <div
-                              key={favorite.data.company_id}
-                              onClick={() =>
-                                handleNavigateToFavorite(
-                                  favorite.data.company_id,
-                                  "office"
-                                )
+                            <FavoriteSidebarList
+                              key={favorite.item_id}
+                              id={favorite.item_id}
+                              name={favorite.data.firm_name}
+                              title={favorite.data.firm_type}
+                              type="office"
+                              handleNavigateToFavorite={
+                                handleNavigateToFavorite
                               }
-                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
-                            >
-                              <div className="truncate">
-                                {withTooltipRenderer(
-                                  <span>{favorite.data.firm_name}</span>,
-                                  favorite.data.firm_name
-                                )}
-                              </div>
-
-                              {favorite.data.firm_type && (
-                                <div className="truncate">
-                                  {withTooltipRenderer(
-                                    <span className="text-xs text-gray-400">
-                                      {Array.isArray(favorite.data.firm_type)
-                                        ? favorite.data.firm_type[0]
-                                        : favorite.data.firm_type}
-                                    </span>,
-                                    Array.isArray(favorite.data.firm_type)
-                                      ? favorite.data.firm_type[0]
-                                      : favorite.data.firm_type
-                                  )}
-                                </div>
-                              )}
-                            </div>
+                            />
                           ))}
                         </>
                       )}
@@ -395,33 +400,16 @@ const AppSidebar = () => {
                             Family Offices Contacts
                           </div>
                           {favoriteFamilyOfficesContacts.map((favorite) => (
-                            <div
-                              key={favorite.id}
-                              onClick={() =>
-                                handleNavigateToFavorite(
-                                  favorite.item_id,
-                                  "contact"
-                                )
+                            <FavoriteSidebarList
+                              key={favorite.item_id}
+                              id={favorite.item_id}
+                              name={favorite.data.full_name}
+                              title={favorite.data.title}
+                              type="contact"
+                              handleNavigateToFavorite={
+                                handleNavigateToFavorite
                               }
-                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
-                            >
-                              <div className="truncate">
-                                {withTooltipRenderer(
-                                  <span>{favorite.data.full_name}</span>,
-                                  favorite.data.full_name
-                                )}
-                              </div>
-                              {favorite.data.title && (
-                                <div className="truncate">
-                                  {withTooltipRenderer(
-                                    <span className="text-xs text-gray-400">
-                                      {favorite.data.title}
-                                    </span>,
-                                    favorite.data.title
-                                  )}
-                                </div>
-                              )}
-                            </div>
+                            />
                           ))}
                         </>
                       )}
@@ -470,47 +458,52 @@ const AppSidebar = () => {
                   )}
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
-                  {savedSearches.length > 0 ? (
+                  {savedSearchesOffices.length > 0 ||
+                  savedSearchesContacts.length > 0 ? (
                     <>
-                      {savedSearches.filter(
-                        (search) => search.type === "company"
-                      ).length > 0 && (
+                      {savedSearchesOffices.length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
-                            Companies
+                            Family Offices
                           </div>
-                          {savedSearches
-                            .filter((search) => search.type === "company")
-                            .map((filter) => (
-                              <div
-                                key={filter.id}
-                                onClick={() => handleApplySavedSearch(filter)}
-                                className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
-                              >
-                                <span className="truncate">{filter.name}</span>
-                              </div>
-                            ))}
+                          {savedSearchesOffices.map((filter) => (
+                            <div
+                              key={filter.id}
+                              onClick={() => handleApplySavedSearch(filter)}
+                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                            >
+                              {withTooltipRenderer(
+                                <span className="truncate">
+                                  {filter.searchQuery}
+                                </span>,
+                                filter.searchQuery
+                              )}
+                            </div>
+                          ))}
                         </>
                       )}
 
-                      {savedSearches.filter(
-                        (search) => search.type === "person"
-                      ).length > 0 && (
+                      {savedSearchesContacts.length > 0 && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
-                            Persons
+                            Family Office Contacts
                           </div>
-                          {savedSearches
-                            .filter((search) => search.type === "person")
-                            .map((filter) => (
-                              <div
-                                key={filter.id}
-                                onClick={() => handleApplySavedSearch(filter)}
-                                className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
-                              >
-                                <span className="truncate">{filter.name}</span>
-                              </div>
-                            ))}
+                          {savedSearchesContacts.map((filter) => (
+                            <div
+                              key={filter.id}
+                              onClick={() => handleApplySavedSearch(filter)}
+                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                            >
+                              <span className="truncate">
+                                {withTooltipRenderer(
+                                  <span className="truncate">
+                                    {filter.searchQuery}
+                                  </span>,
+                                  filter.searchQuery
+                                )}
+                              </span>
+                            </div>
+                          ))}
                         </>
                       )}
                     </>

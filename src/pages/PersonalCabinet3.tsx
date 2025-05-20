@@ -5,29 +5,24 @@ import AppSidebar from "@/components/AppSidebar";
 import ContactsList from "@/components/contacts/ContactsList";
 import PersonsList from "@/components/personal/PersonsList.tsx";
 import { Toaster } from "@/components/ui/toaster";
-import { getSavedFilterById } from "@/services/savedFiltersService";
-import { useToast } from "@/components/ui/use-toast";
 
 const PersonalCabinet3 = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  // Parse the current page and items per page from URL query parameters
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get("page");
   const perPageParam = searchParams.get("perPage");
   const section = searchParams.get("section");
-  const filterId = searchParams.get("filter");
 
   const [currentPage, setCurrentPage] = useState(
-    pageParam ? parseInt(pageParam, 10) : 1,
+    pageParam ? parseInt(pageParam, 10) : 1
   );
   const [itemsPerPage, setItemsPerPage] = useState(
-    perPageParam ? parseInt(perPageParam, 10) : 10,
+    perPageParam ? parseInt(perPageParam, 10) : 10
   );
   const [activeSection, setActiveSection] = useState<string>(
-    section || "persons",
+    section || "persons"
   );
 
   // Состояния для всех параметров фильтра
@@ -65,7 +60,7 @@ const PersonalCabinet3 = () => {
         });
       }
     },
-    [location.pathname, location.search, navigate],
+    [location.pathname, location.search, navigate]
   );
 
   // Update URL when page or items per page changes - using useCallback to prevent unnecessary re-renders
@@ -76,7 +71,7 @@ const PersonalCabinet3 = () => {
       params.set("page", page.toString());
       navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     },
-    [location.pathname, location.search, navigate],
+    [location.pathname, location.search, navigate]
   );
 
   const handleItemsPerPageChange = useCallback(
@@ -89,89 +84,16 @@ const PersonalCabinet3 = () => {
       params.set("page", "1");
       navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     },
-    [location.pathname, location.search, navigate],
+    [location.pathname, location.search, navigate]
   );
 
-  // Load filter if filter ID is provided in URL
   useEffect(() => {
-    const loadFilter = async () => {
-      if (filterId) {
-        try {
-          const filter = await getSavedFilterById(filterId);
-          if (filter) {
-            const newFilters = {
-              firmTypes: filter.firmTypes || [],
-              companyName: filter.companyName || "",
-              position: filter.position || "",
-              location: filter.location || "",
-              responsibilities: filter.responsibilities || "",
-              bio: filter.bio || "",
-            };
-
-            // Reset to page 1 when applying a filter and update URL
-            const params = new URLSearchParams(location.search);
-            params.set("page", "1");
-            navigate(`${location.pathname}?${params.toString()}`, {
-              replace: true,
-            });
-            setCurrentPage(1);
-
-            // Update all filter states
-            setSelectedFirmTypes(newFilters.firmTypes);
-            setCompanyNameFilter(newFilters.companyName);
-            setPositionFilter(newFilters.position);
-            setLocationFilter(newFilters.location);
-            setResponsibilitiesFilter(newFilters.responsibilities);
-            setBioFilter(newFilters.bio);
-
-            handleFilterChange(newFilters);
-
-            toast({
-              title: "Filter Applied",
-              description: `Applied "${filter.name}" filter`,
-            });
-          } else {
-            toast({
-              title: "Filter Not Found",
-              description: "The requested filter could not be found",
-              variant: "destructive",
-            });
-          }
-          const params = new URLSearchParams(location.search);
-          if (params.has("filter")) {
-            params.delete("filter");
-            navigate(`${location.pathname}?${params.toString()}`, {
-              replace: true,
-            });
-          }
-        } catch (error) {
-          console.error("Error loading filter:", error);
-          toast({
-            title: "Error Loading Filter",
-            description: "There was an error loading the filter",
-            variant: "destructive",
-          });
-        }
-      }
-    };
+    const loadFilter = async () => {};
 
     (async () => {
       await loadFilter();
     })();
-  }, [
-    filterId,
-    toast,
-    handleFilterChange,
-    location.pathname,
-    location.search,
-    navigate,
-    selectedFirmTypes,
-    companyNameFilter,
-    positionFilter,
-    locationFilter,
-    responsibilitiesFilter,
-    bioFilter,
-  ]);
+  }, []);
 
   // Keep URL and state in sync - using proper dependency array
   useEffect(() => {

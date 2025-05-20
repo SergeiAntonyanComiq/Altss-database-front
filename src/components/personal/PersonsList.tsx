@@ -2,14 +2,9 @@ import React, { useState, useCallback, memo, useEffect, useMemo } from "react";
 import { useContactsData } from "@/hooks/useContactsData";
 import { ContactType } from "@/types/contact";
 import { PersonType } from "@/types/person";
-import PersonsSearchBar from "./PersonsSearchBar";
 import { usePersonsSelection } from "./hooks";
 import { toast } from "@/components/ui/use-toast";
 import { searchContactsByName } from "@/services/contactsService";
-import {
-  addPersonToFavorites,
-  removePersonFromFavorites,
-} from "@/services/savedFiltersService";
 import CustomPagination from "../ui/CustomPagination.tsx";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { personsColumns } from "@/components/columns-bucket";
@@ -90,7 +85,7 @@ const PersonsList = ({
   const [localPositionFilter, setPositionFilter] = useState(positionFilter);
   const [localLocationFilter, setLocationFilter] = useState(locationFilter);
   const [localResponsibilitiesFilter, setResponsibilitiesFilter] = useState(
-    responsibilitiesFilter,
+    responsibilitiesFilter
   );
   const [localBioFilter, setBioFilter] = useState(bioFilter);
   const [searchResults, setSearchResults] = useState<ContactType[]>([]);
@@ -123,7 +118,7 @@ const PersonsList = ({
         .filter(Boolean)
         .map((contact) => contactToPerson(contact))
         .filter((person): person is PersonType => Boolean(person)),
-    [displayedContacts],
+    [displayedContacts]
   );
 
   const [localPersons, setLocalPersons] = useState<PersonType[]>([]);
@@ -176,7 +171,7 @@ const PersonsList = ({
         const { data, total } = await searchContactsByName(
           query,
           currentPage,
-          itemsPerPage,
+          itemsPerPage
         );
         setSearchResults(data);
         setTotalContacts(total);
@@ -198,7 +193,7 @@ const PersonsList = ({
         setTotalContacts(0);
       }
     },
-    [currentPage, itemsPerPage],
+    [currentPage, itemsPerPage]
   );
 
   const { selectedPersons, handleCheckboxChange, handleSelectAll } =
@@ -218,7 +213,7 @@ const PersonsList = ({
       isSearchActive,
       searchQuery,
       handleSearch,
-    ],
+    ]
   );
 
   const handleItemsPerPageChange = useCallback(
@@ -228,7 +223,7 @@ const PersonsList = ({
         setContactsItemsPerPage(perPage);
       }
     },
-    [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive],
+    [onItemsPerPageChange, setContactsItemsPerPage, isSearchActive]
   );
 
   const toggleFavorite = useCallback(
@@ -241,39 +236,11 @@ const PersonsList = ({
       const person = localPersons[personIndex];
       const isFavorite = person.favorite;
       const updatedPersons = localPersons.map((p, idx) =>
-        idx === personIndex ? { ...p, favorite: !isFavorite } : p,
+        idx === personIndex ? { ...p, favorite: !isFavorite } : p
       );
       setLocalPersons(updatedPersons);
-      try {
-        if (isFavorite) {
-          await removePersonFromFavorites(id);
-          toast({
-            title: "Removed from favorites",
-            description: `${person.name} has been removed.`,
-          });
-        } else {
-          await addPersonToFavorites(
-            id,
-            person.name,
-            person.currentPosition,
-            person.companies?.[0] || "",
-          );
-          toast({
-            title: "Added to favorites",
-            description: `${person.name} has been added.`,
-          });
-        }
-        window.dispatchEvent(new CustomEvent("favoritesUpdated"));
-      } catch {
-        toast({
-          title: "Error",
-          description: "Problem updating favorites",
-          variant: "destructive",
-        });
-        setLocalPersons(originalPersons);
-      }
     },
-    [localPersons],
+    [localPersons]
   );
 
   const handleFilterChange = useCallback(
@@ -294,7 +261,7 @@ const PersonsList = ({
       handlePageChange(1);
       onFilterChange?.(filters);
     },
-    [handlePageChange, onFilterChange],
+    [handlePageChange, onFilterChange]
   );
 
   useEffect(() => {
@@ -318,28 +285,13 @@ const PersonsList = ({
         Persons
       </h1>
 
-      <PersonsSearchBar
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedFirmTypes={localSelectedFirmTypes}
-        companyNameFilter={localCompanyNameFilter}
-        positionFilter={localPositionFilter}
-        locationFilter={localLocationFilter}
-        responsibilitiesFilter={localResponsibilitiesFilter}
-        bioFilter={localBioFilter}
-        onFilterChange={handleFilterChange}
-        onSearch={handleSearch}
-        selectedPersons={selectedPersons}
-        persons={localPersons}
-      />
-
       <div className="mt-6 flex-grow overflow-x-auto w-full">
         <DataTable
           columns={personsColumns(
             favorites,
             toggleFavorite,
             handleSelectAll,
-            handleCheckboxChange,
+            handleCheckboxChange
           )}
           data={localPersons}
         />

@@ -3,14 +3,10 @@ import {
   fetchFamilyOffices,
   FamilyOffice,
 } from "@/services/familyOfficesService";
-import apiClient from "@/lib/axios.ts";
-
-interface UseFamilyOfficesDataParams {
-  page: number;
-  perPage: number;
-  searchQuery?: string;
-  filters?: Record<string, any>;
-}
+import {
+  updateFavoritesData,
+  updateSavedSearchesData,
+} from "@/services/savedFiltersService.ts";
 
 export interface UpdateFavorites {
   itemType: string;
@@ -18,20 +14,20 @@ export interface UpdateFavorites {
   favorited: boolean;
 }
 
-interface UseFamilyOfficesDataResult {
+export interface UseFamilyOfficesDataResult {
   familyOffices: FamilyOffice[];
   isLoading: boolean;
   error: string | null;
   totalPages: number;
   totalItems: number;
   updateFavorites: (data: UpdateFavorites) => Promise<void>;
+  updateSavedSearches: (query: string) => Promise<void>;
 }
 
 export function useFamilyOfficesData(
   currentPage: number,
   itemsPerPage: number,
-  searchQuery: string = "",
-  filters: Record<string, any> = {}
+  searchQuery: string = ""
 ): UseFamilyOfficesDataResult {
   const page = currentPage;
   const perPage = itemsPerPage;
@@ -45,15 +41,11 @@ export function useFamilyOfficesData(
     setIsLoading(true);
     setError(null);
 
-    // Build params for API
-    const params: Record<string, any> = {
-      limit: perPage,
-      offset: (page - 1) * perPage,
-      ...filters,
+    const params: Record<string, string> = {
+      limit: `${perPage}`,
+      offset: `${(page - 1) * perPage}`,
+      search: searchQuery,
     };
-    if (searchQuery) {
-      params.firm_name = searchQuery;
-    }
 
     fetchFamilyOffices(params)
       .then((res) => {
@@ -74,13 +66,25 @@ export function useFamilyOfficesData(
       .finally(() => {
         setIsLoading(false);
       });
-  }, [page, perPage, searchQuery, JSON.stringify(filters)]);
+  }, [page, perPage, searchQuery]);
 
   const updateFavorites = async (data: UpdateFavorites) => {
     try {
       setIsLoading(true);
 
-      await apiClient.post("/favorites/toggle", data);
+      await updateFavoritesData(data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateSavedSearches = async (searchQuery: string) => {
+    try {
+      setIsLoading(true);
+
+      await updateSavedSearchesData(searchQuery, "family_office");
     } catch (err) {
       setError(err);
     } finally {
@@ -89,6 +93,7 @@ export function useFamilyOfficesData(
   };
 
   return {
+    updateSavedSearches,
     updateFavorites,
     familyOffices,
     isLoading,
