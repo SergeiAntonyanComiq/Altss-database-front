@@ -245,7 +245,7 @@ const AppSidebar = () => {
               onClick={() => navigate(`/familyoffices`)}
             >
               <img
-                src="/comiq.png"
+                src="/images/altss_logo.png"
                 alt="Altss Logo"
                 className="h-10 w-auto object-contain"
               />
