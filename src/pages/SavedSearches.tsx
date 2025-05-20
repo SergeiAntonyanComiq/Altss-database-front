@@ -3,20 +3,17 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  BookmarkIcon,
-  SearchIcon,
-  Trash2,
-  Calendar,
-  User,
-  Building2,
-} from "lucide-react";
+import { BookmarkIcon, SearchIcon, User, Building2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  getSavedFilters,
-  deleteSavedFilter,
+  deleteSavedSearches,
+  getSavedSearches,
   SavedSearchType,
 } from "@/services/savedFiltersService";
+import {
+  FamilyOfficeContactSearches,
+  FamilyOfficeSearches,
+} from "@/components/saved-searches";
 
 const SavedSearches = () => {
   const [savedSearches, setSavedSearches] = useState<SavedSearchType[]>([]);
@@ -28,10 +25,9 @@ const SavedSearches = () => {
     const loadSavedSearches = async () => {
       setIsLoading(true);
       try {
-        const data = await getSavedFilters();
-        setSavedSearches(data);
+        const data = await getSavedSearches();
+        setSavedSearches(data.data);
       } catch (error) {
-        console.error("Error loading saved searches:", error);
         toast({
           title: "Error loading saved searches",
           description:
@@ -43,28 +39,38 @@ const SavedSearches = () => {
       }
     };
 
-    loadSavedSearches();
+    (async () => {
+      await loadSavedSearches();
+    })();
   }, [toast]);
 
   const handleUseSearch = (search: SavedSearchType) => {
-    const path = search.type === "company" ? "/companies" : "/persons";
-    navigate(`${path}?filter=${encodeURIComponent(search.id)}`);
+    const path =
+      search.table_name === "family_office"
+        ? "/familyoffices"
+        : "/familyofficescontacts";
+
+    const query = new URLSearchParams();
+
+    if (search.searchQuery) {
+      query.set("search", search.searchQuery);
+    }
+
+    navigate(`${path}?${query.toString()}`);
   };
 
-  const handleDeleteSearch = async (id: string, name: string) => {
+  const handleDeleteSearch = async (id: number, query: string) => {
     try {
-      const success = await deleteSavedFilter(id);
+      const success = await deleteSavedSearches(id);
+
       if (success) {
         setSavedSearches((prev) => prev.filter((search) => search.id !== id));
         toast({
           title: "Search deleted",
-          description: `"${name}" has been removed from saved searches`,
+          description: `"${query}" has been removed from saved searches`,
         });
-      } else {
-        throw new Error("Failed to delete saved search");
       }
     } catch (error) {
-      console.error("Error deleting saved search:", error);
       toast({
         title: "Error",
         description:
@@ -102,12 +108,13 @@ const SavedSearches = () => {
     </div>
   );
 
-  const personSearches = savedSearches.filter(
-    (search) => search.type === "person",
-  );
-  const companySearches = savedSearches.filter(
-    (search) => search.type === "company",
-  );
+  const contactSearches =
+    savedSearches?.filter(
+      (search) => search.table_name === "family_office_contacts"
+    ) ?? [];
+  const officeSearches =
+    savedSearches?.filter((search) => search.table_name === "family_office") ??
+    [];
 
   return (
     <SidebarProvider>
@@ -130,142 +137,40 @@ const SavedSearches = () => {
               renderEmptyState()
             ) : (
               <div className="space-y-6">
-                {companySearches.length > 0 && (
+                {officeSearches.length > 0 && (
                   <div>
                     <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
                       <Building2 className="h-5 w-5 mr-2 text-gray-500" />
-                      Companies
+                      Family Offices
                     </h2>
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="grid grid-cols-1 divide-y divide-gray-200">
-                        {companySearches.map((search) => (
-                          <div
-                            key={search.id}
-                            className="p-4 hover:bg-gray-50 transition-colors"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <div className="flex items-center">
-                                  <div className="font-medium text-gray-800">
-                                    {search.name}
-                                  </div>
-                                  <div className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full">
-                                    Saved Search
-                                  </div>
-                                </div>
-
-                                <div className="mt-2 text-sm text-gray-600">
-                                  {search.description ? (
-                                    <p>{search.description}</p>
-                                  ) : (
-                                    <p className="text-gray-400 italic">
-                                      No description
-                                    </p>
-                                  )}
-                                </div>
-
-                                <div className="mt-3 flex items-center text-xs text-gray-500">
-                                  <Calendar className="h-3 w-3 mr-1 text-gray-400" />
-                                  Saved on{" "}
-                                  {new Date(
-                                    search.createdAt,
-                                  ).toLocaleDateString()}
-                                </div>
-                              </div>
-
-                              <div className="flex space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleUseSearch(search)}
-                                >
-                                  <SearchIcon className="h-4 w-4 mr-1" />
-                                  Use Search
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  onClick={() =>
-                                    handleDeleteSearch(search.id, search.name)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                        {officeSearches.map((search) => (
+                          <FamilyOfficeSearches
+                            handleDeleteSearch={handleDeleteSearch}
+                            handleUseSearch={handleUseSearch}
+                            search={search}
+                          />
                         ))}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {personSearches.length > 0 && (
+                {contactSearches.length > 0 && (
                   <div>
                     <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
                       <User className="h-5 w-5 mr-2 text-gray-500" />
-                      Persons
+                      Family Offices Contacts
                     </h2>
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="grid grid-cols-1 divide-y divide-gray-200">
-                        {personSearches.map((search) => (
-                          <div
-                            key={search.id}
-                            className="p-4 hover:bg-gray-50 transition-colors"
-                          >
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <div className="flex items-center">
-                                  <div className="font-medium text-gray-800">
-                                    {search.name}
-                                  </div>
-                                  <div className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded-full">
-                                    Saved Search
-                                  </div>
-                                </div>
-
-                                <div className="mt-2 text-sm text-gray-600">
-                                  {search.description ? (
-                                    <p>{search.description}</p>
-                                  ) : (
-                                    <p className="text-gray-400 italic">
-                                      No description
-                                    </p>
-                                  )}
-                                </div>
-
-                                <div className="mt-3 flex items-center text-xs text-gray-500">
-                                  <Calendar className="h-3 w-3 mr-1 text-gray-400" />
-                                  Saved on{" "}
-                                  {new Date(
-                                    search.createdAt,
-                                  ).toLocaleDateString()}
-                                </div>
-                              </div>
-
-                              <div className="flex space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleUseSearch(search)}
-                                >
-                                  <SearchIcon className="h-4 w-4 mr-1" />
-                                  Use Search
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  onClick={() =>
-                                    handleDeleteSearch(search.id, search.name)
-                                  }
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                        {contactSearches.map((search) => (
+                          <FamilyOfficeContactSearches
+                            handleDeleteSearch={handleDeleteSearch}
+                            handleUseSearch={handleUseSearch}
+                            search={search}
+                          />
                         ))}
                       </div>
                     </div>

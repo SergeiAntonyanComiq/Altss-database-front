@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import CompaniesSearchBar from "./CompaniesSearchBar";
 import CompaniesError from "./CompaniesError";
 import { useCompaniesData } from "@/hooks/useCompaniesData";
 import { useCompanySelection } from "./useCompanySelection";
-import { getSavedFilterById } from "@/services/savedFiltersService";
 import { useToast } from "@/components/ui/use-toast";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { companiesColumns } from "@/components/columns-bucket";
@@ -27,72 +25,14 @@ const CompaniesList = ({
   onItemsPerPageChange,
   filterId,
 }: CompaniesListProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeSearchQuery, setActiveSearchQuery] = useState("");
-  const [selectedFirmTypes, setSelectedFirmTypes] = useState<string[]>([]);
-
   const [favorites, setFavorites] = useState<Record<number, boolean>>({});
 
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const [activeFilters, setActiveFilters] = useState({
-    firmTypes: [],
-    firmName: "",
-    city: "",
-    country: "",
-    region: "",
-    background: "",
-    yearEst: "",
-    totalStaff: "",
-    peMainFirmStrategy: "",
-    peGeographicExposure: "",
-  });
-
   useEffect(() => {
     const loadFilter = async () => {
       if (!filterId) return;
-      try {
-        const filter = await getSavedFilterById(filterId);
-        if (filter && filter.type === "company") {
-          const isYear = /^\d{4}(-\d+)?$/.test(filter.name);
-
-          const companyFilters = {
-            firmTypes: filter.firmTypes || [],
-            firmName: filter.companyName || "",
-            city: filter.location || "",
-            country: "",
-            region: "",
-            background: filter.responsibilities || "",
-            yearEst: isYear ? filter.name.split("-")[0] : "",
-            totalStaff: "",
-            peMainFirmStrategy: "",
-            peGeographicExposure: "",
-          };
-
-          onPageChange(1);
-          setSelectedFirmTypes(companyFilters.firmTypes);
-          setActiveFilters(companyFilters);
-
-          toast({
-            title: "Filter Applied",
-            description: `Applied "${filter.name}" filter`,
-          });
-        } else {
-          toast({
-            title: "Filter Not Found",
-            description:
-              "The requested filter could not be found or is not applicable to companies",
-            variant: "destructive",
-          });
-        }
-      } catch {
-        toast({
-          title: "Error Loading Filter",
-          description: "There was an error loading the filter",
-          variant: "destructive",
-        });
-      }
 
       const currentUrl = new URL(window.location.href);
       const searchParams = new URLSearchParams(currentUrl.search);
@@ -104,28 +44,16 @@ const CompaniesList = ({
       }
     };
 
-    loadFilter();
+    (async () => {
+      await loadFilter();
+    })();
   }, [filterId, toast, navigate, onPageChange]);
 
-  const handleFilterChange = (filters: typeof activeFilters) => {
-    setSelectedFirmTypes(filters.firmTypes);
-    setActiveFilters(filters);
-  };
-
   const { companies, isLoading, error, totalPages, totalItems } =
-    useCompaniesData(
-      currentPage,
-      itemsPerPage,
-      activeSearchQuery,
-      activeFilters,
-    );
+    useCompaniesData(currentPage, itemsPerPage, "");
 
-  const {
-    selectedCompanies,
-    toggleCompanySelection,
-    toggleAllCompanies,
-    toggleFavorite,
-  } = useCompanySelection();
+  const { toggleCompanySelection, toggleAllCompanies, toggleFavorite } =
+    useCompanySelection();
 
   const handleToggleFavorite = (id: string) => {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -134,7 +62,7 @@ const CompaniesList = ({
       const updatedCompanies = companies.map((company) =>
         company.id === id
           ? { ...company, isFavorite: !company.isFavorite }
-          : company,
+          : company
       );
       if (updatedCompanies.some((c) => c.id === id)) {
         companies.splice(0, companies.length, ...updatedCompanies);
@@ -161,19 +89,6 @@ const CompaniesList = ({
           Companies
         </h1>
 
-        <div className="mt-6">
-          <CompaniesSearchBar
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            onSearch={(query) => setActiveSearchQuery(query)}
-            selectedFirmTypes={selectedFirmTypes}
-            activeFilters={activeFilters}
-            onFilterChange={handleFilterChange}
-            selectedCompanies={selectedCompanies}
-            companies={companies}
-          />
-        </div>
-
         <div className="flex-grow mt-8">
           {error ? (
             <CompaniesError errorMessage={error} />
@@ -183,7 +98,7 @@ const CompaniesList = ({
                 favorites,
                 handleToggleFavorite,
                 toggleAllCompanies,
-                toggleCompanySelection,
+                toggleCompanySelection
               )}
               data={companies}
             />
