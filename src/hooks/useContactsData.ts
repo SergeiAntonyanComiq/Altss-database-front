@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ContactType } from "@/types/contact";
 import {
-  fetchContactById,
   fetchContactsCount,
   fetchFilteredContacts,
 } from "@/services/contactsService";
-import { getFavoritePersons } from "@/services/savedFiltersService";
 import { toast } from "@/components/ui/use-toast";
 
 interface UseContactsDataProps {
@@ -47,7 +45,6 @@ export const useContactsData = ({
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState<number>(initialItemsPerPage);
   const [totalContacts, setTotalContacts] = useState<number>(0);
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
 
   // Use refs to track prop changes without causing re-renders
   const initialPageRef = useRef(initialPage);
@@ -124,25 +121,15 @@ export const useContactsData = ({
         };
 
         const contactsResponse = await fetchFilteredContacts(filterParams);
-        const favoritesResponse = await getFavoritePersons();
 
         if (!isMounted) return;
 
-        const favIds = new Set(favoritesResponse.map((fav) => fav.id));
-        setFavoriteIds(favIds);
-
-        const updatedContacts = contactsResponse.data.map((contact) => ({
-          ...contact,
-          favorite: favIds.has(String(contact.contact_id)),
-        }));
-
-        setContacts(updatedContacts);
         setTotalContacts(contactsResponse.total);
       } catch (err) {
         if (!isMounted) return;
         console.error("Error fetching contacts or favorites:", err);
         setError(
-          err instanceof Error ? err : new Error("An unknown error occurred"),
+          err instanceof Error ? err : new Error("An unknown error occurred")
         );
         setContacts([]); // Clear contacts on error
         toast({
@@ -173,10 +160,8 @@ export const useContactsData = ({
     location,
     responsibilities,
     bio,
-    toast,
   ]);
 
-  // Effect to sync with prop changes (but not on every render)
   useEffect(() => {
     if (initialPageRef.current !== initialPage) {
       initialPageRef.current = initialPage;

@@ -1,19 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useFamilyOfficesData } from "@/hooks/useFamilyOfficesData";
-
-import { Button } from "@/components/ui/button";
-import { Search, Filter, Save, Heart } from "lucide-react";
+import { useDebounce, useFamilyOfficesData } from "@/hooks";
 
 import { familyOfficeColumnList } from "@/components/columns-bucket";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
-import apiClient from "@/lib/axios.ts";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
+import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
+import { useLocation, useSearchParams } from "react-router-dom";
 
-interface FamilyOfficesListProps {
+export interface FamilyOfficesListProps {
   currentPage: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
@@ -21,12 +19,26 @@ interface FamilyOfficesListProps {
   filterId?: string | null;
 }
 
-const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
+const FamilyOfficesList = ({
   currentPage,
   itemsPerPage,
   onPageChange,
   onItemsPerPageChange,
-}) => {
+}: FamilyOfficesListProps) => {
+  const location = useLocation();
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
+
+  const query = new URLSearchParams(location.search);
+  const initialSearch = query.get("search") || "";
+
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
+
+  const debouncedSearchQuery = useDebounce(
+    searchQuery,
+    initialSearch === searchQuery ? 0 : 700
+  );
+
   const {
     familyOffices,
     isLoading,
@@ -34,10 +46,8 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
     totalPages,
     totalItems,
     updateFavorites,
-  } = useFamilyOfficesData(currentPage, itemsPerPage);
-
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
+    updateSavedSearches,
+  } = useFamilyOfficesData(currentPage, itemsPerPage, debouncedSearchQuery);
 
   const onSelectAllRows = (rows: FamilyOffice[]) => {
     const allIds = rows.map((row) => String(row.company_id));
@@ -100,6 +110,10 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
     setFavoriteMap(initialFavorites);
   }, [familyOffices]);
 
+  useEffect(() => {
+    setSearchQuery(initialSearch);
+  }, [initialSearch]);
+
   return (
     <div className="bg-[#FEFEFE] w-full h-full py-8 px-4 md:px-6 lg:px-8 flex flex-col justify-between">
       <Loading show={isLoading} />
@@ -107,40 +121,14 @@ const FamilyOfficesList: React.FC<FamilyOfficesListProps> = ({
         <h1 className="text-[#111928] text-2xl font-semibold mb-10">
           Family Offices
         </h1>
-        <div className="mb-8 flex gap-4 items-center">
-          <div className="min-w-60 min-h-11 text-gray-400 font-normal w-[363px]">
-            <div className="w-full flex-1">
-              <div className="justify-between items-center border border-[#DFE4EA] bg-white flex w-full gap-2 flex-1 h-11 pl-5 pr-4 rounded-[50px]">
-                <input
-                  type="text"
-                  placeholder="Search the company"
-                  className="bg-transparent outline-none flex-1 border-none text-base placeholder:text-[#9CA3AF]"
-                />
-                <Search className="text-[#9CA3AF] size-4" />
-              </div>
-            </div>
-          </div>
-
-          {/* Filter button - Using Button component */}
-          <Button variant="outline" className="h-11 rounded-full">
-            <Filter className="mr-2 size-4.5" />
-            Filters
-          </Button>
-
-          <Button variant="outline" className="h-11 rounded-full" disabled>
-            <Save className="mr-2 size-4.5" />
-            Save this Search
-          </Button>
-
-          <Button
-            variant="outline"
-            className="h-11 rounded-full"
-            onClick={onBulkUpdateFavorites}
-          >
-            <Heart className="mr-2 size-5" />
-            Add to Favorites
-          </Button>
-        </div>
+        <TableToolbar
+          searchPlaceholder="Search the Family Office"
+          isAddToFavoriteDisabled={!selectedIds.length}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onFavoriteClick={onBulkUpdateFavorites}
+          onSaveClick={() => updateSavedSearches(searchQuery)}
+        />
         {error ? (
           <div className="text-red-500 mt-8">{error}</div>
         ) : (

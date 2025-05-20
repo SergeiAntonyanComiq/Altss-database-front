@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useFamilyOfficesContactsData } from "@/hooks/useFamilyOfficesContactsData";
-import { Search, Filter, Save, Heart, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useDebounce, useFamilyOfficesContactsData } from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
-import { FamilyOffice } from "@/services/familyOfficesService.ts";
-import familyOffices from "@/pages/FamilyOffices.tsx";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
+import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
+import { useLocation } from "react-router-dom";
 
 interface FamilyOfficesContactsListProps {
   currentPage: number;
@@ -26,10 +24,18 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   onPageChange,
   onItemsPerPageChange,
 }) => {
-  const [search, setSearch] = useState("");
+  const location = useLocation();
   const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
-
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const query = new URLSearchParams(location.search);
+  const initialSearch = query.get("search") || "";
+
+  const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
+
+  const debouncedSearchQuery = useDebounce(
+    searchQuery,
+    initialSearch === searchQuery ? 0 : 700
+  );
 
   const {
     contacts,
@@ -38,7 +44,12 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
     totalPages,
     totalItems,
     updateFavorites,
-  } = useFamilyOfficesContactsData(currentPage, itemsPerPage);
+    updateSavedSearches,
+  } = useFamilyOfficesContactsData(
+    currentPage,
+    itemsPerPage,
+    debouncedSearchQuery
+  );
 
   const onSelectAllRows = (rows: FamilyOfficeContact[]) => {
     const allIds = rows.map((row) => String(row.contact_id));
@@ -58,8 +69,6 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
       itemIds: selectedIds,
       favorited: true,
     };
-
-    console.log(selectedIds);
 
     setFavoriteMap((prev) => {
       const updated = { ...prev };
@@ -103,16 +112,9 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
     setFavoriteMap(initialFavorites);
   }, [contacts]);
 
-  const filteredContacts = contacts
-    ? contacts.filter(
-        (c) =>
-          c.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-          c.title?.toLowerCase().includes(search.toLowerCase()) ||
-          c.email?.toLowerCase().includes(search.toLowerCase()) ||
-          c.phone?.toLowerCase().includes(search.toLowerCase()) ||
-          c.linkedin?.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
+  useEffect(() => {
+    setSearchQuery(initialSearch);
+  }, [initialSearch]);
 
   return (
     <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">
@@ -121,49 +123,14 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
         <h1 className="text-[#111928] text-2xl font-semibold mb-10">
           Family Offices Contacts
         </h1>
-        <div className="mb-8 flex gap-4 items-center">
-          <div className="min-w-60 min-h-11 text-gray-400 font-normal w-[363px]">
-            <div className="w-full flex-1">
-              <div className="justify-between items-center border border-[#DFE4EA] bg-white flex w-full gap-2 flex-1 h-11 pl-5 pr-4 rounded-[50px]">
-                <input
-                  type="text"
-                  placeholder="Search family office"
-                  className="bg-transparent outline-none flex-1 border-none text-base placeholder:text-[#9CA3AF]"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <Search className="text-[#9CA3AF] size-4" />
-              </div>
-            </div>
-          </div>
-
-          <Button variant="outline" className="h-11 rounded-full">
-            <Filter className="mr-2 size-4.5" />
-            Filters
-          </Button>
-
-          <Button variant="outline" className="h-11 rounded-full" disabled>
-            <Save className="mr-2 size-4.5" />
-            Save this Search
-          </Button>
-
-          <Button
-            variant="outline"
-            className="h-11 rounded-full"
-            onClick={onBulkUpdateFavorites}
-          >
-            <Heart className="mr-2 size-5" />
-            Add to Favorites
-          </Button>
-
-          <button
-            className="justify-center items-center border border-[#DFE4EA] bg-white flex gap-2 text-[#637381] px-[15px] py-2.5 rounded-[50px] h-11"
-            onClick={() => alert("Columns: TODO")}
-          >
-            <Settings className="h-[18px] w-[18px]" />
-            <span>Columns</span>
-          </button>
-        </div>
+        <TableToolbar
+          searchPlaceholder="Search the Family Office"
+          isAddToFavoriteDisabled={!selectedIds.length}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onFavoriteClick={onBulkUpdateFavorites}
+          onSaveClick={() => updateSavedSearches(searchQuery)}
+        />
         {isLoading ? (
           <div className="flex gap-4 items-center mt-10">
             <div className="w-full h-11 bg-gray-100 animate-pulse rounded-full"></div>
@@ -179,7 +146,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
                 onSelectAllRows,
                 onSelectRow
               )}
-              data={filteredContacts}
+              data={contacts}
             />
           </div>
         )}
