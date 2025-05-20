@@ -39,9 +39,11 @@ const FamilyOfficeProfile = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const res = await fetchFamilyOffices({ company_id: id });
-        if (res.data && res.data.length > 0) {
-          setFamilyOffice(res.data[0]);
+        const { data } = await fetchFamilyOffices();
+        if (data && data.length > 0) {
+          const office = data.find((item) => item.company_id === id);
+
+          setFamilyOffice(office);
         } else {
           toast({
             title: "Family Office not found",

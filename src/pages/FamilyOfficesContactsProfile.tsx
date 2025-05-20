@@ -48,15 +48,18 @@ const FamilyOfficesContactsProfile: React.FC = () => {
       linkedin: contact?.linkedin ?? "",
       favorite: false,
     }),
-    [contact],
+    [contact]
   );
 
   useEffect(() => {
     const fetchContact = async () => {
       setIsLoading(true);
       try {
-        const res = await fetchFamilyOfficeContacts({ contact_id: id });
-        setContact(res.data[0] || null);
+        const { data } = await fetchFamilyOfficeContacts({ contact_id: id });
+
+        const newContact = data.find((item) => item.contact_id === id);
+
+        setContact(newContact || null);
       } catch (error) {
         setContact(null);
       } finally {
