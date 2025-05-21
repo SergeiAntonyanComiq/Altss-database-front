@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import {
-  fetchFamilyOfficeContacts,
   FamilyOfficeContact,
+  fetchFamilyOfficesContactsById,
 } from "@/services/familyOfficeContactsService";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 
@@ -55,18 +55,20 @@ const FamilyOfficesContactsProfile: React.FC = () => {
     const fetchContact = async () => {
       setIsLoading(true);
       try {
-        const { data } = await fetchFamilyOfficeContacts({ contact_id: id });
+        const data = await fetchFamilyOfficesContactsById(id);
 
-        const newContact = data.find((item) => item.contact_id === id);
-
-        setContact(newContact || null);
+        setContact(data);
       } catch (error) {
         setContact(null);
       } finally {
         setIsLoading(false);
       }
     };
-    if (id) fetchContact();
+    if (id) {
+      (async () => {
+        await fetchContact();
+      })();
+    }
   }, [id]);
 
   if (isLoading) {
