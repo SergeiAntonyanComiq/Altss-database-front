@@ -55,8 +55,6 @@ export const NameWithLogo = <
   cell: ({ row }) => {
     const isFavorited = favorites[row.original[fieldId]];
 
-    console.log(row.original[fieldId]);
-
     return (
       <div className="flex h-full items-center px-4 justify-between">
         <div

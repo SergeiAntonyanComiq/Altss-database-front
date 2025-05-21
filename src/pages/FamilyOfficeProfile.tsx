@@ -4,8 +4,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  fetchFamilyOffices,
   FamilyOffice,
+  fetchFamilyOfficesById,
 } from "@/services/familyOfficesService";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProfileHeader from "@/components/profile/ProfileHeader";
@@ -39,11 +39,9 @@ const FamilyOfficeProfile = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const { data } = await fetchFamilyOffices();
-        if (data && data.length > 0) {
-          const office = data.find((item) => item.company_id === id);
-
-          setFamilyOffice(office);
+        const data = await fetchFamilyOfficesById(id);
+        if (data) {
+          setFamilyOffice(data);
         } else {
           toast({
             title: "Family Office not found",
@@ -51,6 +49,7 @@ const FamilyOfficeProfile = () => {
             variant: "destructive",
           });
           navigate("/familyoffices");
+
           return;
         }
       } catch (error) {
