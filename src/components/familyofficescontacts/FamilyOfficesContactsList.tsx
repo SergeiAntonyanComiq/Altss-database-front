@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useDebounce, useFamilyOfficesContactsData } from "@/hooks";
+import {
+  useDebounce,
+  useFamilyOfficesContactsData,
+  useFiltersModal,
+} from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
@@ -9,6 +13,7 @@ import { Loading } from "@/utils.tsx";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
 import { useLocation } from "react-router-dom";
+import { CustomFilterModal } from "@/components/common";
 
 interface FamilyOfficesContactsListProps {
   currentPage: number;
@@ -29,6 +34,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const query = new URLSearchParams(location.search);
   const initialSearch = query.get("search") || "";
+  const { isOpen, open, close } = useFiltersModal();
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
@@ -130,6 +136,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
           onSearchChange={setSearchQuery}
           onFavoriteClick={onBulkUpdateFavorites}
           onSaveClick={() => updateSavedSearches(searchQuery)}
+          onFilterClick={open}
         />
         {isLoading ? (
           <div className="flex gap-4 items-center mt-10">
@@ -161,6 +168,12 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
           totalPages={totalPages}
         />
       </div>
+      <CustomFilterModal
+        isOpen={isOpen}
+        onClose={close}
+        placeholder="Type the name of a family office, contact person, or city..."
+        onApply={() => {}}
+      />
     </div>
   );
 };

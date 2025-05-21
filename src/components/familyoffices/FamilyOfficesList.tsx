@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useDebounce, useFamilyOfficesData } from "@/hooks";
+import { useDebounce, useFamilyOfficesData, useFiltersModal } from "@/hooks";
 
 import { familyOfficeColumnList } from "@/components/columns-bucket";
 import { DataTable } from "@/components/ui/DataTable.tsx";
@@ -10,6 +10,7 @@ import { Loading } from "@/utils.tsx";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
 import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
 import { useLocation, useSearchParams } from "react-router-dom";
+import { CustomFilterModal } from "@/components/common";
 
 export interface FamilyOfficesListProps {
   currentPage: number;
@@ -31,6 +32,7 @@ const FamilyOfficesList = ({
 
   const query = new URLSearchParams(location.search);
   const initialSearch = query.get("search") || "";
+  const { isOpen, open, close } = useFiltersModal();
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
@@ -128,6 +130,7 @@ const FamilyOfficesList = ({
           onSearchChange={setSearchQuery}
           onFavoriteClick={onBulkUpdateFavorites}
           onSaveClick={() => updateSavedSearches(searchQuery)}
+          onFilterClick={open}
         />
         {error ? (
           <div className="text-red-500 mt-8">{error}</div>
@@ -155,6 +158,12 @@ const FamilyOfficesList = ({
           totalPages={totalPages}
         />
       </div>
+      <CustomFilterModal
+        isOpen={isOpen}
+        onClose={close}
+        placeholder="I need all Funds of Funds VC, that are founded by ex-startups founders after 2020 and have AUM more then $20B with investment focus in.."
+        onApply={() => {}}
+      />
     </div>
   );
 };

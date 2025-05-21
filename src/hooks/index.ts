@@ -7,3 +7,4 @@ export * from "./useFamilyOfficesData";
 export * from "./useInvestorsData";
 export * from "./useOrderColumnSizes";
 export * from "./useTeamMembers";
+export * from "./useFiltersModal.ts";
