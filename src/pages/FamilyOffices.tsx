@@ -1,19 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import FamilyOfficesList from "@/components/familyoffices/FamilyOfficesList";
 
 const FamilyOffices = () => {
-  const [activeSection, setActiveSection] = useState<string>("familyoffices");
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Parse the current page, items per page, and filter from URL query parameters
   const searchParams = new URLSearchParams(location.search);
   const pageParam = searchParams.get("page");
   const perPageParam = searchParams.get("perPage");
-  const section = searchParams.get("section");
   const filterId = searchParams.get("filter");
 
   const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
