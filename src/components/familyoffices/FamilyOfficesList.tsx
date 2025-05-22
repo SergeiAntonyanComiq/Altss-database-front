@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useDebounce, useFamilyOfficesData, useFiltersModal } from "@/hooks";
+import { useDebounce, useFamilyOfficesData, useModal } from "@/hooks";
 
 import { familyOfficeColumnList } from "@/components/columns-bucket";
 import { DataTable } from "@/components/ui/DataTable.tsx";
@@ -32,7 +32,7 @@ const FamilyOfficesList = ({
 
   const query = new URLSearchParams(location.search);
   const initialSearch = query.get("search") || "";
-  const { isOpen, open, close } = useFiltersModal();
+  const { isOpen, open, close } = useModal();
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 

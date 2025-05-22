@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button.tsx";
 
 export interface FieldsRendererProps {
   label?: string;
-  value?: string | number | Array<string> | null;
+  value?: string | number | Array<string> | null | JSX.Element;
   isBadge?: boolean;
   icon?: JSX.Element;
   variant?: "outline" | "default" | "secondary";
@@ -40,11 +40,11 @@ const FieldsRenderer = ({
         ) : null}
         {value ? (
           <div className="w-full flex flex-row justify-start">
-            {values.slice(0, 4).map((item) => (
+            {values.slice(0, 4).map((item, index) => (
               <>
                 {isBadge ? (
                   <div
-                    key={item}
+                    key={`${JSON.stringify(item)}-${index}`}
                     className="flex items-center min-h-[26px] max-w-[] mr-3"
                   >
                     <Badge variant={variant} className="max-w-[200px] ">

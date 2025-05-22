@@ -5,9 +5,14 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar.tsx";
-import { FieldsRenderer } from "@/components/common";
+import {
+  CustomEmailsModal,
+  FieldsRenderer,
+  PatternDisplay,
+} from "@/components/common";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { LinkedinIcon } from "@/components/ui/icons";
+import { useModal } from "@/hooks";
 
 export const Details = ({
   avatar_filename,
@@ -16,10 +21,14 @@ export const Details = ({
   other_fields,
   linkedin,
   general_email,
-  email,
   phone,
-  office_phone,
 }: FamilyOfficeContact) => {
+  const { isOpen, open, close } = useModal();
+
+  const handleShowEmail = () => {
+    open();
+  };
+
   const detailsFields = [
     { label: "Area of responsibility", value: title },
     { label: "Resident Location", value: "Ankara (Türkiye)" },
@@ -60,15 +69,13 @@ export const Details = ({
     // },
     {
       label: "Work Emails",
-      value: email ?? "test@gmail.com",
+      value: <PatternDisplay handleShow={handleShowEmail} />,
       icon: (
-        <a href={`mailto:${email}`} target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
-            alt="Email"
-            className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
-          />
-        </a>
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
+          alt="Email"
+          className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+        />
       ),
     },
     {
@@ -102,6 +109,8 @@ export const Details = ({
       ),
     },
   ];
+
+  console.log(detailFieldsContacts);
 
   return (
     <div>
@@ -194,6 +203,8 @@ export const Details = ({
           </div>
         </div>
       </div>
+
+      <CustomEmailsModal isOpen={isOpen} onClose={close} />
     </div>
   );
 };
