@@ -31,7 +31,11 @@ export const Details = ({
   const detailFieldsContacts = [
     {
       label: "LinkedIn",
-      value: linkedin,
+      value: (
+        <a href={linkedin} target="_blank" rel="noopener noreferrer">
+          {linkedin}
+        </a>
+      ),
       icon: (
         <a href={linkedin} target="_blank" rel="noopener noreferrer">
           <LinkedinIcon />
