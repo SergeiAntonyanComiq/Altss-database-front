@@ -4,6 +4,7 @@ import apiClient from "@/lib/axios.ts";
 import { UpdateFavorites } from "@/hooks/useFamilyOfficesData.ts";
 import {
   updateFavoritesData,
+  updateSavedFiltersData,
   updateSavedSearchesData,
 } from "@/services/savedFiltersService.ts";
 
@@ -14,13 +15,16 @@ interface UseFamilyOfficesContactsDataResult {
   totalPages: number;
   totalItems: number;
   updateFavorites: (data: UpdateFavorites) => Promise<void>;
+  updateSavedFilters: (query: string) => Promise<void>;
   updateSavedSearches: (query: string) => Promise<void>;
 }
 
 export function useFamilyOfficesContactsData(
   currentPage: number,
   itemsPerPage: number,
-  searchQuery: string
+  searchQuery: string,
+  filter: string,
+  filterQuery: string
 ): UseFamilyOfficesContactsDataResult {
   const [contacts, setContacts] = useState<Array<FamilyOfficeContact>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -41,8 +45,16 @@ export function useFamilyOfficesContactsData(
           offset: offset.toString(),
         });
 
-        if (searchQuery) {
+        if (searchQuery && !filterQuery) {
           params.append("search", searchQuery);
+        }
+
+        if (filter) {
+          params.append("filter", filter);
+        }
+
+        if (filterQuery) {
+          params.append("filterQuery", filterQuery);
         }
 
         const response = await apiClient.get(
@@ -72,7 +84,7 @@ export function useFamilyOfficesContactsData(
     (async () => {
       await fetchContacts();
     })();
-  }, [currentPage, itemsPerPage, searchQuery]);
+  }, [currentPage, itemsPerPage, searchQuery, filter, filterQuery]);
 
   const updateFavorites = async (data: UpdateFavorites) => {
     try {
@@ -98,9 +110,22 @@ export function useFamilyOfficesContactsData(
     }
   };
 
+  const updateSavedFilters = async (filter: string) => {
+    try {
+      setIsLoading(true);
+
+      await updateSavedFiltersData(filter, "family_office_contacts");
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     updateSavedSearches,
     updateFavorites,
+    updateSavedFilters,
     contacts,
     isLoading,
     error,

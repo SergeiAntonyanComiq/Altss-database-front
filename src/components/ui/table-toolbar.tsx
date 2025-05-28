@@ -7,9 +7,11 @@ import { SearchInput } from "./search-input.tsx";
 
 export interface TableToolbarProps {
   searchQuery: string;
+  filter: string;
   searchPlaceholder: string;
   isAddToFavoriteDisabled: boolean;
   onSearchChange: (value: string) => void;
+  onClear: () => void;
   onFilterClick?: () => void;
   onSaveClick?: () => void;
   onFavoriteClick?: () => void;
@@ -17,11 +19,13 @@ export interface TableToolbarProps {
 
 export const TableToolbar = ({
   searchQuery,
+  filter,
   searchPlaceholder,
   isAddToFavoriteDisabled,
   onSearchChange,
   onFilterClick,
   onSaveClick,
+  onClear,
   onFavoriteClick,
 }: TableToolbarProps) => {
   return (
@@ -45,7 +49,7 @@ export const TableToolbar = ({
         variant="outline"
         className="h-11 rounded-full"
         onClick={onSaveClick}
-        disabled={!searchQuery}
+        disabled={!searchQuery && !filter}
       >
         <Save className="mr-2 size-4.5" />
         Save this Search
@@ -60,6 +64,16 @@ export const TableToolbar = ({
         <Heart className="mr-2 size-5" />
         Add to Favorites
       </Button>
+
+      {filter.length > 0 && (
+        <Button
+          variant="outline"
+          className="h-11 rounded-full"
+          onClick={onClear}
+        >
+          Clear Filters
+        </Button>
+      )}
     </div>
   );
 };

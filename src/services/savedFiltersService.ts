@@ -20,6 +20,15 @@ export type SavedSearchType = {
   user_id: string;
 };
 
+export type SavedFiltersType = {
+  created_at: string;
+  id: number;
+  filterText: string;
+  filterQuery: string;
+  table_name: string;
+  user_id: string;
+};
+
 export interface FavoriteContactType {
   created_at: Date;
   id: number;
@@ -58,9 +67,28 @@ export const getSavedSearches = async () => {
   }
 };
 
+export const getSavedFilters = async () => {
+  try {
+    const { data } = await apiClient.get("saved-filters");
+
+    return data;
+  } catch (error) {
+    new Error(error.message);
+  }
+};
+
 export const deleteSavedSearches = async (id: number): Promise<boolean> => {
   try {
     await apiClient.delete(`/saved-searches/${id}`);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const deleteSavedFilters = async (id: number): Promise<boolean> => {
+  try {
+    await apiClient.delete(`/saved-filters/${id}`);
     return true;
   } catch (error) {
     return false;
@@ -101,6 +129,20 @@ export const updateSavedSearchesData = async (
   try {
     await apiClient.post("/saved-searches", {
       searchQuery,
+      table_name: tableName,
+    });
+  } catch (error) {
+    new Error(error.message);
+  }
+};
+
+export const updateSavedFiltersData = async (
+  filter: string,
+  tableName: "family_office" | "family_office_contacts"
+) => {
+  try {
+    await apiClient.post("/saved-filters", {
+      filterText: filter,
       table_name: tableName,
     });
   } catch (error) {

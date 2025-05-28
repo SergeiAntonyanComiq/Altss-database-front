@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   fetchFamilyOffices,
   FamilyOffice,
 } from "@/services/familyOfficesService";
 import {
   updateFavoritesData,
+  updateSavedFiltersData,
   updateSavedSearchesData,
 } from "@/services/savedFiltersService.ts";
 
@@ -21,13 +22,16 @@ export interface UseFamilyOfficesDataResult {
   totalPages: number;
   totalItems: number;
   updateFavorites: (data: UpdateFavorites) => Promise<void>;
+  updateSavedFilters: (query: string) => Promise<void>;
   updateSavedSearches: (query: string) => Promise<void>;
 }
 
 export function useFamilyOfficesData(
   currentPage: number,
   itemsPerPage: number,
-  searchQuery: string = ""
+  searchQuery: string = "",
+  filter: string = "",
+  filterQuery: string = ""
 ): UseFamilyOfficesDataResult {
   const page = currentPage;
   const perPage = itemsPerPage;
@@ -44,7 +48,9 @@ export function useFamilyOfficesData(
     const params: Record<string, string> = {
       limit: `${perPage}`,
       offset: `${(page - 1) * perPage}`,
-      search: searchQuery,
+      search: filterQuery ? undefined : searchQuery,
+      filter,
+      filterQuery,
     };
 
     fetchFamilyOffices(params)
@@ -66,7 +72,7 @@ export function useFamilyOfficesData(
       .finally(() => {
         setIsLoading(false);
       });
-  }, [page, perPage, searchQuery]);
+  }, [page, perPage, searchQuery, filter, filterQuery]);
 
   const updateFavorites = async (data: UpdateFavorites) => {
     try {
@@ -92,9 +98,22 @@ export function useFamilyOfficesData(
     }
   };
 
+  const updateSavedFilters = async (filter: string) => {
+    try {
+      setIsLoading(true);
+
+      await updateSavedFiltersData(filter, "family_office");
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     updateSavedSearches,
     updateFavorites,
+    updateSavedFilters,
     familyOffices,
     isLoading,
     error,

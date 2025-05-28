@@ -9,7 +9,7 @@ import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
 import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { CustomFilterModal } from "@/components/common";
 
 export interface FamilyOfficesListProps {
@@ -29,11 +29,19 @@ const FamilyOfficesList = ({
   const location = useLocation();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
+  const [filter, setFilter] = useState<string>("");
 
   const query = new URLSearchParams(location.search);
+
+  const defaultFilterQuery = query.get("filterQuery") || "";
+  const defaultFilterText = query.get("filterText") || "";
+
   const initialSearch = query.get("search") || "";
+
   const { isOpen, open, close } = useFiltersModal();
 
+  const [filterQuery, setFilterQuery] = useState<string>(defaultFilterQuery);
+  const [filterText, setFilterText] = useState<string>(defaultFilterText);
   const [searchQuery, setSearchQuery] = useState<string>(initialSearch);
 
   const debouncedSearchQuery = useDebounce(
@@ -48,8 +56,15 @@ const FamilyOfficesList = ({
     totalPages,
     totalItems,
     updateFavorites,
+    updateSavedFilters,
     updateSavedSearches,
-  } = useFamilyOfficesData(currentPage, itemsPerPage, debouncedSearchQuery);
+  } = useFamilyOfficesData(
+    currentPage,
+    itemsPerPage,
+    debouncedSearchQuery,
+    filter,
+    filterQuery
+  );
 
   const onSelectAllRows = (rows: FamilyOffice[]) => {
     const allIds = rows.map((row) => String(row.company_id));
@@ -61,6 +76,18 @@ const FamilyOfficesList = ({
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
+  };
+
+  const handleClear = () => {
+    setFilterQuery("");
+    setFilterText("");
+    query.delete("filterQuery");
+    query.delete("filterText");
+
+    const newSearch = query.toString();
+    const newUrl = `${location.pathname}${newSearch ? "?" + newSearch : ""}`;
+
+    window.history.replaceState(null, "", newUrl);
   };
 
   const onBulkUpdateFavorites = async () => {
@@ -98,6 +125,16 @@ const FamilyOfficesList = ({
     await updateFavorites(data);
   };
 
+  const onSave = async () => {
+    if (filter.length > 0) {
+      await updateSavedFilters(filter);
+    }
+
+    if (searchQuery.length > 0) {
+      await updateSavedSearches(searchQuery);
+    }
+  };
+
   useEffect(() => {
     if (!familyOffices) return;
 
@@ -116,6 +153,14 @@ const FamilyOfficesList = ({
     setSearchQuery(initialSearch);
   }, [initialSearch]);
 
+  useEffect(() => {
+    setFilterQuery(defaultFilterQuery);
+  }, [defaultFilterQuery]);
+
+  useEffect(() => {
+    setFilterText(defaultFilterText);
+  }, [defaultFilterText]);
+
   return (
     <div className="bg-[#FEFEFE] w-full h-full py-8 px-4 md:px-6 lg:px-8 flex flex-col justify-between">
       <Loading show={isLoading} />
@@ -124,12 +169,14 @@ const FamilyOfficesList = ({
           Family Offices
         </h1>
         <TableToolbar
+          filter={filter.length > 0 ? filter : filterText}
           searchPlaceholder="Search the Family Office"
           isAddToFavoriteDisabled={!selectedIds.length}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          onClear={handleClear}
           onFavoriteClick={onBulkUpdateFavorites}
-          onSaveClick={() => updateSavedSearches(searchQuery)}
+          onSaveClick={onSave}
           onFilterClick={open}
         />
         {error ? (
@@ -161,8 +208,9 @@ const FamilyOfficesList = ({
       <CustomFilterModal
         isOpen={isOpen}
         onClose={close}
+        defaultFilterText={filterText}
         placeholder="I need all Funds of Funds VC, that are founded by ex-startups founders after 2020 and have AUM more then $20B with investment focus in.."
-        onApply={() => {}}
+        onApply={setFilter}
       />
     </div>
   );
