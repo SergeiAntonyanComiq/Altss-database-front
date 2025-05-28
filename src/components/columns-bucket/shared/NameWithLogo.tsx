@@ -20,6 +20,9 @@ export const NameWithLogo = <
   accessorFn: (row) => row[field],
   meta: {
     maxWidth: 350,
+
+    cellClassName: "shadow-[inset_-10px_0px_6px_-5px_rgba(0,0,0,0.1)]",
+    headerClassName: "shadow-[inset_-10px_0px_6px_-5px_rgba(0,0,0,0.1)]",
   },
   header: ({ table }) => {
     const handleCheckedChange = (value: CheckedState) => {

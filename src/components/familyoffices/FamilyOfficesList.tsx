@@ -81,8 +81,9 @@ const FamilyOfficesList = ({
   const handleClear = () => {
     setFilterQuery("");
     setFilterText("");
-    query.delete("filterQuery");
+    setFilter("");
     query.delete("filterText");
+    query.delete("filterQuery");
 
     const newSearch = query.toString();
     const newUrl = `${location.pathname}${newSearch ? "?" + newSearch : ""}`;
@@ -133,6 +134,15 @@ const FamilyOfficesList = ({
     if (searchQuery.length > 0) {
       await updateSavedSearches(searchQuery);
     }
+  };
+
+  const handleApply = (value: string) => {
+    if (filterQuery.length > 0) {
+      handleClear();
+    }
+
+    setFilterText(value);
+    setFilter(value);
   };
 
   useEffect(() => {
@@ -210,7 +220,7 @@ const FamilyOfficesList = ({
         onClose={close}
         defaultFilterText={filterText}
         placeholder="I need all Funds of Funds VC, that are founded by ex-startups founders after 2020 and have AUM more then $20B with investment focus in.."
-        onApply={setFilter}
+        onApply={handleApply}
       />
     </div>
   );

@@ -125,6 +125,8 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   const handleClear = () => {
     setFilterQuery("");
     setFilterText("");
+    setFilter("");
+
     query.delete("filterQuery");
     query.delete("filterText");
 
@@ -132,6 +134,15 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
     const newUrl = `${location.pathname}${newSearch ? "?" + newSearch : ""}`;
 
     window.history.replaceState(null, "", newUrl);
+  };
+
+  const handleApply = (value: string) => {
+    if (filterQuery.length > 0) {
+      handleClear();
+    }
+
+    setFilterText(value);
+    setFilter(value);
   };
 
   useEffect(() => {
@@ -213,7 +224,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
         onClose={close}
         placeholder="Type the name of a family office, contact person, or city..."
         defaultFilterText={filterText}
-        onApply={setFilter}
+        onApply={handleApply}
       />
     </div>
   );

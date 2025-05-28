@@ -13,7 +13,11 @@ export const FamilyOfficeContactsName = (
 ): ColumnDef<FamilyOfficeContact, string> => ({
   id: "select",
   accessorFn: (row) => row.full_name,
-  meta: { headerClassName: "bg-white", cellClassName: "bg-white" },
+  meta: {
+    headerClassName:
+      "bg-white shadow-[inset_-10px_0px_6px_-5px_rgba(0,0,0,0.1)]",
+    cellClassName: "bg-white shadow-[inset_-10px_0px_6px_-5px_rgba(0,0,0,0.1)]",
+  },
   header: ({ table }) => {
     const handleCheckedChange = (value: CheckedState) => {
       table.toggleAllPageRowsSelected(!!value);

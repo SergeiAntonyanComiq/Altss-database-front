@@ -7,5 +7,5 @@ export const Aum = <T extends { aum?: string }>(): ColumnDef<T> => ({
     cellClassName:
       "font-normal text-[#637381] truncate max-w-full overflow-hidden whitespace-nowrap",
   },
-  header: "AUM, $mln.",
+  header: "AUM",
 });
