@@ -189,11 +189,11 @@ const SavedSearches = () => {
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
-            ) : savedSearches.length === 0 ? (
+            ) : savedSearches.length === 0 && savedFilters.length === 0 ? (
               renderEmptyState()
             ) : (
               <div className="space-y-6">
-                {officeSearches.length > 0 && (
+                {(officeSearches.length > 0 || officeFilters.length > 0) && (
                   <div>
                     <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
                       <Building2 className="h-5 w-5 mr-2 text-gray-500" />
@@ -201,14 +201,14 @@ const SavedSearches = () => {
                     </h2>
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="grid grid-cols-1 divide-y divide-gray-200">
-                        {officeSearches.map((search) => (
+                        {officeSearches?.map((search) => (
                           <FamilyOfficeSearches
                             handleDeleteSearch={handleDeleteSearch}
                             handleUseSearch={handleUseSearch}
                             search={search}
                           />
                         ))}
-                        {officeFilters.map((filter) => (
+                        {officeFilters?.map((filter) => (
                           <FamilyOfficeFilters
                             handleDeleteFilter={handleDeleteFilter}
                             handleUseSearch={handleUseFilter}
@@ -220,7 +220,7 @@ const SavedSearches = () => {
                   </div>
                 )}
 
-                {contactSearches.length > 0 && (
+                {(contactSearches.length > 0 || contactFilters.length > 0) && (
                   <div>
                     <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
                       <User className="h-5 w-5 mr-2 text-gray-500" />
@@ -228,14 +228,14 @@ const SavedSearches = () => {
                     </h2>
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="grid grid-cols-1 divide-y divide-gray-200">
-                        {contactSearches.map((search) => (
+                        {contactSearches?.map((search) => (
                           <FamilyOfficeContactSearches
                             handleDeleteSearch={handleDeleteSearch}
                             handleUseSearch={handleUseSearch}
                             search={search}
                           />
                         ))}
-                        {contactFilters.map((filter) => (
+                        {contactFilters?.map((filter) => (
                           <FamilyOfficeContactFilters
                             handleDeleteSearch={handleDeleteFilter}
                             handleUseSearch={handleUseFilter}
