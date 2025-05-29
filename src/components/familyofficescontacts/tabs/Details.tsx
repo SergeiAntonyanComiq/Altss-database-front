@@ -11,7 +11,7 @@ import {
   fetchFullenrichByContactId,
 } from "@/services/familyOfficeContactsService.ts";
 import { LinkedinIcon } from "@/components/ui/icons";
-import { Loading } from "@/utils.tsx";
+import { SmallLoader } from "@/utils.tsx";
 
 export const Details = ({
   contact_id,
@@ -23,7 +23,8 @@ export const Details = ({
   general_email,
   phone,
 }: FamilyOfficeContact) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isEmailsLoading, setIsEmailsLoading] = useState(false);
+  const [isPhoneLoading, setIsPhoneLoading] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
   const [workEmails, setWorkEmails] = useState<string>("");
@@ -42,7 +43,13 @@ export const Details = ({
         return;
       }
 
-      setIsLoading(true);
+      if (type === "email") {
+        setIsEmailsLoading(true);
+      }
+
+      if (type === "phone") {
+        setIsPhoneLoading(true);
+      }
 
       const interval = setInterval(async () => {
         const result = await fetchFullenrichByContactId(contact_id);
@@ -54,12 +61,13 @@ export const Details = ({
           setWorkEmails(result.work_email ?? "");
           setWorkPhones(result.work_phone ?? "");
           clearInterval(interval);
-          setIsLoading(false);
           if (type === "email") {
+            setIsEmailsLoading(false);
             setShowEmail(true);
           }
 
           if (type === "phone") {
+            setIsPhoneLoading(false);
             setShowPhone(true);
           }
         }
@@ -102,6 +110,8 @@ export const Details = ({
           ) : (
             "We couldn’t find a phone number for this contact."
           )
+        ) : isEmailsLoading ? (
+          <SmallLoader />
         ) : (
           <PatternDisplay handleShow={() => handleShow("email")} />
         ),
@@ -122,6 +132,8 @@ export const Details = ({
           ) : (
             "We couldn’t find a phone number for this contact."
           )
+        ) : isPhoneLoading ? (
+          <SmallLoader />
         ) : (
           <PatternDisplay handleShow={() => handleShow("phone")} />
         ),
@@ -166,6 +178,8 @@ export const Details = ({
       },
     ],
     [
+      isPhoneLoading,
+      isEmailsLoading,
       general_email,
       handleShow,
       linkedin,
@@ -222,7 +236,6 @@ export const Details = ({
 
   return (
     <div>
-      <Loading show={isLoading} />
       <Card className="p-6 mb-4">
         <div className="flex items-center gap-6">
           <Avatar className="h-20 w-20">

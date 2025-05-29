@@ -6,6 +6,11 @@ interface LoadingProps {
   onClick?: () => void;
 }
 
+interface SmallLoaderProps {
+  size?: number;
+  className?: string;
+}
+
 export const Loading = ({
   show = false,
   local = false,
@@ -51,3 +56,37 @@ export const Loading = ({
       <span className="ml-4 text-lg">Loading...</span>
     </div>
   ) : null;
+
+export const SmallLoader = ({
+  size = 16,
+  className = "",
+}: SmallLoaderProps) => (
+  <svg
+    className={`animate-spin ${className}`}
+    width={size}
+    height={size}
+    viewBox="0 0 50 50"
+  >
+    <circle
+      cx="25"
+      cy="25"
+      r="20"
+      fill="none"
+      stroke="url(#smallLoaderGradient)"
+      strokeWidth="5"
+      strokeLinecap="round"
+    />
+    <defs>
+      <linearGradient
+        id="smallLoaderGradient"
+        x1="0%"
+        y1="0%"
+        x2="0%"
+        y2="100%"
+      >
+        <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+        <stop offset="100%" stopColor="#4B5563" stopOpacity="0.4" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
