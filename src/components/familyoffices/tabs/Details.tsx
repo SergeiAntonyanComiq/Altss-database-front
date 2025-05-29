@@ -52,7 +52,14 @@ export const Details = ({
         </a>
       ),
     },
-    { label: "Website", value: website },
+    {
+      label: "Website",
+      value: (
+        <a href={website} target="_blank" rel="noopener noreferrer">
+          {website}
+        </a>
+      ),
+    },
     {
       label: "Office Email",
       value: general_email,

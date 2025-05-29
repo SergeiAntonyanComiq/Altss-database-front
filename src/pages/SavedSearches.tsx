@@ -6,17 +6,23 @@ import { Button } from "@/components/ui/button";
 import { BookmarkIcon, SearchIcon, User, Building2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
+  deleteSavedFilters,
   deleteSavedSearches,
+  getSavedFilters,
   getSavedSearches,
+  SavedFiltersType,
   SavedSearchType,
 } from "@/services/savedFiltersService";
 import {
   FamilyOfficeContactSearches,
   FamilyOfficeSearches,
 } from "@/components/saved-searches";
+import { FamilyOfficeFilters } from "@/components/saved-searches/FamilyOfficeFilters.tsx";
+import { FamilyOfficeContactFilters } from "@/components/saved-searches/FamilyOfficeContactFilters.tsx";
 
 const SavedSearches = () => {
   const [savedSearches, setSavedSearches] = useState<SavedSearchType[]>([]);
+  const [savedFilters, setSavedFilters] = useState<SavedFiltersType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -26,7 +32,10 @@ const SavedSearches = () => {
       setIsLoading(true);
       try {
         const data = await getSavedSearches();
+        const filtersData = await getSavedFilters();
+
         setSavedSearches(data.data);
+        setSavedFilters(filtersData.data);
       } catch (error) {
         toast({
           title: "Error loading saved searches",
@@ -59,12 +68,52 @@ const SavedSearches = () => {
     navigate(`${path}?${query.toString()}`);
   };
 
+  const handleUseFilter = (filter: SavedFiltersType) => {
+    const path =
+      filter.table_name === "family_office"
+        ? "/familyoffices"
+        : "/familyofficescontacts";
+
+    const query = new URLSearchParams();
+
+    if (filter.filterQuery) {
+      query.set("filterQuery", filter.filterQuery);
+    }
+
+    if (filter.filterText) {
+      query.append("filterText", filter.filterText);
+    }
+
+    navigate(`${path}?${query.toString()}`);
+  };
+
   const handleDeleteSearch = async (id: number, query: string) => {
     try {
       const success = await deleteSavedSearches(id);
 
       if (success) {
         setSavedSearches((prev) => prev.filter((search) => search.id !== id));
+        toast({
+          title: "Search deleted",
+          description: `"${query}" has been removed from saved searches`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          "There was a problem deleting your saved search. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteFilter = async (id: number, query: string) => {
+    try {
+      const success = await deleteSavedFilters(id);
+
+      if (success) {
+        setSavedFilters((prev) => prev.filter((search) => search.id !== id));
         toast({
           title: "Search deleted",
           description: `"${query}" has been removed from saved searches`,
@@ -115,6 +164,13 @@ const SavedSearches = () => {
   const officeSearches =
     savedSearches?.filter((search) => search.table_name === "family_office") ??
     [];
+  const contactFilters =
+    savedFilters?.filter(
+      (search) => search.table_name === "family_office_contacts"
+    ) ?? [];
+  const officeFilters =
+    savedFilters?.filter((search) => search.table_name === "family_office") ??
+    [];
 
   return (
     <SidebarProvider>
@@ -133,11 +189,11 @@ const SavedSearches = () => {
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
-            ) : savedSearches.length === 0 ? (
+            ) : savedSearches.length === 0 && savedFilters.length === 0 ? (
               renderEmptyState()
             ) : (
               <div className="space-y-6">
-                {officeSearches.length > 0 && (
+                {(officeSearches.length > 0 || officeFilters.length > 0) && (
                   <div>
                     <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
                       <Building2 className="h-5 w-5 mr-2 text-gray-500" />
@@ -145,11 +201,18 @@ const SavedSearches = () => {
                     </h2>
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="grid grid-cols-1 divide-y divide-gray-200">
-                        {officeSearches.map((search) => (
+                        {officeSearches?.map((search) => (
                           <FamilyOfficeSearches
                             handleDeleteSearch={handleDeleteSearch}
                             handleUseSearch={handleUseSearch}
                             search={search}
+                          />
+                        ))}
+                        {officeFilters?.map((filter) => (
+                          <FamilyOfficeFilters
+                            handleDeleteFilter={handleDeleteFilter}
+                            handleUseSearch={handleUseFilter}
+                            query={filter}
                           />
                         ))}
                       </div>
@@ -157,7 +220,7 @@ const SavedSearches = () => {
                   </div>
                 )}
 
-                {contactSearches.length > 0 && (
+                {(contactSearches.length > 0 || contactFilters.length > 0) && (
                   <div>
                     <h2 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
                       <User className="h-5 w-5 mr-2 text-gray-500" />
@@ -165,11 +228,18 @@ const SavedSearches = () => {
                     </h2>
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                       <div className="grid grid-cols-1 divide-y divide-gray-200">
-                        {contactSearches.map((search) => (
+                        {contactSearches?.map((search) => (
                           <FamilyOfficeContactSearches
                             handleDeleteSearch={handleDeleteSearch}
                             handleUseSearch={handleUseSearch}
                             search={search}
+                          />
+                        ))}
+                        {contactFilters?.map((filter) => (
+                          <FamilyOfficeContactFilters
+                            handleDeleteSearch={handleDeleteFilter}
+                            handleUseSearch={handleUseFilter}
+                            filter={filter}
                           />
                         ))}
                       </div>

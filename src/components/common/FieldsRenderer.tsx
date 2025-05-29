@@ -6,12 +6,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog.tsx";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 
 export interface FieldsRendererProps {
   label?: string;
-  value?: string | number | Array<string> | null | JSX.Element;
+  value?: string | number | Array<string> | JSX.Element | null | JSX.Element;
   isBadge?: boolean;
   icon?: JSX.Element;
   variant?: "outline" | "default" | "secondary";
@@ -41,11 +41,11 @@ const FieldsRenderer = ({
         {value ? (
           <div className="w-full flex flex-row justify-start">
             {values.slice(0, 4).map((item, index) => (
-              <>
+              <Fragment key={item.toString()}>
                 {isBadge ? (
                   <div
                     key={`${JSON.stringify(item)}-${index}`}
-                    className="flex items-center min-h-[26px] max-w-[] mr-3"
+                    className="flex items-center min-h-[26px] mr-3"
                   >
                     <Badge variant={variant} className="max-w-[200px] ">
                       {item}
@@ -56,7 +56,7 @@ const FieldsRenderer = ({
                     {item}
                   </span>
                 )}
-              </>
+              </Fragment>
             ))}
             {values.length > 4 ? (
               <div

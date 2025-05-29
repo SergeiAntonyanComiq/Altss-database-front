@@ -6,8 +6,6 @@ import {
   FamilyOfficeContactsTitle,
 } from "./family-office-contacts";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
-import { Website } from "./shared";
-import { FamilyOffice } from "@/services/familyOfficesService.ts";
 
 export const familyOfficesContactsColumns = (
   favorites: Record<string, boolean>,

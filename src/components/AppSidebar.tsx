@@ -36,6 +36,8 @@ import {
   SavedSearchType,
   FavoriteItem,
   getFavorites,
+  SavedFiltersType,
+  getSavedFilters,
 } from "@/services/savedFiltersService";
 import { isLocked } from "@/utils/routeAccess.ts";
 import { FavoriteSidebarList } from "@/components/favorites";
@@ -57,8 +59,14 @@ const AppSidebar = () => {
   const [savedSearchesOffices, setSavedSearchesOffices] = useState<
     SavedSearchType[]
   >([]);
+  const [savedFilterOffices, setSavedFilterOffices] = useState<
+    SavedFiltersType[]
+  >([]);
   const [savedSearchesContacts, setSavedSearchesContacts] = useState<
     SavedSearchType[]
+  >([]);
+  const [savedFilterContacts, setSavedFilterContacts] = useState<
+    SavedFiltersType[]
   >([]);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
@@ -80,16 +88,28 @@ const AppSidebar = () => {
         );
 
         const { data: searchesData } = await getSavedSearches();
+        const { data: filtersData } = await getSavedFilters();
 
         setSavedSearchesOffices(
           searchesData.filter(
             (search: SavedSearchType) => search.table_name === "family_office"
           ) || []
         );
+        setSavedFilterOffices(
+          filtersData.filter(
+            (filter: SavedFiltersType) => filter.table_name === "family_office"
+          ) || []
+        );
         setSavedSearchesContacts(
           searchesData.filter(
             (search: SavedSearchType) =>
               search.table_name === "family_office_contacts"
+          ) || []
+        );
+        setSavedFilterContacts(
+          filtersData.filter(
+            (filter: SavedFiltersType) =>
+              filter.table_name === "family_office_contacts"
           ) || []
         );
       } catch (error) {
@@ -257,6 +277,25 @@ const AppSidebar = () => {
 
     if (search.searchQuery) {
       query.set("search", search.searchQuery);
+    }
+
+    navigate(`${path}?${query.toString()}`);
+  };
+
+  const handleApplySavedFilter = (filer: SavedFiltersType) => {
+    const path =
+      filer.table_name === "family_office"
+        ? "/familyoffices"
+        : "/familyofficescontacts";
+
+    const query = new URLSearchParams();
+
+    if (filer.filterQuery) {
+      query.set("filterQuery", filer.filterQuery);
+    }
+
+    if (filer.filterText) {
+      query.append("filterText", filer.filterText);
     }
 
     navigate(`${path}?${query.toString()}`);
@@ -459,9 +498,12 @@ const AppSidebar = () => {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="ml-6 mt-1 space-y-1">
                   {savedSearchesOffices.length > 0 ||
+                  savedSearchesContacts.length > 0 ||
+                  savedFilterOffices.length > 0 ||
                   savedSearchesContacts.length > 0 ? (
                     <>
-                      {savedSearchesOffices.length > 0 && (
+                      {(savedSearchesOffices.length > 0 ||
+                        savedFilterOffices.length > 0) && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
                             Family Offices
@@ -480,10 +522,25 @@ const AppSidebar = () => {
                               )}
                             </div>
                           ))}
+                          {savedFilterOffices.map((filter) => (
+                            <div
+                              key={filter.id}
+                              onClick={() => handleApplySavedFilter(filter)}
+                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                            >
+                              {withTooltipRenderer(
+                                <span className="truncate">
+                                  {filter.filterText}
+                                </span>,
+                                filter.filterText
+                              )}
+                            </div>
+                          ))}
                         </>
                       )}
 
-                      {savedSearchesContacts.length > 0 && (
+                      {(savedSearchesContacts.length > 0 ||
+                        savedFilterContacts.length > 0) && (
                         <>
                           <div className="px-3 py-1 text-xs font-medium text-gray-500">
                             Family Office Contacts
@@ -500,6 +557,22 @@ const AppSidebar = () => {
                                     {filter.searchQuery}
                                   </span>,
                                   filter.searchQuery
+                                )}
+                              </span>
+                            </div>
+                          ))}
+                          {savedFilterContacts.map((filter) => (
+                            <div
+                              key={filter.id}
+                              onClick={() => handleApplySavedFilter(filter)}
+                              className="flex items-center gap-2 py-2 px-3 text-sm rounded cursor-pointer hover:bg-gray-100 text-[#637381]"
+                            >
+                              <span className="truncate">
+                                {withTooltipRenderer(
+                                  <span className="truncate">
+                                    {filter.filterText}
+                                  </span>,
+                                  filter.filterText
                                 )}
                               </span>
                             </div>
