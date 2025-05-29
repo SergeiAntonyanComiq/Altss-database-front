@@ -40,11 +40,14 @@ const FieldsRenderer = ({
         ) : null}
         {value ? (
           <div className="w-full flex flex-row justify-start">
-            {values.slice(0, 4).map((item) => (
+            {values.slice(0, 4).map((item, index) => (
               <Fragment key={item.toString()}>
                 {isBadge ? (
-                  <div className="flex items-center min-h-[26px] max-w-[] mr-3">
-                    <Badge variant={variant} className="max-w-[200px] ">
+                  <div
+                    key={`${JSON.stringify(item)}-${index}`}
+                    className="flex items-center min-h-[26px] mr-3"
+                  >
+                    <Badge variant={variant} className="max-w-[350px] ">
                       {item}
                     </Badge>
                   </div>

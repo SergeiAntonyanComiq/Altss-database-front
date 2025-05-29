@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  useDebounce,
-  useFamilyOfficesContactsData,
-  useFiltersModal,
-} from "@/hooks";
+import { useDebounce, useFamilyOfficesContactsData, useModal } from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { familyOfficesContactsColumns } from "@/components/columns-bucket";
 import CustomPagination from "@/components/ui/CustomPagination.tsx";
@@ -36,7 +32,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   const initialSearch = query.get("search") || "";
   const defaultFilterText = query.get("filterText") || "";
   const defaultFilterQuery = query.get("filterQuery") || "";
-  const { isOpen, open, close } = useFiltersModal();
+  const { isOpen, open, close } = useModal();
 
   const [filterQuery, setFilterQuery] = useState<string>(defaultFilterQuery);
   const [filterText, setFilterText] = useState<string>(defaultFilterText);

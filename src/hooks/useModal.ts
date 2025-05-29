@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export const useFiltersModal = () => {
+export const useModal = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const open = useCallback(() => setIsOpen(true), []);
