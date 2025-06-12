@@ -6,14 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog.tsx";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 
 export interface FieldsRendererProps {
   label?: string;
   value?: string | number | Array<string> | JSX.Element | null;
   isBadge?: boolean;
-  icon?: JSX.Element;
+  icon?: ReactNode;
   variant?: "outline" | "default" | "secondary";
   modalHeader?: string;
 }

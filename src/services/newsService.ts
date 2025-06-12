@@ -3,6 +3,7 @@ import { cleanNewsContent } from "@/utils/contentUtils";
 import { extractDomainForLogo, getSourceLogo } from "@/utils/newsUtils";
 import { getRandomColor } from "@/utils/colorUtils";
 import { performSearch } from "./apiService";
+import apiClient from "@/lib/axios.ts";
 
 export interface NewsItem {
   id: string;
@@ -11,6 +12,7 @@ export interface NewsItem {
   textColor: string;
   content: string;
   date: string;
+  source: string;
   url?: string;
 }
 
@@ -21,6 +23,7 @@ export const defaultNewsItems: NewsItem[] = [
     logo: "TC",
     color: "#f43f5e",
     textColor: "#ffffff",
+    source: "TechCrunch",
     content:
       "TechCrunch reports that " +
       "ACME Long Name Super Long Inc. " +
@@ -29,6 +32,7 @@ export const defaultNewsItems: NewsItem[] = [
   },
   {
     id: "2",
+    source: "TechCrunch",
     logo: "FT",
     color: "#3b82f6",
     textColor: "#ffffff",
@@ -41,6 +45,7 @@ export const defaultNewsItems: NewsItem[] = [
   {
     id: "3",
     logo: "WSJ",
+    source: "TechCrunch",
     color: "#10b981",
     textColor: "#ffffff",
     content:
@@ -79,7 +84,7 @@ export const parseNewsResults = (responseData: any): NewsItem[] => {
         (line) =>
           line.trim().startsWith("*") ||
           /^\d+\./.test(line.trim()) ||
-          line.trim().length > 0, // Include any non-empty line as a fallback
+          line.trim().length > 0 // Include any non-empty line as a fallback
       );
 
       if (lines.length > 0) {
@@ -205,7 +210,7 @@ const sortNewsByDate = (newsItems: NewsItem[]): NewsItem[] => {
  * @returns Promise with the fetched news
  */
 export const fetchCompanyNews = async (
-  companyName: string,
+  companyName: string
 ): Promise<NewsItem[]> => {
   try {
     const searchQuery = `show ${companyName} company news. Format: date, news, link to news`;
@@ -218,5 +223,76 @@ export const fetchCompanyNews = async (
   } catch (error) {
     console.error("Error fetching company news:", error);
     throw error;
+  }
+};
+
+export interface NewsArticle {
+  position: number;
+  link: string;
+  title: string;
+  source: string;
+  date: string;
+  snippet: string;
+  favicon: string;
+  highResFavicon: string;
+  thumbnail: string;
+}
+
+export interface NewsResponse {
+  metadata: {
+    query: string;
+    current: number;
+    next: string | null;
+    previous: string | null;
+    totalReturned: number;
+    other_pages: {
+      page: number;
+      url: string;
+    }[];
+  };
+  articles: NewsArticle[];
+}
+
+export interface NewsResponseData {
+  data: NewsResponse;
+}
+
+export const fetchPaginatedNews = async ({
+  company,
+  page,
+  limit,
+}: {
+  company: string;
+  page: number;
+  limit: number;
+}): Promise<{ data: NewsItem[]; totalPages: number }> => {
+  try {
+    const response = await apiClient.get<NewsResponseData>("/news", {
+      params: {
+        company,
+        page,
+        limit,
+      },
+    });
+
+    const { articles, metadata } = response.data.data;
+
+    const data: NewsItem[] = articles?.map((article, index) => ({
+      id: `news-${page}-${index}`,
+      logo: article.highResFavicon,
+      color: getRandomColor(index),
+      textColor: "#ffffff",
+      content: article.snippet,
+      date: formatDate(article.date),
+      source: article.source,
+      url: article.link,
+    }));
+
+    return {
+      data,
+      totalPages: metadata.other_pages.length + 1,
+    };
+  } catch (error) {
+    return { data: [], totalPages: 0 };
   }
 };

@@ -49,7 +49,6 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
     isLoading,
     error,
     totalPages,
-    totalItems,
     updateFavorites,
     updateSavedFilters,
     updateSavedSearches,
@@ -211,7 +210,6 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={onItemsPerPageChange}
           onPageChange={onPageChange}
-          totalItems={totalItems}
           totalPages={totalPages}
         />
       </div>
