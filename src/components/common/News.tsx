@@ -1,84 +1,103 @@
 import React, { useEffect, useState } from "react";
-import { NewsItem } from "@/services/newsService.ts";
-import { useCompanyNews } from "@/hooks/useCompanyNews.ts";
+import { NewsItem, fetchPaginatedNews } from "@/services/newsService";
+import CustomPagination from "@/components/ui/CustomPagination.tsx";
+import { Loading } from "@/utils.tsx";
+import { NewsCard } from "@/components/familyofficescontacts/tabs/components/NewsCard.tsx";
+import { cn } from "@/lib/utils.ts";
 
 const News = ({ firmName }: { firmName: string }) => {
-  const maxLength = 100;
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { newsItems } = useCompanyNews(firmName ?? "");
-
-  const [items, setItems] =
-    useState<Array<NewsItem & { isLongText?: boolean }>>(newsItems);
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    const newItems = newsItems.map((item) => ({
-      ...item,
-      isLongText: item.content.length > maxLength,
-    }));
+    const loadNews = async () => {
+      setIsLoading(true);
+      try {
+        const { data, totalPages } = await fetchPaginatedNews({
+          company: firmName,
+          page: currentPage,
+          limit: itemsPerPage,
+        });
 
-    setItems(newItems);
-  }, [newsItems]);
+        setNewsItems(data);
+        setTotalPages((prev) => (currentPage === 1 ? totalPages : prev));
+      } catch (error) {
+        setNewsItems([]);
+        setTotalPages(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (firmName) {
+      (async () => {
+        await loadNews();
+      })();
+    }
+  }, [firmName, currentPage]);
+
+  const recentNews = newsItems.filter((news) => {
+    const year = new Date(news.date).getFullYear();
+    return year > 2023;
+  });
+
+  const olderNews = newsItems.filter((news) => {
+    const year = new Date(news.date).getFullYear();
+    return year <= 2023;
+  });
 
   return (
     <>
-      <h2 className="font-semibold text-xl py-2 mb-2">Recent</h2>
-      <hr className="border-t border-gray-200 mb-4" />
-      {items.slice(0, 3).map((news) => (
-        <div
-          className="w-full pb-3 flex flex-row justify-start items-center"
-          key={news.id}
-        >
-          <div
-            style={{
-              color: news.textColor,
-              backgroundColor: news.color,
-            }}
-            className="flex-shrink-0 w-14 h-14 flex items-center justify-center text-xl font-bold rounded-md"
-          >
-            {news.logo}
-          </div>
-          <div className="pl-3 leading-[18px] text-sm text-[#637381]">
-            {news.date}
-            <div>
-              {news.isLongText
-                ? news.content.slice(0, maxLength) + "..."
-                : news.content}
-              {news.isLongText && (
-                <span
-                  onClick={() =>
-                    setItems((prevState) => {
-                      return prevState.map((item) =>
-                        item.id === news.id
-                          ? { ...item, isLongText: false }
-                          : item,
-                      );
-                    })
-                  }
-                  className="underline ml-1 text-sm cursor-pointer"
-                >
-                  Read more.
-                </span>
-              )}
-              {!news.isLongText && news.content.length > maxLength && (
-                <span
-                  onClick={() =>
-                    setItems((prevState) =>
-                      prevState.map((item) =>
-                        item.id === news.id
-                          ? { ...item, isLongText: true }
-                          : item,
-                      ),
-                    )
-                  }
-                  className="underline ml-1 text-sm cursor-pointer"
-                >
-                  Show less.
-                </span>
-              )}
-            </div>
-          </div>
+      <Loading show={isLoading} />
+
+      {newsItems.length === 0 && !isLoading ? (
+        <p className="text-sm text-gray-500">No news found.</p>
+      ) : (
+        <>
+          {recentNews.length > 0 ? (
+            <>
+              <h2 className="font-semibold text-xl py-2 mb-2">Recent</h2>
+              <hr className="border-t border-gray-200 mb-4" />
+              {recentNews.map((news) => (
+                <NewsCard key={news.id} news={news} />
+              ))}
+            </>
+          ) : null}
+
+          {olderNews.length > 0 ? (
+            <>
+              <h2
+                className={cn(
+                  "font-semibold text-xl py-2 mb-2",
+                  recentNews.length > 0 ? "mt-6" : ""
+                )}
+              >
+                Older
+              </h2>
+              <hr className="border-t border-gray-200 mb-4" />
+              {olderNews.map((news) => (
+                <NewsCard key={news.id} news={news} />
+              ))}
+            </>
+          ) : null}
+        </>
+      )}
+
+      {!isLoading && totalPages > 1 && (
+        <div className="mt-6">
+          <CustomPagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            showPerPage={false}
+          />
         </div>
-      ))}
+      )}
     </>
   );
 };

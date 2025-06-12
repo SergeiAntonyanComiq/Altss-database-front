@@ -1,17 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Card } from "@/components/ui/card.tsx";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar.tsx";
-import { FieldsRenderer, PatternDisplay } from "@/components/common";
-import {
-  FamilyOfficeContact,
-  fetchFullenrichByContactId,
-} from "@/services/familyOfficeContactsService.ts";
+import { FieldsRenderer } from "@/components/common";
+import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { LinkedinIcon } from "@/components/ui/icons";
-import { SmallLoader } from "@/utils.tsx";
+import { useContactDetails } from "@/hooks/useContactDetails.ts";
+import { ContactField } from "@/components/familyofficescontacts/tabs/components/ContactField.tsx";
 
 export const Details = ({
   contact_id,
@@ -20,61 +18,40 @@ export const Details = ({
   title,
   other_fields,
   linkedin,
-  general_email,
-  phone,
 }: FamilyOfficeContact) => {
-  const [isEmailsLoading, setIsEmailsLoading] = useState(false);
-  const [isPhoneLoading, setIsPhoneLoading] = useState(false);
-  const [showEmail, setShowEmail] = useState(false);
-  const [showPhone, setShowPhone] = useState(false);
-  const [workEmails, setWorkEmails] = useState<string>("");
-  const [workPhones, setWorkPhones] = useState<string>("");
+  const {
+    workEmails,
+    workPhones,
+    personalEmail,
+    personalPhone,
+    isEmailsLoading,
+    isPhoneLoading,
+    isPersonalEmailLoading,
+    isPersonalPhoneLoading,
+    showEmail,
+    showPhone,
+    showPersonalEmail,
+    showPersonalPhone,
+    handleShowWorkDetails,
+    handleShowPersonalDetails,
+  } = useContactDetails(contact_id);
 
-  const handleShow = useCallback(
-    async (type: "email" | "phone") => {
-      if (workEmails || workPhones) {
-        if (type === "email") {
-          setShowEmail(true);
-        }
-
-        if (type === "phone") {
-          setShowPhone(true);
-        }
-        return;
-      }
-
-      if (type === "email") {
-        setIsEmailsLoading(true);
-      }
-
-      if (type === "phone") {
-        setIsPhoneLoading(true);
-      }
-
-      const interval = setInterval(async () => {
-        const result = await fetchFullenrichByContactId(contact_id);
-
-        if (
-          result?.work_email !== undefined ||
-          result?.work_phone !== undefined
-        ) {
-          setWorkEmails(result.work_email ?? "");
-          setWorkPhones(result.work_phone ?? "");
-          clearInterval(interval);
-          if (type === "email") {
-            setIsEmailsLoading(false);
-            setShowEmail(true);
-          }
-
-          if (type === "phone") {
-            setIsPhoneLoading(false);
-            setShowPhone(true);
-          }
-        }
-      }, 7000);
-    },
-    [contact_id, workEmails, workPhones]
-  );
+  console.log({
+    workEmails,
+    workPhones,
+    personalEmail,
+    personalPhone,
+    isEmailsLoading,
+    isPhoneLoading,
+    isPersonalEmailLoading,
+    isPersonalPhoneLoading,
+    showEmail,
+    showPhone,
+    showPersonalEmail,
+    showPersonalPhone,
+    handleShowWorkDetails,
+    handleShowPersonalDetails,
+  });
 
   const detailsFields = useMemo(
     () => [
@@ -96,26 +73,15 @@ export const Details = ({
             {linkedin}
           </a>
         ),
+        isBadge: false,
         icon: (
           <a href={linkedin} target="_blank" rel="noopener noreferrer">
             <LinkedinIcon />
           </a>
         ),
       },
-      {
+      ContactField({
         label: "Work Emails",
-        value: showEmail ? (
-          workEmails.length > 0 && workEmails ? (
-            workEmails
-          ) : (
-            "We couldn’t find a phone number for this contact."
-          )
-        ) : isEmailsLoading ? (
-          <SmallLoader />
-        ) : (
-          <PatternDisplay handleShow={() => handleShow("email")} />
-        ),
-        isBadge: showEmail && workEmails && workEmails.length > 0,
         icon: (
           <img
             src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
@@ -123,21 +89,14 @@ export const Details = ({
             className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
           />
         ),
-      },
-      {
+        isLoading: isEmailsLoading,
+        show: showEmail,
+        value: workEmails,
+        fallback: "We couldn’t find a work email for this contact.",
+        onReveal: () => handleShowWorkDetails("email"),
+      }),
+      ContactField({
         label: "Work Phone",
-        value: showPhone ? (
-          workPhones && workPhones.length > 0 ? (
-            workPhones
-          ) : (
-            "We couldn’t find a phone number for this contact."
-          )
-        ) : isPhoneLoading ? (
-          <SmallLoader />
-        ) : (
-          <PatternDisplay handleShow={() => handleShow("phone")} />
-        ),
-        isBadge: showPhone && workPhones && workPhones.length > 0,
         icon: (
           <img
             src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b"
@@ -145,13 +104,17 @@ export const Details = ({
             className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
           />
         ),
-      },
-      {
-        label: "Personal Emails",
-        value: "personal@gmail.com",
+        isLoading: isPhoneLoading,
+        show: showPhone,
+        value: workPhones,
+        fallback: "We couldn’t find a phone number for this contact.",
+        onReveal: () => handleShowWorkDetails("phone"),
+      }),
+      ContactField({
+        label: "Personal Email",
         icon: (
           <a
-            href={`mailto:${general_email}`}
+            href={`mailto:${personalEmail}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -162,12 +125,21 @@ export const Details = ({
             />
           </a>
         ),
-      },
-      {
-        label: "Phone Number",
-        value: phone || "+810 000 000 000",
+        isLoading: isPersonalEmailLoading,
+        show: showPersonalEmail,
+        value: personalEmail,
+        fallback: "We couldn’t find a personal email for this contact.",
+        onReveal: () => handleShowPersonalDetails("personalEmail"),
+      }),
+      ContactField({
+        label: "Personal Phone",
+        isLoading: isPersonalPhoneLoading,
         icon: (
-          <a href={`tel:${phone}`} target="_blank" rel="noopener noreferrer">
+          <a
+            href={`tel:${personalPhone}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
               src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/5a26cf0f3dd36a935ed5a7cefbff69240744cd7b"
               alt="Phone"
@@ -175,19 +147,28 @@ export const Details = ({
             />
           </a>
         ),
-      },
+        show: showPersonalPhone,
+        value: personalPhone,
+        fallback: "We couldn’t find a personal phone number for this contact.",
+        onReveal: () => handleShowPersonalDetails("personalPhone"),
+      }),
     ],
     [
-      isPhoneLoading,
-      isEmailsLoading,
-      general_email,
-      handleShow,
       linkedin,
-      phone,
+      isEmailsLoading,
       showEmail,
-      showPhone,
       workEmails,
+      isPhoneLoading,
+      showPhone,
       workPhones,
+      personalEmail,
+      isPersonalEmailLoading,
+      showPersonalEmail,
+      isPersonalPhoneLoading,
+      personalPhone,
+      showPersonalPhone,
+      handleShowWorkDetails,
+      handleShowPersonalDetails,
     ]
   );
 
@@ -200,39 +181,6 @@ export const Details = ({
     () => detailFieldsContacts.filter((f) => f.value),
     [detailFieldsContacts]
   );
-
-  useEffect(() => {
-    let isCleared = false;
-
-    const fetchData = async () => {
-      const result = await fetchFullenrichByContactId(contact_id);
-
-      if (
-        result?.work_email !== undefined ||
-        result?.work_phone !== undefined
-      ) {
-        setWorkEmails(result?.work_email ?? "");
-        setWorkPhones(result?.work_phone ?? "");
-        isCleared = true;
-      }
-    };
-
-    (async () => {
-      await fetchData();
-    })();
-
-    const interval = setInterval(() => {
-      if (isCleared) {
-        clearInterval(interval);
-      } else {
-        (async () => {
-          await fetchData();
-        })();
-      }
-    }, 7000);
-
-    return () => clearInterval(interval);
-  }, [contact_id]);
 
   return (
     <div>

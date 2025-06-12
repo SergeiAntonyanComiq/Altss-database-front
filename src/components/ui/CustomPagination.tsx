@@ -19,15 +19,15 @@ interface CustomPaginationProps {
   onPageChange: (page: number) => void;
   totalPages: number;
   itemsPerPage: number;
-  onItemsPerPageChange: (perPage: number) => void;
-  totalItems: number;
+  onItemsPerPageChange?: (perPage: number) => void;
   disabled?: boolean;
+  showPerPage?: boolean;
 }
 
 const generatePaginationItems = (
   currentPage: number,
   totalPages: number,
-  siblingCount = 1,
+  siblingCount = 1
 ) => {
   const totalPageNumbers = siblingCount + 5;
 
@@ -54,7 +54,7 @@ const generatePaginationItems = (
     const rightItemCount = 3 + 2 * siblingCount;
     const rightRange = Array.from(
       { length: rightItemCount },
-      (_, i) => totalPages - i,
+      (_, i) => totalPages - i
     ).reverse();
     return [firstPageIndex, "...", ...rightRange];
   }
@@ -62,7 +62,7 @@ const generatePaginationItems = (
   if (shouldShowLeftEllipsis && shouldShowRightEllipsis) {
     const middleRange = Array.from(
       { length: rightSiblingIndex - leftSiblingIndex + 1 },
-      (_, i) => leftSiblingIndex + i,
+      (_, i) => leftSiblingIndex + i
     );
     return [firstPageIndex, "...", ...middleRange, "...", lastPageIndex];
   }
@@ -75,7 +75,7 @@ const CustomPagination = ({
   totalPages,
   itemsPerPage,
   onItemsPerPageChange,
-  totalItems,
+  showPerPage = true,
   disabled = false,
 }: CustomPaginationProps) => {
   const paginationItems = generatePaginationItems(currentPage, totalPages);
@@ -135,7 +135,11 @@ const CustomPagination = ({
                         ? "bg-[rgba(38,101,240,1)] text-white"
                         : "text-[rgba(99,115,129,1)]"
                     }
-                    ${typeof item === "number" ? "w-[25px] h-[25px] flex items-center justify-center rounded-md cursor-pointer" : ""}
+                    ${
+                      typeof item === "number"
+                        ? "w-[25px] h-[25px] flex items-center justify-center rounded-md cursor-pointer"
+                        : ""
+                    }
                     text-base font-normal leading-none text-center
                   `}
                 >
@@ -166,43 +170,45 @@ const CustomPagination = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Select
-          value={itemsPerPage.toString()}
-          onValueChange={handleItemsPerPageSelect}
-          disabled={disabled}
-        >
-          <SelectTrigger className="min-w-60 min-h-12 text-base text-[#637381] font-normal w-[250px] rounded-md items-center border border-[#DFE4EA] bg-white flex gap-2.5 px-5 py-3">
-            <SelectValue className="self-stretch my-auto">{`${itemsPerPage} results per page`}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              value="10"
-              className="text-base text-[#637381] font-normal"
-            >
-              10 results per page
-            </SelectItem>
-            <SelectItem
-              value="20"
-              className="text-base text-[#637381] font-normal"
-            >
-              20 results per page
-            </SelectItem>
-            <SelectItem
-              value="50"
-              className="text-base text-[#637381] font-normal"
-            >
-              50 results per page
-            </SelectItem>
-            <SelectItem
-              value="100"
-              className="text-base text-[#637381] font-normal"
-            >
-              100 results per page
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {showPerPage ? (
+        <div className="flex items-center gap-2">
+          <Select
+            value={itemsPerPage.toString()}
+            onValueChange={handleItemsPerPageSelect}
+            disabled={disabled}
+          >
+            <SelectTrigger className="min-w-60 min-h-12 text-base text-[#637381] font-normal w-[250px] rounded-md items-center border border-[#DFE4EA] bg-white flex gap-2.5 px-5 py-3">
+              <SelectValue className="self-stretch my-auto">{`${itemsPerPage} results per page`}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                value="10"
+                className="text-base text-[#637381] font-normal"
+              >
+                10 results per page
+              </SelectItem>
+              <SelectItem
+                value="20"
+                className="text-base text-[#637381] font-normal"
+              >
+                20 results per page
+              </SelectItem>
+              <SelectItem
+                value="50"
+                className="text-base text-[#637381] font-normal"
+              >
+                50 results per page
+              </SelectItem>
+              <SelectItem
+                value="100"
+                className="text-base text-[#637381] font-normal"
+              >
+                100 results per page
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      ) : null}
     </div>
   );
 };

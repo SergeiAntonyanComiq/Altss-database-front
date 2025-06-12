@@ -13,7 +13,6 @@ interface UseFamilyOfficesContactsDataResult {
   isLoading: boolean;
   error: string | null;
   totalPages: number;
-  totalItems: number;
   updateFavorites: (data: UpdateFavorites) => Promise<void>;
   updateSavedFilters: (query: string) => Promise<void>;
   updateSavedSearches: (query: string) => Promise<void>;
@@ -30,7 +29,6 @@ export function useFamilyOfficesContactsData(
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [totalItems, setTotalItems] = useState<number>(0);
 
   useEffect(() => {
     setIsLoading(true);
@@ -67,7 +65,6 @@ export function useFamilyOfficesContactsData(
         };
 
         setContacts(apiData.data);
-        setTotalItems(apiData.metadata?.total || 0);
         setTotalPages(
           apiData.metadata?.total
             ? Math.ceil(apiData.metadata.total / itemsPerPage)
@@ -130,6 +127,5 @@ export function useFamilyOfficesContactsData(
     isLoading,
     error,
     totalPages,
-    totalItems,
   };
 }
