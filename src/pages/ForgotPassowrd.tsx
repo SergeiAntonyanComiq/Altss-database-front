@@ -39,7 +39,7 @@ const ForgotPassword = () => {
       "check-user-by-email",
       {
         body: JSON.stringify({ email }),
-      },
+      }
     );
 
     if (!userData?.exists) {
@@ -81,7 +81,7 @@ const ForgotPassword = () => {
             <div className="flex w-full items-center justify-between">
               <div className="flex items-center">
                 <img
-                  src="/images/altss_logo.png"
+                  src="/images/logo.png"
                   alt="Altss Logo"
                   className="h-10 w-auto object-contain"
                 />
