@@ -6,7 +6,7 @@ export const Mandate = ({
   firm_type,
   geographic_focus,
   emerging_markets,
-  industry_wealth_origin,
+  industry,
 }: FamilyOffice) => {
   const mandateBaselineField = [
     {
@@ -46,7 +46,7 @@ export const Mandate = ({
     },
     {
       label: "Industries",
-      value: industry_wealth_origin,
+      value: industry,
     },
   ];
 

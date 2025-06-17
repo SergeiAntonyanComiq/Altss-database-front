@@ -18,6 +18,9 @@ export const Details = ({
   title,
   other_fields,
   linkedin,
+  location_country,
+  location_regions,
+  location_raw_address,
 }: FamilyOfficeContact) => {
   const {
     workEmails,
@@ -36,32 +39,38 @@ export const Details = ({
     handleShowPersonalDetails,
   } = useContactDetails(contact_id);
 
-  console.log({
-    workEmails,
-    workPhones,
-    personalEmail,
-    personalPhone,
-    isEmailsLoading,
-    isPhoneLoading,
-    isPersonalEmailLoading,
-    isPersonalPhoneLoading,
-    showEmail,
-    showPhone,
-    showPersonalEmail,
-    showPersonalPhone,
-    handleShowWorkDetails,
-    handleShowPersonalDetails,
-  });
+  const hasLocation =
+    !!location_raw_address ||
+    !!location_country ||
+    (!!location_regions && location_regions.length > 0);
 
   const detailsFields = useMemo(
     () => [
       { label: "Area of responsibility", value: title },
-      { label: "Resident Location", value: "Ankara (Türkiye)" },
+      ...(hasLocation
+        ? [
+            {
+              label: "Resident Location",
+              value:
+                location_raw_address ??
+                location_country ??
+                location_regions.join(","),
+            },
+          ]
+        : []),
       { label: "Current Company", value: other_fields.family_office },
       { label: "Position title", value: title },
-      { label: "SEC Registration", value: "ID Number" },
+      // TODO will integrate when sec registration field will be available
+      // { label: "SEC Registration", value: "ID Number" },
     ],
-    [other_fields.family_office, title]
+    [
+      hasLocation,
+      location_country,
+      location_raw_address,
+      location_regions,
+      other_fields.family_office,
+      title,
+    ]
   );
 
   const detailFieldsContacts = useMemo(

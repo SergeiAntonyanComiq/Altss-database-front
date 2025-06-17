@@ -41,7 +41,7 @@ const FieldsRenderer = ({
         {value ? (
           <div className="w-full flex flex-row justify-start">
             {values.slice(0, 4).map((item, index) => (
-              <Fragment key={item.toString()}>
+              <Fragment key={`${item?.toString()}-${index}`}>
                 {isBadge ? (
                   <div
                     key={`${JSON.stringify(item)}-${index}`}

@@ -41,12 +41,13 @@ const News = ({ firmName }: { firmName: string }) => {
   }, [firmName, currentPage]);
 
   const recentNews = newsItems.filter((news) => {
-    const year = new Date(news.date).getFullYear();
+    const year = news.date !== "n/a" ? new Date(news.date).getFullYear() : 2025;
+
     return year > 2023;
   });
 
   const olderNews = newsItems.filter((news) => {
-    const year = new Date(news.date).getFullYear();
+    const year = news.date !== "n/a" ? new Date(news.date).getFullYear() : 2025;
     return year <= 2023;
   });
 

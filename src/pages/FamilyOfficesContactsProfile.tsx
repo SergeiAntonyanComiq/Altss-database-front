@@ -137,7 +137,7 @@ const FamilyOfficesContactsProfile: React.FC = () => {
                 </TabsContent>
 
                 <TabsContent value="jobhistory" className="mt-0">
-                  <JobHistory {...contact} />
+                  <JobHistory experiences={contact.experience_data} />
                 </TabsContent>
               </div>
             </Tabs>

@@ -47,9 +47,9 @@ export const NewsCard = ({ news }: { news: NewsItem }) => {
       <div className="pl-3 leading-[18px] text-base text-[#637381]">
         {news.date}
         <div>
-          {news.content.length > maxLength
+          {news.content && news.content?.length > maxLength
             ? news.content.slice(0, maxLength).trimEnd() + "..."
-            : news.content.trimEnd().endsWith("...")
+            : news.content?.trimEnd().endsWith("...")
             ? news.content
             : news.content + "..."}
           {news.url && (
