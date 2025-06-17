@@ -4,26 +4,30 @@ import { FamilyOffice } from "@/services/familyOfficesService.ts";
 
 export const InvestmentFocus = ({
   firm_type,
-  industry_wealth_origin,
+  industry,
   geographic_focus,
-  emerging_markets,
+  technologies,
 }: FamilyOffice) => {
+  console.log(firm_type);
   const investmentFields = [
-    {
-      label: "Company type",
-      value: firm_type,
-    },
+    ...(firm_type &&
+      firm_type[0] !== null && [
+        {
+          label: "Company type",
+          value: firm_type,
+        },
+      ]),
     {
       label: "Geo Focus",
       value: geographic_focus?.split(","),
     },
     {
       label: "Technology & Vertical",
-      value: emerging_markets?.split(","),
+      value: technologies?.split(","),
     },
     {
       label: "Industries",
-      value: industry_wealth_origin,
+      value: industry?.split(","),
     },
   ];
 
