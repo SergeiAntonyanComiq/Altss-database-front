@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { useToast } from "@/components/ui/use-toast";
@@ -25,6 +25,9 @@ const FamilyOfficeProfile = () => {
   const [familyOffice, setFamilyOffice] = useState<FamilyOffice | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
 
+  const [searchParams] = useSearchParams();
+  const from = searchParams.get("from");
+
   useEffect(() => {
     if (!id) {
       toast({
@@ -32,7 +35,8 @@ const FamilyOfficeProfile = () => {
         description: "No family office ID provided",
         variant: "destructive",
       });
-      navigate("/familyoffices");
+      navigate(from || "/familyoffices");
+
       return;
     }
 
@@ -48,7 +52,7 @@ const FamilyOfficeProfile = () => {
             description: `No data for family office with ID: ${id}`,
             variant: "destructive",
           });
-          navigate("/familyoffices");
+          navigate(from || "/familyoffices");
 
           return;
         }

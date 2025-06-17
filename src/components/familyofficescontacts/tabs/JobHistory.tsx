@@ -2,6 +2,7 @@ import React from "react";
 import { FieldsRenderer } from "@/components/common";
 import { format } from "date-fns";
 import { ExperienceData } from "@/services/familyOfficeContactsService.ts";
+import { Link } from "react-router-dom";
 
 const formatDateRange = (from: string, to: string | null) => {
   const start = format(new Date(from), "MM/yyyy");
@@ -29,7 +30,18 @@ export const JobHistory = ({
               value: job.department || job.company_industry,
             },
             { label: "Position title", value: job.title },
-            { label: "Company Name", value: job.company_name },
+            {
+              label: "Company Name",
+              value: (
+                <Link
+                  to={`/familyoffices/${
+                    job.company_id
+                  }?from=${encodeURIComponent(window.location.pathname)}`}
+                >
+                  {job.company_name}
+                </Link>
+              ),
+            },
           ];
 
           return (

@@ -1,3 +1,3 @@
 export * from "./FamilyOfficeContactsName";
 export * from "./FamilyOfficeContactsTitle";
-export * from "./FamilyOfficeContactsCompanyName.ts";
+export * from "./FamilyOfficeContactsCompanyName.tsx";

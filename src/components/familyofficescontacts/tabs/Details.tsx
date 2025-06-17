@@ -10,9 +10,11 @@ import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { LinkedinIcon } from "@/components/ui/icons";
 import { useContactDetails } from "@/hooks/useContactDetails.ts";
 import { ContactField } from "@/components/familyofficescontacts/tabs/components/ContactField.tsx";
+import { Link } from "react-router-dom";
 
 export const Details = ({
   contact_id,
+  company_id,
   avatar_filename,
   full_name,
   title,
@@ -21,6 +23,7 @@ export const Details = ({
   location_country,
   location_regions,
   location_raw_address,
+  experience_data,
 }: FamilyOfficeContact) => {
   const {
     workEmails,
@@ -58,12 +61,22 @@ export const Details = ({
             },
           ]
         : []),
-      { label: "Current Company", value: other_fields.family_office },
+      {
+        label: "Current Company",
+        value: (
+          <Link
+            to={`/familyoffices/${
+              company_id ?? experience_data?.[0]?.company_id
+            }?from=${encodeURIComponent(window.location.pathname)}`}
+          >
+            {other_fields.family_office ?? experience_data?.[0]?.company_name}
+          </Link>
+        ),
+      },
       { label: "Position title", value: title },
-      // TODO will integrate when sec registration field will be available
-      // { label: "SEC Registration", value: "ID Number" },
     ],
     [
+      company_id,
       hasLocation,
       location_country,
       location_raw_address,

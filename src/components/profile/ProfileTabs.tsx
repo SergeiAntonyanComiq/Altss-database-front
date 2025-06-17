@@ -35,8 +35,6 @@ type ProfileTabsProps = ProfileTabsUserProps | ProfileTabsContactProps;
 const ProfileTabs: React.FC<ProfileTabsProps> = (props) => {
   const isContactProfile = "contact" in props && props.contact !== undefined;
 
-  console.log(props);
-
   const handleTabChange = isContactProfile
     ? props.setActiveTab
     : props.onTabChange;

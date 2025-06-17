@@ -8,7 +8,6 @@ export const InvestmentFocus = ({
   geographic_focus,
   technologies,
 }: FamilyOffice) => {
-  console.log(firm_type);
   const investmentFields = [
     ...(firm_type &&
       firm_type[0] !== null && [
