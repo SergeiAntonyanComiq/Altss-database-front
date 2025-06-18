@@ -12,8 +12,11 @@ export const NewsCard = ({ news }: { news: NewsItem }) => {
         style={{ color: news.textColor }}
         className="flex-shrink-0 flex items-center justify-center text-xl font-bold rounded-md overflow-hidden"
       >
-        <div
+        <a
           style={{ color: news.textColor }}
+          target="_blank"
+          rel="noopener noreferrer"
+          href={news.url}
           className="flex-shrink-0 flex items-center justify-center text-xl font-bold rounded-md overflow-hidden w-[60px] h-[60px]"
         >
           {news.logo && news.logo.startsWith("http") ? (
@@ -42,7 +45,7 @@ export const NewsCard = ({ news }: { news: NewsItem }) => {
                 .toUpperCase()}
             </div>
           )}
-        </div>
+        </a>
       </div>
       <div className="pl-3 leading-[18px] text-base text-[#637381]">
         {news.date}

@@ -282,7 +282,7 @@ export const fetchPaginatedNews = async ({
       logo: article.highResFavicon,
       color: getRandomColor(index),
       textColor: "#ffffff",
-      content: article.snippet,
+      content: article.snippet ?? article.title ?? "",
       date: formatDate(article.date),
       source: article.source,
       url: article.link,
