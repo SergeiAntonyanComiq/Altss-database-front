@@ -10,12 +10,8 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import { EmptyDetailsPage, News } from "@/components/common";
-import {
-  Details,
-  InvestmentFocus,
-  Mandate,
-  Team,
-} from "@/components/familyoffices";
+import { Details, InvestmentFocus, Team } from "@/components/familyoffices";
+import DealsTab from "@/components/familyoffices/tabs/Deals.tsx";
 
 const FamilyOfficeProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -173,22 +169,22 @@ const FamilyOfficeProfile = () => {
                     >
                       News
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="mandate"
-                      className="py-3 px-6 space-x-2 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        x="0px"
-                        y="0px"
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M 12 1 C 8.6761905 1 6 3.6761905 6 7 L 6 8 C 4.9069372 8 4 8.9069372 4 10 L 4 20 C 4 21.093063 4.9069372 22 6 22 L 18 22 C 19.093063 22 20 21.093063 20 20 L 20 10 C 20 8.9069372 19.093063 8 18 8 L 18 7 C 18 3.6761905 15.32381 1 12 1 z M 12 3 C 14.27619 3 16 4.7238095 16 7 L 16 8 L 8 8 L 8 7 C 8 4.7238095 9.7238095 3 12 3 z M 6 10 L 18 10 L 18 20 L 6 20 L 6 10 z M 12 13 C 10.9 13 10 13.9 10 15 C 10 16.1 10.9 17 12 17 C 13.1 17 14 16.1 14 15 C 14 13.9 13.1 13 12 13 z"></path>
-                      </svg>
-                      <div>Mandate</div>
-                    </TabsTrigger>
+                    {/*<TabsTrigger*/}
+                    {/*  value="mandate"*/}
+                    {/*  className="py-3 px-6 space-x-2 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"*/}
+                    {/*>*/}
+                    {/*  <svg*/}
+                    {/*    xmlns="http://www.w3.org/2000/svg"*/}
+                    {/*    x="0px"*/}
+                    {/*    y="0px"*/}
+                    {/*    width="15"*/}
+                    {/*    height="15"*/}
+                    {/*    viewBox="0 0 24 24"*/}
+                    {/*  >*/}
+                    {/*    <path d="M 12 1 C 8.6761905 1 6 3.6761905 6 7 L 6 8 C 4.9069372 8 4 8.9069372 4 10 L 4 20 C 4 21.093063 4.9069372 22 6 22 L 18 22 C 19.093063 22 20 21.093063 20 20 L 20 10 C 20 8.9069372 19.093063 8 18 8 L 18 7 C 18 3.6761905 15.32381 1 12 1 z M 12 3 C 14.27619 3 16 4.7238095 16 7 L 16 8 L 8 8 L 8 7 C 8 4.7238095 9.7238095 3 12 3 z M 6 10 L 18 10 L 18 20 L 6 20 L 6 10 z M 12 13 C 10.9 13 10 13.9 10 15 C 10 16.1 10.9 17 12 17 C 13.1 17 14 16.1 14 15 C 14 13.9 13.1 13 12 13 z"></path>*/}
+                    {/*  </svg>*/}
+                    {/*  <div>Mandate</div>*/}
+                    {/*</TabsTrigger>*/}
                     <TabsTrigger
                       value="serviceproviders"
                       className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
@@ -202,13 +198,13 @@ const FamilyOfficeProfile = () => {
                     <Details {...familyOffice} />
                   </TabsContent>
                   <TabsContent value="investment" className="mt-0">
-                    <InvestmentFocus {...familyOffice} />
+                    <InvestmentFocus id={id} />
                   </TabsContent>
                   <TabsContent value="team" className="mt-0">
-                    <Team {...familyOffice} />
+                    <Team id={id} />
                   </TabsContent>
                   <TabsContent value="deals" className="mt-0">
-                    <EmptyDetailsPage pageName="Deals" />
+                    <DealsTab familyOfficeId={id} />
                   </TabsContent>
                   <TabsContent value="gp&lp" className="mt-0">
                     <EmptyDetailsPage pageName="GP & LP" />
@@ -219,9 +215,10 @@ const FamilyOfficeProfile = () => {
                   <TabsContent value="news" className="mt-0">
                     <News firmName={familyOffice.firm_name} />
                   </TabsContent>
-                  <TabsContent value="mandate" className="mt-0">
-                    <Mandate {...familyOffice} />
-                  </TabsContent>
+                  {/*TODO Integrate when will be available data*/}
+                  {/*<TabsContent value="mandate" className="mt-0">*/}
+                  {/*  <Mandate {...familyOffice} />*/}
+                  {/*</TabsContent>*/}
                   {/*TODO*/}
                   {/*<TabsContent value="transactions" className="mt-0">*/}
                   {/*  <div className="mb-6">*/}
