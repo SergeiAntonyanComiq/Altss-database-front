@@ -9,7 +9,7 @@ import {
 } from "@/services/familyOfficesService";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import { EmptyDetailsPage, News } from "@/components/common";
+import { News } from "@/components/common";
 import { Details, InvestmentFocus, Team } from "@/components/familyoffices";
 import DealsTab from "@/components/familyoffices/tabs/Deals.tsx";
 
@@ -117,6 +117,8 @@ const FamilyOfficeProfile = () => {
     city: familyOffice.city || "",
     state: familyOffice.region || "",
     country_territory: familyOffice.country || "",
+    logo_filename: familyOffice.logo_filename || "",
+    logo: familyOffice.logo || "",
     zip_code: "",
     linkedin: familyOffice.linkedin || "",
     favorite: false,
@@ -157,18 +159,19 @@ const FamilyOfficeProfile = () => {
                     >
                       Deals
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="gp&lp"
-                      className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
-                    >
-                      GP & LP
-                    </TabsTrigger>
+
                     <TabsTrigger
                       value="news"
                       className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
                     >
                       News
                     </TabsTrigger>
+                    {/*<TabsTrigger*/}
+                    {/*    value="gp&lp"*/}
+                    {/*    className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"*/}
+                    {/*>*/}
+                    {/*  GP & LP*/}
+                    {/*</TabsTrigger>*/}
                     {/*<TabsTrigger*/}
                     {/*  value="mandate"*/}
                     {/*  className="py-3 px-6 space-x-2 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"*/}
@@ -185,12 +188,12 @@ const FamilyOfficeProfile = () => {
                     {/*  </svg>*/}
                     {/*  <div>Mandate</div>*/}
                     {/*</TabsTrigger>*/}
-                    <TabsTrigger
-                      value="serviceproviders"
-                      className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
-                    >
-                      Service Providers
-                    </TabsTrigger>
+                    {/*<TabsTrigger*/}
+                    {/*  value="serviceproviders"*/}
+                    {/*  className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"*/}
+                    {/*>*/}
+                    {/*  Service Providers*/}
+                    {/*</TabsTrigger>*/}
                   </TabsList>
                 </div>
                 <div className="p-4">
@@ -206,15 +209,16 @@ const FamilyOfficeProfile = () => {
                   <TabsContent value="deals" className="mt-0">
                     <DealsTab familyOfficeId={id} />
                   </TabsContent>
-                  <TabsContent value="gp&lp" className="mt-0">
-                    <EmptyDetailsPage pageName="GP & LP" />
-                  </TabsContent>
-                  <TabsContent value="serviceproviders" className="mt-0">
-                    <EmptyDetailsPage pageName="Service Providers" />
-                  </TabsContent>
                   <TabsContent value="news" className="mt-0">
                     <News firmName={familyOffice.firm_name} />
                   </TabsContent>
+                  {/*TODO Integrate when will be available data*/}
+                  {/*<TabsContent value="gp&lp" className="mt-0">*/}
+                  {/*  <EmptyDetailsPage pageName="GP & LP" />*/}
+                  {/*</TabsContent>*/}
+                  {/*<TabsContent value="serviceproviders" className="mt-0">*/}
+                  {/*  <EmptyDetailsPage pageName="Service Providers" />*/}
+                  {/*</TabsContent>*/}
                   {/*TODO Integrate when will be available data*/}
                   {/*<TabsContent value="mandate" className="mt-0">*/}
                   {/*  <Mandate {...familyOffice} />*/}

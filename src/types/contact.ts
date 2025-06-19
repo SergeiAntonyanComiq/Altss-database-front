@@ -1,4 +1,3 @@
-
 export interface ContactType {
   id: number;
   firm_id: number;
@@ -21,4 +20,6 @@ export interface ContactType {
   twitter?: string; // Added twitter property as optional
   sec_registration?: string; // Added sec_registration property as optional
   favorite?: boolean;
+  logo_filename?: string;
+  logo?: string;
 }

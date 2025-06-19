@@ -9,7 +9,7 @@ import {
   DealRole,
 } from "./deals";
 
-export const dealsColumns = (): ColumnDef<Deals, unknown>[] => [
+export const dealsColumns: ColumnDef<Deals>[] = [
   Partner,
   DealSize,
   DealType,

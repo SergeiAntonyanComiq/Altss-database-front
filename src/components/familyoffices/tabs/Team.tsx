@@ -8,6 +8,8 @@ import {
 import { Loading } from "@/utils.tsx";
 import { useContactDetails } from "@/hooks/useContactDetails.ts";
 import { ContactField } from "@/components/familyofficescontacts/tabs/components/ContactField.tsx";
+import { AvatarBadgeDialogList } from "@/components/common/AvatarFieldRenderer.tsx";
+import { getInitials } from "@/lib/utils.ts";
 
 export const Team = ({ id }: { id: string }) => {
   const [groupedTeam, setGroupedTeam] = useState<GroupedTeam | null>(null);
@@ -88,8 +90,22 @@ export const Team = ({ id }: { id: string }) => {
     {
       label: "Full Name",
       value: (
-        <a href={`/familyofficescontactsprofile/${primaryContact.contact_id}`}>
-          {primaryContact.full_name}
+        <a
+          href={`/familyofficescontactsprofile/${primaryContact.contact_id}`}
+          className="flex flex-row items-center space-x-2"
+        >
+          {primaryContact.picture ? (
+            <img
+              src={primaryContact.picture}
+              alt={primaryContact.full_name}
+              className="w-6 h-6 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-medium text-white">
+              {getInitials(primaryContact.full_name)}
+            </div>
+          )}
+          <span className="text-base">{primaryContact.full_name}</span>
         </a>
       ),
     },
@@ -103,6 +119,8 @@ export const Team = ({ id }: { id: string }) => {
     },
     workEmailField,
   ];
+
+  console.log(Object.entries(groupedTeam));
 
   return (
     <>
@@ -142,19 +160,15 @@ export const Team = ({ id }: { id: string }) => {
           ))}
         </div>
         <div className="space-y-[24px]">
-          {Object.entries(groupedTeam).map(([label, members]) => (
-            <FieldsRenderer
-              key={label}
-              value={members.map((m) => ({
+          {Object.entries(groupedTeam).map(([_, members]) => (
+            <AvatarBadgeDialogList
+              items={members.map((m) => ({
                 label: m.full_name,
                 onClick: () =>
-                  m.contact_id
-                    ? (window.location.href = `/familyofficescontactsprofile/${m.contact_id}`)
-                    : undefined,
+                  (window.location.href = `/familyofficescontactsprofile/${m.contact_id}`),
+                image: m.picture,
               }))}
-              modalHeader={label}
-              isBadge={true}
-              variant="secondary"
+              modalHeader="Team Members"
             />
           ))}
         </div>

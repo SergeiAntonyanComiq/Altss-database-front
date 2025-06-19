@@ -5,7 +5,12 @@ import { CheckedState } from "@radix-ui/react-checkbox";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 
 export const NameWithLogo = <
-  T extends { logo_filename?: string; firm_name?: string; name?: string }
+  T extends {
+    logo_filename?: string;
+    logo?: string;
+    firm_name?: string;
+    name?: string;
+  }
 >(
   fieldId: string,
   field: string,
@@ -58,6 +63,8 @@ export const NameWithLogo = <
   cell: ({ row }) => {
     const isFavorited = favorites[row.original[fieldId]];
 
+    const hasLogo = row.original.logo || row.original.logo_filename;
+
     return (
       <div className="flex h-full items-center px-4 justify-between">
         <div
@@ -77,7 +84,13 @@ export const NameWithLogo = <
         </div>
         <div className="ml-3 flex items-center gap-3 flex-1 min-w-0">
           <img
-            src={`https://sinerg.blob.core.windows.net/main/img/logo/${row.original.logo_filename}`}
+            src={
+              row.original.logo_filename
+                ? `https://sinerg.blob.core.windows.net/main/img/logo/${row.original.logo_filename}`
+                : row.original.logo?.startsWith("/9j")
+                ? `data:image/jpeg;base64,${row.original.logo}`
+                : row.original.logo || "/placeholder.svg"
+            }
             alt=""
             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
             onError={(e) => {

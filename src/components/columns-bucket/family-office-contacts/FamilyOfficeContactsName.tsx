@@ -66,7 +66,13 @@ export const FamilyOfficeContactsName = (
         </div>
         <div className="ml-3 flex items-center gap-3 flex-1 min-w-[300px]">
           <img
-            src={`https://sinerg.blob.core.windows.net/main/img/avatars/${row.original.avatar_filename}`}
+            src={
+              row.original.avatar_filename
+                ? `https://sinerg.blob.core.windows.net/main/img/avatars/${row.original.avatar_filename}`
+                : row.original.picture_url?.startsWith("/9j")
+                ? `data:image/jpeg;base64,${row.original.picture_url}`
+                : row.original.picture_url || "/placeholder.svg"
+            }
             alt=""
             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
             onError={(e) => {

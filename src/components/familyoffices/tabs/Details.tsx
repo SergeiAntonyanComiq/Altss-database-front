@@ -1,6 +1,7 @@
 import { FieldsRenderer } from "@/components/common";
 import React from "react";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
+import { LinkedinIcon } from "@/components/ui/icons";
 
 export const Details = ({
   firm_type,
@@ -15,6 +16,12 @@ export const Details = ({
   office_phone,
   website,
   general_email,
+  description,
+  websites_main,
+  websites_main_original,
+  linkedin,
+  websites_linkedin,
+  websites_linkedin_canonical,
 }: FamilyOffice) => {
   const overviewFields = [
     {
@@ -24,8 +31,8 @@ export const Details = ({
     { label: "City", value: city },
     { label: "Country", value: country },
     { label: "Region", value: region },
-    { label: "AUM", value: aum },
-    { label: "Year Founded", value: year_founded },
+    { label: "AUM ($, mln)", value: aum },
+    { label: "Founded Year", value: year_founded },
     { label: "Wealth Creator", value: wealth_creator },
     {
       label: "Industry Wealth Origin",
@@ -33,6 +40,10 @@ export const Details = ({
     },
     { label: "SEC Registered", value: sec_registered },
   ];
+
+  const websiteLink = website ?? websites_main ?? websites_main_original;
+  const linkedinLink =
+    linkedin ?? websites_linkedin ?? websites_linkedin_canonical;
 
   const overviewFieldsContacts = [
     {
@@ -52,14 +63,18 @@ export const Details = ({
         </a>
       ),
     },
-    {
-      label: "Website",
-      value: (
-        <a href={website} target="_blank" rel="noopener noreferrer">
-          {website}
-        </a>
-      ),
-    },
+    ...(websiteLink
+      ? [
+          {
+            label: "Website",
+            value: (
+              <a href={websiteLink} target="_blank" rel="noopener noreferrer">
+                {websiteLink}
+              </a>
+            ),
+          },
+        ]
+      : [{}]),
     {
       label: "Office Email",
       value: general_email,
@@ -77,12 +92,43 @@ export const Details = ({
         </a>
       ),
     },
+    ...(linkedinLink
+      ? [
+          {
+            label: "LinkedIn",
+            value: (
+              <a
+                href={
+                  linkedin ?? websites_linkedin ?? websites_linkedin_canonical
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {websites_linkedin ?? websites_linkedin_canonical}
+              </a>
+            ),
+            isBadge: false,
+            icon: (
+              <a
+                href={websites_linkedin ?? websites_linkedin_canonical}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <LinkedinIcon />
+              </a>
+            ),
+          },
+        ]
+      : [{}]),
   ];
 
   return (
     <>
       <div className="mb-6">
         <h2 className="font-semibold text-xl py-2 mb-2">About</h2>
+        <div className="mb-2 text-sm">
+          <span>{description}</span>
+        </div>
         <hr className="border-t border-gray-200 mb-4" />
         <div className="flex space-x-[120px]">
           <div className="space-y-[24px]">

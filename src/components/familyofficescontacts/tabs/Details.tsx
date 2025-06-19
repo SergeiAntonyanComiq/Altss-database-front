@@ -16,6 +16,7 @@ export const Details = ({
   contact_id,
   company_id,
   avatar_filename,
+  picture_url,
   full_name,
   title,
   other_fields,
@@ -210,7 +211,13 @@ export const Details = ({
         <div className="flex items-center gap-6">
           <Avatar className="h-20 w-20">
             <AvatarImage
-              src={`https://sinerg.blob.core.windows.net/main/img/avatars/${avatar_filename}`}
+              src={
+                avatar_filename
+                  ? `https://sinerg.blob.core.windows.net/main/img/avatars/${avatar_filename}`
+                  : picture_url?.startsWith("/9j")
+                  ? `data:image/jpeg;base64,${picture_url}`
+                  : picture_url || "/placeholder.svg"
+              }
               alt={full_name}
               onError={(e) =>
                 ((e.target as HTMLImageElement).src = "/placeholder.svg")

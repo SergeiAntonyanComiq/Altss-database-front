@@ -41,7 +41,7 @@ const DealsTab = ({ familyOfficeId }: DealsProps) => {
       <Loading show={isLoading} />
       <h1 className="text-2xl font-semibold mb-6">Deals</h1>
 
-      <DataTable columns={dealsColumns()} data={deals} />
+      <DataTable columns={dealsColumns} data={deals} />
     </div>
   );
 };

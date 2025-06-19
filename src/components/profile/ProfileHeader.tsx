@@ -21,12 +21,27 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
   const displayName = isContactProfile ? props.contact.name : props.name;
 
   const displayPlan = isContactProfile ? "" : props.plan;
+  const logoFilename = props.contact.logo_filename;
+  const logo = props.contact.logo;
 
   return (
     <div className="mb-5">
       <div className="p-4">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-1">
+            {logoFilename || logo ? (
+              <img
+                src={
+                  logoFilename
+                    ? `https://sinerg.blob.core.windows.net/main/img/logo/${logoFilename}`
+                    : logo?.startsWith("/9j")
+                    ? `data:image/jpeg;base64,${logo}`
+                    : logo || "/placeholder.svg"
+                }
+                alt="Logo"
+                className="w-6 h-6 object-contain mr-2"
+              />
+            ) : null}
             <h1 className="text-[rgba(17,25,40,1)] text-2xl font-semibold leading-none">
               {displayName}
             </h1>
