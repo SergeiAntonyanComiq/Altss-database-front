@@ -1,8 +1,6 @@
 import React from "react";
 
-import { Badge } from "@/components/ui/badge.tsx";
 import { ColumnDef } from "@tanstack/react-table";
-import { Investor } from "@/hooks/useInvestorsData.ts";
 import { PersonType } from "@/types/person.ts";
 
 export const PersonPosition: ColumnDef<PersonType> = {

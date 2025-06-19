@@ -5,3 +5,4 @@ export * from "./CompaniesColumns.ts";
 export * from "./FamilyOfficesContactsColumns.ts";
 export * from "./InvestorsColumns.ts";
 export * from "./PersonsColumns.ts";
+export * from "./DealsColumns.ts";
