@@ -1,79 +1,94 @@
 import React from "react";
-import { FieldsRenderer } from "@/components/common";
 import { format } from "date-fns";
-import { ExperienceData } from "@/services/familyOfficeContactsService.ts";
+import { ExperienceData } from "@/services/familyOfficeContactsService";
 import { Link } from "react-router-dom";
+import clsx from "clsx";
 
-const formatDateRange = (from: string, to: string | null) => {
-  const start = format(new Date(from), "MM/yyyy");
-  const end = to ? format(new Date(to), "MM/yyyy") : "Current Time";
-  return `${start}-${end}`;
+const formatDateRangeWithDuration = (
+  from: string,
+  to: string | null,
+  duration: string | null
+) => {
+  const start = format(new Date(from), "MMM yyyy");
+  const end = to ? format(new Date(to), "MMM yyyy") : "Present";
+  return duration ? `${start} – ${end} · ${duration}` : `${start} – ${end}`;
 };
 
 export const JobHistory = ({
   experiences,
 }: {
   experiences: ExperienceData[];
-}) => (
-  <div className="p-4">
-    {!experiences || experiences.length === 0 ? (
+}) => {
+  if (!experiences || experiences.length === 0) {
+    return (
       <div className="p-4 text-sm text-gray-500 italic">
         No job history found.
       </div>
-    ) : (
-      experiences
+    );
+  }
+
+  return (
+    <div className="p-4 space-y-6">
+      {experiences
         .sort((a, b) => a.order_in_profile - b.order_in_profile)
         .map((job) => {
-          const fields = [
-            {
-              label: "Area of responsibility",
-              value: job.department || job.company_industry,
-            },
-            { label: "Position title", value: job.title },
-            {
-              label: "Company Name",
-              value: (
-                <Link
-                  to={`/familyoffices/${
-                    job.company_id
-                  }?from=${encodeURIComponent(window.location.pathname)}`}
-                >
-                  {job.company_name}
-                </Link>
-              ),
-            },
-          ];
+          const dateInfo = formatDateRangeWithDuration(
+            job.date_from,
+            job.date_to,
+            job.job_time_period
+          );
+          const company = job.company_id ? (
+            <Link
+              to={`/familyoffices/${job.company_id}?from=${encodeURIComponent(
+                window.location.pathname
+              )}`}
+              className="text-blue-600 hover:underline"
+            >
+              {job.company_name}
+            </Link>
+          ) : (
+            job.company_name
+          );
 
           return (
-            <div className="mb-6" key={`${job.title}-${job.company_name}`}>
-              <h2 className="font-semibold text-xl mb-2">
-                {formatDateRange(job.date_from, job.date_to)}
-              </h2>
-              <hr className="border-t border-gray-200 mb-4" />
-              <div className="flex space-x-[120px]">
-                <div className="space-y-2">
-                  {fields
-                    .filter((f) => f.value)
-                    .map((f) => (
-                      <FieldsRenderer key={f.label} label={f.label} />
-                    ))}
+            <div
+              key={`${job.title}-${job.company_name}`}
+              className="flex space-x-4"
+            >
+              {job.company_logo_url ? (
+                <img
+                  src={job.company_logo_url}
+                  alt={job.company_name || "Company Logo"}
+                  className="w-12 h-12 object-contain rounded"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gray-200 text-gray-700 rounded flex items-center justify-center text-lg font-semibold">
+                  {job.company_name?.[0] || "?"}
                 </div>
-                <div className="space-y-2">
-                  {fields
-                    .filter((f) => f.value)
-                    .map((f) => (
-                      <FieldsRenderer
-                        key={f.label}
-                        value={f.value}
-                        modalHeader={f.label}
-                        isBadge={f.label === "Area of responsibility"}
-                      />
-                    ))}
+              )}
+
+              <div className="flex-1">
+                <div className="text-lg font-medium">
+                  {job.title}{" "}
+                  {job.company_name && (
+                    <span className="text-gray-700 font-normal">
+                      · {company}
+                    </span>
+                  )}
                 </div>
+                <div className="text-sm text-gray-500">{dateInfo}</div>
+                {job.location && (
+                  <div className="text-sm text-gray-500">{job.location}</div>
+                )}
+                {job.description && (
+                  <div className="mt-2 space-y-2 text-sm text-gray-800 whitespace-pre-line">
+                    {job.description}
+                  </div>
+                )}
               </div>
             </div>
           );
-        })
-    )}
-  </div>
-);
+        })}
+    </div>
+  );
+};
