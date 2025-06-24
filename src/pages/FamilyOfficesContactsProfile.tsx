@@ -26,8 +26,6 @@ const FamilyOfficesContactsProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("details");
 
-  console.log(contact);
-
   const profileHeaderContacts = useMemo(
     () => ({
       id: contact?.contact_id,
