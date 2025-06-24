@@ -26,9 +26,11 @@ const FamilyOfficesContactsProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("details");
 
+  console.log(contact);
+
   const profileHeaderContacts = useMemo(
     () => ({
-      id: 0,
+      id: contact?.contact_id,
       firm_id: Number(contact?.company_id) || 0,
       contact_id: 0,
       investor: "",
@@ -46,7 +48,8 @@ const FamilyOfficesContactsProfile: React.FC = () => {
       country_territory: "",
       zip_code: "",
       linkedin: contact?.linkedin ?? "",
-      favorite: false,
+      favorite: contact?.isFavorite,
+      itemType: "family_office_contacts",
     }),
     [contact]
   );

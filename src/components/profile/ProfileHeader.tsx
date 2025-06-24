@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { ContactType } from "@/types/contact";
+import { FilledHeartIcon, OutlineHeartIcon } from "@/components/ui/icons";
+import { updateFavoritesData } from "@/services/savedFiltersService.ts";
 
 interface ProfileHeaderUserProps {
   name: string;
@@ -18,11 +20,28 @@ type ProfileHeaderProps = ProfileHeaderUserProps | ProfileHeaderContactProps;
 const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
   const isContactProfile = "contact" in props && props.contact !== undefined;
 
+  const [isFavorited, setIsFavorited] = useState(
+    props.contact?.favorite ?? false
+  );
+
   const displayName = isContactProfile ? props.contact.name : props.name;
 
   const displayPlan = isContactProfile ? "" : props.plan;
   const logoFilename = props.contact.logo_filename;
   const logo = props.contact.logo;
+
+  const handleAddToFavorites = async () => {
+    const newFavorite = !isFavorited;
+    setIsFavorited(newFavorite);
+
+    const data = {
+      itemType: props.contact.itemType,
+      itemIds: [props.contact.id.toString()],
+      favorited: newFavorite,
+    };
+
+    await updateFavoritesData(data);
+  };
 
   return (
     <div className="mb-5">
@@ -47,12 +66,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
             </h1>
 
             {isContactProfile && (
-              <button className="min-w-[200px] bg-white flex items-center gap-2 text-[#03887E] border-none font-medium text-center justify-center px-4 py-1 rounded-[50px]">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/ca51bf083c87bb6765db009254de1b519ea4a3ec"
-                  className="w-[18px] h-[18px] object-contain"
-                  alt="Favorites icon"
-                />
+              <button
+                className="min-w-[200px] bg-white flex items-center gap-2 text-[#03887E] border-none font-medium text-center justify-center px-4 py-1 rounded-[50px]"
+                onClick={handleAddToFavorites}
+              >
+                {isFavorited ? <FilledHeartIcon /> : <OutlineHeartIcon />}
                 <span>Add to Favorites</span>
               </button>
             )}
@@ -64,22 +82,22 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
             </div>
           )}
 
-          {isContactProfile && (
-            <div className="flex items-center gap-2.5">
-              <button className="min-w-[180px] max-h-[34px] bg-white border flex items-center gap-2 justify-center px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/0bd597c769172697ba7e1f8d0385eb32afeed632"
-                  className="w-[18px] h-[18px] object-contain"
-                  alt="Enrich icon"
-                />
-                <span className="ml-1">Order Enrich</span>
-              </button>
+          {/*{isContactProfile && (*/}
+          {/*  <div className="flex items-center gap-2.5">*/}
+          {/*    <button className="min-w-[180px] max-h-[34px] bg-white border flex items-center gap-2 justify-center px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">*/}
+          {/*      <img*/}
+          {/*        src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/0bd597c769172697ba7e1f8d0385eb32afeed632"*/}
+          {/*        className="w-[18px] h-[18px] object-contain"*/}
+          {/*        alt="Enrich icon"*/}
+          {/*      />*/}
+          {/*      <span className="ml-1">Order Enrich</span>*/}
+          {/*    </button>*/}
 
-              <button className="min-w-[180px] max-h-[34px] bg-white border flex items-center gap-2 justify-center px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">
-                Claim a mistake
-              </button>
-            </div>
-          )}
+          {/*    <button className="min-w-[180px] max-h-[34px] bg-white border flex items-center gap-2 justify-center px-4 py-1.5 rounded-[50px] border-[rgba(223,228,234,1)] text-[rgba(99,115,129,1)] font-medium">*/}
+          {/*      Claim a mistake*/}
+          {/*    </button>*/}
+          {/*  </div>*/}
+          {/*)}*/}
         </div>
       </div>
     </div>

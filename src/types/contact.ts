@@ -1,5 +1,5 @@
 export interface ContactType {
-  id: number;
+  id: string;
   firm_id: number;
   contact_id: number;
   investor: string;
@@ -22,4 +22,5 @@ export interface ContactType {
   favorite?: boolean;
   logo_filename?: string;
   logo?: string;
+  itemType?: string;
 }
