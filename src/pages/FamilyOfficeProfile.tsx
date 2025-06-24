@@ -97,7 +97,7 @@ const FamilyOfficeProfile = () => {
   }
 
   const contactLike = {
-    id: 0,
+    id: familyOffice?.company_id,
     firm_id: familyOffice.company_id ? Number(familyOffice.company_id) : 0,
     contact_id: 0,
     investor: "",
@@ -121,7 +121,8 @@ const FamilyOfficeProfile = () => {
     logo: familyOffice.logo || "",
     zip_code: "",
     linkedin: familyOffice.linkedin || "",
-    favorite: false,
+    favorite: familyOffice.isFavorite,
+    itemType: "family_office",
   };
 
   return (
