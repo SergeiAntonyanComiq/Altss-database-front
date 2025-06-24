@@ -211,7 +211,7 @@ const FamilyOfficeProfile = () => {
                     <DealsTab familyOfficeId={id} />
                   </TabsContent>
                   <TabsContent value="news" className="mt-0">
-                    <News firmName={familyOffice.firm_name} />
+                    <News name={familyOffice.firm_name} />
                   </TabsContent>
                   {/*TODO Integrate when will be available data*/}
                   {/*<TabsContent value="gp&lp" className="mt-0">*/}

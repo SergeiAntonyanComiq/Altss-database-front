@@ -4,7 +4,7 @@ import { Deals } from "@/services/familyOfficesService.ts";
 
 export const DealType: ColumnDef<Deals> = {
   id: "type",
-  accessorFn: (row) => row.type.split(","),
+  accessorFn: (row) => row.type?.split(","),
   header: "Deal Type",
   cell: ({ row }) => (
     <div className="flex gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap">

@@ -5,7 +5,13 @@ import { Loading } from "@/utils.tsx";
 import { NewsCard } from "@/components/familyofficescontacts/tabs/components/NewsCard.tsx";
 import { cn } from "@/lib/utils.ts";
 
-const News = ({ firmName }: { firmName: string }) => {
+const News = ({
+  name,
+  isContactNews = false,
+}: {
+  name: string;
+  isContactNews?: boolean;
+}) => {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -18,9 +24,10 @@ const News = ({ firmName }: { firmName: string }) => {
       setIsLoading(true);
       try {
         const { data, totalPages } = await fetchPaginatedNews({
-          company: firmName,
+          name,
           page: currentPage,
           limit: itemsPerPage,
+          isContactNews,
         });
 
         setNewsItems(data);
@@ -33,12 +40,12 @@ const News = ({ firmName }: { firmName: string }) => {
       }
     };
 
-    if (firmName) {
+    if (name) {
       (async () => {
         await loadNews();
       })();
     }
-  }, [firmName, currentPage]);
+  }, [name, currentPage, isContactNews]);
 
   const recentNews = newsItems.filter((news) => {
     const year = news.date !== "n/a" ? new Date(news.date).getFullYear() : 2025;

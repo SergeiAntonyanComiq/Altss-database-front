@@ -4,6 +4,7 @@ import { extractDomainForLogo, getSourceLogo } from "@/utils/newsUtils";
 import { getRandomColor } from "@/utils/colorUtils";
 import { performSearch } from "./apiService";
 import apiClient from "@/lib/axios.ts";
+import { b } from "vite/dist/node/types.d-aGj9QkWt";
 
 export interface NewsItem {
   id: string;
@@ -258,22 +259,27 @@ export interface NewsResponseData {
 }
 
 export const fetchPaginatedNews = async ({
-  company,
+  name,
   page,
   limit,
+  isContactNews,
 }: {
-  company: string;
+  name: string;
   page: number;
   limit: number;
+  isContactNews: boolean;
 }): Promise<{ data: NewsItem[]; totalPages: number }> => {
   try {
-    const response = await apiClient.get<NewsResponseData>("/news", {
-      params: {
-        company,
-        page,
-        limit,
-      },
-    });
+    const response = await apiClient.get<NewsResponseData>(
+      isContactNews ? "contact-news" : "/news",
+      {
+        params: {
+          ...(isContactNews ? { contact: name } : { company: name }),
+          page,
+          limit,
+        },
+      }
+    );
 
     const { articles, metadata } = response.data.data;
 
@@ -288,10 +294,7 @@ export const fetchPaginatedNews = async ({
       url: article.link,
     }));
 
-    return {
-      data,
-      totalPages: metadata.other_pages.length + 1,
-    };
+    return { data, totalPages: metadata.other_pages.length + 1 };
   } catch (error) {
     return { data: [], totalPages: 0 };
   }
