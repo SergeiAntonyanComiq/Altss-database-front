@@ -3,6 +3,11 @@ import React from "react";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
 import { LinkedinIcon } from "@/components/ui/icons";
 
+const getSafeUrl = (url?: string) => {
+  if (!url) return "#";
+  return url.startsWith("http") ? url : `https://${url}`;
+};
+
 export const Details = ({
   firm_type,
   city,
@@ -68,7 +73,11 @@ export const Details = ({
           {
             label: "Website",
             value: (
-              <a href={websiteLink} target="_blank" rel="noopener noreferrer">
+              <a
+                href={getSafeUrl(websiteLink)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {websiteLink}
               </a>
             ),
