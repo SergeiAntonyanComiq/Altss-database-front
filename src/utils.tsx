@@ -11,6 +11,8 @@ interface SmallLoaderProps {
   className?: string;
 }
 
+export const EMPTY_PLACEHOLDER = "--";
+
 export const Loading = ({
   show = false,
   local = false,
