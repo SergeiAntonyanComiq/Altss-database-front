@@ -27,8 +27,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
   const displayName = isContactProfile ? props.contact.name : props.name;
 
   const displayPlan = isContactProfile ? "" : props.plan;
-  const logoFilename = props.contact.logo_filename;
-  const logo = props.contact.logo;
+  const logoFilename = props.contact?.logo_filename;
+  const logo = props.contact?.logo;
 
   const handleAddToFavorites = async () => {
     const newFavorite = !isFavorited;

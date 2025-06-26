@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@radix-ui/react-label";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
+import { getUserStatus, registerUser } from "@/services/usersService.ts";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -35,10 +36,7 @@ const Auth = () => {
         email,
         password,
         options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          },
+          data: { first_name: firstName, last_name: lastName },
         },
       });
 
@@ -53,10 +51,10 @@ const Auth = () => {
           title: "Sign up successful!",
           description: "Please check your email for verification.",
         });
-        navigate("/companies");
+
+        navigate("/familyoffices");
       }
     } catch (error) {
-      console.error("Error signing up:", error);
       toast({
         title: "An unexpected error occurred",
         description: "Please try again later.",
@@ -88,7 +86,15 @@ const Auth = () => {
           title: "Signed in successfully!",
           description: "Welcome back!",
         });
-        navigate("/companies");
+
+        const statusResponse = await getUserStatus();
+        const status = statusResponse?.status;
+
+        if (status && status !== "pending") {
+          navigate("/familyoffices");
+        } else {
+          navigate("/waiting-approval");
+        }
       }
     } catch (error) {
       console.error("Error signing in:", error);
@@ -111,7 +117,7 @@ const Auth = () => {
         provider,
         options: {
           scopes: "email",
-          redirectTo: window.location.origin + "/familyoffices",
+          redirectTo: window.location.origin + "/waiting-approval",
         },
       });
 

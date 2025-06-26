@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronRight, ChevronDown, Heart } from "lucide-react";
+import { ChevronRight, ChevronDown, Heart, Loader2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,6 +42,9 @@ import {
 import { isLocked } from "@/utils/routeAccess.ts";
 import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
+import { UserIcon } from "@/components/ui/icons/User.tsx";
+import { getUserStatus } from "@/services/usersService.ts";
+import { Loading } from "@/utils.tsx";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -70,6 +73,9 @@ const AppSidebar = () => {
   >([]);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
+  const { userPlan } = useAuth();
+
+  const isAdmin = userPlan === "admin";
 
   useEffect(() => {
     const loadData = async () => {
@@ -594,6 +600,27 @@ const AppSidebar = () => {
                 </CollapsibleContent>
               </Collapsible>
             </SidebarMenuItem>
+
+            <SidebarSeparator className="my-4 mx-1 bg-[#DFE4EA]" />
+
+            {isAdmin && (
+              <SidebarMenuItem key="users">
+                <button
+                  onClick={() => navigate("/users")}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
+                    isActive("/users")
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                      : "text-[#637381] hover:bg-gray-100"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <UserIcon />
+                    <span className="whitespace-nowrap">Users</span>
+                  </div>
+                </button>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarContent>
 

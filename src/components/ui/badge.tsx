@@ -15,12 +15,14 @@ const badgeVariants = cva(
           "border-transparent bg-[#007E601A] text-[#007E60] [a&]:hover:bg-primary/90",
         outline:
           "border-[#0145C7] bg-transparent text-[#0145C7] [a&]:hover:bg-primary/90",
+        error:
+          "border-transparent bg-[#FEF3F3] text-[#BC1C21] [a&]:hover:bg-primary/90",
       },
     },
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 export function Badge({

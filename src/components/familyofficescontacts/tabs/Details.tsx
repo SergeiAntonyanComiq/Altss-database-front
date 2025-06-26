@@ -11,6 +11,8 @@ import { LinkedinIcon } from "@/components/ui/icons";
 import { useContactDetails } from "@/hooks/useContactDetails.ts";
 import { ContactField } from "@/components/familyofficescontacts/tabs/components/ContactField.tsx";
 import { Link } from "react-router-dom";
+import LimitErrorModal from "@/components/modals/LimitedErrorModal.tsx";
+import { LimitErrorType } from "@/services/usersService.ts";
 
 export const Details = ({
   contact_id,
@@ -39,6 +41,8 @@ export const Details = ({
     showPhone,
     showPersonalEmail,
     showPersonalPhone,
+    limitErrorType,
+    setLimitErrorType,
     handleShowWorkDetails,
     handleShowPersonalDetails,
   } = useContactDetails(contact_id);
@@ -294,6 +298,11 @@ export const Details = ({
           </div>
         </div>
       </div>
+      <LimitErrorModal
+        open={!!limitErrorType}
+        onClose={() => setLimitErrorType(null)}
+        type={limitErrorType || null}
+      />
     </div>
   );
 };

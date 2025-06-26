@@ -120,8 +120,6 @@ export const Team = ({ id }: { id: string }) => {
     workEmailField,
   ];
 
-  console.log(Object.entries(groupedTeam));
-
   return (
     <>
       <div className="mb-6">
