@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   userStatus: string | null;
   userPlan: string | null;
+  userPlanExpirationDate: Date | null;
   userPlanType: "office_or_contact" | "expired" | null;
   signOut: () => Promise<void>;
 }
@@ -21,6 +22,7 @@ const AuthContext = createContext<AuthContextType>({
   userStatus: null,
   userPlan: null,
   userPlanType: null,
+  userPlanExpirationDate: null,
   signOut: async () => {},
 });
 
@@ -33,6 +35,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<Session | null>(null);
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
+  const [userPlanExpirationDate, setUserPlanExpirationDate] =
+    useState<Date | null>(null);
   const [userPlanType, setUserPlanType] = useState<
     "office_or_contact" | "expired" | null
   >(null);
@@ -84,6 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
           setUserStatus(statusRes?.status ?? null);
           setUserPlan(statusRes?.plan ?? null);
+          setUserPlanExpirationDate(statusRes?.expiration_date ?? null);
           setUserPlanType(statusRes?.type ?? null);
         }
       } catch (err) {
@@ -107,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           getUserStatus().then((statusRes) => {
             setUserStatus(statusRes?.status ?? null);
             setUserPlan(statusRes?.plan ?? null);
+            setUserPlanExpirationDate(statusRes?.expiration_date ?? null);
             setUserPlanType(statusRes?.type ?? null);
           });
         } else {
@@ -129,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         loading,
         userStatus,
         userPlan,
+        userPlanExpirationDate,
         userPlanType,
         signOut,
       }}

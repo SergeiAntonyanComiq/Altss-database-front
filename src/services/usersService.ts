@@ -10,6 +10,7 @@ export interface User {
   plan: UserPlan;
   status: UserStatus;
   sign_up_date: Date;
+  expiration_date: Date;
 }
 
 export enum LimitErrorType {

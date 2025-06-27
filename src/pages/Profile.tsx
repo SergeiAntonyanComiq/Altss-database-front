@@ -35,7 +35,8 @@ const Profile: React.FC = () => {
     newPassword: "",
     confirmPassword: "",
   };
-  const { user } = useAuth();
+  const { user, userPlan, userPlanExpirationDate } = useAuth();
+
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("details");
   const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +56,7 @@ const Profile: React.FC = () => {
         const { data, error } = await supabase
           .from("profiles")
           .select(
-            "first_name, last_name, website, company_name, plan, avatar_url",
+            "first_name, last_name, website, company_name, plan, avatar_url"
           )
           .eq("id", user.id)
           .single();
@@ -151,7 +152,7 @@ const Profile: React.FC = () => {
         .from("altss")
         .upload(filePath, file, {
           upsert: true,
-          contentType: file.type, // Explicitly set content type
+          contentType: file.type,
         });
 
       if (uploadError) {
@@ -331,7 +332,7 @@ const Profile: React.FC = () => {
           <section className="bg-[rgba(254,254,254,1)] shadow-[0px_1px_3px_rgba(166,175,195,0.4)] w-full rounded-lg px-6 pt-4 pb-4">
             <ProfileHeader
               name={`${formData.firstName} ${formData.secondName}`.trim()}
-              plan={formData.plan}
+              plan={userPlan}
             />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -368,7 +369,10 @@ const Profile: React.FC = () => {
                   />
                 </TabsContent>
                 <TabsContent value="billing" className="mt-0">
-                  <Billing plan={formData.plan} />
+                  <Billing
+                    plan={userPlan}
+                    expirationDate={userPlanExpirationDate}
+                  />
                 </TabsContent>
                 <TabsContent value="support" className="mt-0">
                   <Support />
