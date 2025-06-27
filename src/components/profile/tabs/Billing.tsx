@@ -18,7 +18,7 @@ export const Billing = ({
       label: "Plan",
       value: (
         <Badge variant={planVariantMap[plan]}>
-          {plan.charAt(0).toUpperCase() + plan.slice(1)}
+          {plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : "--"}
         </Badge>
       ),
     },
