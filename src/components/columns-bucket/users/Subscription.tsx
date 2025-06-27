@@ -7,15 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
-
-const planVariantMap: Record<UserPlan, "default" | "outline" | "error"> = {
-  paid: "default",
-  trial: "outline",
-  expired: "error",
-  admin: "default",
-};
-
-const planOptions: UserPlan[] = ["paid", "trial", "expired"];
+import { planOptions, planVariantMap } from "@/utils/users.ts";
 
 export const Subscription = (
   onChangePlan: (id: string, newPlan: UserPlan) => void

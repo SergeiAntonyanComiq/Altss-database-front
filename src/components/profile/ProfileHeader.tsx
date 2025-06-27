@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { ContactType } from "@/types/contact";
 import { FilledHeartIcon, OutlineHeartIcon } from "@/components/ui/icons";
 import { updateFavoritesData } from "@/services/savedFiltersService.ts";
+import { Badge } from "@/components/ui/badge.tsx";
+import { planVariantMap } from "@/utils/users.ts";
 
 interface ProfileHeaderUserProps {
   name: string;
@@ -77,9 +79,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
           </div>
 
           {!isContactProfile && displayPlan && (
-            <div className="bg-green-50 text-green-700 px-4 py-1 rounded-full text-sm font-medium border border-green-100">
-              {displayPlan}
-            </div>
+            <Badge variant={planVariantMap[displayPlan]}>
+              {displayPlan.charAt(0).toUpperCase() + displayPlan.slice(1)}
+            </Badge>
           )}
 
           {/*{isContactProfile && (*/}

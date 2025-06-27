@@ -3,6 +3,8 @@ import { FieldsRenderer } from "@/components/common";
 import { useAuth } from "@/contexts/AuthContext.tsx";
 import { UserPlan } from "@/services/usersService.ts";
 import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge.tsx";
+import { planVariantMap } from "@/utils/users.ts";
 
 export const Billing = ({
   plan,
@@ -12,7 +14,14 @@ export const Billing = ({
   expirationDate: Date;
 }) => {
   const mySubscriptionFields = [
-    { label: "Plan", value: plan },
+    {
+      label: "Plan",
+      value: (
+        <Badge variant={planVariantMap[plan]}>
+          {plan.charAt(0).toUpperCase() + plan.slice(1)}
+        </Badge>
+      ),
+    },
     ...(plan !== "admin"
       ? [
           {
