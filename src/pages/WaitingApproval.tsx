@@ -1,33 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client.ts";
 import { getUserStatus, registerUser } from "@/services/usersService.ts";
+import { useAuth0 } from "@auth0/auth0-react";
+import { Button } from "@/components/ui/button.tsx";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 
 const WaitingApproval = () => {
   const POLL_INTERVAL_MS = 8000;
+  const { user, getAccessTokenSilently } = useAuth0();
+  const { signOut } = useAuth();
 
-  const startPollingUserStatus = async () => {
+  useEffect(() => {
     let hasRegistered = false;
 
     const poll = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      const token = session?.access_token;
-      const user = session?.user;
-
-      if (!token || !user) return;
-
-      const fullName =
-        user.user_metadata.full_name ??
-        `${user.user_metadata.first_name ?? ""} ${
-          user.user_metadata.last_name ?? ""
-        }`.trim();
+      if (!user) return;
 
       try {
+        const token = await getAccessTokenSilently();
+        if (!token) return;
+
+        const fullName =
+          user.name ??
+          `${user.given_name ?? ""} ${user.family_name ?? ""}`.trim();
+
         const statusResponse = await getUserStatus();
         const status = statusResponse?.status;
 
@@ -41,7 +39,7 @@ const WaitingApproval = () => {
         }
 
         if (!hasRegistered) {
-          await registerUser(fullName, user.email);
+          await registerUser(fullName, user.email ?? "");
           hasRegistered = true;
         }
       } catch (err) {
@@ -49,16 +47,11 @@ const WaitingApproval = () => {
       }
     };
 
-    await poll();
-
     const intervalId = setInterval(poll, POLL_INTERVAL_MS);
-  };
+    poll();
 
-  useEffect(() => {
-    (async () => {
-      await startPollingUserStatus();
-    })();
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [user, getAccessTokenSilently]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#F6F6F7] px-4">
@@ -86,6 +79,9 @@ const WaitingApproval = () => {
           <div className="flex justify-center pt-4">
             <Loader2 className="animate-spin h-6 w-6 text-gray-400" />
           </div>
+          <Button className="mt-8 w-full" onClick={signOut}>
+            Log out
+          </Button>
         </CardContent>
       </Card>
     </div>

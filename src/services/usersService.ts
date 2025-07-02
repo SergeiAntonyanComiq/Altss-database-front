@@ -6,6 +6,11 @@ export type UserPlan = "admin" | "trial" | "paid" | "expired";
 export interface User {
   user_id: string;
   full_name: string;
+  first_name?: string;
+  last_name?: string;
+  website?: string;
+  avatar_url?: string;
+  company_name?: string;
   email: string;
   plan: UserPlan;
   status: UserStatus;
@@ -78,4 +83,41 @@ export const updateUserStatus = async (id: string, status: string) => {
   } catch (error) {
     throw new Error(error);
   }
+};
+
+export const getUserById = async (id: string): Promise<User> => {
+  try {
+    const response = await apiClient.get(`/users/${id}`);
+
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch user");
+  }
+};
+
+export const updateUser = async (id: string, payload: Partial<User>) => {
+  try {
+    const response = await apiClient.patch(`/users/${id}`, payload);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to update user");
+  }
+};
+
+export const uploadUserAvatar = async (
+  file: File,
+  userId: string
+): Promise<string> => {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await apiClient.patch(
+    `/users/avatar?targetUserId=${userId}`,
+    formData,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+
+  return response.data.avatarUrl;
 };

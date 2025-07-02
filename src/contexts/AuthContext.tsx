@@ -1,22 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { getUserStatus } from "@/services/usersService";
+import { useAuth0, User } from "@auth0/auth0-react";
 
 interface AuthContextType {
-  session: Session | null;
-  user: User | null;
+  user: User | undefined;
   loading: boolean;
   userStatus: string | null;
   userPlan: string | null;
   userPlanExpirationDate: Date | null;
   userPlanType: "office_or_contact" | "expired" | null;
-  signOut: () => Promise<void>;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  session: null,
   user: null,
   loading: true,
   userStatus: null,
@@ -31,8 +28,8 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const { user, logout, isLoading, isAuthenticated } = useAuth0();
+  const [loading, setLoading] = useState(false);
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [userPlanExpirationDate, setUserPlanExpirationDate] =
@@ -40,99 +37,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userPlanType, setUserPlanType] = useState<
     "office_or_contact" | "expired" | null
   >(null);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const signOut = async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        toast({
-          title: "Error signing out",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      localStorage.removeItem("userName");
-      localStorage.removeItem("avatarUrl");
-      setUser(null);
-      setSession(null);
-      setUserStatus(null);
-      toast({ title: "Signed out successfully" });
-    } catch (err) {
-      console.error("Error signing out:", err);
-    } finally {
-      setLoading(false);
-    }
+    await logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
   };
 
   useEffect(() => {
     let mounted = true;
 
-    const init = async () => {
+    const fetchStatus = async () => {
+      setLoading(true);
+
+      if (!user || !isAuthenticated) return;
+
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        const statusRes = await getUserStatus();
 
-        setSession(session);
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
-
-        if (currentUser) {
-          const statusRes = await getUserStatus();
-
+        if (mounted) {
           setUserStatus(statusRes?.status ?? null);
           setUserPlan(statusRes?.plan ?? null);
           setUserPlanExpirationDate(statusRes?.expiration_date ?? null);
           setUserPlanType(statusRes?.type ?? null);
         }
       } catch (err) {
-        console.error("AuthProvider init error:", err);
+        if (mounted) {
+          setUserStatus(null);
+        }
       } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
     };
 
-    init();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-
-        if (session?.user) {
-          getUserStatus().then((statusRes) => {
-            setUserStatus(statusRes?.status ?? null);
-            setUserPlan(statusRes?.plan ?? null);
-            setUserPlanExpirationDate(statusRes?.expiration_date ?? null);
-            setUserPlanType(statusRes?.type ?? null);
-          });
-        } else {
-          setUserStatus(null);
-        }
-      }
-    });
+    (async () => {
+      await fetchStatus();
+    })();
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
     };
-  }, []);
+  }, [user, isAuthenticated]);
 
   return (
     <AuthContext.Provider
       value={{
-        session,
         user,
-        loading,
+        loading: isLoading || loading,
         userStatus,
         userPlan,
         userPlanExpirationDate,
