@@ -2,8 +2,7 @@ import React, { useRef, useState } from "react";
 
 interface AccountInfoProps {
   formData: {
-    firstName: string;
-    secondName: string;
+    full_name: string;
     email: string;
     website: string;
     companyName: string;
@@ -51,27 +50,13 @@ const AccountInfo: React.FC<AccountInfoProps> = ({
           <div className="min-w-60 pt-2 max-md:max-w-full">
             <div className="flex min-h-[38px] items-center gap-8 max-md:max-w-full">
               <label className="font-medium leading-none self-stretch w-[180px] my-auto">
-                First Name
+                Full Name
               </label>
               <div className="self-stretch min-w-60 font-normal whitespace-nowrap w-[250px] my-auto">
                 <input
                   className="bg-white border flex min-h-[38px] w-full items-center text-[#111928] gap-2.5 pl-5 pr-4 py-[7px] rounded-md border-[rgba(223,228,234,1)] border-solid"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={onChange}
-                />
-              </div>
-            </div>
-
-            <div className="flex min-h-[38px] items-center gap-8 mt-6 max-md:max-w-full">
-              <label className="font-medium leading-none self-stretch w-[180px] my-auto">
-                Second Name
-              </label>
-              <div className="self-stretch min-w-60 font-normal whitespace-nowrap w-[250px] my-auto">
-                <input
-                  className="bg-white border flex min-h-[38px] w-full items-center text-[#111928] gap-2.5 pl-5 pr-4 py-[7px] rounded-md border-[rgba(223,228,234,1)] border-solid"
-                  name="secondName"
-                  value={formData.secondName}
+                  name="full_name"
+                  value={formData.full_name}
                   onChange={onChange}
                 />
               </div>

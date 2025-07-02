@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { ChevronRight, ChevronDown, Heart, Loader2 } from "lucide-react";
+import { ChevronRight, ChevronDown, Heart } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Lock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,8 +42,7 @@ import { isLocked } from "@/utils/routeAccess.ts";
 import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 import { UserIcon } from "@/components/ui/icons/User.tsx";
-import { getUserStatus } from "@/services/usersService.ts";
-import { Loading } from "@/utils.tsx";
+import { getUserById } from "@/services/usersService.ts";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -143,29 +141,21 @@ const AppSidebar = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!user) return;
+      if (!user?.sub) return;
 
       try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("first_name, last_name, avatar_url")
-          .eq("id", user.id)
-          .single();
-
-        if (error) {
-          return;
-        }
+        const data = await getUserById(user.sub);
 
         if (data) {
-          const name = `${data.first_name || ""} ${
-            data.last_name || ""
-          }`.trim();
-          if (name) localStorage.setItem("userName", name);
-          if (data.avatar_url)
+          if (data.full_name) {
+            localStorage.setItem("userName", data.full_name);
+          }
+          if (data.avatar_url) {
             localStorage.setItem("avatarUrl", data.avatar_url);
+          }
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching user profile:", error);
       }
     };
 
@@ -185,7 +175,7 @@ const AppSidebar = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate("/auth");
+      navigate("/");
       toast({
         title: "Logged out successfully",
       });

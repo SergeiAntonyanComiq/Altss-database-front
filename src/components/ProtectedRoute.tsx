@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth0 } from "@auth0/auth0-react";
 import { getUserStatus } from "@/services/usersService";
 import { Loader2 } from "lucide-react";
+import { Loading } from "@/utils.tsx";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading, userPlan } = useAuth();
+  const { isAuthenticated, isLoading, user, loginWithRedirect } = useAuth0();
   const location = useLocation();
   const [statusChecked, setStatusChecked] = useState(false);
   const [isPending, setIsPending] = useState(false);
@@ -30,37 +31,30 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           setStatusChecked(true);
         }
       } else {
-        setStatusChecked(true); // user is null, done
+        setStatusChecked(true);
       }
     };
 
-    (async () => {
-      await checkStatus();
-    })();
+    checkStatus();
   }, [user]);
 
-  if (loading || !statusChecked) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-lg">Loading...</span>
-      </div>
-    );
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      loginWithRedirect({
+        appState: { returnTo: window.location.pathname },
+      });
+    }
+  }, [isLoading, isAuthenticated, loginWithRedirect, location.pathname]);
+
+  if (isLoading || !statusChecked) {
+    return <Loading show={true} />;
   }
 
-  if (!user && !isAuthPage) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-
-  if (user && isAuthPage) {
-    return <Navigate to="/familyoffices" replace />;
-  }
-
-  if (user && isPending && location.pathname !== "/waiting-approval") {
+  if (isPending && location.pathname !== "/waiting-approval") {
     return <Navigate to="/waiting-approval" replace />;
   }
 
-  if (location.pathname === "/users" && userPlan && userPlan !== "admin") {
+  if (isAuthenticated && isAuthPage) {
     return <Navigate to="/familyoffices" replace />;
   }
 

@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/AppSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import ProfileHeader from "@/components/profile/ProfileHeader";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs } from "@radix-ui/react-tabs";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
 import { Details, Billing, Support } from "@/components/profile";
+import {
+  getUserById,
+  updateUser,
+  uploadUserAvatar,
+} from "@/services/usersService.ts";
+import apiClient from "@/lib/axios.ts";
 
 export interface ProfileFormValues {
-  firstName: string;
-  secondName: string;
+  full_name: string;
   email: string;
   website: string;
   companyName: string;
@@ -23,18 +27,20 @@ export interface ProfileFormValues {
 }
 
 const Profile: React.FC = () => {
-  const defaultValues = {
-    firstName: "",
-    secondName: "",
-    email: "",
-    website: "",
-    companyName: "",
-    plan: "Free",
-    avatar_url: "",
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  };
+  const defaultValues = useMemo(
+    () => ({
+      full_name: "",
+      email: "",
+      website: "",
+      companyName: "",
+      plan: "Free",
+      avatar_url: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    }),
+    []
+  );
   const { user, userPlan, userPlanExpirationDate } = useAuth();
 
   const { toast } = useToast();
@@ -53,40 +59,31 @@ const Profile: React.FC = () => {
 
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select(
-            "first_name, last_name, website, company_name, plan, avatar_url"
-          )
-          .eq("id", user.id)
-          .single();
-
-        if (error) {
-          return new Error(error.message);
-        }
+        const data = await getUserById(user.sub);
 
         const loadedData = {
-          firstName: data?.first_name || "",
-          secondName: data?.last_name || "",
+          full_name: data.full_name || "",
           email: user.email || "",
-          website: data?.website || "", // Load from DB
-          companyName: data?.company_name || "", // Load from DB
-          plan: data?.plan || "Free", // Load plan or default to Free
-          avatar_url: data?.avatar_url || "", // Load avatar_url
+          website: data?.website || "",
+          companyName: data?.company_name || "",
+          plan: data?.plan || "Free",
+          avatar_url: data?.avatar_url || "",
           currentPassword: "",
           newPassword: "",
           confirmPassword: "",
         };
 
+        console.log(loadedData);
+
         setFormData(loadedData);
-        setInitialFormData(loadedData); // Set initial state for Undo
+        setInitialFormData(loadedData);
       } catch (error) {
         toast({
           title: "Error",
           description: `Failed to load profile: ${error.message}`,
           variant: "destructive",
         });
-        // Set default/empty state on error
+
         const defaultData: ProfileFormValues = {
           ...defaultValues,
           email: user.email || "",
@@ -102,10 +99,11 @@ const Profile: React.FC = () => {
     (async () => {
       await fetchProfile();
     })();
-  }, [user, toast]);
+  }, [user, toast, defaultValues]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -113,14 +111,12 @@ const Profile: React.FC = () => {
   };
 
   const handleAvatarUpload = async (file: File) => {
-    if (!user) return;
-    if (!file) return;
+    if (!user || !file) return;
 
     setIsLoading(true);
 
-    // Check file type and size
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
 
     if (!allowedTypes.includes(file.type)) {
       toast({
@@ -142,47 +138,21 @@ const Profile: React.FC = () => {
       return;
     }
 
-    const fileExt = file.name.split(".").pop() || "png";
-    const timestamp = new Date().getTime();
-    const fileName = `avatar_${timestamp}.${fileExt}`;
-    const filePath = `${user.id}/${fileName}`;
-
     try {
-      const { error: uploadError } = await supabase.storage
-        .from("altss")
-        .upload(filePath, file, {
-          upsert: true,
-          contentType: file.type,
-        });
+      const avatarUrl = await uploadUserAvatar(file, user.sub);
 
-      if (uploadError) {
-        return new Error(`Upload failed: ${uploadError.message}`);
-      }
-
-      const { data: urlData } = supabase.storage
-        .from("altss")
-        .getPublicUrl(filePath);
-
-      const publicUrl = urlData?.publicUrl;
-      if (!publicUrl) {
-        return new Error("Failed to get public URL for avatar.");
-      }
-
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-        .eq("id", user.id);
-
-      if (updateError) {
-        return new Error(`Profile update failed: ${updateError.message}`);
-      }
-
-      const newData = { ...formData, avatar_url: publicUrl };
+      const newData = {
+        ...formData,
+        avatar_url: avatarUrl,
+        updatedAt: Date.now(),
+      };
       setFormData(newData);
       setInitialFormData(newData);
 
+      await updateUser(user.sub, { avatar_url: avatarUrl });
+
       toast({
-        title: "Avatar Updated",
+        title: "Avatar Uploaded",
         description: "Your profile picture has been updated.",
       });
     } catch (error) {
@@ -192,6 +162,11 @@ const Profile: React.FC = () => {
           error.message || "Failed to upload avatar. Please try again.",
         variant: "destructive",
       });
+
+      setFormData((prevState) => ({
+        ...prevState,
+        avatar_url: initialFormData.avatar_url,
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -201,8 +176,7 @@ const Profile: React.FC = () => {
     if (!user) return;
 
     const profileDataChanged =
-      formData.firstName !== initialFormData.firstName ||
-      formData.secondName !== initialFormData.secondName ||
+      formData.full_name !== initialFormData.full_name ||
       formData.website !== initialFormData.website ||
       formData.companyName !== initialFormData.companyName;
 
@@ -210,21 +184,13 @@ const Profile: React.FC = () => {
       setIsLoading(true);
       try {
         const profileUpdateData = {
-          first_name: formData.firstName,
-          last_name: formData.secondName,
+          full_name: formData.full_name,
           website: formData.website,
-          company_name: formData.companyName,
+          company: formData.companyName,
           updated_at: new Date().toISOString(),
         };
 
-        const { error } = await supabase
-          .from("profiles")
-          .update(profileUpdateData)
-          .eq("id", user.id);
-
-        if (error) {
-          return new Error("throw");
-        }
+        await updateUser(user.sub, profileUpdateData);
 
         setInitialFormData(formData);
         toast({
@@ -232,7 +198,6 @@ const Profile: React.FC = () => {
           description: "Profile updated successfully.",
         });
       } catch (error) {
-        console.error("Error updating profile:", error);
         toast({
           title: "Error",
           description: `Failed to update profile: ${error.message}`,
@@ -247,21 +212,20 @@ const Profile: React.FC = () => {
       formData.newPassword &&
       formData.newPassword === formData.confirmPassword
     ) {
-      setIsLoading(true); // Indicate loading for password change too
+      setIsLoading(true);
       try {
-        const { error: pwError } = await supabase.auth.updateUser({
-          password: formData.newPassword,
+        await apiClient.patch("/auth/change-password", {
+          userId: user.sub,
+          email: user.email,
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
         });
-
-        if (pwError) {
-          return new Error(pwError.message);
-        }
 
         toast({
           title: "Password Changed",
           description: "Your password has been updated successfully.",
         });
-        // Reset password fields only on successful change
+
         setFormData((prev) => ({
           ...prev,
           currentPassword: "",
@@ -275,7 +239,6 @@ const Profile: React.FC = () => {
           confirmPassword: "",
         }));
       } catch (pwError) {
-        console.error("Error changing password:", pwError);
         toast({
           title: "Password Change Error",
           description: `Failed to change password: ${pwError.message}`,
@@ -297,7 +260,7 @@ const Profile: React.FC = () => {
       }
     }
 
-    if (!profileDataChanged) {
+    if (!profileDataChanged && !formData.newPassword) {
       setIsLoading(false);
     }
   };
@@ -330,10 +293,7 @@ const Profile: React.FC = () => {
 
         <div className="flex-1 bg-gray-100 overflow-auto p-8">
           <section className="bg-[rgba(254,254,254,1)] shadow-[0px_1px_3px_rgba(166,175,195,0.4)] w-full rounded-lg px-6 pt-4 pb-4">
-            <ProfileHeader
-              name={`${formData.firstName} ${formData.secondName}`.trim()}
-              plan={userPlan}
-            />
+            <ProfileHeader name={formData.full_name} plan={userPlan} />
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="px-4 flex gap-6 border-b border-[#DFE4EA]">
@@ -379,7 +339,6 @@ const Profile: React.FC = () => {
                 </TabsContent>
               </div>
             </Tabs>
-            {/*<ProfileTabs activeTab={activeTab} onTabChange={handleTabChange} />*/}
           </section>
         </div>
       </div>

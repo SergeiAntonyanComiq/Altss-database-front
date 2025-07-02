@@ -17,8 +17,8 @@ export interface ContactType {
   country_territory: string;
   zip_code: string;
   linkedin: string;
-  twitter?: string; // Added twitter property as optional
-  sec_registration?: string; // Added sec_registration property as optional
+  twitter?: string;
+  sec_registration?: string;
   favorite?: boolean;
   logo_filename?: string;
   logo?: string;

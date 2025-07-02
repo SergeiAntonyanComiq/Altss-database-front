@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button.tsx";
-import { supabase } from "@/integrations/supabase/client.ts";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const messages = {
   expired: {
@@ -37,10 +37,15 @@ type Props = {
 const TrialBlockedScreen = ({ type }: Props) => {
   const navigate = useNavigate();
   const content = messages[type];
+  const { logout } = useAuth0();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth", { replace: true });
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
+    navigate("/familyoffices", { replace: true });
   };
 
   return (
