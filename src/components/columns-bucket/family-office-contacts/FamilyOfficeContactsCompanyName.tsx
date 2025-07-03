@@ -30,7 +30,7 @@ export const FamilyOfficeContactsCompanyName: ColumnDef<
         {name}
       </Link>
     ) : (
-      <span className="text-gray-400 italic">No company</span>
+      <span className="text-gray-400 italic">{name ?? "No company"}</span>
     );
   },
 };
