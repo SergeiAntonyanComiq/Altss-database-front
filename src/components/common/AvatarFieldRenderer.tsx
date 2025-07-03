@@ -28,7 +28,7 @@ export const AvatarBadgeDialogList = ({
   modalHeader = "Team Members",
 }: AvatarBadgeDialogListProps) => {
   const [open, setOpen] = useState(false);
-  const previewItems = items.slice(0, 4);
+  const previewItems = items.slice(0, 3);
 
   const renderItem = (item: AvatarItem, idx: number) => (
     <div
@@ -63,13 +63,13 @@ export const AvatarBadgeDialogList = ({
           <Fragment key={idx}>{renderItem(item, idx)}</Fragment>
         ))}
 
-        {items.length > 4 && (
+        {items.length > 3 && (
           <Badge
             variant={variant}
             className="cursor-pointer px-2 py-1"
             onClick={() => setOpen(true)}
           >
-            +{items.length - 4}
+            +{items.length - 3}
           </Badge>
         )}
       </div>
@@ -81,7 +81,7 @@ export const AvatarBadgeDialogList = ({
             <div className="w-[90px] border-2 rounded-[2px] border-[#2665F0] mx-auto mt-2" />
           </DialogHeader>
 
-          <div className="flex flex-col gap-3 mt-4">
+          <div className="flex flex-col gap-3 py-6 mt-4 max-h-[400px] overflow-y-auto">
             {items.map((item, idx) => (
               <Fragment key={idx}>{renderItem(item, idx)}</Fragment>
             ))}

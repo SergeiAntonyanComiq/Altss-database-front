@@ -19,8 +19,6 @@ export const FamilyOfficeContactsCompanyName: ColumnDef<
     const name = row.getValue("family_office") as string;
     const id = row.original.company_id;
 
-    console.log(id);
-
     return id ? (
       <Link
         to={`/familyoffices/${id}?from=${encodeURIComponent(
