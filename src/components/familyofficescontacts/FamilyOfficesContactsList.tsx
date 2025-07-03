@@ -176,7 +176,7 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
         <TableToolbar
           filter={filter.length > 0 ? filter : filterText}
           onClear={handleClear}
-          searchPlaceholder="Search the Family Office"
+          searchPlaceholder="Search the Family Office Contact"
           isAddToFavoriteDisabled={!selectedIds.length}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

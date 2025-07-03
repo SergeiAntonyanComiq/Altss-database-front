@@ -17,8 +17,9 @@ export const FamilyOfficeContactsCompanyName: ColumnDef<
   },
   cell: ({ row }) => {
     const name = row.getValue("family_office") as string;
-    const fallbackCompanyId = row.original.experience_data?.[0]?.company_id;
-    const id = row.original.company_id || fallbackCompanyId;
+    const id = row.original.company_id;
+
+    console.log(id);
 
     return id ? (
       <Link

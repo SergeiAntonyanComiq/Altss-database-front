@@ -211,7 +211,6 @@ const FamilyOfficesList = ({
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={onItemsPerPageChange}
           onPageChange={onPageChange}
-          totalItems={totalItems}
           totalPages={totalPages}
         />
       </div>

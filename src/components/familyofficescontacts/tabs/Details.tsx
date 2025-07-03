@@ -51,6 +51,8 @@ export const Details = ({
     !!location_country ||
     (!!location_regions && location_regions.length > 0);
 
+  const officeId = company_id ?? experience_data?.[0]?.company_id;
+
   const detailsFields = useMemo(
     () => [
       { label: "Area of responsibility", value: title },
@@ -67,14 +69,16 @@ export const Details = ({
         : []),
       {
         label: "Current Company",
-        value: (
+        value: officeId ? (
           <Link
-            to={`/familyoffices/${
-              company_id ?? experience_data?.[0]?.company_id
-            }?from=${encodeURIComponent(window.location.pathname)}`}
+            to={`/familyoffices/${officeId}?from=${encodeURIComponent(
+              window.location.pathname
+            )}`}
           >
             {other_fields.family_office ?? experience_data?.[0]?.company_name}
           </Link>
+        ) : (
+          other_fields.family_office ?? experience_data?.[0]?.company_name
         ),
       },
       { label: "Position title", value: title },
