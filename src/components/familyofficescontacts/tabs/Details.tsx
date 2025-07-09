@@ -12,6 +12,7 @@ import { useContactDetails } from "@/hooks/useContactDetails.ts";
 import { ContactField } from "@/components/familyofficescontacts/tabs/components/ContactField.tsx";
 import { Link } from "react-router-dom";
 import LimitErrorModal from "@/components/modals/LimitedErrorModal.tsx";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 
 export const Details = ({
   contact_id,
@@ -45,6 +46,8 @@ export const Details = ({
     handleShowWorkDetails,
     handleShowPersonalDetails,
   } = useContactDetails(contact_id);
+
+  const { userPlan } = useAuth();
 
   const hasLocation =
     !!location_raw_address ||
@@ -302,6 +305,7 @@ export const Details = ({
         </div>
       </div>
       <LimitErrorModal
+        userPlan={userPlan}
         open={!!limitErrorType}
         onClose={() => setLimitErrorType(null)}
         type={limitErrorType || null}

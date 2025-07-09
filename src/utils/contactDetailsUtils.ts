@@ -21,11 +21,7 @@ export const enrichWorkDetails = async (
       }
     }
   } catch (error) {
-    if (error.response?.status === 455) {
-      onLimitError?.(error.response?.data.type);
-    } else {
-      throw new Error(error);
-    }
+    onLimitError?.(error.response?.data.type);
   }
 };
 

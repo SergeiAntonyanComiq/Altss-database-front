@@ -10,5 +10,5 @@ export const DealDate: ColumnDef<Deals> = {
     cellClassName:
       "font-medium text-[#1F2A37] truncate overflow-hidden whitespace-nowrap text-center",
   },
-  header: "Investments & Deals",
+  header: "Date",
 };

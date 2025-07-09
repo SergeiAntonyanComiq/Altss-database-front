@@ -50,6 +50,7 @@ export const useContactDetails = (contact_id: string) => {
         type === "personalEmail" ? "email" : "phone",
         (type) => setLimitErrorType(type)
       );
+
       setShow((prev) => ({ ...prev, [type]: true }));
       setLoading((prev) => ({ ...prev, [type]: false }));
     },

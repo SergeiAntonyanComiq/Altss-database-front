@@ -5,10 +5,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { LimitErrorType } from "@/services/usersService.ts";
+import { LimitErrorType, UserPlan } from "@/services/usersService.ts";
 
 interface LimitErrorModalProps {
   open: boolean;
+  userPlan: UserPlan;
   onClose: () => void;
   type: LimitErrorType;
 }
@@ -39,14 +40,27 @@ const limitMessageMap: Record<
   },
 };
 
-const LimitErrorModal = ({ open, onClose, type }: LimitErrorModalProps) => {
+const LimitErrorModal = ({
+  open,
+  onClose,
+  type,
+  userPlan,
+}: LimitErrorModalProps) => {
   const fallbackMessage = {
     title: "Limit reached",
     description:
       "You’ve reached a data access limit. Please contact your account executive for more details.",
   };
 
-  const { title, description } = limitMessageMap[type] ?? fallbackMessage;
+  const fallbackMessageForTrialUser = {
+    title: "Feature unavailable",
+    description:
+      "This feature is available only on the paid version. Please upgrade your plan to access it.",
+  };
+
+  const { title, description } =
+    limitMessageMap[type] ??
+    (userPlan === "trial" ? fallbackMessageForTrialUser : fallbackMessage);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
