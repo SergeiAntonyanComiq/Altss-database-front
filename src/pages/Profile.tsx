@@ -73,8 +73,6 @@ const Profile: React.FC = () => {
           confirmPassword: "",
         };
 
-        console.log(loadedData);
-
         setFormData(loadedData);
         setInitialFormData(loadedData);
       } catch (error) {

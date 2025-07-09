@@ -50,7 +50,6 @@ const AppSidebar = () => {
   const { user, signOut } = useAuth();
   const { state } = useSidebar();
   const { toast } = useToast();
-  const avatarUrl = localStorage.getItem("avatarUrl");
   const userName = localStorage.getItem("userName");
   const [favoriteFamilyOfficesContacts, setFavoriteFamilyOfficesContacts] =
     useState<FavoriteContactType[]>([]);
@@ -71,6 +70,7 @@ const AppSidebar = () => {
   >([]);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const { userPlan } = useAuth();
 
   const isAdmin = userPlan === "admin";
@@ -151,7 +151,7 @@ const AppSidebar = () => {
             localStorage.setItem("userName", data.full_name);
           }
           if (data.avatar_url) {
-            localStorage.setItem("avatarUrl", data.avatar_url);
+            setAvatarUrl(data?.avatar_url ?? "");
           }
         }
       } catch (error) {
@@ -621,7 +621,7 @@ const AppSidebar = () => {
                 <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors">
                   <Avatar>
                     <AvatarImage
-                      src={avatarUrl || ""}
+                      src={avatarUrl || "/profile.png"}
                       alt="User Profile"
                       className="rounded-full object-cover"
                     />

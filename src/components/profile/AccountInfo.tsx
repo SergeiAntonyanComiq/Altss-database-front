@@ -136,10 +136,7 @@ const AccountInfo: React.FC<AccountInfoProps> = ({
           onMouseLeave={() => setIsHovering(false)}
         >
           <img
-            src={
-              avatarUrl ||
-              "https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/446c16c3e646ab75dd4138e42502eb4358eb6fbe?placeholderIfAbsent=true"
-            }
+            src={avatarUrl || "/profile.png"}
             alt="Profile Avatar"
             className="w-full h-full cursor-pointer object-cover rounded-lg transition-opacity"
             style={{ opacity: isHovering ? 0.7 : 1 }}

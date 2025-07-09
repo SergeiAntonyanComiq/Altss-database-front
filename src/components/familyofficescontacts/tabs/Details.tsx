@@ -125,7 +125,10 @@ export const Details = ({
         isLoading: isEmailsLoading,
         show: showEmail,
         value: workEmails,
-        fallback: "We couldn’t find a work email for this contact.",
+        fallback:
+          userPlan === "trial"
+            ? "This feature is available only on the paid version. Please upgrade your plan to access it."
+            : "We couldn’t find a work email for this contact.",
         onReveal: () => handleShowWorkDetails("email"),
       }),
       ContactField({
@@ -140,7 +143,10 @@ export const Details = ({
         isLoading: isPhoneLoading,
         show: showPhone,
         value: workPhones,
-        fallback: "We couldn’t find a phone number for this contact.",
+        fallback:
+          userPlan === "trial"
+            ? "This feature is available only on the paid version. Please upgrade your plan to access it."
+            : "We couldn’t find a phone number for this contact.",
         onReveal: () => handleShowWorkDetails("phone"),
       }),
       ContactField({
@@ -161,7 +167,10 @@ export const Details = ({
         isLoading: isPersonalEmailLoading,
         show: showPersonalEmail,
         value: personalEmail,
-        fallback: "We couldn’t find a personal email for this contact.",
+        fallback:
+          userPlan === "trial"
+            ? "This feature is available only on the paid version. Please upgrade your plan to access it."
+            : "We couldn’t find a personal email for this contact.",
         onReveal: () => handleShowPersonalDetails("personalEmail"),
       }),
       ContactField({
@@ -182,7 +191,10 @@ export const Details = ({
         ),
         show: showPersonalPhone,
         value: personalPhone,
-        fallback: "We couldn’t find a personal phone number for this contact.",
+        fallback:
+          userPlan === "trial"
+            ? "This feature is available only on the paid version. Please upgrade your plan to access it."
+            : "We couldn’t find a personal phone number for this contact.",
         onReveal: () => handleShowPersonalDetails("personalPhone"),
       }),
     ],
@@ -305,8 +317,7 @@ export const Details = ({
         </div>
       </div>
       <LimitErrorModal
-        userPlan={userPlan}
-        open={!!limitErrorType}
+        open={!!limitErrorType && userPlan !== "trial"}
         onClose={() => setLimitErrorType(null)}
         type={limitErrorType || null}
       />

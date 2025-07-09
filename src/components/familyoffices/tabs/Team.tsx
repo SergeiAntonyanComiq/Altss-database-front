@@ -10,12 +10,14 @@ import { useContactDetails } from "@/hooks/useContactDetails.ts";
 import { ContactField } from "@/components/familyofficescontacts/tabs/components/ContactField.tsx";
 import { AvatarBadgeDialogList } from "@/components/common/AvatarFieldRenderer.tsx";
 import { getInitials } from "@/lib/utils.ts";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 
 export const Team = ({ id }: { id: string }) => {
   const [groupedTeam, setGroupedTeam] = useState<GroupedTeam | null>(null);
   const [primaryContact, setPrimaryContact] = useState<PrimaryContact | null>(
     null
   );
+  const { userPlan } = useAuth();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -47,40 +49,24 @@ export const Team = ({ id }: { id: string }) => {
   if (!primaryContact || !groupedTeam)
     return <EmptyDetailsPage pageName="Team" />;
 
-  const workEmailField =
-    primaryContact.work_emails && primaryContact.work_emails.length > 0
-      ? {
-          label: "Work Emails",
-          value: primaryContact.work_emails[0],
-          icon: (
-            <a
-              href={`mailto:${primaryContact.work_emails[0]}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
-                alt="Email"
-                className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
-              />
-            </a>
-          ),
-        }
-      : ContactField({
-          label: "Work Emails",
-          icon: (
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
-              alt="Email"
-              className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
-            />
-          ),
-          isLoading: isEmailsLoading,
-          show: showEmail,
-          value: workEmails,
-          fallback: "We couldn’t find a work email for this contact.",
-          onReveal: () => handleShowWorkDetails("email"),
-        });
+  const workEmailField = ContactField({
+    label: "Work Emails",
+    icon: (
+      <img
+        src="https://cdn.builder.io/api/v1/image/assets/ce56428a1de541c0a66cfb597c694052/f13c2f94dec5b3082859425931633350f34b7a54"
+        alt="Email"
+        className="w-4 h-4 opacity-[.75] hover:opacity-100 transition-opacity"
+      />
+    ),
+    isLoading: isEmailsLoading,
+    show: showEmail,
+    value: workEmails,
+    fallback:
+      userPlan === "trial"
+        ? "This feature is available only on the paid version. Please upgrade your plan to access it."
+        : "We couldn’t find a work email for this contact.",
+    onReveal: () => handleShowWorkDetails("email"),
+  });
 
   const areaOfResponsibility = Object.keys(groupedTeam).find((group) =>
     groupedTeam[group]?.some((m) => m.contact_id === primaryContact.contact_id)
@@ -89,6 +75,7 @@ export const Team = ({ id }: { id: string }) => {
   const teamFields = [
     {
       label: "Full Name",
+      isBadge: false,
       value: (
         <a
           href={`/familyofficescontactsprofile/${primaryContact.contact_id}`}
@@ -141,7 +128,7 @@ export const Team = ({ id }: { id: string }) => {
                   key={f.label}
                   value={f.value}
                   modalHeader={f.label}
-                  isBadge={f.label === "Area of responsibility"}
+                  isBadge={f.label === "Area of responsibility" || f.isBadge}
                 />
               ))}
           </div>
