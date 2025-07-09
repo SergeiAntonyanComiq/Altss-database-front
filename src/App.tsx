@@ -28,6 +28,7 @@ import Users from "@/pages/Users.tsx";
 import { RequireAuth } from "@/components/RequireAuth.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setAuth0 } from "@/auth/auth0Client.ts";
+import { Loading } from "@/utils.tsx";
 
 const queryClient = new QueryClient();
 
@@ -89,7 +90,7 @@ const AppContent = () => {
         path="/familyofficescontacts/:id"
         element={
           <ProtectedRoute>
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <React.Suspense fallback={<Loading />}>
               <FamilyOfficeProfile />
             </React.Suspense>
           </ProtectedRoute>

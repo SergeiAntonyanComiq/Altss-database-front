@@ -9,7 +9,7 @@ import { LimitErrorType, UserPlan } from "@/services/usersService.ts";
 
 interface LimitErrorModalProps {
   open: boolean;
-  userPlan: UserPlan;
+  userPlan: string;
   onClose: () => void;
   type: LimitErrorType;
 }
