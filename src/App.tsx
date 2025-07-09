@@ -108,7 +108,7 @@ const AppContent = () => {
         path="/familyoffices/:id"
         element={
           <ProtectedRoute>
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <React.Suspense fallback={<Loading />}>
               <FamilyOfficeProfile />
             </React.Suspense>
           </ProtectedRoute>
