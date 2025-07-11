@@ -16,7 +16,12 @@ export const InvestmentFocus = ({ id }: { id: string }) => {
       try {
         const data = await fetchInvestmentFocus(id);
 
-        setFocus(data);
+        const hasAnyData = Object.values(data).some((value) => {
+          if (Array.isArray(value)) return value?.length > 0;
+          return value !== null && value !== undefined;
+        });
+
+        setFocus(hasAnyData ? data : null);
       } catch (error) {
         console.error(error);
       } finally {
@@ -35,9 +40,21 @@ export const InvestmentFocus = ({ id }: { id: string }) => {
 
   const investmentFields = [
     { label: "Company type", value: focus?.company_type },
-    { label: "Geo Focus", value: focus?.regional_focus },
-    { label: "Technology & Vertical", value: focus?.technological_focus },
-    { label: "Industries", value: focus?.industry_focus },
+    {
+      label: "Geo Focus",
+      value: focus?.regional_focus?.length > 0 ? focus?.regional_focus : null,
+    },
+    {
+      label: "Technology & Vertical",
+      value:
+        focus?.technological_focus?.length > 0
+          ? focus?.technological_focus
+          : null,
+    },
+    {
+      label: "Industries",
+      value: focus?.industry_focus?.length > 0 ? focus?.industry_focus : null,
+    },
   ];
 
   return (

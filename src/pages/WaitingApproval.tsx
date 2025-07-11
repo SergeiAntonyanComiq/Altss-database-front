@@ -5,12 +5,10 @@ import { Loader2 } from "lucide-react";
 import { getUserStatus, registerUser } from "@/services/usersService.ts";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@/components/ui/button.tsx";
-import { useAuth } from "@/contexts/AuthContext.tsx";
 
 const WaitingApproval = () => {
   const POLL_INTERVAL_MS = 8000;
-  const { user, getAccessTokenSilently } = useAuth0();
-  const { signOut } = useAuth();
+  const { user, getAccessTokenSilently, logout } = useAuth0();
 
   useEffect(() => {
     let hasRegistered = false;
@@ -79,7 +77,12 @@ const WaitingApproval = () => {
           <div className="flex justify-center pt-4">
             <Loader2 className="animate-spin h-6 w-6 text-gray-400" />
           </div>
-          <Button className="mt-8 w-full" onClick={signOut}>
+          <Button
+            className="mt-8 w-full"
+            onClick={() =>
+              logout({ logoutParams: { returnTo: window.location.origin } })
+            }
+          >
             Log out
           </Button>
         </CardContent>

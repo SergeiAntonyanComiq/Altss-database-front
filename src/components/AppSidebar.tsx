@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight, ChevronDown, Heart } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,15 +42,15 @@ import { isLocked } from "@/utils/routeAccess.ts";
 import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 import { UserIcon } from "@/components/ui/icons/User.tsx";
-import { getUserById } from "@/services/usersService.ts";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, userPlan, userData } = useAuth();
+  const { logout } = useAuth0();
   const { state } = useSidebar();
   const { toast } = useToast();
-  const userName = localStorage.getItem("userName");
   const [favoriteFamilyOfficesContacts, setFavoriteFamilyOfficesContacts] =
     useState<FavoriteContactType[]>([]);
   const [favoriteFamilyOffices, setFavoriteFamilyOffices] = useState<
@@ -71,9 +71,21 @@ const AppSidebar = () => {
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
-  const { userPlan } = useAuth();
+  const [userName, setUserName] = useState<string>("");
+
+  const userAvatarUrl = useMemo(
+    () => userData?.avatar_url,
+    [userData?.avatar_url]
+  );
+  const userFullName = useMemo(
+    () => userData?.full_name,
+    [userData?.full_name]
+  );
+  const userEmail = useMemo(() => userData?.email, [userData?.email]);
 
   const isAdmin = userPlan === "admin";
+
+  const profileLoadedRef = useRef(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -141,19 +153,10 @@ const AppSidebar = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!user?.sub) return;
-
       try {
-        const data = await getUserById(user.sub);
-
-        if (data) {
-          if (data.full_name) {
-            localStorage.setItem("userName", data.full_name);
-          }
-          if (data.avatar_url) {
-            setAvatarUrl(data?.avatar_url ?? "");
-          }
-        }
+        setUserName(userFullName ?? userEmail ?? "");
+        setAvatarUrl(userAvatarUrl ?? "/profile.png");
+        profileLoadedRef.current = true;
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
@@ -162,7 +165,7 @@ const AppSidebar = () => {
     (async () => {
       await fetchUserProfile();
     })();
-  }, [user]);
+  }, [userAvatarUrl, userEmail, userFullName]);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -174,7 +177,7 @@ const AppSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await logout({ logoutParams: { returnTo: window.location.origin } });
       navigate("/");
       toast({
         title: "Logged out successfully",
@@ -621,14 +624,14 @@ const AppSidebar = () => {
                 <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors">
                   <Avatar>
                     <AvatarImage
-                      src={avatarUrl || "/profile.png"}
+                      src={avatarUrl || ""}
                       alt="User Profile"
                       className="rounded-full object-cover"
                     />
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <span className="text-[#637381] text-base font-medium">
-                    {userName ?? user?.email ?? "User Name"}
+                    {userName || ""}
                   </span>
                 </div>
               </DropdownMenuTrigger>
