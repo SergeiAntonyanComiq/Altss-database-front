@@ -8,7 +8,6 @@ import {
   Routes,
   Route,
   Navigate,
-  useNavigate,
   useLocation,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -22,19 +21,18 @@ import Favorites from "./pages/Favorites";
 import SavedSearches from "./pages/SavedSearches";
 import Profile from "./pages/Profile";
 import FamilyOfficesContactsProfile from "./pages/FamilyOfficesContactsProfile";
-import WaitingApproval from "@/pages/WaitingApproval.tsx";
 import TrialBlockedScreen from "@/components/modals/TrialBlockedScreen.tsx";
 import Users from "@/pages/Users.tsx";
 import { RequireAuth } from "@/components/RequireAuth.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setAuth0 } from "@/auth/auth0Client.ts";
 import { Loading } from "@/utils.tsx";
+import TermsConsent from "@/pages/TermsConsent.tsx";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   const { user, userPlan, userPlanType, userStatus, loading } = useAuth();
-  const location = useLocation();
 
   const auth0 = useAuth0();
 
@@ -44,14 +42,6 @@ const AppContent = () => {
 
   const shouldBlock = user && userPlan === "expired";
 
-  if (!loading) {
-    if (!userStatus || userStatus === "pending") {
-      if (location.pathname !== "/waiting-approval") {
-        return <Navigate to="/waiting-approval" replace />;
-      }
-    }
-  }
-
   if (shouldBlock) {
     return <TrialBlockedScreen type={userPlanType ?? "expired"} />;
   }
@@ -60,7 +50,7 @@ const AppContent = () => {
     <Routes>
       <Route path="/" element={<Navigate to="/familyoffices" replace />} />
 
-      <Route path="/waiting-approval" element={<WaitingApproval />} />
+      <Route path="/terms-consent" element={<TermsConsent />} />
 
       <Route
         path="/familyoffices"

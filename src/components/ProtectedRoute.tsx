@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getUserStatus } from "@/services/usersService";
+import { getUserStatus, registerUser } from "@/services/usersService";
 import { Loader2 } from "lucide-react";
 import { Loading } from "@/utils.tsx";
 
@@ -24,7 +24,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           const response = await getUserStatus();
           const status = response?.status;
 
-          setIsPending(status === "pending");
+          if (!status) {
+            const fullName =
+              user.name ??
+              `${user.given_name ?? ""} ${user.family_name ?? ""}`.trim();
+            const email = user.email ?? "";
+            await registerUser(fullName, email);
+          } else {
+            setIsPending(status === "pending");
+          }
         } catch {
           setIsPending(true);
         } finally {
@@ -48,10 +56,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (isLoading || !statusChecked) {
     return <Loading show={true} />;
-  }
-
-  if (isPending && location.pathname !== "/waiting-approval") {
-    return <Navigate to="/waiting-approval" replace />;
   }
 
   if (isAuthenticated && isAuthPage) {
