@@ -19,6 +19,7 @@ import {
   prepareFocusForSave,
 } from "@/utils/integration.ts";
 import { FocusData, RangeData } from "@/services/familyOfficesService.ts";
+import { useToast } from "@/hooks";
 
 const emptyState = {
   company_id: "new",
@@ -39,6 +40,7 @@ const emptyState = {
 export default function IntegrationDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const isNew = id === "new";
   const [data, setData] = useState<IntegrationOffice | null>(null);
@@ -102,13 +104,16 @@ export default function IntegrationDetails() {
       if (isNew) {
         await addNewOffice(newData);
         navigate("/integration");
+        toast({ title: "New office added successfully!" });
       } else {
         await updateOffice(id, newData);
 
         reset(newData);
+        toast({ title: "Office updated successfully!" });
       }
       setIsEditing(false);
     } catch (error) {
+      toast({ title: "An error occurred while saving." });
       throw new Error(error.message);
     }
   };
