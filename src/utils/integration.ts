@@ -15,7 +15,11 @@ export const prepareFocusForSave = (data: InvestmentFocusResponse) => {
 
   if (transformedData.company_types) {
     focusFields?.forEach((field) => {
-      Object.keys(transformedData?.[field]).forEach((key) => {
+      if (!transformedData[field]) {
+        transformedData[field] = {};
+      }
+
+      Object.keys(transformedData[field]).forEach((key) => {
         const value = transformedData[field][key];
         if (typeof value === "string") {
           transformedData[field][key] = value
@@ -25,7 +29,6 @@ export const prepareFocusForSave = (data: InvestmentFocusResponse) => {
       });
     });
   }
-
   if (typeof transformedData.philanthropic_themes === "string") {
     transformedData.philanthropic_themes = (
       transformedData.philanthropic_themes as string

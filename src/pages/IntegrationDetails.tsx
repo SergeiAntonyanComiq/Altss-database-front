@@ -18,6 +18,7 @@ import {
   prepareDefaultDeals,
   prepareFocusForSave,
 } from "@/utils/integration.ts";
+import { FocusData, RangeData } from "@/services/familyOfficesService.ts";
 
 const emptyState = {
   company_id: "new",
@@ -32,6 +33,7 @@ const emptyState = {
   linkedin_url: "",
   description: "",
   logo: "",
+  twitter_url: "",
 };
 
 export default function IntegrationDetails() {
@@ -49,7 +51,23 @@ export default function IntegrationDetails() {
       return { ...emptyState, deals: [] };
     }
 
-    return { ...data, deals: prepareDefaultDeals(data?.deals) };
+    return {
+      ...data,
+      deals: prepareDefaultDeals(data?.deals),
+      investment_focus:
+        data?.investment_focus &&
+        Object.prototype.hasOwnProperty.call(
+          data?.investment_focus,
+          "company_type"
+        )
+          ? {
+              company_types: {},
+              technological_focuses: {},
+              regional_focuses: {},
+              industry_focuses: {},
+            }
+          : data?.investment_focus ?? {},
+    };
   }, [data, isNew]);
 
   const form = useForm<IntegrationOffice>({ defaultValues, mode: "onSubmit" });
