@@ -118,7 +118,7 @@ export const Details = ({
         </a>
       ),
     },
-    ...(linkedinLink
+    ...(linkedinLink && linkedinLink !== "N/A"
       ? [
           {
             label: "LinkedIn",
