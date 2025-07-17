@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, ChevronDown, Heart } from "lucide-react";
+import { ChevronRight, ChevronDown, Heart, Zap } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -610,6 +610,25 @@ const AppSidebar = () => {
                   <div className="flex items-center gap-2.5">
                     <UserIcon />
                     <span className="whitespace-nowrap">Users</span>
+                  </div>
+                </button>
+              </SidebarMenuItem>
+            )}
+
+            {isAdmin && (
+              <SidebarMenuItem key="users">
+                <button
+                  onClick={() => navigate("/integration")}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
+                    isActive("/users")
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                      : "text-[#637381] hover:bg-gray-100"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Zap />
+                    <span className="whitespace-nowrap">Integration</span>
                   </div>
                 </button>
               </SidebarMenuItem>
