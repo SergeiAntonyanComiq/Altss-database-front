@@ -29,6 +29,7 @@ export interface FieldsRendererProps {
   icon?: ReactNode;
   variant?: "outline" | "default" | "secondary";
   modalHeader?: string;
+  maxSize?: number;
 }
 
 const FieldsRenderer = ({
@@ -38,6 +39,7 @@ const FieldsRenderer = ({
   icon,
   variant,
   modalHeader,
+  maxSize = 4,
 }: FieldsRendererProps) => {
   const [open, setOpen] = useState(false);
   const values = Array.isArray(value) ? value : [value];
@@ -55,7 +57,7 @@ const FieldsRenderer = ({
         ) : null}
         {value ? (
           <div className="w-full flex flex-row justify-start">
-            {values.slice(0, 4).map((item, index) => {
+            {values.slice(0, maxSize).map((item, index) => {
               const isObject =
                 typeof item === "object" && item !== null && "label" in item;
 
@@ -86,7 +88,7 @@ const FieldsRenderer = ({
                 </Fragment>
               );
             })}
-            {values.length > 4 ? (
+            {values.length > maxSize ? (
               <div
                 className="max-w-[160px] min-h-[26px] flex items-center mr-3"
                 onClick={() => setOpen(!open)}
@@ -95,7 +97,7 @@ const FieldsRenderer = ({
                   variant={variant}
                   className="w-full px-2 py-1 cursor-pointer"
                 >
-                  {`+ ${values.length - 3}`}
+                  {`+ ${values.length - maxSize}`}
                 </Badge>
               </div>
             ) : null}

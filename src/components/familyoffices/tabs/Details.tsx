@@ -2,6 +2,8 @@ import { FieldsRenderer } from "@/components/common";
 import React from "react";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
 import { LinkedinIcon } from "@/components/ui/icons";
+import { Globe, GlobeIcon, Twitter, XIcon } from "lucide-react";
+import { TwitterIcon } from "@/components/ui/icons/Twitter.tsx";
 
 const getSafeUrl = (url?: string) => {
   if (!url) return "#";
@@ -24,7 +26,9 @@ export const Details = ({
   description,
   websites_main,
   websites_main_original,
+  twitter_url,
   linkedin,
+  linkedin_url,
   websites_linkedin,
   websites_linkedin_canonical,
 }: FamilyOffice) => {
@@ -48,7 +52,10 @@ export const Details = ({
 
   const websiteLink = website ?? websites_main ?? websites_main_original;
   const linkedinLink =
-    linkedin ?? websites_linkedin ?? websites_linkedin_canonical;
+    linkedin_url ??
+    linkedin ??
+    websites_linkedin ??
+    websites_linkedin_canonical;
 
   const overviewFieldsContacts = [
     {
@@ -81,6 +88,16 @@ export const Details = ({
                 {websiteLink}
               </a>
             ),
+            icon: (
+              <a
+                href={getSafeUrl(websiteLink)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {" "}
+                <Globe size={16} color="#0A66C2" />
+              </a>
+            ),
           },
         ]
       : [{}]),
@@ -106,24 +123,32 @@ export const Details = ({
           {
             label: "LinkedIn",
             value: (
-              <a
-                href={
-                  linkedin ?? websites_linkedin ?? websites_linkedin_canonical
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {websites_linkedin ?? websites_linkedin_canonical}
+              <a href={linkedinLink} target="_blank" rel="noopener noreferrer">
+                {linkedinLink}
               </a>
             ),
             isBadge: false,
             icon: (
-              <a
-                href={websites_linkedin ?? websites_linkedin_canonical}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={linkedinLink} target="_blank" rel="noopener noreferrer">
                 <LinkedinIcon />
+              </a>
+            ),
+          },
+        ]
+      : [{}]),
+    ...(twitter_url
+      ? [
+          {
+            label: "Twitter",
+            value: (
+              <a href={twitter_url} target="_blank" rel="noopener noreferrer">
+                {twitter_url}
+              </a>
+            ),
+            isBadge: false,
+            icon: (
+              <a href={twitter_url} target="_blank" rel="noopener noreferrer">
+                <TwitterIcon />
               </a>
             ),
           },
