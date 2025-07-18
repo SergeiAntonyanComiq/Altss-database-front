@@ -1,7 +1,7 @@
 import React from "react";
 import { Label } from "@/components/ui/label.tsx";
-import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input.tsx";
+import { Controller, useFormContext } from "react-hook-form";
 
 interface InvestmentFocusProps {
   isEditing: boolean;

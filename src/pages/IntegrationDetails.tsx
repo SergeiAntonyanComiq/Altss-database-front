@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   addNewOffice,
+  fetchIntegrationContactsList,
   fetchIntegrationOfficeById,
   IntegrationOffice,
+  IntegrationOfficeFormValues,
   updateOffice,
 } from "@/services/integrationService";
 import { Button } from "@/components/ui/button.tsx";
@@ -17,9 +19,14 @@ import {
   prepareDealsForSave,
   prepareDefaultDeals,
   prepareFocusForSave,
+  prepareGroupedDataForSave,
+  prepareGroupedTeam,
 } from "@/utils/integration.ts";
-import { FocusData, RangeData } from "@/services/familyOfficesService.ts";
 import { useToast } from "@/hooks";
+import { Team } from "@/components/integration/Team.tsx";
+import { ContactOption } from "@/components/ui/dropdown-search.tsx";
+import { FamilyOfficeTeamResponse } from "@/services/familyOfficesService.ts";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const emptyState = {
   company_id: "new",
@@ -44,9 +51,18 @@ export default function IntegrationDetails() {
 
   const isNew = id === "new";
   const [data, setData] = useState<IntegrationOffice | null>(null);
+  const [contactsList, setContactsList] = useState<ContactOption[]>(null);
   const [isEditing, setIsEditing] = useState(isNew);
   const [loading, setLoading] = useState(!isNew);
   const [error, setError] = useState<string | null>(null);
+
+  // State for controlling which sections are expanded
+  const [expandedSections, setExpandedSections] = useState({
+    generalInfo: false,
+    team: false,
+    investmentFocus: false,
+    deals: false,
+  });
 
   const defaultValues = useMemo(() => {
     if (isNew) {
@@ -56,6 +72,10 @@ export default function IntegrationDetails() {
     return {
       ...data,
       deals: prepareDefaultDeals(data?.deals),
+      team: {
+        ...data?.team,
+        groupedTeam: prepareGroupedTeam(data?.team?.groupedTeam),
+      },
       investment_focus:
         data?.investment_focus &&
         Object.prototype.hasOwnProperty.call(
@@ -72,7 +92,10 @@ export default function IntegrationDetails() {
     };
   }, [data, isNew]);
 
-  const form = useForm<IntegrationOffice>({ defaultValues, mode: "onSubmit" });
+  const form = useForm<IntegrationOfficeFormValues>({
+    defaultValues,
+    mode: "onSubmit",
+  });
 
   const { handleSubmit, reset } = form;
 
@@ -93,11 +116,15 @@ export default function IntegrationDetails() {
       .finally(() => setLoading(false));
   };
 
-  const onSaveClick = async (formValues: IntegrationOffice) => {
+  const onSaveClick = async (formValues: IntegrationOfficeFormValues) => {
     const newData = {
       ...formValues,
       deals: prepareDealsForSave(formValues?.deals),
       investment_focus: prepareFocusForSave(formValues?.investment_focus),
+      team: {
+        ...formValues?.team,
+        groupedTeam: prepareGroupedDataForSave(formValues?.team?.groupedTeam),
+      } as FamilyOfficeTeamResponse,
     };
 
     try {
@@ -108,7 +135,13 @@ export default function IntegrationDetails() {
       } else {
         await updateOffice(id, newData);
 
-        reset(newData);
+        reset({
+          ...newData,
+          team: {
+            ...newData.team,
+            groupedTeam: prepareGroupedTeam(newData?.team?.groupedTeam),
+          },
+        });
         toast({ title: "Office updated successfully!" });
       }
       setIsEditing(false);
@@ -127,6 +160,14 @@ export default function IntegrationDetails() {
     }
 
     setLoading(true);
+    fetchIntegrationContactsList().then((fetchedData) =>
+      setContactsList(
+        fetchedData.map(({ contact_id, full_name }) => ({
+          label: full_name,
+          value: contact_id,
+        }))
+      )
+    );
     fetchIntegrationOfficeById(id)
       .then((fetchedData) => {
         setData(fetchedData);
@@ -143,6 +184,13 @@ export default function IntegrationDetails() {
       reset(defaultValues);
     }
   }, [defaultValues, reset]);
+
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
@@ -168,21 +216,83 @@ export default function IntegrationDetails() {
                   </div>
                 )}
               </div>
-              <div className="my-10">
-                <h1 className="my-10 font-semibold">Company Information</h1>
 
-                <GeneralInformation
-                  isEditing={isEditing}
-                  hideCompanyId={isNew}
-                />
+              <div className="my-10">
+                <div className="flex flex-row w-full items-center space-x-8">
+                  <h1 className="my-10 font-semibold">Company Information</h1>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => toggleSection("generalInfo")}
+                  >
+                    {expandedSections.generalInfo ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </div>
+                </div>
+                {expandedSections.generalInfo && (
+                  <GeneralInformation
+                    isEditing={isEditing}
+                    hideCompanyId={isNew}
+                  />
+                )}
               </div>
 
               <div className="my-10">
-                <h1 className="my-10 font-semibold">Investment Focus</h1>
-                <InvestmentFocus isEditing={isEditing} />
+                <div className="flex flex-row w-full items-center space-x-8">
+                  <h1 className="my-10 font-semibold">Team</h1>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => toggleSection("team")}
+                  >
+                    {expandedSections.team ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </div>
+                </div>
+                {expandedSections.team && (
+                  <Team isEditable={isEditing} contacts={contactsList ?? []} />
+                )}
               </div>
 
-              <Deals isEditing={isEditing} />
+              <div className="my-10">
+                <div className="flex flex-row w-full items-center space-x-8">
+                  <h1 className="my-10 font-semibold">Investment Focus</h1>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => toggleSection("investmentFocus")}
+                  >
+                    {expandedSections.investmentFocus ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </div>
+                </div>
+                {expandedSections.investmentFocus && (
+                  <InvestmentFocus isEditing={isEditing} />
+                )}
+              </div>
+
+              <div className="my-10">
+                <div className="flex flex-row w-full items-center space-x-8">
+                  <h1 className="my-10 font-semibold">Deals</h1>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => toggleSection("deals")}
+                  >
+                    {expandedSections.deals ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </div>
+                </div>
+                {expandedSections.deals && <Deals isEditing={isEditing} />}
+              </div>
             </form>
           </FormProvider>
         </main>

@@ -1,5 +1,16 @@
 import apiClient from "@/lib/axios.ts";
-import { Deals, InvestmentFocusResponse } from "./familyOfficesService.ts";
+import {
+  Deals,
+  FamilyOfficeTeamResponse,
+  InvestmentFocusResponse,
+  PrimaryContact,
+  TeamMember,
+} from "./familyOfficesService.ts";
+
+export interface IntegrationContactsList {
+  contact_id: string;
+  full_name: string;
+}
 
 export interface IntegrationOfficesList {
   company_id: string;
@@ -22,6 +33,36 @@ export interface IntegrationOffice {
   logo: string;
   deals?: Deals[];
   investment_focus?: InvestmentFocusResponse;
+  team?: FamilyOfficeTeamResponse;
+}
+
+export interface IntegrationOfficeFormValues {
+  company_id: string;
+  firm_name: string;
+  firm_type: string;
+  city: string;
+  country: string;
+  region?: string | null;
+  aum?: string | number | null;
+  year_founded?: string | number | null;
+  website: string;
+  linkedin_url: string;
+  twitter_url: string;
+  description: string;
+  logo: string;
+  deals?: Deals[];
+  investment_focus?: InvestmentFocusResponse;
+  team?: FamilyOfficeTeamFormValues;
+}
+
+export interface GroupedTeamFormValues {
+  key: string;
+  ids: string[];
+}
+
+export interface FamilyOfficeTeamFormValues {
+  groupedTeam?: GroupedTeamFormValues[];
+  primaryContact?: PrimaryContact;
 }
 
 export interface IntegrationOfficesResponse {
@@ -98,5 +139,19 @@ export const updateOffice = async (
     await apiClient.patch(`/companies/${id}`, officeData);
   } catch (error) {
     throw new Error(error.message || "Failed to create new integration office");
+  }
+};
+
+export const fetchIntegrationContactsList = async (): Promise<
+  IntegrationContactsList[]
+> => {
+  try {
+    const { data } = await apiClient.get<{ data: IntegrationContactsList[] }>(
+      `/contacts/list`
+    );
+
+    return data.data;
+  } catch (error) {
+    new Error(error.message);
   }
 };

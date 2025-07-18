@@ -1,7 +1,9 @@
 import {
   Deals,
   InvestmentFocusResponse,
+  TeamMember,
 } from "@/services/familyOfficesService.ts";
+import { GroupedTeamFormValues } from "@/services/integrationService.ts";
 
 export const prepareFocusForSave = (data: InvestmentFocusResponse) => {
   const transformedData = { ...data };
@@ -74,3 +76,33 @@ export const prepareDealsForSave = (deals: Deals[]) =>
     ...item,
     partner_name: item.partner_name.toString().split(","),
   })) ?? [];
+
+export const prepareGroupedTeam = (
+  groupedTeam: Record<string, TeamMember[]> | undefined | null
+) => {
+  if (!groupedTeam) {
+    return [];
+  }
+
+  return Object.keys(groupedTeam).map((groupKey) => ({
+    key: groupKey,
+    ids: groupedTeam[groupKey].map((contact) => contact.contact_id),
+  }));
+};
+
+export const prepareGroupedDataForSave = (data: GroupedTeamFormValues[]) => {
+  const result: Record<string, { contact_id: string }[]> = {};
+
+  data.forEach((item) => {
+    const { key, ids } = item;
+
+    if (!result[key]) {
+      result[key] = [];
+    }
+
+    const contacts = ids.map((id) => ({ contact_id: id }));
+    result[key] = [...result[key], ...contacts];
+  });
+
+  return result;
+};
