@@ -1,22 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable";
 import CustomPagination from "@/components/ui/CustomPagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { Loading } from "@/utils";
-import AppSidebar from "@/components/AppSidebar.tsx";
+import AppSidebar from "@/components/AppSidebar";
 
-import { SidebarProvider } from "@/components/ui/sidebar.tsx";
-import { useIntegrationData } from "@/hooks/useIntegrationData.ts";
-import { integrationColumns } from "@/components/columns-bucket/IntegrationColumns.ts";
-import { deleteIntegrationOfficeById } from "@/services/integrationService.ts";
-import { Button } from "@/components/ui/button.tsx";
-import { useNavigate } from "react-router-dom";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { useIntegrationData } from "@/hooks/useIntegrationData";
+import { integrationColumns } from "@/components/columns-bucket/IntegrationColumns";
+import { deleteIntegrationOfficeById } from "@/services/integrationService";
+import { Button } from "@/components/ui/button";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Integration = () => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+
+  const pageParam = searchParams.get("page");
+  const perPageParam = searchParams.get("perPage");
+
+  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
+  const itemsPerPage = perPageParam ? parseInt(perPageParam, 10) : 10;
   const [searchQuery, setSearchQuery] = useState("");
 
   const debouncedSearch = useDebounce(searchQuery, 500);
@@ -28,6 +35,23 @@ const Integration = () => {
   );
 
   const handleDelete = (id: string) => deleteIntegrationOfficeById(id);
+
+  const updateUrl = (page: number, perPage: number) => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("page", page.toString());
+    queryParams.set("perPage", perPage.toString());
+    navigate(`${location.pathname}?${queryParams.toString()}`, {
+      replace: true,
+    });
+  };
+
+  const handlePageChange = (page: number) => {
+    updateUrl(page, itemsPerPage);
+  };
+
+  const handleItemsPerPageChange = (perPage: number) => {
+    updateUrl(1, perPage); // Reset to first page when changing items per page
+  };
 
   return (
     <SidebarProvider>
@@ -68,8 +92,8 @@ const Integration = () => {
               <CustomPagination
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
-                onItemsPerPageChange={setItemsPerPage}
-                onPageChange={setCurrentPage}
+                onItemsPerPageChange={handleItemsPerPageChange}
+                onPageChange={handlePageChange}
                 totalPages={totalPages}
               />
             </div>
