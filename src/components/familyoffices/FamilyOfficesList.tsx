@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDebounce, useFamilyOfficesData, useModal } from "@/hooks";
 
 import { familyOfficeColumnList } from "@/components/columns-bucket";
@@ -9,7 +9,7 @@ import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
 import { FamilyOffice } from "@/services/familyOfficesService.ts";
 import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CustomFilterModal } from "@/components/common";
 
 export interface FamilyOfficesListProps {
@@ -30,6 +30,8 @@ const FamilyOfficesList = ({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [favoriteMap, setFavoriteMap] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const query = new URLSearchParams(location.search);
 
@@ -54,7 +56,6 @@ const FamilyOfficesList = ({
     isLoading,
     error,
     totalPages,
-    totalItems,
     updateFavorites,
     updateSavedFilters,
     updateSavedSearches,
@@ -145,6 +146,18 @@ const FamilyOfficesList = ({
     setFilter(value);
   };
 
+  const updateUrl = useCallback(
+    (page: number, perPage: number) => {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set("page", page.toString());
+      queryParams.set("perPage", perPage.toString());
+      navigate(`${location.pathname}?${queryParams.toString()}`, {
+        replace: true,
+      });
+    },
+    [location.pathname, location.search, navigate]
+  );
+
   useEffect(() => {
     if (!familyOffices) return;
 
@@ -170,6 +183,16 @@ const FamilyOfficesList = ({
   useEffect(() => {
     setFilterText(defaultFilterText);
   }, [defaultFilterText]);
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      if (totalPages < currentPage) {
+        updateUrl(1, itemsPerPage);
+      } else {
+        updateUrl(currentPage, itemsPerPage);
+      }
+    }
+  }, [debouncedSearchQuery, currentPage, itemsPerPage, totalPages, updateUrl]);
 
   return (
     <div className="bg-[#FEFEFE] w-full h-full py-8 px-4 md:px-6 lg:px-8 flex flex-col justify-between">

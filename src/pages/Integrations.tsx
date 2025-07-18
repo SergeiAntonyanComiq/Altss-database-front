@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable";
 import CustomPagination from "@/components/ui/CustomPagination";
@@ -36,14 +36,17 @@ const Integration = () => {
 
   const handleDelete = (id: string) => deleteIntegrationOfficeById(id);
 
-  const updateUrl = (page: number, perPage: number) => {
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("page", page.toString());
-    queryParams.set("perPage", perPage.toString());
-    navigate(`${location.pathname}?${queryParams.toString()}`, {
-      replace: true,
-    });
-  };
+  const updateUrl = useCallback(
+    (page: number, perPage: number) => {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set("page", page.toString());
+      queryParams.set("perPage", perPage.toString());
+      navigate(`${location.pathname}?${queryParams.toString()}`, {
+        replace: true,
+      });
+    },
+    [location.pathname, location.search, navigate]
+  );
 
   const handlePageChange = (page: number) => {
     updateUrl(page, itemsPerPage);
@@ -52,6 +55,16 @@ const Integration = () => {
   const handleItemsPerPageChange = (perPage: number) => {
     updateUrl(1, perPage); // Reset to first page when changing items per page
   };
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      if (totalPages < currentPage) {
+        updateUrl(1, itemsPerPage);
+      } else {
+        updateUrl(currentPage, itemsPerPage);
+      }
+    }
+  }, [debouncedSearch, currentPage, itemsPerPage, totalPages, updateUrl]);
 
   return (
     <SidebarProvider>
