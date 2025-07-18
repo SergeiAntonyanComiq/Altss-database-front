@@ -80,13 +80,11 @@ export const Deals = ({ isEditing }: DealsProps) => {
   return (
     <div className="my-10 font-semibold">
       <div className="flex w-full justify-between items-center">
-        <h1 className="my-10">Deals</h1>
-
         {isEditing && (
           <Button
             type="button"
             onClick={addNewDeal}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="mb-10 px-4 py-2 bg-blue-600 text-white rounded"
             disabled={isAddDisabled}
             title={
               isAddDisabled

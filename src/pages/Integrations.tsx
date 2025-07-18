@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDebounce } from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable";
 import CustomPagination from "@/components/ui/CustomPagination";
-import { SearchInput } from "@/components/ui/search-input"; // same one used in toolbar
+import { SearchInput } from "@/components/ui/search-input";
 import { Loading } from "@/utils";
 import AppSidebar from "@/components/AppSidebar.tsx";
 
