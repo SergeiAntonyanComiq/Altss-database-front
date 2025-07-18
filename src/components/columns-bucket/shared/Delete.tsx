@@ -6,11 +6,13 @@ import { DeleteConfirmDialog } from "@/components/common/DeleteConfirmDialog.tsx
 interface DeleteCellProps<T, KId extends keyof T> {
   id: T[KId];
   onDelete: (id: T[KId]) => Promise<void> | void;
+  itemName?: string;
 }
 
 const DeleteCell = <T, KId extends keyof T>({
   id,
   onDelete,
+  itemName = "Office",
 }: DeleteCellProps<T, KId>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -47,7 +49,7 @@ const DeleteCell = <T, KId extends keyof T>({
         onOpenChange={setIsOpen}
         onConfirm={handleDelete}
         isLoading={isDeleting}
-        itemName="Office"
+        itemName={itemName}
       />
     </>
   );
@@ -56,14 +58,15 @@ const DeleteCell = <T, KId extends keyof T>({
 export function Delete<T, KId extends keyof T>(
   idKey: KId,
   onDelete: (id: T[KId]) => Promise<void> | void,
-  header: string = "Delete"
+  header: string = "Delete",
+  itemName: string = "Office"
 ): ColumnDef<T, unknown> {
   return {
     id: "delete",
     header,
     cell: ({ row }) => {
       const id = row.original[idKey];
-      return <DeleteCell id={id} onDelete={onDelete} />;
+      return <DeleteCell id={id} onDelete={onDelete} itemName={itemName} />;
     },
   };
 }

@@ -24,6 +24,7 @@ const Users = () => {
     totalPages,
     handleStatusChange,
     handlePlanChange,
+    handleDelete,
   } = useUsersData(currentPage, itemsPerPage, debouncedSearch);
 
   return (
@@ -53,7 +54,8 @@ const Users = () => {
                   <DataTable
                     columns={getUserColumns(
                       handleStatusChange,
-                      handlePlanChange
+                      handlePlanChange,
+                      handleDelete
                     )}
                     data={users}
                   />

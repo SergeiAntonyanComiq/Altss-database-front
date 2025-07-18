@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+  deleteUser,
   fetchUsers,
   updateUserPlan,
   updateUserStatus,
@@ -16,6 +17,7 @@ export interface UseUsersDataResult {
   totalItems: number;
   handleStatusChange: (userId: string, newStatus: UserStatus) => Promise<void>;
   handlePlanChange: (userId: string, newPlan: UserPlan) => Promise<void>;
+  handleDelete: (userId: string) => Promise<void>;
 }
 
 export function useUsersData(
@@ -64,6 +66,19 @@ export function useUsersData(
     }
   };
 
+  const handleDelete = async (userId: string) => {
+    try {
+      setIsLoading(true);
+
+      await deleteUser(userId);
+      setUsers((prev) => prev.filter((user) => user.user_id !== userId));
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     setIsLoading(true);
     setError(null);
@@ -101,5 +116,6 @@ export function useUsersData(
     totalItems,
     handlePlanChange,
     handleStatusChange,
+    handleDelete,
   };
 }
