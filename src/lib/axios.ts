@@ -1,5 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
 import { getAccessToken, triggerLogin } from "@/auth/auth0Client";
+import { triggerWaitingApprovalModal } from "@/utils/waitingApprovalModalController.ts";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -24,6 +25,11 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       triggerLogin();
     }
+
+    if (error.response?.status === 456) {
+      triggerWaitingApprovalModal();
+    }
+
     return Promise.reject(error);
   }
 );

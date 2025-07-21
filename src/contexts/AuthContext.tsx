@@ -1,12 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { getUserById, getUserStatus, User } from "@/services/usersService";
 import { useAuth0, User as Auth0User } from "@auth0/auth0-react";
+import { registerWaitingApprovalModalSetter } from "@/utils/waitingApprovalModalController.ts";
+import { WaitingApprovalModal } from "@/pages/WaitingApproval.tsx";
 
 interface AuthContextType {
   user: Auth0User | undefined;
@@ -16,6 +12,8 @@ interface AuthContextType {
   userPlan: string | null;
   userPlanExpirationDate: Date | null;
   userPlanType: "office_or_contact" | "expired" | null;
+  showWaitingApprovalModal: boolean;
+  setShowWaitingApprovalModal: (value: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +24,8 @@ const AuthContext = createContext<AuthContextType>({
   userPlan: null,
   userPlanType: null,
   userPlanExpirationDate: null,
+  showWaitingApprovalModal: false,
+  setShowWaitingApprovalModal: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -38,11 +38,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userStatus, setUserStatus] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [userData, setUserData] = useState<User | null>(null);
+  const [showWaitingApprovalModal, setShowWaitingApprovalModal] =
+    useState(false);
+
   const [userPlanExpirationDate, setUserPlanExpirationDate] =
     useState<Date | null>(null);
   const [userPlanType, setUserPlanType] = useState<
     "office_or_contact" | "expired" | null
   >(null);
+
+  useEffect(() => {
+    registerWaitingApprovalModalSetter(setShowWaitingApprovalModal);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -94,9 +101,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         userPlan,
         userPlanExpirationDate,
         userPlanType,
+        showWaitingApprovalModal,
+        setShowWaitingApprovalModal,
       }}
     >
       {children}
+      <WaitingApprovalModal
+        open={showWaitingApprovalModal}
+        onOpenChange={setShowWaitingApprovalModal}
+      />
     </AuthContext.Provider>
   );
 };

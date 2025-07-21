@@ -56,9 +56,7 @@ export default function IntegrationDetails() {
   const [loading, setLoading] = useState(!isNew);
   const [error, setError] = useState<string | null>(null);
 
-  // State for controlling which sections are expanded
   const [expandedSections, setExpandedSections] = useState({
-    generalInfo: false,
     team: false,
     investmentFocus: false,
     deals: false,
@@ -104,7 +102,7 @@ export default function IntegrationDetails() {
     if (!id) return;
 
     if (isNew) {
-      navigate("/integration"); // go back to list
+      navigate("/integration");
       return;
     }
 
@@ -220,23 +218,11 @@ export default function IntegrationDetails() {
               <div className="my-10">
                 <div className="flex flex-row w-full items-center space-x-8">
                   <h1 className="my-10 font-semibold">Company Information</h1>
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => toggleSection("generalInfo")}
-                  >
-                    {expandedSections.generalInfo ? (
-                      <ChevronUp className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
-                    )}
-                  </div>
                 </div>
-                {expandedSections.generalInfo && (
-                  <GeneralInformation
-                    isEditing={isEditing}
-                    hideCompanyId={isNew}
-                  />
-                )}
+                <GeneralInformation
+                  isEditing={isEditing}
+                  hideCompanyId={isNew}
+                />
               </div>
 
               <div className="my-10">

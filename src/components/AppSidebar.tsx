@@ -48,12 +48,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
-import { TabsTrigger } from "@/components/ui/tabs.tsx";
 
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, userPlan, userData } = useAuth();
+  const { user, userPlan, userData, userStatus } = useAuth();
   const { logout } = useAuth0();
   const { state } = useSidebar();
   const { toast } = useToast();
@@ -95,6 +94,10 @@ const AppSidebar = () => {
 
   useEffect(() => {
     const loadData = async () => {
+      if (!userStatus || userStatus === "pending") {
+        return;
+      }
+
       try {
         const { data: favoriteData } = await getFavorites();
 
@@ -155,7 +158,7 @@ const AppSidebar = () => {
       window.removeEventListener("favoritesUpdated", handleUpdate);
       window.removeEventListener("savedFiltersUpdated", handleUpdate);
     };
-  }, [location.pathname]);
+  }, [location.pathname, userStatus]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -366,7 +369,7 @@ const AppSidebar = () => {
 
                     {userPlan === "trial" &&
                       item.path === "/familyofficescontacts" && (
-                        <TooltipContent>
+                        <TooltipContent side="bottom">
                           Not available for trial users
                         </TooltipContent>
                       )}
@@ -639,7 +642,7 @@ const AppSidebar = () => {
                   onClick={() => navigate("/integration")}
                   className={cn(
                     "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
-                    isActive("/users")
+                    isActive("/integration")
                       ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
                       : "text-[#637381] hover:bg-gray-100"
                   )}
