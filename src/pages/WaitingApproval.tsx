@@ -25,7 +25,7 @@ export const WaitingApprovalModal = ({ open, onOpenChange }: Props) => {
       } catch (e) {
         console.error("Status check failed", e);
       }
-    }, 3000000);
+    }, 9000);
 
     return () => clearInterval(interval);
   }, [open, onOpenChange]);
