@@ -19,17 +19,26 @@ import { cn } from "@/lib/utils";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  fieldId?: string;
+  selectedIds?: string[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  fieldId,
+  selectedIds = [],
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
+    getRowId: (row) => row?.[fieldId],
+    state: {
+      rowSelection: Object.fromEntries(selectedIds?.map((id) => [id, true])),
+    },
+    onRowSelectionChange: () => {},
   });
 
   const stickyColumnId = ["select", "firm_name"];
@@ -48,14 +57,14 @@ export function DataTable<TData, TValue>({
                   (header.column.columnDef.meta as { headerClassName?: string })
                     ?.headerClassName,
                   stickyColumnId.includes(header.column.id) &&
-                    "sticky left-0 z-10 p-0!",
+                    "sticky left-0 z-10 p-0!"
                 )}
               >
                 {header.isPlaceholder
                   ? null
                   : flexRender(
                       header.column.columnDef.header,
-                      header.getContext(),
+                      header.getContext()
                     )}
               </TableHead>
             ))}
@@ -86,7 +95,7 @@ export function DataTable<TData, TValue>({
                   (cell.column.columnDef.meta as { cellClassName?: string })
                     ?.cellClassName,
                   stickyColumnId.includes(cell.column.id) &&
-                    "sticky left-0 z-10 p-0!",
+                    "sticky left-0 z-10 p-0!"
                 )}
                 style={{ ...cell.column.columnDef.meta }}
               >

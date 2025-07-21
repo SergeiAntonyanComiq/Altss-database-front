@@ -2,13 +2,13 @@ import { Checkbox } from "@/components/ui/checkbox.tsx";
 import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { LinkedinIcon } from "@/components/ui/icons";
 
 export const FamilyOfficeContactsName = (
   favorites: Record<string, boolean>,
+  selectedIds: string[],
   toggleFavorite: (id: string) => void,
-  onSelectAll?: (id: FamilyOfficeContact[]) => void,
+  onSelectAll?: (value: boolean, id: FamilyOfficeContact[]) => void,
   onSelect?: (id: string) => void
 ): ColumnDef<FamilyOfficeContact, string> => ({
   id: "select",
@@ -19,29 +19,32 @@ export const FamilyOfficeContactsName = (
     cellClassName: "bg-white shadow-[inset_-10px_0px_6px_-5px_rgba(0,0,0,0.1)]",
   },
   header: ({ table }) => {
-    const handleCheckedChange = (value: CheckedState) => {
-      table.toggleAllPageRowsSelected(!!value);
-
-      const selectedData = value
-        ? table.getRowModel().rows.map((row) => row.original)
-        : [];
-
-      onSelectAll?.(selectedData);
-    };
-
     return (
       <div className="flex h-[44px] items-center w-full bg-white">
         <div className="flex items-center h-full border-r border-[#DFE4EA] pr-3">
           <Checkbox
-            checked={table.getIsAllPageRowsSelected()}
+            checked={table
+              .getRowModel()
+              .rows.every((row) => selectedIds.includes(row.id))}
             data-state={
-              table.getIsSomePageRowsSelected()
-                ? "indeterminate"
-                : table.getIsAllPageRowsSelected()
-                ? "checked"
+              table
+                .getRowModel()
+                .rows.some((row) => selectedIds.includes(row.id))
+                ? table
+                    .getRowModel()
+                    .rows.every((row) => selectedIds.includes(row.id))
+                  ? "checked"
+                  : "indeterminate"
                 : "unchecked"
             }
-            onCheckedChange={handleCheckedChange}
+            onCheckedChange={(value) => {
+              const rows = table.getRowModel().rows;
+
+              onSelectAll?.(
+                value as boolean,
+                rows.map((r) => r.original)
+              );
+            }}
             aria-label="Select all"
           />
         </div>
@@ -57,10 +60,7 @@ export const FamilyOfficeContactsName = (
         <div className="flex items-center h-full border-r border-[#DFE4EA] pr-3">
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => {
-              onSelect(row.original.contact_id);
-              row.toggleSelected(!!value);
-            }}
+            onCheckedChange={() => onSelect?.(row.original.contact_id)}
             aria-label="Select row"
           />
         </div>

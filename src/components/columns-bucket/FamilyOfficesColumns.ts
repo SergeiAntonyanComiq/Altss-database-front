@@ -10,7 +10,8 @@ import { Aum, LastUpdated, NameWithLogo, Type, FoundedYear } from "./shared";
 export const familyOfficeColumnList = (
   favorites: Record<string, boolean>,
   toggleFavorite: (id: string) => void,
-  onSelectAll: (id: FamilyOffice[]) => void,
+  selectedIds: string[],
+  onSelectAll: (value: boolean, id: FamilyOffice[]) => void,
   onSelect: (id: string) => void
 ): ColumnDef<FamilyOffice, unknown>[] => [
   NameWithLogo(
@@ -20,6 +21,7 @@ export const familyOfficeColumnList = (
     favorites,
     toggleFavorite,
     "familyoffices",
+    selectedIds,
     onSelectAll,
     onSelect
   ),
