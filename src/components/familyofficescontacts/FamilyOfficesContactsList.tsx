@@ -10,6 +10,7 @@ import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CustomFilterModal } from "@/components/common";
+import { FamilyOffice } from "@/services/familyOfficesService.ts";
 
 interface FamilyOfficesContactsListProps {
   currentPage: number;
@@ -62,10 +63,14 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
     filterQuery
   );
 
-  const onSelectAllRows = (rows: FamilyOfficeContact[]) => {
-    const allIds = rows.map((row) => String(row.contact_id));
+  const onSelectAllRows = (isChecked: boolean, rows: FamilyOfficeContact[]) => {
+    const pageIds = rows.map((row) => String(row.contact_id));
 
-    setSelectedIds(allIds);
+    setSelectedIds((prev) => {
+      const filtered = prev.filter((id) => !pageIds.includes(id));
+
+      return isChecked ? [...filtered, ...pageIds] : filtered;
+    });
   };
 
   const onSelectRow = (id: string) => {
@@ -219,10 +224,13 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
             <DataTable
               columns={familyOfficesContactsColumns(
                 favoriteMap,
+                selectedIds,
                 toggleFavorite,
                 onSelectAllRows,
                 onSelectRow
               )}
+              fieldId="contact_id"
+              selectedIds={selectedIds}
               data={contacts}
             />
           </div>

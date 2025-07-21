@@ -1,7 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils.ts";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 
 export const NameWithLogo = <
@@ -18,7 +17,8 @@ export const NameWithLogo = <
   favorites: Record<string, boolean>,
   toggleFavorite: (id: string) => void,
   path: string,
-  onSelectAll?: (id: T[]) => void,
+  selectedIds: string[],
+  onSelectAll?: (value: boolean, id: T[]) => void,
   onSelect?: (id: string) => void
 ): ColumnDef<T> => ({
   id: field,
@@ -30,29 +30,32 @@ export const NameWithLogo = <
     headerClassName: "shadow-[inset_-10px_0px_6px_-5px_rgba(0,0,0,0.1)]",
   },
   header: ({ table }) => {
-    const handleCheckedChange = (value: CheckedState) => {
-      table.toggleAllPageRowsSelected(!!value);
-
-      const selectedData = value
-        ? table.getRowModel().rows.map((row) => row.original)
-        : [];
-
-      onSelectAll?.(selectedData);
-    };
-
     return (
       <div className="min-h-[43.5px] flex h-full items-center px-4 shadow-none">
         <div className="min-h-[43.5px] flex items-center h-full border-r border-[#DFE4EA] pr-3">
           <Checkbox
-            checked={table.getIsAllPageRowsSelected()}
+            checked={table
+              .getRowModel()
+              .rows.every((row) => selectedIds.includes(row.id))}
             data-state={
-              table.getIsSomePageRowsSelected()
-                ? "indeterminate"
-                : table.getIsAllPageRowsSelected()
-                ? "checked"
+              table
+                .getRowModel()
+                .rows.some((row) => selectedIds.includes(row.id))
+                ? table
+                    .getRowModel()
+                    .rows.every((row) => selectedIds.includes(row.id))
+                  ? "checked"
+                  : "indeterminate"
                 : "unchecked"
             }
-            onCheckedChange={handleCheckedChange}
+            onCheckedChange={(value) => {
+              const rows = table.getRowModel().rows;
+
+              onSelectAll?.(
+                value as boolean,
+                rows?.map((r) => r.original)
+              );
+            }}
             aria-label="Select all"
           />
         </div>
@@ -63,8 +66,6 @@ export const NameWithLogo = <
   cell: ({ row }) => {
     const isFavorited = favorites[row.original[fieldId]];
 
-    const hasLogo = row.original.logo || row.original.logo_filename;
-
     return (
       <div className="flex h-full items-center px-4 justify-between">
         <div
@@ -74,11 +75,7 @@ export const NameWithLogo = <
         >
           <Checkbox
             checked={row.getIsSelected()}
-            onCheckedChange={(value) => {
-              row.toggleSelected(!!value);
-
-              onSelect?.(row.original[fieldId]);
-            }}
+            onCheckedChange={() => onSelect?.(row.original[fieldId])}
             aria-label="Select row"
           />
         </div>

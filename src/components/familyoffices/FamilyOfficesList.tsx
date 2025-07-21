@@ -67,10 +67,14 @@ const FamilyOfficesList = ({
     filterQuery
   );
 
-  const onSelectAllRows = (rows: FamilyOffice[]) => {
-    const allIds = rows.map((row) => String(row.company_id));
+  const onSelectAllRows = (isChecked: boolean, rows: FamilyOffice[]) => {
+    const pageIds = rows.map((row) => String(row.company_id));
 
-    setSelectedIds(allIds);
+    setSelectedIds((prev) => {
+      const filtered = prev.filter((id) => !pageIds.includes(id));
+
+      return isChecked ? [...filtered, ...pageIds] : filtered;
+    });
   };
 
   const onSelectRow = (id: string) => {
@@ -220,9 +224,12 @@ const FamilyOfficesList = ({
               columns={familyOfficeColumnList(
                 favoriteMap,
                 toggleFavorite,
+                selectedIds,
                 onSelectAllRows,
                 onSelectRow
               )}
+              fieldId="company_id"
+              selectedIds={selectedIds}
               data={familyOffices || []}
             />
           </div>
