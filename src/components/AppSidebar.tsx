@@ -43,6 +43,12 @@ import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 import { UserIcon } from "@/components/ui/icons/User.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
+import { TabsTrigger } from "@/components/ui/tabs.tsx";
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -323,37 +329,49 @@ const AppSidebar = () => {
           <SidebarMenu>
             {mainMenuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <button
-                  onClick={() =>
-                    !isLocked(item.path) && handleNavigation(item.path)
-                  }
-                  disabled={isLocked(item.path)}
-                  className={cn(
-                    "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
-                    isActive(item.path) && !isLocked(item.path)
-                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
-                      : "text-[#637381]",
-                    isLocked(item.path)
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-gray-100"
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <img
-                      src={item.iconSrc}
-                      alt={item.title}
-                      className="h-6 w-6 object-contain"
-                    />
-                    <span className="whitespace-nowrap">{item.title}</span>
-                  </div>
-                  {isLocked(item.path) ? (
-                    <Lock className="w-4 h-4 text-[#A0AEC0]" />
-                  ) : (
-                    item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
-                    )
-                  )}
-                </button>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <button
+                      onClick={() =>
+                        !isLocked(item.path, userPlan) &&
+                        handleNavigation(item.path)
+                      }
+                      disabled={isLocked(item.path, userPlan)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11 space-x-4",
+                        isActive(item.path) && !isLocked(item.path, userPlan)
+                          ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                          : "text-[#637381]",
+                        isLocked(item.path, userPlan)
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-gray-100"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src={item.iconSrc}
+                          alt={item.title}
+                          className="h-6 w-6 object-contain"
+                        />
+                        <span className="whitespace-nowrap">{item.title}</span>
+                      </div>
+                      {isLocked(item.path, userPlan) ? (
+                        <Lock className="w-4 h-4 text-[#A0AEC0]" />
+                      ) : (
+                        item.hasRightIcon && (
+                          <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                        )
+                      )}
+                    </button>
+
+                    {userPlan === "trial" &&
+                      item.path === "/familyofficescontacts" && (
+                        <TooltipContent>
+                          Not available for trial users
+                        </TooltipContent>
+                      )}
+                  </TooltipTrigger>
+                </Tooltip>
               </SidebarMenuItem>
             ))}
 
