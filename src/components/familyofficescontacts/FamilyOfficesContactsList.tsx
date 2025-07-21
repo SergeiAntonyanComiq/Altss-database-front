@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDebounce, useFamilyOfficesContactsData, useModal } from "@/hooks";
 import { DataTable } from "@/components/ui/DataTable.tsx";
 import { familyOfficesContactsColumns } from "@/components/columns-bucket";
@@ -8,7 +8,7 @@ import CustomPagination from "@/components/ui/CustomPagination.tsx";
 import { Loading } from "@/utils.tsx";
 import { FamilyOfficeContact } from "@/services/familyOfficeContactsService.ts";
 import { TableToolbar } from "@/components/ui/table-toolbar.tsx";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CustomFilterModal } from "@/components/common";
 
 interface FamilyOfficesContactsListProps {
@@ -33,6 +33,8 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   const defaultFilterText = query.get("filterText") || "";
   const defaultFilterQuery = query.get("filterQuery") || "";
   const { isOpen, open, close } = useModal();
+
+  const navigate = useNavigate();
 
   const [filterQuery, setFilterQuery] = useState<string>(defaultFilterQuery);
   const [filterText, setFilterText] = useState<string>(defaultFilterText);
@@ -117,6 +119,18 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
     }
   };
 
+  const updateUrl = useCallback(
+    (page: number, perPage: number) => {
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set("page", page.toString());
+      queryParams.set("perPage", perPage.toString());
+      navigate(`${location.pathname}?${queryParams.toString()}`, {
+        replace: true,
+      });
+    },
+    [location.pathname, location.search, navigate]
+  );
+
   const handleClear = () => {
     setFilterQuery("");
     setFilterText("");
@@ -165,6 +179,16 @@ const FamilyOfficesContactsList: React.FC<FamilyOfficesContactsListProps> = ({
   useEffect(() => {
     setFilterText(defaultFilterText);
   }, [defaultFilterText]);
+
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      if (totalPages < currentPage) {
+        updateUrl(1, itemsPerPage);
+      } else {
+        updateUrl(currentPage, itemsPerPage);
+      }
+    }
+  }, [debouncedSearchQuery, currentPage, itemsPerPage, totalPages, updateUrl]);
 
   return (
     <div className="bg-[#FEFEFE] w-full min-h-screen flex flex-col py-8 px-4 md:px-6 lg:px-8">

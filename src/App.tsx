@@ -28,6 +28,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setAuth0 } from "@/auth/auth0Client.ts";
 import { Loading } from "@/utils.tsx";
 import TermsConsent from "@/pages/TermsConsent.tsx";
+import Integration from "@/pages/Integrations.tsx";
+import IntegrationDetails from "@/pages/IntegrationDetails.tsx";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +75,22 @@ const AppContent = () => {
         element={
           <ProtectedRoute>
             <Users />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/integration"
+        element={
+          <ProtectedRoute>
+            <Integration />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/integration/:id"
+        element={
+          <ProtectedRoute>
+            <IntegrationDetails />
           </ProtectedRoute>
         }
       />

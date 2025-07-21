@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { ChevronRight, ChevronDown, Heart } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronRight, ChevronDown, Heart, Zap } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -42,15 +42,21 @@ import { isLocked } from "@/utils/routeAccess.ts";
 import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 import { UserIcon } from "@/components/ui/icons/User.tsx";
-import { getUserById } from "@/services/usersService.ts";
+import { useAuth0 } from "@auth0/auth0-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
+import { TabsTrigger } from "@/components/ui/tabs.tsx";
 
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user, userPlan, userData } = useAuth();
+  const { logout } = useAuth0();
   const { state } = useSidebar();
   const { toast } = useToast();
-  const userName = localStorage.getItem("userName");
   const [favoriteFamilyOfficesContacts, setFavoriteFamilyOfficesContacts] =
     useState<FavoriteContactType[]>([]);
   const [favoriteFamilyOffices, setFavoriteFamilyOffices] = useState<
@@ -71,9 +77,21 @@ const AppSidebar = () => {
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [savedSearchesOpen, setSavedSearchesOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
-  const { userPlan } = useAuth();
+  const [userName, setUserName] = useState<string>("");
+
+  const userAvatarUrl = useMemo(
+    () => userData?.avatar_url,
+    [userData?.avatar_url]
+  );
+  const userFullName = useMemo(
+    () => userData?.full_name,
+    [userData?.full_name]
+  );
+  const userEmail = useMemo(() => userData?.email, [userData?.email]);
 
   const isAdmin = userPlan === "admin";
+
+  const profileLoadedRef = useRef(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -141,19 +159,10 @@ const AppSidebar = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      if (!user?.sub) return;
-
       try {
-        const data = await getUserById(user.sub);
-
-        if (data) {
-          if (data.full_name) {
-            localStorage.setItem("userName", data.full_name);
-          }
-          if (data.avatar_url) {
-            setAvatarUrl(data?.avatar_url ?? "");
-          }
-        }
+        setUserName(userFullName ?? userEmail ?? "");
+        setAvatarUrl(userAvatarUrl ?? "/profile.png");
+        profileLoadedRef.current = true;
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
@@ -162,7 +171,7 @@ const AppSidebar = () => {
     (async () => {
       await fetchUserProfile();
     })();
-  }, [user]);
+  }, [userAvatarUrl, userEmail, userFullName]);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -174,7 +183,7 @@ const AppSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await logout({ logoutParams: { returnTo: window.location.origin } });
       navigate("/");
       toast({
         title: "Logged out successfully",
@@ -320,37 +329,49 @@ const AppSidebar = () => {
           <SidebarMenu>
             {mainMenuItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <button
-                  onClick={() =>
-                    !isLocked(item.path) && handleNavigation(item.path)
-                  }
-                  disabled={isLocked(item.path)}
-                  className={cn(
-                    "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
-                    isActive(item.path) && !isLocked(item.path)
-                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
-                      : "text-[#637381]",
-                    isLocked(item.path)
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-gray-100"
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <img
-                      src={item.iconSrc}
-                      alt={item.title}
-                      className="h-6 w-6 object-contain"
-                    />
-                    <span className="whitespace-nowrap">{item.title}</span>
-                  </div>
-                  {isLocked(item.path) ? (
-                    <Lock className="w-4 h-4 text-[#A0AEC0]" />
-                  ) : (
-                    item.hasRightIcon && (
-                      <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
-                    )
-                  )}
-                </button>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <button
+                      onClick={() =>
+                        !isLocked(item.path, userPlan) &&
+                        handleNavigation(item.path)
+                      }
+                      disabled={isLocked(item.path, userPlan)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11 space-x-4",
+                        isActive(item.path) && !isLocked(item.path, userPlan)
+                          ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                          : "text-[#637381]",
+                        isLocked(item.path, userPlan)
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-gray-100"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <img
+                          src={item.iconSrc}
+                          alt={item.title}
+                          className="h-6 w-6 object-contain"
+                        />
+                        <span className="whitespace-nowrap">{item.title}</span>
+                      </div>
+                      {isLocked(item.path, userPlan) ? (
+                        <Lock className="w-4 h-4 text-[#A0AEC0]" />
+                      ) : (
+                        item.hasRightIcon && (
+                          <ChevronRight className="h-5 w-5 text-[#637381] rotate-90" />
+                        )
+                      )}
+                    </button>
+
+                    {userPlan === "trial" &&
+                      item.path === "/familyofficescontacts" && (
+                        <TooltipContent>
+                          Not available for trial users
+                        </TooltipContent>
+                      )}
+                  </TooltipTrigger>
+                </Tooltip>
               </SidebarMenuItem>
             ))}
 
@@ -611,6 +632,25 @@ const AppSidebar = () => {
                 </button>
               </SidebarMenuItem>
             )}
+
+            {isAdmin && (
+              <SidebarMenuItem key="users">
+                <button
+                  onClick={() => navigate("/integration")}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-md text-[15px] py-2.5 px-3.5 min-h-11",
+                    isActive("/users")
+                      ? "bg-[rgba(38,101,240,0.05)] text-[#2665F0] border-r-[3px] border-[#2665F0]"
+                      : "text-[#637381] hover:bg-gray-100"
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Zap />
+                    <span className="whitespace-nowrap">Integration</span>
+                  </div>
+                </button>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarContent>
 
@@ -621,14 +661,14 @@ const AppSidebar = () => {
                 <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-colors">
                   <Avatar>
                     <AvatarImage
-                      src={avatarUrl || "/profile.png"}
+                      src={avatarUrl || ""}
                       alt="User Profile"
                       className="rounded-full object-cover"
                     />
                     <AvatarFallback>{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <span className="text-[#637381] text-base font-medium">
-                    {userName ?? user?.email ?? "User Name"}
+                    {userName || ""}
                   </span>
                 </div>
               </DropdownMenuTrigger>

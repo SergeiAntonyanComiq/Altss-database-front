@@ -104,6 +104,14 @@ export const updateUser = async (id: string, payload: Partial<User>) => {
   }
 };
 
+export const deleteUser = async (id: string) => {
+  try {
+    const response = await apiClient.delete(`/users/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to delete user");
+  }
+};
 export const uploadUserAvatar = async (
   file: File,
   userId: string

@@ -7,3 +7,5 @@ export * from "./Aum.ts";
 export * from "./FoundedYear.ts";
 export * from "./CompanyLocation.tsx";
 export * from "./Date.ts";
+export * from "./Name.tsx";
+export * from "./Delete.tsx";

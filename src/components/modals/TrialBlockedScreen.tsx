@@ -40,11 +40,7 @@ const TrialBlockedScreen = ({ type }: Props) => {
   const { logout } = useAuth0();
 
   const handleLogout = async () => {
-    logout({
-      logoutParams: {
-        returnTo: window.location.origin,
-      },
-    });
+    await logout({ logoutParams: { returnTo: window.location.origin } });
     navigate("/familyoffices", { replace: true });
   };
 

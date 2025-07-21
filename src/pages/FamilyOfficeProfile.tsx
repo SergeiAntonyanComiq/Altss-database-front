@@ -12,6 +12,13 @@ import ProfileHeader from "@/components/profile/ProfileHeader";
 import { News } from "@/components/common";
 import { Details, InvestmentFocus, Team } from "@/components/familyoffices";
 import DealsTab from "@/components/familyoffices/tabs/Deals.tsx";
+import { useAuth } from "@/contexts/AuthContext.tsx";
+import { Lock } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
 
 const FamilyOfficeProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +27,8 @@ const FamilyOfficeProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [familyOffice, setFamilyOffice] = useState<FamilyOffice | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+
+  const { userPlan } = useAuth();
 
   const [searchParams] = useSearchParams();
   const from = searchParams.get("from");
@@ -148,12 +157,25 @@ const FamilyOfficeProfile = () => {
                     >
                       Investment focus
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="team"
-                      className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
-                    >
-                      Team
-                    </TabsTrigger>
+
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <TabsTrigger
+                          value="team"
+                          disabled={userPlan === "trial"}
+                          className="space-x-2 py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
+                        >
+                          <div>Team</div>
+                          {userPlan === "trial" ? <Lock size={16} /> : null}
+                        </TabsTrigger>
+                      </TooltipTrigger>
+
+                      {userPlan === "trial" && (
+                        <TooltipContent>
+                          Not available for trial users
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
                     <TabsTrigger
                       value="deals"
                       className="py-3 px-6 rounded-none text-[#637381] data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 data-[state=active]:font-medium"
@@ -204,9 +226,11 @@ const FamilyOfficeProfile = () => {
                   <TabsContent value="investment" className="mt-0">
                     <InvestmentFocus id={id} />
                   </TabsContent>
-                  <TabsContent value="team" className="mt-0">
-                    <Team id={id} />
-                  </TabsContent>
+                  {userPlan === "trial" ? null : (
+                    <TabsContent value="team" className="mt-0">
+                      <Team id={id} />
+                    </TabsContent>
+                  )}
                   <TabsContent value="deals" className="mt-0">
                     <DealsTab familyOfficeId={id} />
                   </TabsContent>

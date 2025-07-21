@@ -15,16 +15,26 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs.tsx";
 import {
-  Details,
   BioAndNews,
+  Details,
   JobHistory,
 } from "@/components/familyofficescontacts";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog.tsx";
+import { Button } from "@/components/ui/button.tsx";
 
 const FamilyOfficesContactsProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [contact, setContact] = useState<FamilyOfficeContact | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("details");
+  const [trialError, setTrialError] = useState(false);
+  const [trialErrorMessage, setTrialErrorMessage] = useState(null);
 
   const profileHeaderContacts = useMemo(
     () => ({
@@ -60,11 +70,17 @@ const FamilyOfficesContactsProfile: React.FC = () => {
 
         setContact(data);
       } catch (error) {
-        setContact(null);
+        if (error?.response?.status === 455) {
+          setTrialError(true);
+          setTrialErrorMessage(error?.response?.data?.message);
+        } else {
+          setContact(null);
+        }
       } finally {
         setIsLoading(false);
       }
     };
+
     if (id) {
       (async () => {
         await fetchContact();
@@ -85,7 +101,7 @@ const FamilyOfficesContactsProfile: React.FC = () => {
     );
   }
 
-  if (!contact) {
+  if (!contact && !trialError) {
     return (
       <SidebarProvider>
         <div className="flex h-screen w-full overflow-hidden">
@@ -95,6 +111,32 @@ const FamilyOfficesContactsProfile: React.FC = () => {
           </div>
         </div>
       </SidebarProvider>
+    );
+  }
+
+  if (trialError) {
+    return (
+      <Dialog open={true}>
+        <DialogContent
+          className="text-center [&>button:last-of-type]:hidden"
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Access Restricted</DialogTitle>
+            <DialogDescription className="mt-2">
+              {trialErrorMessage}
+            </DialogDescription>
+          </DialogHeader>
+
+          <Button
+            onClick={() => (window.location.href = "/")}
+            className="mt-6 inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+          >
+            Back to Home
+          </Button>
+        </DialogContent>
+      </Dialog>
     );
   }
 
