@@ -13,6 +13,7 @@ import {
   uploadUserAvatar,
 } from "@/services/usersService.ts";
 import apiClient from "@/lib/axios.ts";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export interface ProfileFormValues {
   full_name: string;
@@ -42,6 +43,7 @@ const Profile: React.FC = () => {
     []
   );
   const { user, userPlan, userPlanExpirationDate } = useAuth();
+  const { user: auth0User } = useAuth0();
 
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("details");
@@ -62,7 +64,7 @@ const Profile: React.FC = () => {
         const data = await getUserById(user.sub);
 
         const loadedData = {
-          full_name: data.full_name || "",
+          full_name: data.full_name ?? auth0User.name ?? "",
           email: user.email || "",
           website: data?.website || "",
           companyName: data?.company_name || "",

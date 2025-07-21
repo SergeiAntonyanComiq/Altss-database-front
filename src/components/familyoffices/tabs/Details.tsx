@@ -40,7 +40,7 @@ export const Details = ({
     { label: "City", value: city },
     { label: "Country", value: country },
     { label: "Region", value: region },
-    { label: "AUM ($, mln)", value: aum },
+    { label: "AUM", value: aum },
     { label: "Founded Year", value: year_founded },
     { label: "Wealth Creator", value: wealth_creator },
     {
