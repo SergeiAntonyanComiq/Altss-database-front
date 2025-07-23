@@ -60,7 +60,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         navigate("/");
       }
     })();
-  }, [navigate, user?.sub]);
+  }, []);
 
   if (isLoading || !statusChecked) {
     return <Loading show={true} />;
