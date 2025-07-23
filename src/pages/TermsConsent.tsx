@@ -78,14 +78,15 @@ const TermsConsent = () => {
             </div>
             <h1 className="mt-10">Welcome to Altss</h1>
             <p className="text-sm font-normal mt-2 text-gray-500">
-              Please enter your full name and agree to our terms to continue.
+              Enter your full name to get started. By continuing you accept our{" "}
+              <b>Terms of Service</b> and <b>Privacy Policy</b>.
             </p>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label className="text-xl font-bold text-[#111928]">
-              Full Name
+              Full name
             </Label>
             <Input
               className="border-[#DFE4EA] border placeholder:text-#9CA3AF"
@@ -104,7 +105,7 @@ const TermsConsent = () => {
               onCheckedChange={(value) => setAgreed(!!value)}
             />
             <span className="text-sm text-gray-700">
-              By joining, you agree to our{" "}
+              I agree to{" "}
               <a
                 href="/terms-of-service"
                 target="_blank"
