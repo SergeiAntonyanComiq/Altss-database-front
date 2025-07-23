@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getUserStatus, registerUser } from "@/services/usersService";
-import { Loader2 } from "lucide-react";
 import { Loading } from "@/utils.tsx";
+import { getUserStatus } from "@/services/usersService.ts";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -24,13 +23,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           const response = await getUserStatus();
           const status = response?.status;
 
-          if (!status) {
-            const fullName =
-              user.name ??
-              `${user.given_name ?? ""} ${user.family_name ?? ""}`.trim();
-            const email = user.email ?? "";
-            await registerUser(fullName, email);
-          } else {
+          if (status) {
             setIsPending(status === "pending");
           }
         } catch {
@@ -43,14 +36,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       }
     };
 
-    checkStatus();
+    (async () => {
+      await checkStatus();
+    })();
   }, [user]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      loginWithRedirect({
-        appState: { returnTo: window.location.pathname },
-      });
+      (async () => {
+        await loginWithRedirect({
+          appState: { returnTo: window.location.pathname },
+        });
+      })();
     }
   }, [isLoading, isAuthenticated, loginWithRedirect, location.pathname]);
 

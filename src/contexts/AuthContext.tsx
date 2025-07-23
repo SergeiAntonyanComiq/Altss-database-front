@@ -14,6 +14,7 @@ interface AuthContextType {
   userPlanType: "office_or_contact" | "expired" | null;
   showWaitingApprovalModal: boolean;
   setShowWaitingApprovalModal: (value: boolean) => void;
+  handleLogout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   userPlanExpirationDate: null,
   showWaitingApprovalModal: false,
   setShowWaitingApprovalModal: () => {},
+  handleLogout: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -91,6 +93,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [user, isAuthenticated]);
 
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+      await logout({ logoutParams: { returnTo: window.location.origin } });
+    } catch (error) {
+      throw new Error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -103,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         userPlanType,
         showWaitingApprovalModal,
         setShowWaitingApprovalModal,
+        handleLogout,
       }}
     >
       {children}

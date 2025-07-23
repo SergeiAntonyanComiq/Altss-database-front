@@ -3,13 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -34,7 +28,7 @@ import IntegrationDetails from "@/pages/IntegrationDetails.tsx";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { user, userPlan, userPlanType, userStatus, loading } = useAuth();
+  const { user, userPlan, userPlanType, userData, loading } = useAuth();
 
   const auth0 = useAuth0();
 
@@ -44,13 +38,26 @@ const AppContent = () => {
 
   const shouldBlock = user && userPlan === "expired";
 
+  if (loading) {
+    return <Loading show={true} />;
+  }
+
   if (shouldBlock) {
     return <TrialBlockedScreen type={userPlanType ?? "expired"} />;
   }
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/familyoffices" replace />} />
+      <Route
+        path="/"
+        element={
+          userData ? (
+            <Navigate to="/familyoffices" replace />
+          ) : (
+            <Navigate to="/terms-consent" replace />
+          )
+        }
+      />
 
       <Route path="/terms-consent" element={<TermsConsent />} />
 

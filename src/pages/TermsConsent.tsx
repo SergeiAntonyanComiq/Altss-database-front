@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@radix-ui/react-label";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-import apiClient from "@/lib/axios.ts";
+import { useAuth0 } from "@auth0/auth0-react";
+import { getUserStatus, registerUser } from "@/services/usersService.ts";
+import { useAuth } from "@/contexts/AuthContext.tsx";
 
 const TermsConsent = () => {
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get("user");
-
   const [fullName, setFullName] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -19,6 +18,10 @@ const TermsConsent = () => {
 
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const { user: auth0User } = useAuth0();
+
+  const userId = auth0User.sub;
 
   const handleSubmit = async () => {
     if (!userId) {
@@ -43,16 +46,14 @@ const TermsConsent = () => {
     setLoading(true);
 
     try {
-      await apiClient.post("/users/set-agreed-to-terms", null, {
-        params: {
-          userId,
-          full_name: fullName,
-        },
-      });
+      const statusRes = await getUserStatus();
 
-      navigate("/");
+      if (!statusRes?.status) {
+        await registerUser(fullName, auth0User?.email ?? "");
+      }
+
+      navigate("/familyoffices");
     } catch (error) {
-      console.log(error);
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
@@ -103,21 +104,21 @@ const TermsConsent = () => {
               onCheckedChange={(value) => setAgreed(!!value)}
             />
             <span className="text-sm text-gray-700">
-              I agree to the{" "}
-              <a
-                href="/privacy-policy"
-                target="_blank"
-                className="text-blue-600 underline"
-              >
-                Privacy Policy
-              </a>{" "}
-              and{" "}
+              By joining, you agree to our{" "}
               <a
                 href="/terms-of-service"
                 target="_blank"
                 className="text-blue-600 underline"
               >
                 Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="/privacy-policy"
+                target="_blank"
+                className="text-blue-600 underline"
+              >
+                Privacy Policy
               </a>
               .
             </span>
@@ -126,7 +127,11 @@ const TermsConsent = () => {
             <p className="text-sm text-red-600 mt-1">{validationError}</p>
           )}
 
-          <Button onClick={handleSubmit} className="w-full" disabled={loading}>
+          <Button
+            onClick={handleSubmit}
+            className="w-full"
+            disabled={loading || !agreed || !fullName}
+          >
             {loading ? "Submitting..." : "Continue"}
           </Button>
         </CardContent>

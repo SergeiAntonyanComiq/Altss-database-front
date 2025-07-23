@@ -42,18 +42,23 @@ import { isLocked } from "@/utils/routeAccess.ts";
 import { FavoriteSidebarList } from "@/components/favorites";
 import { withTooltipRenderer } from "@/components/ui/withTooltipRenderer.tsx";
 import { UserIcon } from "@/components/ui/icons/User.tsx";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip.tsx";
+import { getUserById } from "@/services/usersService.ts";
 
 const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, userPlan, userData, userStatus } = useAuth();
-  const { logout } = useAuth0();
+  const {
+    user,
+    userPlan,
+    userData,
+    userStatus,
+    handleLogout: logout,
+  } = useAuth();
   const { state } = useSidebar();
   const { toast } = useToast();
   const [favoriteFamilyOfficesContacts, setFavoriteFamilyOfficesContacts] =
@@ -186,8 +191,8 @@ const AppSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await logout({ logoutParams: { returnTo: window.location.origin } });
-      navigate("/");
+      await logout();
+      navigate("/familyoffices");
       toast({
         title: "Logged out successfully",
       });
@@ -308,6 +313,21 @@ const AppSidebar = () => {
 
     navigate(`${path}?${query.toString()}`);
   };
+
+  useEffect(() => {
+    if (userFullName) {
+      setUserName(userFullName);
+    } else {
+      (async () => {
+        try {
+          const newUser = await getUserById(user?.sub);
+          setUserName(newUser?.full_name ?? "");
+        } catch (error) {
+          setUserName("");
+        }
+      })();
+    }
+  }, [user?.sub, userFullName]);
 
   return (
     <>

@@ -8,8 +8,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
-  const { logout } = useAuth0();
+  const { user, handleLogout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,10 +26,6 @@ const Header: React.FC = () => {
     } else {
       navigate("/auth");
     }
-  };
-
-  const handleLogout = async () => {
-    await logout({ logoutParams: { returnTo: window.location.origin } });
   };
 
   return (
