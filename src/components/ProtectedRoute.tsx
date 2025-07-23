@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Loading } from "@/utils.tsx";
-import { getUserStatus } from "@/services/usersService.ts";
+import { getUserById, getUserStatus } from "@/services/usersService.ts";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,6 +13,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
   const [statusChecked, setStatusChecked] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const navigate = useNavigate();
 
   const isAuthPage = location.pathname === "/auth";
 
@@ -50,6 +51,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       })();
     }
   }, [isLoading, isAuthenticated, loginWithRedirect, location.pathname]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await getUserById(user?.sub);
+      } catch (error) {
+        navigate("/");
+      }
+    })();
+  }, [navigate, user?.sub]);
 
   if (isLoading || !statusChecked) {
     return <Loading show={true} />;

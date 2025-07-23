@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@radix-ui/react-label";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { getUserStatus, registerUser } from "@/services/usersService.ts";
-import { useAuth } from "@/contexts/AuthContext.tsx";
+import {
+  getUserById,
+  getUserStatus,
+  registerUser,
+} from "@/services/usersService.ts";
 
 const TermsConsent = () => {
   const [fullName, setFullName] = useState("");
@@ -63,6 +66,20 @@ const TermsConsent = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await getUserById(userId);
+
+        if (userId) {
+          navigate("/familyoffices");
+        }
+      } catch (error) {
+        navigate("/");
+      }
+    })();
+  }, [navigate, userId]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#F6F6F7]">
