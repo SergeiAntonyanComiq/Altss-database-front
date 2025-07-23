@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
@@ -66,20 +66,6 @@ const TermsConsent = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    (async () => {
-      try {
-        await getUserById(userId);
-
-        if (userId) {
-          navigate("/familyoffices");
-        }
-      } catch (error) {
-        navigate("/");
-      }
-    })();
-  }, [navigate, userId]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#F6F6F7]">
