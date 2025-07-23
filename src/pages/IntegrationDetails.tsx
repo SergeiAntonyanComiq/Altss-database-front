@@ -85,6 +85,7 @@ export default function IntegrationDetails() {
               technological_focuses: {},
               regional_focuses: {},
               industry_focuses: {},
+              emerging_manager_lp: {},
             }
           : data?.investment_focus ?? {},
     };

@@ -99,6 +99,28 @@ export const InvestmentFocus = ({ id }: { id: string }) => {
             data={focus?.regional_focuses}
           />
         )}
+        {focus?.manager_maturity_preference && (
+          <FocusSection
+            label="Manager Maturity Preference"
+            data={focus?.manager_maturity_preference}
+          />
+        )}
+
+        {focus?.emerging_manager_lp && (
+          <>
+            <div className="font-semibold text-lg mb-4">Emerging Manager</div>
+            <div className="mb-4">
+              <div className="font-medium text-md mb-2">
+                {focus?.emerging_manager_lp?.confidence}
+              </div>
+              <div className="text-md mb-2">
+                {focus?.emerging_manager_lp?.notes}
+              </div>
+            </div>
+            <hr className="border-t border-gray-200 my-4" />
+          </>
+        )}
+
         {focus?.ticket_size_musd && (
           <>
             <div className="flex space-x-8 items-center">

@@ -13,24 +13,36 @@ export const prepareFocusForSave = (data: InvestmentFocusResponse) => {
     "technological_focuses",
     "industry_focuses",
     "regional_focuses",
+    "manager_maturity_preference",
   ];
 
-  if (transformedData.company_types) {
-    focusFields?.forEach((field) => {
-      if (!transformedData[field]) {
-        transformedData[field] = {};
+  focusFields.forEach((field) => {
+    if (!transformedData[field]) {
+      transformedData[field] = {};
+    }
+
+    const fieldData = transformedData[field];
+
+    Object.keys(fieldData).forEach((key) => {
+      const value = fieldData[key];
+
+      if (typeof value === "string") {
+        fieldData[key] = value.split(",").map((item) => item.trim());
       }
 
-      Object.keys(transformedData[field]).forEach((key) => {
-        const value = transformedData[field][key];
-        if (typeof value === "string") {
-          transformedData[field][key] = value
-            .split(",")
-            .map((item) => item.trim());
+      if (Array.isArray(fieldData[key])) {
+        fieldData[key] = fieldData[key].filter((item) => item.trim() !== "");
+        if (fieldData[key].length === 0) {
+          delete fieldData[key];
         }
-      });
+      }
     });
-  }
+
+    if (Object.keys(fieldData).length === 0) {
+      delete transformedData[field];
+    }
+  });
+
   if (typeof transformedData.philanthropic_themes === "string") {
     transformedData.philanthropic_themes = (
       transformedData.philanthropic_themes as string
@@ -49,11 +61,32 @@ export const prepareFocusForSave = (data: InvestmentFocusResponse) => {
     const range = transformedData[field];
     if (range) {
       if (typeof range.min === "string") {
-        transformedData[field].min = parseFloat(range.min);
+        range.min = parseFloat(range.min);
       }
       if (typeof range.max === "string") {
-        transformedData[field].max = parseFloat(range.max);
+        range.max = parseFloat(range.max);
       }
+
+      // Remove range field if both min and max are undefined/null/NaN
+      const isEmpty =
+        (range.min === undefined || isNaN(range.min)) &&
+        (range.max === undefined || isNaN(range.max));
+      if (isEmpty) {
+        delete transformedData[field];
+      }
+    }
+  });
+
+  const flatObjectFields = ["emerging_manager_lp"];
+
+  flatObjectFields.forEach((field) => {
+    const obj = transformedData[field];
+    if (
+      obj &&
+      typeof obj === "object" &&
+      Object.values(obj).every((v) => v === "")
+    ) {
+      delete transformedData[field];
     }
   });
 

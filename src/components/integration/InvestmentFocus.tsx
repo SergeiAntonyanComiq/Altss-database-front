@@ -177,6 +177,57 @@ export const InvestmentFocus = ({ isEditing }: InvestmentFocusProps) => {
           name="investment_focus.regional_focuses.Negative"
           isEditing={isEditing}
         />
+        <FocusSection
+          label="Manager Maturity Preference: Confirmed (comma separated)"
+          name="investment_focus.manager_maturity_preference.Confirmed"
+          isEditing={isEditing}
+        />
+        <FocusSection
+          label="Manager Maturity Preference: Pipeline (comma separated)"
+          name="investment_focus.manager_maturity_preference.Pipeline"
+          isEditing={isEditing}
+        />
+        <FocusSection
+          label="Manager Maturity Preference: Indicated (comma separated)"
+          name="investment_focus.manager_maturity_preference.Indicated"
+          isEditing={isEditing}
+        />
+      </div>
+
+      <div className="flex flex-row w-full space-x-8">
+        <div className="flex flex-col space-y-4 mb-6 w-full">
+          <Label>Emerging Manager Confidence</Label>
+          <Controller
+            name="investment_focus.emerging_manager_lp.confidence"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                disabled={!isEditing}
+                id="title"
+                type="text"
+                onChange={(e) => field.onChange(e)}
+                className="bg-white placeholder:text-gray-400 disabled:bg-gray-200"
+              />
+            )}
+          />
+        </div>
+        <div className="flex flex-col space-y-4 mb-6 w-full">
+          <Label>Emerging Manager Note</Label>
+          <Controller
+            name="investment_focus.emerging_manager_lp.notes"
+            control={control}
+            render={({ field }) => (
+              <textarea
+                {...field}
+                id={field.name}
+                disabled={!isEditing}
+                rows={6}
+                className="w-full rounded-md border-0 bg-white disabled:bg-gray-200 p-2 text-base resize-none"
+              />
+            )}
+          />
+        </div>
       </div>
 
       <div>
