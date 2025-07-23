@@ -22,7 +22,7 @@ const messages = {
       <>
         <p>You’ve reached your profile view limit.</p>
         <p className="mt-2">
-          This trial allows access to 50 profiles. To unlock full platform
+          This trial allows access to 200 profiles. To unlock full platform
           access, please reach out to your account manager.
         </p>
       </>
