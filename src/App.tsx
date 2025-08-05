@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
 
 import NotFound from "./pages/NotFound";
 import FamilyOffices from "./pages/FamilyOffices";
@@ -15,11 +14,7 @@ import Favorites from "./pages/Favorites";
 import SavedSearches from "./pages/SavedSearches";
 import Profile from "./pages/Profile";
 import FamilyOfficesContactsProfile from "./pages/FamilyOfficesContactsProfile";
-import TrialBlockedScreen from "@/components/modals/TrialBlockedScreen.tsx";
 import Users from "@/pages/Users.tsx";
-import { RequireAuth } from "@/components/RequireAuth.tsx";
-import { useAuth0 } from "@auth0/auth0-react";
-import { setAuth0 } from "@/auth/auth0Client.ts";
 import { Loading } from "@/utils.tsx";
 import TermsConsent from "@/pages/TermsConsent.tsx";
 import Integration from "@/pages/Integrations.tsx";
@@ -28,132 +23,44 @@ import IntegrationDetails from "@/pages/IntegrationDetails.tsx";
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  const { user, userPlan, userPlanType, userData, loading } = useAuth();
-
-  const auth0 = useAuth0();
-
-  useEffect(() => {
-    setAuth0(auth0);
-  }, [auth0]);
-
-  const shouldBlock = user && userPlan === "expired";
-
-  if (loading) {
-    return <Loading show={true} />;
-  }
-
-  if (shouldBlock) {
-    return <TrialBlockedScreen type={userPlanType ?? "expired"} />;
-  }
-
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          userData ? (
-            <Navigate to="/familyoffices" replace />
-          ) : (
-            <Navigate to="/terms-consent" replace />
-          )
-        }
-      />
+      <Route path="/" element={<Navigate to="/familyoffices" replace />} />
 
       <Route path="/terms-consent" element={<TermsConsent />} />
 
-      <Route
-        path="/familyoffices"
-        element={
-          <ProtectedRoute>
-            <FamilyOffices />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/familyoffices" element={<FamilyOffices />} />
       <Route
         path="/familyofficescontacts"
-        element={
-          <ProtectedRoute>
-            <FamilyOfficesContacts />
-          </ProtectedRoute>
-        }
+        element={<FamilyOfficesContacts />}
       />
-      <Route
-        path="/users"
-        element={
-          <ProtectedRoute>
-            <Users />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/integration"
-        element={
-          <ProtectedRoute>
-            <Integration />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/integration/:id"
-        element={
-          <ProtectedRoute>
-            <IntegrationDetails />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/users" element={<Users />} />
+      <Route path="/integration" element={<Integration />} />
+      <Route path="/integration/:id" element={<IntegrationDetails />} />
       <Route
         path="/familyofficescontacts/:id"
         element={
-          <ProtectedRoute>
-            <React.Suspense fallback={<Loading />}>
-              <FamilyOfficeProfile />
-            </React.Suspense>
-          </ProtectedRoute>
+          <React.Suspense fallback={<Loading />}>
+            <FamilyOfficeProfile />
+          </React.Suspense>
         }
       />
       <Route
         path="/familyofficescontactsprofile/:id"
-        element={
-          <ProtectedRoute>
-            <FamilyOfficesContactsProfile />
-          </ProtectedRoute>
-        }
+        element={<FamilyOfficesContactsProfile />}
       />
       <Route
         path="/familyoffices/:id"
         element={
-          <ProtectedRoute>
-            <React.Suspense fallback={<Loading />}>
-              <FamilyOfficeProfile />
-            </React.Suspense>
-          </ProtectedRoute>
+          <React.Suspense fallback={<Loading />}>
+            <FamilyOfficeProfile />
+          </React.Suspense>
         }
       />
 
-      <Route
-        path="/favorites"
-        element={
-          <ProtectedRoute>
-            <Favorites />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/saved-searches"
-        element={
-          <ProtectedRoute>
-            <SavedSearches />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/userprofile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/favorites" element={<Favorites />} />
+      <Route path="/saved-searches" element={<SavedSearches />} />
+      <Route path="/userprofile" element={<Profile />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -162,15 +69,11 @@ const AppContent = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <RequireAuth>
-            <AppContent />
-          </RequireAuth>
-        </BrowserRouter>
-      </AuthProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
